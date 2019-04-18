@@ -1,0 +1,73 @@
+D:\Winta\Website\sieuwebaz\LogisticWeb\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\LogisticWeb\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\LogisticWeb\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\Winta\Website\sieuwebaz\LogisticWeb\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\LogisticWeb\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta\FullCode\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\5.CONGTY-WINTA\ProjectsWinTa2018\DataAccess\InfoDB\obj\Debug\InfoDB.csprojResolveAssemblyReference.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\Winta\Website\sieuwebaz\GitWinta\ProjectsWinta Full\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\ESC\Git VinhGia\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\ESC\Git VinhGia\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\ESC\Git VinhGia\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\ESC\Git VinhGia\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
+D:\ESC\Git VinhGia\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\ESC\Git VinhGia\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\ESC\Git VinhGia\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\ESC\Git VinhGia\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\ESC\Git VinhGia\DataAccess\InfoDB\bin\Debug\InfoDB.dll.config
+D:\EMan_ver3\DataAccess\InfoDB\bin\Debug\InfoDB.dll.config
+D:\EMan_ver3\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\EMan_ver3\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\EMan_ver3\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\EMan_ver3\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
+D:\EMan_ver3\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\EMan_ver3\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\EMan_ver3\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\EMan_ver3\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\EMan_ver3\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\eman\DataAccess\InfoDB\bin\Debug\InfoDB.dll.config
+D:\eman\DataAccess\InfoDB\bin\Debug\InfoDB.dll
+D:\eman\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
+D:\eman\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
+D:\eman\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
+D:\eman\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
+D:\eman\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
+D:\eman\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
+D:\eman\DataAccess\InfoDB\obj\Debug\InfoDB.dll
+D:\eman\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\ESC\Git VinhGia\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache

@@ -1,0 +1,1 @@
+﻿function check_zoom(){return DPR=window.devicePixelRatio,DPR<=1?zoomLevel="0":DPR<=1.1?zoomLevel="1":DPR<=1.3&&(zoomLevel="1"),zoomLevel}var Browser=navigator.userAgent;Browser=Browser.indexOf("MSIE")>=0?"MSIE":Browser.indexOf("Firefox")>=0?"Firefox":Browser.indexOf("Chrome")>=0?"Chrome":Browser.indexOf("Safari")>=0?"Safari":Browser.indexOf("Opera")>=0?"Opera":"UNKNOWN";

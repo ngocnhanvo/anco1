@@ -1,0 +1,68 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "eman_ver3", "eman_ver3\", "{F1A87ED9-8735-465F-B367-F466C2AD6644}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		ProjectReferences = "{3068a533-f7c5-4d29-9839-8ac6495d7cfa}|InfoDB.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_51974"
+		Debug.AspNetCompiler.PhysicalPath = "eman_ver3\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51974\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_51974"
+		Release.AspNetCompiler.PhysicalPath = "eman_ver3\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_51974\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "51974"
+		SlnRelativePath = "eman_ver3\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateModels", "GenerateModels\GenerateModels.csproj", "{4C5B4270-128B-43D2-B8DD-404046511BD4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{78B9D112-C1B8-4CBD-A442-F322DBCE6B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfoDB", "DataAccess\InfoDB\InfoDB.csproj", "{3068A533-F7C5-4D29-9839-8AC6495D7CFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Report", "Report\Report.csproj", "{B7826624-E18E-44B9-A784-B8608DE57E6F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1A87ED9-8735-465F-B367-F466C2AD6644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A87ED9-8735-465F-B367-F466C2AD6644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A87ED9-8735-465F-B367-F466C2AD6644}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A87ED9-8735-465F-B367-F466C2AD6644}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{4C5B4270-128B-43D2-B8DD-404046511BD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C5B4270-128B-43D2-B8DD-404046511BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C5B4270-128B-43D2-B8DD-404046511BD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C5B4270-128B-43D2-B8DD-404046511BD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3068A533-F7C5-4D29-9839-8AC6495D7CFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3068A533-F7C5-4D29-9839-8AC6495D7CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3068A533-F7C5-4D29-9839-8AC6495D7CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3068A533-F7C5-4D29-9839-8AC6495D7CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7826624-E18E-44B9-A784-B8608DE57E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7826624-E18E-44B9-A784-B8608DE57E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7826624-E18E-44B9-A784-B8608DE57E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7826624-E18E-44B9-A784-B8608DE57E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3068A533-F7C5-4D29-9839-8AC6495D7CFA} = {78B9D112-C1B8-4CBD-A442-F322DBCE6B4A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {13F90881-267D-48E2-B119-81FC418147E7}
+	EndGlobalSection
+EndGlobal

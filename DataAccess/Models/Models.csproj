@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C952282C-CA94-4CBB-A2F7-F1A08766CB45}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataAccess</RootNamespace>
+    <AssemblyName>Models</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Mvc, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.ApiExplorer, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.ApiExplorer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Core, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Cors, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.DataAnnotations, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.DataAnnotations.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Formatters.Json, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Formatters.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Localization, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Razor, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.Razor.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.RazorPages, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.RazorPages.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.TagHelpers, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.TagHelpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.ViewFeatures, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.AspNetCore.Mvc.ViewFeatures.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Design, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.EntityFrameworkCore.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Relational, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.SqlServer, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.EntityFrameworkCore.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Framework\Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Start Compile Winta-->
+    <Compile Include="Objects\DM_BAN.cs" />
+    <Compile Include="Objects\DM_BARCODE.cs" />
+    <Compile Include="Objects\DM_CA_LV.cs" />
+    <Compile Include="Objects\DM_CacKhoanBT.cs" />
+    <Compile Include="Objects\DM_CAP_PHAT_TS.cs" />
+    <Compile Include="Objects\DM_CHI_NHANH.cs" />
+    <Compile Include="Objects\DM_CHIPHI.cs" />
+    <Compile Include="Objects\DM_CHUNG_KHAC.cs" />
+    <Compile Include="Objects\DM_CHUNG_TU.cs" />
+    <Compile Include="Objects\DM_DUAN.cs" />
+    <Compile Include="Objects\DM_DUAN_CT.cs" />
+    <Compile Include="Objects\DM_DVT.cs" />
+    <Compile Include="Objects\DM_HOPDONG_NVI.cs" />
+    <Compile Include="Objects\DM_KETCHUYEN.cs" />
+    <Compile Include="Objects\DM_KHACHHANG.cs" />
+    <Compile Include="Objects\DM_KHEN_THUONG.cs" />
+    <Compile Include="Objects\DM_KHOHANG.cs" />
+    <Compile Include="Objects\DM_KHUVUC.cs" />
+    <Compile Include="Objects\DM_LOAI_THE.cs" />
+    <Compile Include="Objects\DM_LOTDATE.cs" />
+    <Compile Include="Objects\DM_NGHANH.cs" />
+    <Compile Include="Objects\DM_NGHIEPVU.cs" />
+    <Compile Include="Objects\DM_NHANVIEN.cs" />
+    <Compile Include="Objects\DM_NHAXE.cs" />
+    <Compile Include="Objects\DM_PHUONGTHUCVC.cs" />
+    <Compile Include="Objects\DM_PTHUC_TTOAN.cs" />
+    <Compile Include="Objects\DM_SU_CO.cs" />
+    <Compile Include="Objects\DM_TAIKHOAN.cs" />
+    <Compile Include="Objects\DM_TAKCHUNG.cs" />
+    <Compile Include="Objects\DM_THONGKE.cs" />
+    <Compile Include="Objects\DM_TKNGANHANG.cs" />
+    <Compile Include="Objects\DM_TO_KHAI_HQ.cs" />
+    <Compile Include="Objects\DM_TYGIA.cs" />
+    <Compile Include="Objects\DM_VANDON.cs" />
+    <Compile Include="Objects\DM_VANDON_PMB.cs" />
+    <Compile Include="Objects\DM_VATTU.cs" />
+    <Compile Include="Objects\DM_VATTU_QD.cs" />
+    <Compile Include="Objects\DM_VI_TRI_CV.cs" />
+    <Compile Include="Objects\ImportExcel.cs" />
+    <Compile Include="Objects\L01_FIELDS.cs" />
+    <Compile Include="Objects\L02_COMMON.cs" />
+    <Compile Include="Objects\L04_MESSAGES.cs" />
+    <Compile Include="Objects\L06_MENU.cs" />
+    <Compile Include="Objects\L06_REPORT.cs" />
+    <Compile Include="Objects\P11THU_CHI.cs" />
+    <Compile Include="Objects\P12_DK_THU_CHI.cs" />
+    <Compile Include="Objects\P13_CHI_TIET_DK.cs" />
+    <Compile Include="Objects\P21_NHAP_XUAT.cs" />
+    <Compile Include="Objects\P22_CHI_TIET.cs" />
+    <Compile Include="Objects\P23_CHI_TIET_FIFO.cs" />
+    <Compile Include="Objects\P23_DINH_KHOAN.cs" />
+    <Compile Include="Objects\P31_BAN_HANG.cs" />
+    <Compile Include="Objects\P31TMP_BAN_HANG.cs" />
+    <Compile Include="Objects\P32_CHI_TIET.cs" />
+    <Compile Include="Objects\P32TMP_CHI_TIET.cs" />
+    <Compile Include="Objects\P33_DINH_KHOAN.cs" />
+    <Compile Include="Objects\P34_CHI_TIET_VC.cs" />
+    <Compile Include="Objects\P41_SO_TONG_HOP.cs" />
+    <Compile Include="Objects\P42_CHI_TIET_TH.cs" />
+    <Compile Include="Objects\P43_CHI_TIET_TS.cs" />
+    <Compile Include="Objects\P51_BANG_GIA.cs" />
+    <Compile Include="Objects\P52_CHI_TIET.cs" />
+    <Compile Include="Objects\P52Detail_ChiTiet.cs" />
+    <Compile Include="Objects\P53_DIEU_KIEN.cs" />
+    <Compile Include="Objects\P61_DAT_PHONG.cs" />
+    <Compile Include="Objects\P71_DINH_MUC.cs" />
+    <Compile Include="Objects\P72_CHI_TIET.cs" />
+    <Compile Include="Objects\P73_DINH_MUC_SX.cs" />
+    <Compile Include="Objects\P73_TINH_GIA_THANH.cs" />
+    <Compile Include="Objects\P74_CONG_DOAN_SX.cs" />
+    <Compile Include="Objects\P75_KY_TINH_GT.cs" />
+    <Compile Include="Objects\P75_ZCHI_TIET_CP.cs" />
+    <Compile Include="Objects\P75_ZCHI_TIET_GT.cs" />
+    <Compile Include="Objects\P76_DT_TAP_HOP_CP.cs" />
+    <Compile Include="Objects\P76_ZCHI_TIET.cs" />
+    <Compile Include="Objects\P77_PHAN_BO_CP.cs" />
+    <Compile Include="Objects\P77_ZCHI_TIET_PB.cs" />
+    <Compile Include="Objects\P81_BIEU_THUE_TN.cs" />
+    <Compile Include="Objects\P81_KHOAN_TN_KT.cs" />
+    <Compile Include="Objects\P81_KY_HIEU_CCONG.cs" />
+    <Compile Include="Objects\P81_LOAI_BAO_HIEM.cs" />
+    <Compile Include="Objects\P81_MUC_LUONG.cs" />
+    <Compile Include="Objects\P81_CAP_PHAT_TSNS.cs" />
+    <Compile Include="Objects\P81_DC_CHI_TIET_TGNS.cs" />
+    <Compile Include="Objects\P81_DIEU_CHINH_TGNS.cs" />
+    <Compile Include="Objects\P81_LICH_SU_LUONG.cs" />
+    <Compile Include="Objects\P81_LICH_SU_LUONG_TMP.cs" />
+    <Compile Include="Objects\P812_CHI_TIET.cs" />
+    <Compile Include="Objects\P84_KHEN_THUONG_KL.cs" />
+    <Compile Include="Objects\P85_CHAM_CONG.cs" />
+    <Compile Include="Objects\P85_CHI_TIET.cs" />
+    <Compile Include="Objects\P89_BANG_LUONG.cs" />
+    <Compile Include="Objects\P89_CHI_TIET.cs" />
+    <Compile Include="Objects\P89_LUONG_CONG.cs" />
+    <Compile Include="Objects\P91_TAI_SAN.cs" />
+    <Compile Include="Objects\P92_CTIET_TSAN.cs" />
+    <Compile Include="Objects\P93_DIEU_CHUYEN.cs" />
+    <Compile Include="Objects\P93_ZCHI_TIET.cs" />
+    <Compile Include="Objects\PALL_LENH_DX.cs" />
+    <Compile Include="Objects\PALL_TO_KHAI_CT.cs" />
+    <Compile Include="Objects\PALL_VAT_BAN_RA.cs" />
+    <Compile Include="Objects\PALL_VAT_MUA_VAO.cs" />
+    <Compile Include="Objects\PALL_VAN_DON_CT.cs" />
+    <Compile Include="Objects\PG11_CHUNG_TU_GS.cs" />
+    <Compile Include="Objects\PG12_CHI_TIET.cs" />
+    <Compile Include="Objects\PG21_LIST_CT.cs" />
+    <Compile Include="Objects\PG21_LIST_CTTH.cs" />
+    <Compile Include="Objects\PNX_CHON_LOT.cs" />
+    <Compile Include="Objects\PTC_CHON_TTOAN_.cs" />
+    <Compile Include="Objects\PZ11_KIEM_KE.cs" />
+    <Compile Include="Objects\PZ12_CHI_TIET.cs" />
+    <Compile Include="Objects\PZ21_SO_DU.cs" />
+    <Compile Include="Objects\PZ22_CHI_TIET.cs" />
+    <Compile Include="Objects\PZP_CHI_TIET.cs" />
+    <Compile Include="Objects\PZP_TONG_HOP.cs" />
+    <Compile Include="Objects\PZR_IN_PLIEN.cs" />
+    <Compile Include="Objects\PZT_CHI_TIET_LDX.cs" />
+    <Compile Include="Objects\PZT_LENH_DX.cs" />
+    <Compile Include="Objects\R99_TEN_REPORT.cs" />
+    <Compile Include="Objects\RP_BAO_CAO_TS.cs" />
+    <Compile Include="Objects\RP_BCKQKD.cs" />
+    <Compile Include="Objects\RP_BCKQKD_200.cs" />
+    <Compile Include="Objects\RP_BCKQKD_48.cs" />
+    <Compile Include="Objects\RP_CAN_DOI_PS.cs" />
+    <Compile Include="Objects\RP_CAN_DOI_PS_TMP.cs" />
+    <Compile Include="Objects\RP_CD_KE_TOAN.cs" />
+    <Compile Include="Objects\RP_CD_KE_TOAN_200.cs" />
+    <Compile Include="Objects\RP_CD_KE_TOAN_48.cs" />
+    <Compile Include="Objects\RP_LUU_CHUYEN_TTE.cs" />
+    <Compile Include="Objects\RP_LUU_CHUYEN_TTE_200.cs" />
+    <Compile Include="Objects\RP_NHAT_KY_CHUNG.cs" />
+    <Compile Include="Objects\RP_SO_CAI.cs" />
+    <Compile Include="Objects\RP_SO_CAI_TONG_HOP.cs" />
+    <Compile Include="Objects\RP_THUEVAT_RA.cs" />
+    <Compile Include="Objects\RP_THUEVAT_VAO.cs" />
+    <Compile Include="Objects\RP_TRUY_VAN_ALL.cs" />
+    <Compile Include="Objects\RP11_CHI_TIET.cs" />
+    <Compile Include="Objects\RP12SOQUY.cs" />
+    <Compile Include="Objects\RP21_CHI_TIET.cs" />
+    <Compile Include="Objects\RP22_CHUNG_TU.cs" />
+    <Compile Include="Objects\RP31_CHI_TIET.cs" />
+    <Compile Include="Objects\RP32_CHUNG_TU.cs" />
+    <Compile Include="Objects\RP33_BAO_CAO.cs" />
+    <Compile Include="Objects\RP33_BAO_CAO_TMP.cs" />
+    <Compile Include="Objects\RP33_BAO_CAO_VC.cs" />
+    <Compile Include="Objects\RP34_THONG_KE.cs" />
+    <Compile Include="Objects\RP35_PTBHANG_.cs" />
+    <Compile Include="Objects\RP35_PTBHANG_TMP.cs" />
+    <Compile Include="Objects\RP42_CHUNG_TU.cs" />
+    <Compile Include="Objects\RP51_CHI_TIET_NXT.cs" />
+    <Compile Include="Objects\RP51_TON_KHO.cs" />
+    <Compile Include="Objects\RP51_TON_KHO_TMP.cs" />
+    <Compile Include="Objects\RP61_CNO_CTRINH.cs" />
+    <Compile Include="Objects\RP61_CONG_NO.cs" />
+    <Compile Include="Objects\RP61_CONG_NO_TMP.cs" />
+    <Compile Include="Objects\RP71_BC_SAN_XUAT.cs" />
+    <Compile Include="Objects\RP79_THE_TINH_GT.cs" />
+    <Compile Include="Objects\RP81_CHI_TIET.cs" />
+    <Compile Include="Objects\RP89_CHI_TIET.cs" />
+    <Compile Include="Objects\RPG_CHUNG_TU_GS.cs" />
+    <Compile Include="Objects\RZP_BAO_CAO.cs" />
+    <Compile Include="Objects\S01_USERS.cs" />
+    <Compile Include="Objects\S02_PHANQUYEN.cs" />
+    <Compile Include="Objects\S02_THIETLAP.cs" />
+    <Compile Include="Objects\S03_HISTORY.cs" />
+    <Compile Include="Objects\S04_USERLOG.cs" />
+    <Compile Include="Objects\S06_GENSET.cs" />
+    <Compile Include="Objects\S06_RESET.cs" />
+    <Compile Include="Objects\S07_DATA_BACKUP.cs" />
+    <Compile Include="Objects\S07_SET_HOP_DATA.cs" />
+    <Compile Include="Objects\S07_SET_HOP_SERVER.cs" />
+    <Compile Include="Objects\S08_DK_KHOA_SO.cs" />
+    <Compile Include="Objects\S11_KIEM_TRA_DB.cs" />
+    <Compile Include="Objects\S12_CONG_THU.cs" />
+    <Compile Include="Objects\S13_VIEW_FIELD.cs" />
+    <Compile Include="Objects\S14_FILES_DATA.cs" />
+    <Compile Include="Objects\S15_IMPORT_INFO.cs" />
+    <Compile Include="Objects\SUMTONGTMP.cs" />
+    <Compile Include="Objects\TABLE_AUTO.cs" />
+    <Compile Include="Objects\TABLETMP_AUTO.cs" />
+    <Compile Include="Objects\tempsum.cs" />
+    <Compile Include="Objects\THONG_TIN_DV.cs" />
+    <Compile Include="Objects\ZFILTERDATA.cs" />
+    <!--End Compile Winta-->
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="WintaContext.cs" />
+    <Compile Include="ConnectionStr.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StoredProcedure\CongNoKhachHang.cs" />
+    <Compile Include="StoredProcedure\ThongKeVanDon.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InfoDB\InfoDB.csproj">
+      <Project>{3068a533-f7c5-4d29-9839-8ac6495d7cfa}</Project>
+      <Name>InfoDB</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ObjectsMore\" />
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\InfoDB.dll" />
+    <Content Include="bin\Debug\InfoDB.pdb" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Abstractions.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.ApiExplorer.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Core.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Cors.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.DataAnnotations.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Formatters.Json.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Localization.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Razor.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.Razor.Extensions.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.RazorPages.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.TagHelpers.dll" />
+    <Content Include="bin\Debug\Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
+    <Content Include="bin\Debug\Microsoft.EntityFrameworkCore.Design.dll" />
+    <Content Include="bin\Debug\Microsoft.EntityFrameworkCore.dll" />
+    <Content Include="bin\Debug\Microsoft.EntityFrameworkCore.Relational.dll" />
+    <Content Include="bin\Debug\Microsoft.EntityFrameworkCore.SqlServer.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Caching.Abstractions.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Caching.Memory.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Configuration.Abstractions.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.DependencyInjection.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Logging.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Options.dll" />
+    <Content Include="bin\Debug\Microsoft.Extensions.Primitives.dll" />
+    <Content Include="bin\Debug\Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore.dll" />
+    <Content Include="bin\Debug\Microsoft.Win32.Primitives.dll" />
+    <Content Include="bin\Debug\Models.dll" />
+    <Content Include="bin\Debug\Models.pdb" />
+    <Content Include="bin\Debug\netstandard.dll" />
+    <Content Include="bin\Debug\Remotion.Linq.dll" />
+    <Content Include="bin\Debug\System.AppContext.dll" />
+    <Content Include="bin\Debug\System.Collections.Concurrent.dll" />
+    <Content Include="bin\Debug\System.Collections.dll" />
+    <Content Include="bin\Debug\System.Collections.Immutable.dll" />
+    <Content Include="bin\Debug\System.Collections.NonGeneric.dll" />
+    <Content Include="bin\Debug\System.Collections.Specialized.dll" />
+    <Content Include="bin\Debug\System.ComponentModel.dll" />
+    <Content Include="bin\Debug\System.ComponentModel.EventBasedAsync.dll" />
+    <Content Include="bin\Debug\System.ComponentModel.Primitives.dll" />
+    <Content Include="bin\Debug\System.ComponentModel.TypeConverter.dll" />
+    <Content Include="bin\Debug\System.Console.dll" />
+    <Content Include="bin\Debug\System.Data.Common.dll" />
+    <Content Include="bin\Debug\System.Data.SqlClient.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.Contracts.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.Debug.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.FileVersionInfo.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.Process.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.StackTrace.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.TextWriterTraceListener.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.Tools.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.TraceSource.dll" />
+    <Content Include="bin\Debug\System.Diagnostics.Tracing.dll" />
+    <Content Include="bin\Debug\System.Drawing.Primitives.dll" />
+    <Content Include="bin\Debug\System.Dynamic.Runtime.dll" />
+    <Content Include="bin\Debug\System.Globalization.Calendars.dll" />
+    <Content Include="bin\Debug\System.Globalization.dll" />
+    <Content Include="bin\Debug\System.Globalization.Extensions.dll" />
+    <Content Include="bin\Debug\System.Interactive.Async.dll" />
+    <Content Include="bin\Debug\System.IO.Compression.dll" />
+    <Content Include="bin\Debug\System.IO.Compression.ZipFile.dll" />
+    <Content Include="bin\Debug\System.IO.dll" />
+    <Content Include="bin\Debug\System.IO.FileSystem.dll" />
+    <Content Include="bin\Debug\System.IO.FileSystem.DriveInfo.dll" />
+    <Content Include="bin\Debug\System.IO.FileSystem.Primitives.dll" />
+    <Content Include="bin\Debug\System.IO.FileSystem.Watcher.dll" />
+    <Content Include="bin\Debug\System.IO.IsolatedStorage.dll" />
+    <Content Include="bin\Debug\System.IO.MemoryMappedFiles.dll" />
+    <Content Include="bin\Debug\System.IO.Pipes.dll" />
+    <Content Include="bin\Debug\System.IO.UnmanagedMemoryStream.dll" />
+    <Content Include="bin\Debug\System.Linq.dll" />
+    <Content Include="bin\Debug\System.Linq.Expressions.dll" />
+    <Content Include="bin\Debug\System.Linq.Parallel.dll" />
+    <Content Include="bin\Debug\System.Linq.Queryable.dll" />
+    <Content Include="bin\Debug\System.Net.Http.dll" />
+    <Content Include="bin\Debug\System.Net.NameResolution.dll" />
+    <Content Include="bin\Debug\System.Net.NetworkInformation.dll" />
+    <Content Include="bin\Debug\System.Net.Ping.dll" />
+    <Content Include="bin\Debug\System.Net.Primitives.dll" />
+    <Content Include="bin\Debug\System.Net.Requests.dll" />
+    <Content Include="bin\Debug\System.Net.Security.dll" />
+    <Content Include="bin\Debug\System.Net.Sockets.dll" />
+    <Content Include="bin\Debug\System.Net.WebHeaderCollection.dll" />
+    <Content Include="bin\Debug\System.Net.WebSockets.Client.dll" />
+    <Content Include="bin\Debug\System.Net.WebSockets.dll" />
+    <Content Include="bin\Debug\System.ObjectModel.dll" />
+    <Content Include="bin\Debug\System.Reflection.dll" />
+    <Content Include="bin\Debug\System.Reflection.Extensions.dll" />
+    <Content Include="bin\Debug\System.Reflection.Primitives.dll" />
+    <Content Include="bin\Debug\System.Resources.Reader.dll" />
+    <Content Include="bin\Debug\System.Resources.ResourceManager.dll" />
+    <Content Include="bin\Debug\System.Resources.Writer.dll" />
+    <Content Include="bin\Debug\System.Runtime.CompilerServices.VisualC.dll" />
+    <Content Include="bin\Debug\System.Runtime.dll" />
+    <Content Include="bin\Debug\System.Runtime.Extensions.dll" />
+    <Content Include="bin\Debug\System.Runtime.Handles.dll" />
+    <Content Include="bin\Debug\System.Runtime.InteropServices.dll" />
+    <Content Include="bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <Content Include="bin\Debug\System.Runtime.Numerics.dll" />
+    <Content Include="bin\Debug\System.Runtime.Serialization.Formatters.dll" />
+    <Content Include="bin\Debug\System.Runtime.Serialization.Json.dll" />
+    <Content Include="bin\Debug\System.Runtime.Serialization.Primitives.dll" />
+    <Content Include="bin\Debug\System.Runtime.Serialization.Xml.dll" />
+    <Content Include="bin\Debug\System.Security.Claims.dll" />
+    <Content Include="bin\Debug\System.Security.Cryptography.Algorithms.dll" />
+    <Content Include="bin\Debug\System.Security.Cryptography.Csp.dll" />
+    <Content Include="bin\Debug\System.Security.Cryptography.Encoding.dll" />
+    <Content Include="bin\Debug\System.Security.Cryptography.Primitives.dll" />
+    <Content Include="bin\Debug\System.Security.Cryptography.X509Certificates.dll" />
+    <Content Include="bin\Debug\System.Security.Principal.dll" />
+    <Content Include="bin\Debug\System.Security.SecureString.dll" />
+    <Content Include="bin\Debug\System.Text.Encoding.dll" />
+    <Content Include="bin\Debug\System.Text.Encoding.Extensions.dll" />
+    <Content Include="bin\Debug\System.Text.RegularExpressions.dll" />
+    <Content Include="bin\Debug\System.Threading.dll" />
+    <Content Include="bin\Debug\System.Threading.Overlapped.dll" />
+    <Content Include="bin\Debug\System.Threading.Tasks.dll" />
+    <Content Include="bin\Debug\System.Threading.Tasks.Parallel.dll" />
+    <Content Include="bin\Debug\System.Threading.Thread.dll" />
+    <Content Include="bin\Debug\System.Threading.ThreadPool.dll" />
+    <Content Include="bin\Debug\System.Threading.Timer.dll" />
+    <Content Include="bin\Debug\System.ValueTuple.dll" />
+    <Content Include="bin\Debug\System.Xml.ReaderWriter.dll" />
+    <Content Include="bin\Debug\System.Xml.XDocument.dll" />
+    <Content Include="bin\Debug\System.Xml.XmlDocument.dll" />
+    <Content Include="bin\Debug\System.Xml.XmlSerializer.dll" />
+    <Content Include="bin\Debug\System.Xml.XPath.dll" />
+    <Content Include="bin\Debug\System.Xml.XPath.XDocument.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Abstractions.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.ApiExplorer.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Core.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Cors.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.DataAnnotations.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Formatters.Json.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Localization.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Razor.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.Razor.Extensions.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.RazorPages.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.TagHelpers.dll" />
+    <Content Include="bin\Release\Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
+    <Content Include="bin\Release\Microsoft.EntityFrameworkCore.Design.dll" />
+    <Content Include="bin\Release\Microsoft.EntityFrameworkCore.dll" />
+    <Content Include="bin\Release\Microsoft.EntityFrameworkCore.Relational.dll" />
+    <Content Include="bin\Release\Microsoft.EntityFrameworkCore.SqlServer.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Caching.Abstractions.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Caching.Memory.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Configuration.Abstractions.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.DependencyInjection.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Logging.Abstractions.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Logging.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Options.dll" />
+    <Content Include="bin\Release\Microsoft.Extensions.Primitives.dll" />
+    <Content Include="bin\Release\Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore.dll" />
+    <Content Include="bin\Release\Microsoft.Win32.Primitives.dll" />
+    <Content Include="bin\Release\Models.dll" />
+    <Content Include="bin\Release\Models.pdb" />
+    <Content Include="bin\Release\netstandard.dll" />
+    <Content Include="bin\Release\Remotion.Linq.dll" />
+    <Content Include="bin\Release\System.AppContext.dll" />
+    <Content Include="bin\Release\System.Collections.Concurrent.dll" />
+    <Content Include="bin\Release\System.Collections.dll" />
+    <Content Include="bin\Release\System.Collections.Immutable.dll" />
+    <Content Include="bin\Release\System.Collections.NonGeneric.dll" />
+    <Content Include="bin\Release\System.Collections.Specialized.dll" />
+    <Content Include="bin\Release\System.ComponentModel.dll" />
+    <Content Include="bin\Release\System.ComponentModel.EventBasedAsync.dll" />
+    <Content Include="bin\Release\System.ComponentModel.Primitives.dll" />
+    <Content Include="bin\Release\System.ComponentModel.TypeConverter.dll" />
+    <Content Include="bin\Release\System.Console.dll" />
+    <Content Include="bin\Release\System.Data.Common.dll" />
+    <Content Include="bin\Release\System.Data.SqlClient.dll" />
+    <Content Include="bin\Release\System.Diagnostics.Contracts.dll" />
+    <Content Include="bin\Release\System.Diagnostics.Debug.dll" />
+    <Content Include="bin\Release\System.Diagnostics.FileVersionInfo.dll" />
+    <Content Include="bin\Release\System.Diagnostics.Process.dll" />
+    <Content Include="bin\Release\System.Diagnostics.StackTrace.dll" />
+    <Content Include="bin\Release\System.Diagnostics.TextWriterTraceListener.dll" />
+    <Content Include="bin\Release\System.Diagnostics.Tools.dll" />
+    <Content Include="bin\Release\System.Diagnostics.TraceSource.dll" />
+    <Content Include="bin\Release\System.Diagnostics.Tracing.dll" />
+    <Content Include="bin\Release\System.Drawing.Primitives.dll" />
+    <Content Include="bin\Release\System.Dynamic.Runtime.dll" />
+    <Content Include="bin\Release\System.Globalization.Calendars.dll" />
+    <Content Include="bin\Release\System.Globalization.dll" />
+    <Content Include="bin\Release\System.Globalization.Extensions.dll" />
+    <Content Include="bin\Release\System.Interactive.Async.dll" />
+    <Content Include="bin\Release\System.IO.Compression.dll" />
+    <Content Include="bin\Release\System.IO.Compression.ZipFile.dll" />
+    <Content Include="bin\Release\System.IO.dll" />
+    <Content Include="bin\Release\System.IO.FileSystem.dll" />
+    <Content Include="bin\Release\System.IO.FileSystem.DriveInfo.dll" />
+    <Content Include="bin\Release\System.IO.FileSystem.Primitives.dll" />
+    <Content Include="bin\Release\System.IO.FileSystem.Watcher.dll" />
+    <Content Include="bin\Release\System.IO.IsolatedStorage.dll" />
+    <Content Include="bin\Release\System.IO.MemoryMappedFiles.dll" />
+    <Content Include="bin\Release\System.IO.Pipes.dll" />
+    <Content Include="bin\Release\System.IO.UnmanagedMemoryStream.dll" />
+    <Content Include="bin\Release\System.Linq.dll" />
+    <Content Include="bin\Release\System.Linq.Expressions.dll" />
+    <Content Include="bin\Release\System.Linq.Parallel.dll" />
+    <Content Include="bin\Release\System.Linq.Queryable.dll" />
+    <Content Include="bin\Release\System.Net.Http.dll" />
+    <Content Include="bin\Release\System.Net.NameResolution.dll" />
+    <Content Include="bin\Release\System.Net.NetworkInformation.dll" />
+    <Content Include="bin\Release\System.Net.Ping.dll" />
+    <Content Include="bin\Release\System.Net.Primitives.dll" />
+    <Content Include="bin\Release\System.Net.Requests.dll" />
+    <Content Include="bin\Release\System.Net.Security.dll" />
+    <Content Include="bin\Release\System.Net.Sockets.dll" />
+    <Content Include="bin\Release\System.Net.WebHeaderCollection.dll" />
+    <Content Include="bin\Release\System.Net.WebSockets.Client.dll" />
+    <Content Include="bin\Release\System.Net.WebSockets.dll" />
+    <Content Include="bin\Release\System.ObjectModel.dll" />
+    <Content Include="bin\Release\System.Reflection.dll" />
+    <Content Include="bin\Release\System.Reflection.Extensions.dll" />
+    <Content Include="bin\Release\System.Reflection.Primitives.dll" />
+    <Content Include="bin\Release\System.Resources.Reader.dll" />
+    <Content Include="bin\Release\System.Resources.ResourceManager.dll" />
+    <Content Include="bin\Release\System.Resources.Writer.dll" />
+    <Content Include="bin\Release\System.Runtime.CompilerServices.VisualC.dll" />
+    <Content Include="bin\Release\System.Runtime.dll" />
+    <Content Include="bin\Release\System.Runtime.Extensions.dll" />
+    <Content Include="bin\Release\System.Runtime.Handles.dll" />
+    <Content Include="bin\Release\System.Runtime.InteropServices.dll" />
+    <Content Include="bin\Release\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <Content Include="bin\Release\System.Runtime.Numerics.dll" />
+    <Content Include="bin\Release\System.Runtime.Serialization.Formatters.dll" />
+    <Content Include="bin\Release\System.Runtime.Serialization.Json.dll" />
+    <Content Include="bin\Release\System.Runtime.Serialization.Primitives.dll" />
+    <Content Include="bin\Release\System.Runtime.Serialization.Xml.dll" />
+    <Content Include="bin\Release\System.Security.Claims.dll" />
+    <Content Include="bin\Release\System.Security.Cryptography.Algorithms.dll" />
+    <Content Include="bin\Release\System.Security.Cryptography.Csp.dll" />
+    <Content Include="bin\Release\System.Security.Cryptography.Encoding.dll" />
+    <Content Include="bin\Release\System.Security.Cryptography.Primitives.dll" />
+    <Content Include="bin\Release\System.Security.Cryptography.X509Certificates.dll" />
+    <Content Include="bin\Release\System.Security.Principal.dll" />
+    <Content Include="bin\Release\System.Security.SecureString.dll" />
+    <Content Include="bin\Release\System.Text.Encoding.dll" />
+    <Content Include="bin\Release\System.Text.Encoding.Extensions.dll" />
+    <Content Include="bin\Release\System.Text.RegularExpressions.dll" />
+    <Content Include="bin\Release\System.Threading.dll" />
+    <Content Include="bin\Release\System.Threading.Overlapped.dll" />
+    <Content Include="bin\Release\System.Threading.Tasks.dll" />
+    <Content Include="bin\Release\System.Threading.Tasks.Parallel.dll" />
+    <Content Include="bin\Release\System.Threading.Thread.dll" />
+    <Content Include="bin\Release\System.Threading.ThreadPool.dll" />
+    <Content Include="bin\Release\System.Threading.Timer.dll" />
+    <Content Include="bin\Release\System.ValueTuple.dll" />
+    <Content Include="bin\Release\System.Xml.ReaderWriter.dll" />
+    <Content Include="bin\Release\System.Xml.XDocument.dll" />
+    <Content Include="bin\Release\System.Xml.XmlDocument.dll" />
+    <Content Include="bin\Release\System.Xml.XmlSerializer.dll" />
+    <Content Include="bin\Release\System.Xml.XPath.dll" />
+    <Content Include="bin\Release\System.Xml.XPath.XDocument.dll" />
+    <Content Include="obj\Debug\Models.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\Models.dll" />
+    <Content Include="obj\Debug\Models.pdb" />
+    <Content Include="obj\Release\Models.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Release\Models.dll" />
+    <Content Include="obj\Release\Models.pdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obj\Debug\build.force" />
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\Models.csproj.CopyComplete" />
+    <None Include="obj\Debug\Models.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Debug\Models.csprojAssemblyReference.cache" />
+    <None Include="obj\Debug\Models.csprojResolveAssemblyReference.cache" />
+    <None Include="obj\Release\Models.csproj.CopyComplete" />
+    <None Include="obj\Release\Models.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Release\Models.csprojAssemblyReference.cache" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

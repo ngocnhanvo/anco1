@@ -1,0 +1,416 @@
+﻿<%@ WebHandler Language="C#" Class="JQGridMD_00_NCVTTKModify" %>
+using System;
+using System.Web;
+using System.Linq;
+using System.Collections.Generic;
+using DataAcess;
+public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
+{
+    public void ProcessRequest (HttpContext context) {
+        string oper = "vnn";
+        if (Security.id_taikhoan(context) != "")
+           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+        switch (oper)
+        {
+            case "add":
+                this.add(context);
+                break;
+            case "edit":
+                this.edit(context);
+                break;
+            case "del":
+                this.del(context);
+                break;
+            case "CA_01_TinhNhuCauVatTu":
+                this.CA_01_TinhNhuCauVatTu(context);
+                break;
+			case "CA_01_TaoYCMuaVT":
+                this.CA_01_TaoYCMuaVT(context);
+                break;
+            default:
+                break;
+        }
+    }
+	public void CA_01_TaoYCMuaVT(HttpContext context)
+	{
+		EntityContext db = new EntityContext();
+		string msg = "";
+		User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        string[] vnn = context.Request.Form["id"].Split(',');
+		int i= 1;
+		foreach(var ncvt in db.c_nhucauvattu.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList()) {
+			if(ncvt.c_yeucaumuavt_id != " ") {
+				msg += "<div style='color:red'>Lỗi: Dòng \""+ ncvt.ten_nhucau +"\" đã có yêu cầu mua.</div>";
+			}
+			else if(ncvt.datinh_nhucau == false) {
+				msg += "<div style='color:red'>Lỗi: Dòng \""+ ncvt.ten_nhucau +"\" chưa tính nhu cầu mua vật tư.</div>";
+			}
+			else {
+				 var dondhpxs_got = from a in db.c_nhucauvattu_dhpx
+									join b in db.c_nhucauvattu on a.c_nhucauvattu_id equals b.c_nhucauvattu_id
+                                    join c in db.md_dondathangphanxuong on a.md_dondathangphanxuong_id equals c.md_dondathangphanxuong_id
+									where b.c_yeucaumuavt_id != " " & b.hoatdong == true & c.ngayhoanthanh >= ncvt.tungay & c.ngayhoanthanh <= ncvt.denngay
+									select new { a.md_dondathangphanxuong_id, c.sochungtu, b.ten_nhucau };
+				
+				var dondhpxs_got_arr = dondhpxs_got.Distinct();	
+                var arr_got = new List<string>();
+                foreach(var a in db.c_nhucauvattu_dhpx.Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList()) {
+                    arr_got.Add(a.md_dondathangphanxuong_id);
+                }
+				int count_err = 0;
+				foreach(var px_error in dondhpxs_got_arr.Where(s=> arr_got.Contains(s.md_dondathangphanxuong_id)).ToList()) {
+					msg += "<div style='color:red'>Lỗi: Dòng \""+ px_error.sochungtu +"\" đã có trong nhu cầu \""+ px_error.ten_nhucau +"\".</div>";
+					count_err = 1;
+				}
+				
+				if(count_err <= 0)
+				{
+					string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", i);
+					i++;
+					ncvt.c_yeucaumuavt_id = sochungtu;
+					var ycmvt = new c_yeucaumuavt(){
+						c_yeucaumuavt_id = Helper.getNewId(),
+						c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
+						c_kehoachmuavt_id = " ",
+						md_trangthai_id = "SOANTHAO",
+						sochungtu = sochungtu,
+						nguoiyeucau = "",
+						ngaycan = ncvt.ngayyeucau,
+						nguoitao = us.ad_user_id,
+						vaitrotao = us.ad_role_id,
+						bophantao = us.md_phongban_id,
+						value_nguoitao = us.ma_user,
+						value_vaitrotao = us.ten_role,
+						value_bophantao = us.ten_phongban,
+						nguoicapnhat = us.ad_user_id,
+						vaitrocapnhat = us.ad_role_id,
+						bophancapnhat = us.md_phongban_id,
+						value_nguoicapnhat = us.ma_user,
+						value_vaitrocapnhat = us.ten_role,
+						value_bophancapnhat = us.ten_phongban,
+						ngaytao = DateTime.Now,
+						ngaycapnhat = DateTime.Now,
+						mota = "",
+						hoatdong = true
+					};
+					db.c_yeucaumuavt.Add(ycmvt);
+					
+					foreach(var ncvt_ycmvt in db.c_nhucauvattu_ycmvt.
+                            Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList()) {
+						var ycmvt_cdh = new c_yeucaumuavt_cdh(){
+							c_yeucaumuavt_cdh_id = Helper.getNewId(),
+							c_yeucaumuavt_id = ycmvt.c_yeucaumuavt_id,
+							md_sanpham_id = ncvt_ycmvt.md_sanpham_id,
+							md_donvitinhsanpham_id = ncvt_ycmvt.md_donvitinhsanpham_id,
+							soluong_yeucau = ncvt_ycmvt.soluong.Value,
+							nguoitao = us.ad_user_id,
+							vaitrotao = us.ad_role_id,
+							bophantao = us.md_phongban_id,
+							value_nguoitao = us.ma_user,
+							value_vaitrotao = us.ten_role,
+							value_bophantao = us.ten_phongban,
+							nguoicapnhat = us.ad_user_id,
+							vaitrocapnhat = us.ad_role_id,
+							bophancapnhat = us.md_phongban_id,
+							value_nguoicapnhat = us.ma_user,
+							value_vaitrocapnhat = us.ten_role,
+							value_bophancapnhat = us.ten_phongban,
+							ngaytao = DateTime.Now,
+							ngaycapnhat = DateTime.Now,
+							mota = "",
+							hoatdong = true
+						};
+						db.c_yeucaumuavt_cdh.Add(ycmvt_cdh);
+					}
+					db.SaveChanges();
+					msg += "<div style='color:blue'>Đã tạo yêu cầu mua \""+ sochungtu +"\"</div>";
+				}
+			}
+		}
+		context.Response.Write(msg);
+	}
+	
+	public void CA_01_TinhNhuCauVatTu(HttpContext context)
+    {
+        var db = new EntityContext();
+		string msg = "", msg_success = "";
+		User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        string[] vnn = context.Request.Form["id"].Split(',');
+		
+		foreach(var ncvt in db.c_nhucauvattu.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList()) {
+			if(ncvt.c_yeucaumuavt_id != " ") {
+				msg = "<div style='color:red'>Lỗi: dòng \"" + ncvt.ten_nhucau +"\" đã lập yêu cầu mua vật tư.</div>";
+				break;
+			}
+			else {
+				//Lay ra tat ca don dat hang px da tao yeu cau mua vat tu
+                var dondhpxs_got = from a in db.c_nhucauvattu_dhpx
+									join b in db.c_nhucauvattu on a.c_nhucauvattu_id equals b.c_nhucauvattu_id
+                                    join c in db.md_dondathangphanxuong on a.md_dondathangphanxuong_id equals c.md_dondathangphanxuong_id
+									where b.c_yeucaumuavt_id != " " & b.hoatdong == true & c.ngay_hieuluc >= ncvt.tungay & c.ngay_hieuluc <= ncvt.denngay
+									select new { a.md_dondathangphanxuong_id };
+				
+				var dondhpxs_got_arr = dondhpxs_got.Distinct();	
+                var arr_got = new List<string>();
+                foreach(var a in dondhpxs_got_arr) {
+                    arr_got.Add(a.md_dondathangphanxuong_id);
+                }
+
+				//--Xoa du lieu
+				var dondhpxs = from a in db.md_dondathangphanxuong
+							   join b in db.c_danhsachdathang on a.sctdathang equals b.sochungtu
+							   where a.ngay_hieuluc >= ncvt.tungay & a.ngay_hieuluc <= ncvt.denngay
+							   & a.md_trangthai_id == "HIEULUC" & b.trangthai == "HIEULUC"
+							   & !arr_got.Contains(a.md_dondathangphanxuong_id)
+							   select new { a.md_dondathangphanxuong_id };
+				
+				int count_dondhpxs = db.c_nhucauvattu_dhpx.Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count();
+				if(count_dondhpxs <= 0)
+					db.c_nhucauvattu_dhpx.RemoveRange(db.c_nhucauvattu_dhpx.Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
+				
+				db.c_nhucauvattu_ddhpx.RemoveRange(db.c_nhucauvattu_ddhpx.Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
+				db.c_nhucauvattu_ycmvt.RemoveRange(db.c_nhucauvattu_ycmvt.Where(s=>s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
+				//--Tổng hợp đơn đặt hàng phân xưởng
+				if(count_dondhpxs <= 0)
+				{
+					foreach(var ddhpx in dondhpxs.ToList())
+					{
+						var ncvt_dhpx = new c_nhucauvattu_dhpx() {
+							c_nhucauvattu_dhpx_id = Helper.getNewId(),
+							c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
+							md_dondathangphanxuong_id = ddhpx.md_dondathangphanxuong_id,
+							nguoitao = us.ad_user_id,
+							vaitrotao = us.ad_role_id,
+							bophantao = us.md_phongban_id,
+							value_nguoitao = us.ma_user,
+							value_vaitrotao = us.ten_role,
+							value_bophantao = us.ten_phongban,
+
+							nguoicapnhat = us.ad_user_id,
+							vaitrocapnhat = us.ad_role_id,
+							bophancapnhat = us.md_phongban_id,
+							value_nguoicapnhat = us.ma_user,
+							value_vaitrocapnhat = us.ten_role,
+							value_bophancapnhat = us.ten_phongban,
+							
+							ngaytao = DateTime.Now,
+							ngaycapnhat = DateTime.Now,
+							mota = "",
+							hoatdong = true
+						};
+						db.c_nhucauvattu_dhpx.Add(ncvt_dhpx);
+					}
+				}				
+				ncvt.datinh_nhucau = true;
+				msg_success += "<div style='color:blue'>Tính nhu cầu vật tư \""+ ncvt.ten_nhucau +"\" thành công</div>";
+			}
+		}
+		
+		if(msg.Length <= 0){
+			db.SaveChanges();
+			msg = msg_success;
+			foreach(var ncvt_dhpx in db.c_nhucauvattu_dhpx.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList()) {
+				//--Tổng hợp dòng đặt hàng phân xưởng
+				foreach(var dhpx_cdh in db.md_dondathangphanxuong_cdh.
+                        Where(s=>s.md_dondathangphanxuong_id == ncvt_dhpx.md_dondathangphanxuong_id).ToList()) {
+					var ncvt_ddhpx_chk = db.c_nhucauvattu_ddhpx.
+                            Where(s=>s.md_sanpham_id == dhpx_cdh.md_sanpham_id & 
+                            s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
+					c_nhucauvattu_ddhpx ncvt_ddhpx = ncvt_ddhpx_chk;
+					if(ncvt_ddhpx_chk == null){
+						ncvt_ddhpx = new c_nhucauvattu_ddhpx();
+						ncvt_ddhpx.c_nhucauvattu_ddhpx_id = Helper.getNewId();
+						ncvt_ddhpx.soluong = dhpx_cdh.tong_sl_dat.Value;
+						ncvt_ddhpx.c_nhucauvattu_id = ncvt_dhpx.c_nhucauvattu_id;
+						ncvt_ddhpx.md_sanpham_id = dhpx_cdh.md_sanpham_id;
+						ncvt_ddhpx.md_donvitinhsanpham_id = dhpx_cdh.md_donvitinhsanpham_id;
+					}
+					else {
+						ncvt_ddhpx.soluong += dhpx_cdh.tong_sl_dat.Value;
+					}
+					ncvt_ddhpx.nguoitao = us.ad_user_id;
+					ncvt_ddhpx.vaitrotao = us.ad_role_id;
+					ncvt_ddhpx.bophantao = us.md_phongban_id;
+					ncvt_ddhpx.value_nguoitao = us.ma_user;
+					ncvt_ddhpx.value_vaitrotao = us.ten_role;
+					ncvt_ddhpx.value_bophantao = us.ten_phongban;
+					ncvt_ddhpx.nguoicapnhat = us.ad_user_id;
+					ncvt_ddhpx.vaitrocapnhat = us.ad_role_id;
+					ncvt_ddhpx.bophancapnhat = us.md_phongban_id;
+					ncvt_ddhpx.value_nguoicapnhat = us.ma_user;
+					ncvt_ddhpx.value_vaitrocapnhat = us.ten_role;
+					ncvt_ddhpx.value_bophancapnhat = us.ten_phongban;
+					ncvt_ddhpx.ngaytao = DateTime.Now;
+					ncvt_ddhpx.ngaycapnhat = DateTime.Now;
+					ncvt_ddhpx.mota = "";
+					ncvt_ddhpx.hoatdong = true;							
+					if(ncvt_ddhpx_chk == null){
+						db.c_nhucauvattu_ddhpx.Add(ncvt_ddhpx);
+					}
+					db.SaveChanges();
+				}
+				//--Tổng hợp tổng vật tư đặt hàng phân xưởng
+				foreach(var dhpx_vt in db.md_dondathangphanxuong_vattu.
+                        Where(s=>s.md_dondathangphanxuong_id == ncvt_dhpx.md_dondathangphanxuong_id).ToList()) {
+					var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhpx_vt.md_sanpham_id).FirstOrDefault();					
+					if(sp.sanpham != true)
+					{
+						var ncvt_ycmvt_chk = db.c_nhucauvattu_ycmvt.Where(s=>s.md_sanpham_id == dhpx_vt.md_sanpham_id & s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
+						c_nhucauvattu_ycmvt ncvt_ycmvt = ncvt_ycmvt_chk;
+						if(ncvt_ycmvt_chk == null) {
+							ncvt_ycmvt = new c_nhucauvattu_ycmvt();
+							ncvt_ycmvt.c_nhucauvattu_ycmvt_id = Helper.getNewId();
+							ncvt_ycmvt.c_nhucauvattu_id = ncvt_dhpx.c_nhucauvattu_id;
+							ncvt_ycmvt.md_sanpham_id = dhpx_vt.md_sanpham_id;
+							ncvt_ycmvt.md_donvitinhsanpham_id = dhpx_vt.md_donvitinhsanpham_id;
+							ncvt_ycmvt.soluong = (decimal)dhpx_vt.soluong.Value;
+						} else {
+							ncvt_ycmvt.soluong += (decimal)dhpx_vt.soluong.Value;
+						}
+						ncvt_ycmvt.nguoitao = us.ad_user_id;
+						ncvt_ycmvt.vaitrotao = us.ad_role_id;
+						ncvt_ycmvt.bophantao = us.md_phongban_id;
+						ncvt_ycmvt.value_nguoitao = us.ma_user;
+						ncvt_ycmvt.value_vaitrotao = us.ten_role;
+						ncvt_ycmvt.value_bophantao = us.ten_phongban;
+						ncvt_ycmvt.nguoicapnhat = us.ad_user_id;
+						ncvt_ycmvt.vaitrocapnhat = us.ad_role_id;
+						ncvt_ycmvt.bophancapnhat = us.md_phongban_id;
+						ncvt_ycmvt.value_nguoicapnhat = us.ma_user;
+						ncvt_ycmvt.value_vaitrocapnhat = us.ten_role;
+						ncvt_ycmvt.value_bophancapnhat = us.ten_phongban;
+						ncvt_ycmvt.ngaytao = DateTime.Now;
+						ncvt_ycmvt.ngaycapnhat = DateTime.Now;
+						ncvt_ycmvt.mota = "";
+						ncvt_ycmvt.hoatdong = true;
+						if(ncvt_ycmvt_chk == null) {
+							db.c_nhucauvattu_ycmvt.Add(ncvt_ycmvt);
+						}
+						db.SaveChanges();
+					}
+				}
+			}
+		}
+        context.Response.Write(msg);
+    }
+	
+    public void add(HttpContext context)
+    {
+        EntityContext db = new EntityContext();
+        string msg = "",id_new = Helper.getNewId();
+        string ma_module = context.Request.QueryString["ma_module"];
+        try
+        {
+            string id = context.Request.Form["id"];
+            if (msg.Length <= 0)
+            {
+                string action = "add";
+                string[] column_ex = { };
+                string ten_table = "c_nhucauvattu";
+                VNN_Function.Set_DefaultvalueColumn(context, action);
+                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "true#Thêm thành công." + "#" + id_new;
+            }
+        }
+        catch(Exception ex)
+        {
+            msg = "false#" + ex.Message;
+        }
+        context.Response.Write(msg);
+    }
+
+    public void edit(HttpContext context)
+    {
+        EntityContext db = new EntityContext();
+        string msg = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+        try
+        {
+            string id = context.Request.Form["id"];
+            string object_ = db.c_nhucauvattu.Where(p => p.c_nhucauvattu_id == id).Select(s => s.c_nhucauvattu_id).Take(1).FirstOrDefault();
+            if (object_ == null)
+            {
+                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+            }
+            
+            if (msg.Length <= 0)
+            {
+                string action = "edit";
+                string[] column_ex = { };
+                string ten_table = "c_nhucauvattu";
+                VNN_Function.Set_DefaultvalueColumn(context, action);
+                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "true#Cập nhật thành công.";
+            }
+        }
+        catch(Exception ex)
+        {
+            msg = "false#" + ex.Message;
+        }
+        context.Response.Write(msg);
+    }
+
+    public void del(HttpContext context)
+    {
+        EntityContext db = new EntityContext();
+        string msg = "",  msg_del = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+        try
+        {
+            string ten_table = "c_nhucauvattu";
+            int count = context.Request.Form["id"].Split(',').Count();
+            string[] id_del = new string[count];
+            id_del = context.Request.Form["id"].Split(',');
+            for (int i = 0; i < count; i++)
+            {
+                 msg_del = ""; var id_del_ = id_del[i];
+                c_nhucauvattu object_ = db.c_nhucauvattu.Where(p => p.c_nhucauvattu_id == id_del_).Take(1).FirstOrDefault();
+                if (object_ == null) {
+                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
+                    msg += msg_del + "\n";
+                }
+				else if(object_.c_yeucaumuavt_id != " " & object_.c_yeucaumuavt_id != ""){
+                    msg_del = "Lỗi: dòng \""+ object_.ten_nhucau +"\" đã tạo yêu cầu mua vật tư.";
+                    msg += msg_del + "\n";
+				}
+				
+                if (msg_del.Length <= 0)
+                {
+                    db.c_nhucauvattu.Remove(object_);
+                }
+            }
+            
+            if (msg.Length <= 0)
+            {
+				VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "true#Xóa thành công.";
+            }
+            else
+            {
+                msg = "false#" + msg;
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.ToUpper().Contains("REFERENCE"))
+            {
+                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
+            }
+            else
+            {
+                msg = "false#Lỗi: " + ex.Message;
+            }
+        }
+        context.Response.Write(msg);
+    }
+
+    public bool IsReusable
+    {
+        get
+        {
+            return false;
+        }
+    }
+}

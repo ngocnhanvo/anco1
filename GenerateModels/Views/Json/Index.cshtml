@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Json Page";
+}
+
+<div class="jumbotron">
+    <h1>Gennerate JSON from Database</h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12" align="center">
+            <h3>Choose 1 table</h3>
+            <p>
+                @Html.DropDownList("TableAllColumn", null, "-- Select 1 Table --", new { @class = "form-control" })
+            </p>
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject001(this)">Action 1 Table</button>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="resultGenerate hide">
+            <span class="msg"></span>
+            <a href="javascript:void(0)" onclick="$(this).parent().addClass('hide');" class="msg">Close</a>
+        </label>
+    </div>
+</div>
+<script type="text/javascript">
+    var buttons = $('button.btn.blue');
+    var resultGenerate = $('.resultGenerate');
+
+    var WriteObject001 = function (btnA) {
+        var tableVal = $('#TableAllColumn').val();
+        if (!tableVal.length) {
+            $(btnA).notify(
+                "Please select 1 table!!!",
+                { position: "bottom center" }
+            );
+            return;
+        }
+
+        $('.loadingPage').removeClass('hide');
+        var model = {
+            Table: tableVal
+        };
+
+        $(buttons).prop('disabled', true);
+        $.ajax({
+            url: '/Json/WriteObject001',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                resultGenerate.find('span.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+
+                if (result.link != "") {
+                    console.log(result.link);
+                    window.location.href = '/Json/Download?link=' + result.link;
+                }
+            }
+        });
+    };
+
+</script>

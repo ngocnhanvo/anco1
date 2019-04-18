@@ -1,0 +1,64 @@
+﻿<%@ WebHandler Language="C#" Class="Download" %>
+
+using System;
+using System.Web;
+using System.Linq;
+using System.Data.Linq;
+using System.IO;
+using DataAcess;
+
+public class Download : IHttpHandler
+{
+
+    public void ProcessRequest(HttpContext context)
+    {
+        EntityContext db = new EntityContext();
+        string md_taptin_id = context.Request.QueryString["id"];
+        md_taptin tt = db.md_taptin.Where(p => p.md_taptin_id == md_taptin_id).FirstOrDefault();
+        if (tt != null)
+        {
+            context.Response.Clear();
+            context.Response.Buffer = true;
+            context.Response.ContentType = tt.mimetype;
+            context.Response.AddHeader("Content-Disposition", "attachment;filename=" + tt.tentaptin + "." + tt.mimetype);
+            context.Response.Charset = "";
+            context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            string filepath = Security.UrlBase() + tt.path + "";
+            context.Response.WriteFile(context.Server.MapPath(tt.path));
+            context.Response.End();
+        }
+        else if (md_taptin_id != null & md_taptin_id != "")
+        {
+            int j = md_taptin_id.LastIndexOf("/");
+            string filename = md_taptin_id.Substring(j+1);
+            string path = context.Server.MapPath("/" + md_taptin_id);
+            if (File.Exists(path))
+            {
+                context.Response.Clear();
+                context.Response.Buffer = true;
+                context.Response.AddHeader("Content-Disposition", "attachment;filename=" + filename);
+                context.Response.Charset = "";
+                context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                context.Response.WriteFile(path);
+            }
+            else
+            {
+                context.Response.AddHeader("Content-Disposition", "attachment;filename=notfound.txt");
+            }
+            context.Response.End();
+        }
+        else
+        {
+            context.Response.AddHeader("Content-Disposition", "attachment;filename=notfound.txt");
+        }
+    }
+
+    public bool IsReusable
+    {
+        get
+        {
+            return false;
+        }
+    }
+
+}

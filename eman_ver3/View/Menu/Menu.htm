@@ -1,0 +1,167 @@
+﻿<table class="cl_table_menu" >
+    <!-- thong tin tai khoan -->
+    <tr style="width:100%" height="34px">
+        <td colspan = "6" style="cursor:pointer">
+            <img  id="Img2" height="18px" style="  margin: 0px 0 0 9px;"  alt="" src="images/Menu/menu_user.png"/>
+                <a id="a_user" title="xem chi tiết" class="cl_a_btnthongtinnguoidung" onclick="xemthongtinchitiet()"></a>
+                <img class="cl_img_btncanhbao" id="Img4" style="  margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png"/>
+                <a onclick="chatbox_vu()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
+                <span title="Thoát chương trình" onclick="logout()" class="span_logout glyphicon glyphicon-off"></span>
+        </td>
+    </tr>
+
+    <tr>
+        <!--menu -->
+        <td class="menu_td_menuchinh" style="max-width: 220px;" colspan="6" valign = "top">
+        <div class = "cl_div_menu">
+            <div class="menu_div_dongkhung">
+            <table style="width: 100%;margin: 7 0 0 0; border-collapse: collapse; ">
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+            </table>
+            </div>
+            </div>
+        </td>
+        <!--#menu -->
+    </tr>
+</table>
+
+
+<script type="text/javascript">
+    load_doimau(null);
+
+    function dem_Records_menu() {
+        var a_menu = $('.menu_td_menuchinh tr td table tr td div table tr td a');
+        $(a_menu).removeAttr('style');
+        $(a_menu).css('color', 'red');
+        var val_final = "";
+        $(a_menu).each(function (index, val) {
+            val_final += $(this).attr('name');
+            if (index < $(a_menu).length - 1) {
+                val_final += ",";
+            }
+        });
+        if (val_final != null & val_final != "") {
+            click_loadtrangchu();
+            $('.menu_td_menuchinh tr td table tr td div table tr td a').removeAttr('style');
+            $('.menu_td_menuchinh tr td table tr td div table tr td a').css('color', 'black');
+            loadgrid_at = false;
+            //$.post('Controller/PublicFunction/CountDocument.ashx?oper=countCV',
+            //{ ma_menu: val_final }, function (result) {
+            //    result = result.split('(##)');
+            //    $(a_menu).each(function (index, val) {
+            //        loadgiatri_demCV($(this).attr('id'), result[index]);
+            //    });
+            //});
+        }
+    }
+
+    $('.menu_td_menuchinh table').empty();
+    $('.menu_td_menuchinh table').append('<tr><td class="loading" height="50px"></td></tr>');
+
+    $.ajax({
+        type: "GET",
+        url: "Controller/JqGridModify/JQGridMD_00_MNZModify.ashx?oper=loadMenu",
+        success: function (msg) {
+            $('.menu_td_menuchinh table').empty();
+            $('.menu_td_menuchinh table').append(msg);
+            dem_Records_menu();
+        }
+    });
+
+    function loadMenucon(e, d) {
+		var this_sel = $('#tr_' + e + ' > td > table');
+        if ($(this_sel).hasClass('menu_btndanhan')) {
+			$('#div_' + e + ' > a').css('text-shadow','none');
+			$(this_sel).fadeOut( 200, function(){
+				$('#div_' + e).css('padding', '0px 0 3px 0');
+				$(this).css('display', 'none');
+				$(this).removeClass('menu_btndanhan');
+				//$(this).parent().removeAttr('style');
+			});
+        }
+        else {
+			$('#div_' + e).css('padding', '4px 0 3px 0');
+			$('#div_' + e + ' > a').css('text-shadow','1px 1px 1px #F16B6B');
+			
+			$(this_sel).addClass('menu_btndanhan');
+			$(this_sel).fadeIn( 200, function(){
+				$(this).removeAttr('style');
+				//$(this).parent().css('background-color','#FFF');
+			});
+        }
+        //$('.menu_td_menuchinh tr td table tr td div table tr td span').css('font-weight', 'normal');
+    }
+
+
+    function loadContent(e, d, c, q) {
+        $('.menu_td_menuchinh tr td table tr td').removeClass('menu_btndanhan');
+
+        //xoa gach duoi tat ca va them vao td vừa nhấn
+        $('.menu_td_menuchinh tr td table tr td div table tr td span').removeAttr('style');
+        //$('.menu_td_menuchinh tr td table tr td div table tr td span').css('color', 'rgba(0, 0, 0, 0.8)');
+        $('.menu_td_menuchinh tr td table tr td div table tr td span').css('font-weight', 'normal');
+        $('#td_' + e + ' div table tr td span').css('color', 'rgb(223, 66, 66)');
+
+        $('#td_' + e).addClass('menu_btndanhan');
+
+        //load content cua menu nay voi url nay
+        $('#input_urlmenu').val(d);
+        $('#input_idmenu').val(e);
+
+        //lam moi gia tri ten cho su kien url of clicking events
+        $('#input_tenmenu0').val(q);
+        $('#input_tenmenu1').val(c);
+        $('.cl_td_urlmenu').empty();
+
+        $('#input_tenmodule1').val("");
+        $('#input_tenmodule2').val("");
+        // gán giá trị cho sự kiện trở về trang trước
+        $('#input_trovetrangtruoc').val($('#input_trovetrangtruoc').val() + '/' + 'td_' + e);
+		document.title = "eMan-" + c;
+        loadPage('Menu/Content/Content.aspx');
+       
+    }
+
+    function overmouse_menu_lv0(e) {
+        $('#' + e).css('font-weight', '700');
+    }
+    function outmouse_menu_lv0(e) {
+        $('#' + e).removeAttr('style');
+    }
+
+    function overmouse_menu_lv1(e) {
+        if (!$('#' + e).hasClass('menu_btndanhan')) {
+            $('#' + e + ' div table tr td span').css('color', 'rgb(223, 66, 66)');
+        }
+    }
+    function outmouse_menu_lv1(e) {
+        if (!$('#' + e).hasClass('menu_btndanhan')) {
+            $('#' + e + ' div table tr td span').removeAttr('style');
+        }
+    }
+
+
+    $('#a_user').append(ma_tk);
+    $('.cl_table_menu').height($('.menu').height() - 6);
+    $('.menu_div_dongkhung').css('height', $('.menu').height() - 36);
+
+    var margin_img = 30 + Number($('#a_user').width()) - 14;
+    $('#Img4').css('margin', '0px 3px 0 ' + margin_img + 'px');
+    
+</script>
+
+

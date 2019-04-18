@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Compile Page";
+}
+
+<div class="jumbotron">
+    <h1>Compile Module</h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12" align="center">
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject000(this)">Compile All Modules</button>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="resultGenerate hide">
+            <span class="msg"></span>
+            <a href="javascript:void(0)" onclick="$(this).parent().addClass('hide');" class="msg">Close</a>
+        </label>
+    </div>
+</div>
+<script type="text/javascript">
+    var buttons = $('button.btn.blue');
+    var resultGenerate = $('.resultGenerate');
+
+    var WriteObject000 = function (btnA) {
+        $('.loadingPage').removeClass('hide');
+
+        $(buttons).prop('disabled', true);
+
+        $.ajax({
+            url: '/Compile/WriteObject000',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                resultGenerate.find('span.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+            }
+        });
+    };
+
+</script>

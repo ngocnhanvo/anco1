@@ -1,0 +1,204 @@
+
+                using System;
+                using System.Collections.Generic;
+                using System.ComponentModel.DataAnnotations.Schema;
+                namespace DataAcess
+                {
+                    public partial class c_danhsachdathang
+                    {
+                        
+                        #region c_danhsachdathang_anco_check_wintaFN
+                        
+                        #endregion c_danhsachdathang_anco_check_wintaFN
+                        public bool? anco_check { get; set; }
+                
+						
+                        #region c_danhsachdathang_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_c_donhang_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_c_donhang_id_wintaFN
+                        public string c_donhang_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_check_nangluc_wintaFN
+                        
+                        #endregion c_danhsachdathang_check_nangluc_wintaFN
+                        public bool? check_nangluc { get; set; }
+                
+						
+                        #region c_danhsachdathang_dg_nangluc_wintaFN
+                        
+                        #endregion c_danhsachdathang_dg_nangluc_wintaFN
+                        public bool? dg_nangluc { get; set; }
+                
+						
+                        #region c_danhsachdathang_diachigiaohang_wintaFN
+                        
+                        #endregion c_danhsachdathang_diachigiaohang_wintaFN
+                        public string diachigiaohang { get; set; }
+                
+						
+                        #region c_danhsachdathang_discount_wintaFN
+                        
+                        #endregion c_danhsachdathang_discount_wintaFN
+                        public Decimal? discount { get; set; }
+                
+						
+                        #region c_danhsachdathang_grandtotal_wintaFN
+                        
+                        #endregion c_danhsachdathang_grandtotal_wintaFN
+                        public Decimal? grandtotal { get; set; }
+                
+						
+                        #region c_danhsachdathang_hangiaohang_po_wintaFN
+                        
+                        #endregion c_danhsachdathang_hangiaohang_po_wintaFN
+                        public DateTime? hangiaohang_po { get; set; }
+                
+						
+                        #region c_danhsachdathang_hoatdong_wintaFN
+                        
+                        #endregion c_danhsachdathang_hoatdong_wintaFN
+                        public bool? hoatdong { get; set; }
+                
+						
+                        #region c_danhsachdathang_huongdanlamhang_wintaFN
+                        
+                        #endregion c_danhsachdathang_huongdanlamhang_wintaFN
+                        public string huongdanlamhang { get; set; }
+                
+						
+                        #region c_danhsachdathang_huongdanlamhangchung_wintaFN
+                        
+                        #endregion c_danhsachdathang_huongdanlamhangchung_wintaFN
+                        public string huongdanlamhangchung { get; set; }
+                
+						
+                        #region c_danhsachdathang_isgui_hdlh_wintaFN
+                        
+                        #endregion c_danhsachdathang_isgui_hdlh_wintaFN
+                        public bool? isgui_hdlh { get; set; }
+                
+						
+                        #region c_danhsachdathang_khachhang_wintaFN
+                        
+                        #endregion c_danhsachdathang_khachhang_wintaFN
+                        public string khachhang { get; set; }
+                
+						
+                        #region c_danhsachdathang_md_doitackinhdoanh_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_md_doitackinhdoanh_id_wintaFN
+                        public string md_doitackinhdoanh_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_md_trangthai_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_md_trangthai_id_wintaFN
+                        public string md_trangthai_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_mota_wintaFN
+                        
+                        #endregion c_danhsachdathang_mota_wintaFN
+                        public string mota { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngay_tigia_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngay_tigia_wintaFN
+                        public DateTime? ngay_tigia { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaybatdau_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaybatdau_wintaFN
+                        public DateTime? ngaybatdau { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycapnhat_wintaFN
+                        public DateTime? ngaycapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngayhoanthanh_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngayhoanthanh_wintaFN
+                        public DateTime? ngayhoanthanh { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaylap_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaylap_wintaFN
+                        public DateTime? ngaylap { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaytao_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaytao_wintaFN
+                        public DateTime? ngaytao { get; set; }
+                
+						
+                        #region c_danhsachdathang_nguoi_dathang_wintaFN
+                        
+                        #endregion c_danhsachdathang_nguoi_dathang_wintaFN
+                        public string nguoi_dathang { get; set; }
+                
+						
+                        #region c_danhsachdathang_nguoi_phutrach_wintaFN
+                        
+                        #endregion c_danhsachdathang_nguoi_phutrach_wintaFN
+                        public string nguoi_phutrach { get; set; }
+                
+						
+                        #region c_danhsachdathang_nguoicapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_nguoicapnhat_wintaFN
+                        public string nguoicapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_nguoitao_wintaFN
+                        
+                        #endregion c_danhsachdathang_nguoitao_wintaFN
+                        public string nguoitao { get; set; }
+                
+						
+                        #region c_danhsachdathang_so_po_wintaFN
+                        
+                        #endregion c_danhsachdathang_so_po_wintaFN
+                        public string so_po { get; set; }
+                
+						
+                        #region c_danhsachdathang_sochungtu_wintaFN
+                        
+                        #endregion c_danhsachdathang_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
+                        #region c_danhsachdathang_thoigiansx_wintaFN
+                        
+                        #endregion c_danhsachdathang_thoigiansx_wintaFN
+                        public int? thoigiansx { get; set; }
+                
+						
+                        #region c_danhsachdathang_total_wintaFN
+                        
+                        #endregion c_danhsachdathang_total_wintaFN
+                        public Decimal? total { get; set; }
+                
+						
+                        #region c_danhsachdathang_trangthai_wintaFN
+                        
+                        #endregion c_danhsachdathang_trangthai_wintaFN
+                        public string trangthai { get; set; }
+                
+						
+                    }
+                }
+            
