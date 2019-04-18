@@ -9,7 +9,7 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
     public void ProcessRequest (HttpContext context) {
         string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
         {
             case "add":
@@ -34,7 +34,8 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
         EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == Security.id_taikhoan(context)).Take(1).FirstOrDefault();
+        string ad_user_id = Security.id_taikhoan(context);
+        ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == ad_user_id).Take(1).FirstOrDefault();
         try
         {
             string id = context.Request.QueryString["id"];
@@ -52,7 +53,7 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
                 if (macdinh == true)
                     msg = "false#Tài khoản đã tồn tại vai trò mặc định.";
             }
-            
+
             if (msg.Length <= 0)
             {
                 ad_user_role object_ = new ad_user_role();
@@ -90,7 +91,8 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
     public void edit(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == Security.id_taikhoan(context)).Take(1).FirstOrDefault();
+        string ad_user_id = Security.id_taikhoan(context);
+        ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == ad_user_id).Take(1).FirstOrDefault();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -101,19 +103,19 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
             string ad_role_id = context.Request.Form["ad_role_id"];
             bool macdinh = bool.Parse(context.Request.Form["macdinh"]);
             ad_user tk_parent = db.ad_user.Where(s => s.ad_user_id == id).Take(1).FirstOrDefault();
-            ad_user_role object_ = db.ad_user_role.SingleOrDefault(p => p.ad_user_role_id == id);
+            ad_user_role object_ = db.ad_user_role.SingleOrDefault(p => p.ad_user_role_id == id_sel);
 
             if (db.ad_user_role.Where(s => s.ad_role_id == ad_role_id & s.ad_user_id == id).FirstOrDefault() != null)
             {
                 if (ad_role_id != object_.ad_role_id)
                     msg = "false#Tài khoản đã tồn tại vai trò này.";
             }
-            
+
             if (object_ == null)
             {
                 msg = "false#Không tìm thấy đối tượng.";
             }
-            
+
             if (msg.Length <= 0)
             {
                 //start truyền các giá trị cần sửa
@@ -129,7 +131,8 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
                 object_.mota = context.Request.Form["mota"];
                 //#end truyền các giá trị cần sửa
                 if(macdinh == true) {
-                    foreach(ad_user_role us_rol in db.ad_user_role.Where(s => s.macdinh == true & s.ad_user_id == id & s.ad_user_role_id != id_sel))
+                    foreach(ad_user_role us_rol in db.ad_user_role.
+                            Where(s => s.macdinh == true & s.ad_user_id == id & s.ad_user_role_id != id_sel).ToList())
                     {
                         us_rol.macdinh = false;
                     }
@@ -157,8 +160,8 @@ public class JQGridMD_01_VaiTroBoSungModify : IHttpHandler, System.Web.SessionSt
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.ad_user_role.Where(p => p.ad_user_role_id == id_del_).Select(s => s.ad_user_role_id).Take(1).FirstOrDefault();
+                msg_del = ""; var id_del_ = id_del[i];
+                string object_ = db.ad_user_role.Where(p => p.ad_user_role_id == id_del_).Select(s => s.ad_user_role_id).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
@@ -213,7 +216,7 @@ string object_ = db.ad_user_role.Where(p => p.ad_user_role_id == id_del_).Select
         select += "</select>";
         context.Response.Write(select);
     }
-    
+
     public bool IsReusable
     {
         get

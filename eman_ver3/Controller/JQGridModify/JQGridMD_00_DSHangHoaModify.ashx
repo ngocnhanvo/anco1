@@ -236,7 +236,7 @@ public class JQGridMD_00_DSHangHoaModify : IHttpHandler, System.Web.SessionState
         EntityContext db = new EntityContext();
         string msg = "",  msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        //try
+        try
         {
             string ten_table = "md_sanpham";
             int count = context.Request.Form["id"].Split(',').Count();
@@ -260,8 +260,10 @@ public class JQGridMD_00_DSHangHoaModify : IHttpHandler, System.Web.SessionState
                 if (msg_del.Length <= 0)
                 {
                     string action = "del";
-                    string[] column_ex = { };
+                    string[] column_ex = { "hoatdong" };
                     VNN_Function.SetFormValue("id", object_);
+                    VNN_Function.SetFormValue("hoatdong", "false");
+                    VNN_Function.SetFormValue("trangthai", "NHD");
                     VNN_Function.Set_DefaultvalueColumn(context, action);
                     VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 }
@@ -276,16 +278,16 @@ public class JQGridMD_00_DSHangHoaModify : IHttpHandler, System.Web.SessionState
                 msg = "false#" + msg;
             }
         }
-        //catch (Exception ex)
+        catch (Exception ex)
         {
-            /* if (ex.Message.ToUpper().Contains("REFERENCE"))
+             if (ex.Message.ToUpper().Contains("REFERENCE"))
              {
                  msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
              }
              else
              {
                  msg = "false#Lỗi: " + ex.Message;
-             }*/
+             }
         }
         context.Response.Write(msg);
     }
