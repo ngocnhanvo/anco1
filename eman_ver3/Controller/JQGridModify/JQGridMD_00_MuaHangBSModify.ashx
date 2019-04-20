@@ -2,7 +2,7 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -173,21 +173,28 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         string md_banggia_id = context.Request.Form["md_banggia_id"];
         string i = "1";
         bool tr = true;
-        //string md_dongtien_id = context.Request.Form["md_dongtien_id"];
+        string ngaydonhang = context.Request.Form["ngaydonhang"];
         try
         {
-            md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).FirstOrDefault();
-            md_banggia bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).FirstOrDefault();
+            var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).FirstOrDefault();
+            var bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).FirstOrDefault();
+            if (bg == null)
+                msg = "false#Không tìm thấy bảng giá";
+            if (dtkd == null)
+                msg = "false#Không tìm thấy đối tác kinh doanh";
             string id = context.Request.Form["id"];
             if (msg.Length <= 0)
             {
+
                 string action = "add";
-                string[] column_ex = { "c_kehoachdathang_dhncc_id", "bosung" };
+                string[] column_ex = { "c_kehoachdathang_dhncc_id", "bosung", "md_dongtien_id", "tygiaVND" };
                 string ten_table = "c_donmuahang";
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtkd.md_doitackinhdoanh_id);
                 VNN_Function.SetFormValue("c_kehoachdathang_dhncc_id", i);
                 VNN_Function.SetFormValue("bosung", tr.ToString());
                 VNN_Function.SetFormValue("sochungtu", sochungtu);
+                VNN_Function.SetFormValue("md_dongtien_id", bg.md_dongtien_id);
+                VNN_Function.SetFormValue("tygiaVND", Extension.TyGiaVND(bg.md_dongtien_id, VNN_Config.setDateTime(ngaydonhang), db).ToString());
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -204,40 +211,251 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
     public void edit(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "";
+        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        string msg = "", msg_er = "", msg_err = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         string ma_dtkd = context.Request.Form["md_doitackinhdoanh_id"];
+        string md_banggia_id = context.Request.Form["md_banggia_id"];
+        string md_phienbangia_id = context.Request.Form["md_phienbangia_id"];
+        string md_phienbangia_id2 = md_phienbangia_id;
+        string md_doitackinhdoanh_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
+        decimal dongiamua = 0;
         try
         {
-            string id = context.Request.Form["id"]; 
-            md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).FirstOrDefault();
-            c_donmuahang object_ = db.c_donmuahang.Where(p => p.c_donmuahang_id == id).Take(1).FirstOrDefault();
-            //c_donmuahang_cdmh cdmh = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).FirstOrDefault();
+            string id_parent = context.Request.Form["id_parent"];
+            string id = context.Request.Form["id"];
+            var object_ = db.c_donmuahang.Where(p => p.c_donmuahang_id == id).Take(1).FirstOrDefault();
             int count = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Count();
+
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (count <= 0)
+            else if (count <= 0 & md_trangthai_id == "HIEULUC")
             {
                 msg = "false#Lỗi:Đối tượng chưa có mặc hàng cần mua.";
             }
-            else if (object_.tong_tienhang <= 0 & object_.tong_tatca <= 0)
+            else if (object_.tong_tienhang <= 0 & object_.tong_tatca <= 0 & md_trangthai_id == "HIEULUC")
             {
                 msg = "false#Lỗi:Đối tượng chưa có tổng tiền hàng.";
             }
+            else if (md_doitackinhdoanh_id == null)
+            {
+                msg = "false#Lỗi:Không tồn tại đối tác kinh doanh \"" + ma_dtkd + "\".";
+            }
+            else if (ma_dtkd == "MUA NGOAI" & md_trangthai_id == "HIEULUC")
+            {
+                msg = "false#Lỗi:Không thể hiệu lực khi đối tác kinh doanh là \"" + ma_dtkd + "\".";
+            }
+            else if (object_.md_trangthai_id != "SOANTHAO")
+            {
+                msg = "false#Lỗi:Đối tượng không phải 'Soạn Thảo' không thể chỉnh sửa.";
+            }
+            else if (md_trangthai_id != "HIEULUC" & md_trangthai_id != "SOANTHAO")
+            {
+                msg = "false#Lỗi:Đối tượng chỉ có thể 'Hiệu Lực'.";
+            }
+
+            foreach (var dmh_st in db.c_donmuahang.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id & s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).ToList())
+            {
+                foreach (var cdh_st in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh_st.c_donmuahang_id).ToList())
+                {
+                    var cdh_obj = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == dmh_st.c_kehoachmuavt_id & s.md_sanpham_id == cdh_st.md_sanpham_id).FirstOrDefault();
+                    if (cdh_obj != null)
+                    {
+                        var sp_obj = db.md_sanpham.Where(s => s.md_sanpham_id == cdh_obj.md_sanpham_id).FirstOrDefault();
+                        if (
+                            (cdh_obj.sl_conlai + cdh_st.sl_dadat2.GetValueOrDefault(0) - cdh_st.saiso.GetValueOrDefault(0))
+                            > cdh_obj.sl_duyet
+                        )
+                        {
+                            decimal check_sl = cdh_obj.sl_duyet.Value - cdh_obj.sl_conlai.Value;
+                            msg_err += string.Format(@"Mã sản phẩm ""{0}"" vượt quá SL cho phép (SL còn lại:""{1}"") <br>",
+                                sp_obj.ma_sanpham, check_sl);
+                        }
+                    }
+                }
+            }
+
+            if (msg_err.Length > 0)
+                msg = "false#Lỗi:" + msg_err;
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_donmuahang";
-                VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtkd.md_doitackinhdoanh_id);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
+                md_phienbangia_id2 = object_.md_phienbangia_id;
+                md_banggia bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).Take(1).FirstOrDefault();
+                md_phienbangia pbg = db.md_phienbangia.Where(s => s.md_banggia_id == bg.md_banggia_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
+
+                if (bg == null)
+                {
+                    msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có bảng giá.";
+                }
+                else if (pbg == null)
+                {
+                    md_phienbangia pbg1 = db.md_phienbangia.Where(s => s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
+                    msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có phiên bảng giá \"" + pbg1.ten_phienbangia + "\" .";
+                }
+
+                var c_donmuahang_cdmhs = from a in db.c_donmuahang_cdmh
+                                         join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
+                                         where a.c_donmuahang_id == object_.c_donmuahang_id
+                                         select new { a.c_donmuahang_cdmh_id, a.md_sanpham_id, c.ma_sanpham };
+
+                if (msg.Length <= 0)
+                {
+                    foreach (var cdmh in c_donmuahang_cdmhs.OrderBy(s => s.md_sanpham_id).ToList())
+                    {
+                        var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh.md_sanpham_id & s.md_phienbangia_id == pbg.md_phienbangia_id).FirstOrDefault();
+                        if (gsp == null)
+                        {
+                            msg_er += "không có giá của sản phẩm \"" + cdmh.ma_sanpham + "\"<br>";
+                        }
+                        else { }
+                    }
+
+                    if (msg_er.Length > 0)
+                    {
+                        msg = "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\"<br>" + msg_er;
+                    }
+                }
+
+                if (msg.Length <= 0)
+                {
+                    object_.md_trangthai_id = context.Request.Form["md_trangthai_id"];
+                    object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
+                    object_.ngaydonhang = VNN_Config.setDateTime(context.Request.Form["ngaydonhang"]);
+                    object_.ngaygiaohang = VNN_Config.setDateTime(context.Request.Form["ngaygiaohang"]);
+                    object_.huongdan_lamhang = context.Request.Form["huongdan_lamhang"];
+                    object_.diadiem_giaohang = context.Request.Form["diadiem_giaohang"];
+                    object_.md_banggia_id = context.Request.Form["md_banggia_id"];
+                    object_.md_phienbangia_id = context.Request.Form["md_phienbangia_id"];
+                    object_.md_dongtien_id = bg.md_dongtien_id;
+                    object_.tygiaVND = Extension.TyGiaVND(bg.md_dongtien_id, object_.ngaydonhang.Value, db);
+                    object_.mota = context.Request.Form["mota"];
+                    db.c_donmuahang_thue.RemoveRange(db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id));
+                    db.SaveChanges();
+
+                    foreach (var cdmh1 in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).OrderBy(s => s.md_sanpham_id).ToList())
+                    {
+                        var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh1.md_sanpham_id & s.md_phienbangia_id == pbg.md_phienbangia_id).FirstOrDefault();
+                        var thue_sp = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == cdmh1.thue).FirstOrDefault();
+                        dongiamua = gsp.gia.Value;
+                        if (md_phienbangia_id2 != md_phienbangia_id)
+                        {
+                            cdmh1.dongiamua = dongiamua;
+                            cdmh1.giachuan = dongiamua;
+                        }
+                        else
+                        {
+                            dongiamua = (decimal)cdmh1.dongiamua.Value;
+                        }
+
+                        string md_thue_sanpham_id = "";
+                        if (thue_sp != null)
+                            md_thue_sanpham_id = thue_sp.md_thue_sanpham_id;
+                        cdmh1.thue = md_thue_sanpham_id;
+                        cdmh1.thanhtien = dongiamua * cdmh1.sl_dadat.Value;
+                        dongiamua = 0;
+
+                        cdmh1.nguoicapnhat = us.ad_user_id;
+                        cdmh1.vaitrocapnhat = us.ad_role_id;
+                        cdmh1.bophancapnhat = us.md_phongban_id;
+                        cdmh1.ngaycapnhat = DateTime.Now;
+
+                        //Tinh thue
+                        var thue = new c_donmuahang_thue();
+                        decimal gt_thue = 0;
+                        if (thue_sp != null)
+                        {
+                            gt_thue = thue_sp.giatri.Value;
+                        }
+                        thue.tong_tien_thue = cdmh1.thanhtien * gt_thue / 100;
+                        thue.tong_tien_chiu_thue = cdmh1.thanhtien + thue.tong_tien_thue;
+                        thue.c_donmuahang_thue_id = Helper.getNewId();
+                        thue.c_donmuahang_id = cdmh1.c_donmuahang_id;
+                        thue.md_thue_sanpham_id = cdmh1.thue;
+                        thue.doanhnghiep = "";
+                        thue.tochuc = "";
+
+                        thue.nguoitao = us.ad_user_id;
+                        thue.vaitrotao = us.ad_role_id;
+                        thue.bophantao = us.md_phongban_id;
+                        thue.value_nguoitao = us.ma_user;
+                        thue.value_vaitrotao = us.ten_role;
+                        thue.value_bophantao = us.ten_phongban;
+
+                        thue.nguoicapnhat = us.ad_user_id;
+                        thue.vaitrocapnhat = us.ad_role_id;
+                        thue.bophancapnhat = us.md_phongban_id;
+                        thue.value_nguoicapnhat = us.ma_user;
+                        thue.value_vaitrocapnhat = us.ten_role;
+                        thue.value_bophancapnhat = us.ten_phongban;
+
+                        thue.ngaytao = DateTime.Now;
+                        thue.ngaycapnhat = DateTime.Now;
+                        thue.mota = "";
+                        thue.hoatdong = true;
+
+                        if (cdmh1.thue != "")
+                        {
+                            db.c_donmuahang_thue.Add(thue);
+                        }
+                    }
+                    db.SaveChanges();
+                    //Start cap nhat Thue trong don mua hang
+                    var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).FirstOrDefault();
+                    var c_donmuahang_thues = db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id);
+                    List<string> id_notdel = new List<string>();
+                    foreach (var thue_donhang_list in c_donmuahang_thues.Select(s => new { s.md_thue_sanpham_id, s.c_donmuahang_id }).Distinct().ToList())
+                    {
+                        var c_donmuahang_thueschild = c_donmuahang_thues.Where(s => s.md_thue_sanpham_id == thue_donhang_list.md_thue_sanpham_id);
+                        c_donmuahang_thue dmh_thue = c_donmuahang_thueschild.Take(1).FirstOrDefault();
+
+                        dmh_thue.tong_tien_thue = c_donmuahang_thueschild.Select(s => s.tong_tien_thue).Sum();
+                        dmh_thue.tong_tien_chiu_thue = c_donmuahang_thueschild.Select(s => s.tong_tien_chiu_thue).Sum();
+                        id_notdel.Add(dmh_thue.c_donmuahang_thue_id);
+                    }
+
+
+                    foreach (var dong_thue in c_donmuahang_thues.Where(s => !id_notdel.Contains(s.c_donmuahang_thue_id)).ToList())
+                    {
+                        db.c_donmuahang_thue.Remove(dong_thue);
+                    }
+                    db.SaveChanges();
+                    //Start cap nhat don mua hang
+                    decimal tong_tienhang = decimal.Parse("0.00");
+                    try { tong_tienhang = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Select(s => s.thanhtien.Value).Sum(); } catch { }
+                    decimal tong_tienthue = decimal.Parse("0.00");
+                    try { tong_tienthue = db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Select(s => s.tong_tien_thue.Value).Sum(); } catch { }
+                    decimal tong_tatca = tong_tienhang + tong_tienthue;
+                    //--
+                    string donvitinh = "VND";
+                    md_dongtien dt = db.md_dongtien.Where(s => s.md_dongtien_id == dmh.md_dongtien_id).Take(1).FirstOrDefault();
+                    if (dt != null) { donvitinh = dt.ma_iso; }
+                    //--
+                    var tth = VNN_ConvertMoney.convert((double)tong_tienhang, donvitinh).FirstOrDefault();
+                    var ttc = VNN_ConvertMoney.convert((double)tong_tatca, donvitinh).FirstOrDefault();
+                    dmh.tong_tienhang = (decimal)tth.Value;
+                    dmh.tong_tatca = (decimal)ttc.Value;
+                    dmh.chu_tong_tienhang = tth.Key;
+                    dmh.chu_tong_tatca = ttc.Key;
+                    db.SaveChanges();
+                    //End cap nhat don mua hang
+                    // cap nhat ke hoach mua vat tu
+                    var kh = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.c_donmuavattu_id.Contains(object_.sochungtu)).FirstOrDefault();
+                    if (kh != null & md_trangthai_id == "HIEULUC")
+                    {
+                        foreach (var cdh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).ToList())
+                        {
+                            var cd = db.c_kehoachmuavt_cdh.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.c_kehoachmuavt_id == kh.c_kehoachmuavt_id).FirstOrDefault();
+                            cd.sl_conlai += cdh.sl_dadat2;
+                        }
+                    }
+                    db.SaveChanges();
+                }
             }
+            VNN_Function.loaddulieu_Auto(db, ma_module);
         }
         catch (Exception ex)
         {
@@ -259,7 +477,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
+                msg_del = ""; var id_del_ = id_del[i];
                 c_donmuahang object_ = db.c_donmuahang.Where(p => p.c_donmuahang_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {

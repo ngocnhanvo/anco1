@@ -50,6 +50,11 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             if (!System.IO.File.Exists(context.Server.MapPath(path))) {
                 msg = path + "/" + files[0].FileName;
                 files[0].SaveAs(context.Server.MapPath(msg));
+                int j = msg.LastIndexOf(".");
+                if(msg.Substring(j) != ".xls") {
+			        ConvertXLSXToXLS.ConvertWorkbookXSSFToHSSF(context.Server.MapPath(msg));
+                    msg = msg.Replace(".xlsx",".xls");
+		        }
             }
             else {
                 msg = "false";

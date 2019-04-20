@@ -103,10 +103,25 @@ public static class Extension
             Where(s => 
                 s.tu_dongtien_id == dongtienId & 
                 s.sang_dongtien_id == vndId &
-                s.hieuluc_tungay >= ngaylap &
-                s.hieuluc_denngay <= ngaylap).FirstOrDefault();
+                s.hieuluc_tungay <= ngaylap &
+                s.hieuluc_denngay >= ngaylap).FirstOrDefault();
         if (tygia != null)
             value = value * tygia.chia_cho.GetValueOrDefault(0);
+        return value;
+    }
+
+    public static decimal TyGiaVND(string dongtienId, DateTime? ngaylap, EntityContext db)
+    {
+        decimal value = 1;
+        string vndId = db.md_dongtien.Where(s => s.ma_iso == "VND").Select(s => s.md_dongtien_id).FirstOrDefault();
+        var tygia = db.md_tygia.
+            Where(s =>
+                s.tu_dongtien_id == dongtienId &
+                s.sang_dongtien_id == vndId &
+                s.hieuluc_tungay <= ngaylap &
+                s.hieuluc_denngay >= ngaylap).OrderByDescending(s=>s.hieuluc_tungay).FirstOrDefault();
+        if (tygia != null)
+            value = tygia.chia_cho.GetValueOrDefault(0);
         return value;
     }
 }

@@ -205,6 +205,12 @@
                         public Decimal? tong_tienhang { get; set; }
                 
 						
+                        #region c_donmuahang_tygiaVND_wintaFN
+                        
+                        #endregion c_donmuahang_tygiaVND_wintaFN
+                        public Decimal? tygiaVND { get; set; }
+                
+						
                         #region c_donmuahang_vaitrocapnhat_wintaFN
                         
                         #endregion c_donmuahang_vaitrocapnhat_wintaFN

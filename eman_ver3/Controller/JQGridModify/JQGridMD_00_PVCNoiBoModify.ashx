@@ -42,13 +42,13 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
 
-        if (vnn.Count() > 1)
+        if (vnn.Count() < -1)
         {
             msg = "<div style='color:red'>Lỗi:Chỉ được chọn 1 phiếu vận chuyển.</div>";
         }
         else
         {
-            foreach (md_vanchuyennoibo vcnb in db.md_vanchuyennoibo.Where(s => vnn.Contains(s.md_vanchuyennoibo_id)))
+            foreach (var vcnb in db.md_vanchuyennoibo.Where(s => vnn.Contains(s.md_vanchuyennoibo_id)).ToList())
             {
                 if (vcnb.md_trangthai_id == "HIEULUC")
                 {
@@ -56,10 +56,9 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     break;
                 }
 
-                int dachuyenhet = 0;
                 var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id);
                 int tong_sl_dachuyenhet = vcnb_cdvcs.Where(s => s.dachuyenhet == true).Count();
-                foreach (md_vanchuyennoibo_cdvc vcnb_cdvc in vcnb_cdvcs.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).OrderBy(s => s.denkho))
+                foreach (var vcnb_cdvc in vcnb_cdvcs.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).OrderBy(s => s.denkho).ToList())
                 {
                     /*if (vcnb_cdvc.denkho != vcnb.denkho)
 					if(1 == 1)                    
@@ -210,18 +209,29 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     break;
                 }
                 //-----
-                int a = 0;
-                foreach (md_vanchuyennoibo_cdvc cdvc in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id))
+                foreach (var cdvc in db.md_vanchuyennoibo_cdvc.
+                                        Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).ToList())
                 {
                     //Cap nhat du kien lay hang ton
-                    foreach (c_doichieuhangton_dklht dklht in db.c_doichieuhangton_dklht.Where(s => s.c_doichieuhangton_id == vcnb.c_doichieuhangton_id & s.md_sanpham_id == cdvc.md_sanpham_id))
+                    foreach (var dklht in
+                            db.c_doichieuhangton_dklht.
+                                Where(s => s.c_doichieuhangton_id == vcnb.c_doichieuhangton_id &
+                                s.md_sanpham_id == cdvc.md_sanpham_id).ToList())
                     {
                         dklht.sl_dalay = dklht.sl_dalay + cdvc.soluong_dachuyen;
                     }
                     //Cap nhat lai cac dong van chuyen
-                    foreach (md_vanchuyennoibo check_xk in db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id != vcnb.md_vanchuyennoibo_id & s.c_doichieuhangton_id == vcnb.c_doichieuhangton_id & s.md_trangthai_id == "SOANTHAO"))
+                    foreach (var check_xk in
+                            db.md_vanchuyennoibo.Where(s =>
+                                s.md_vanchuyennoibo_id != vcnb.md_vanchuyennoibo_id &
+                                s.c_doichieuhangton_id == vcnb.c_doichieuhangton_id &
+                                s.tukho == vcnb.tukho &
+                                s.md_trangthai_id == "SOANTHAO").ToList())
                     {
-                        foreach (md_vanchuyennoibo_cdvc ck_dh in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == check_xk.md_vanchuyennoibo_id & s.md_sanpham_id == cdvc.md_sanpham_id))
+                        foreach (var ck_dh in
+                                db.md_vanchuyennoibo_cdvc.Where(s =>
+                                    s.md_vanchuyennoibo_id == check_xk.md_vanchuyennoibo_id &
+                                    s.md_sanpham_id == cdvc.md_sanpham_id).ToList())
                         {
                             ck_dh.soluong_toida = ck_dh.soluong_toida - cdvc.soluong_dachuyen;
                         }
@@ -250,23 +260,23 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string denkho = context.Request.Form["denkho"];
         string loaichuyen_id = "";
         string sctdathang = context.Request.Form["sctdathang"];
-        int a = 0, count = 0, count_new = 0;
+        int a = 0, count = 0;
         string chungtuthamchieu = context.Request["chungtuthamchieu"];
         try
         {
-            md_kho ko = db.md_kho.Where(s => s.md_kho_id == tukho).FirstOrDefault();
+            var ko = db.md_kho.Where(s => s.md_kho_id == tukho).FirstOrDefault();
             var check_cdh1 = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == loaichuyen_id);
             var check_cdh2 = db.md_xuatban_cdh.Where(s => s.md_xuatban_id == loaichuyen_id);
             if (loaichuyen == "XUATNB")
             {
-                md_xuatkhonb xnb = db.md_xuatkhonb.Where(s => s.sochungtu == chungtuthamchieu & s.tukho == denkho).FirstOrDefault();
+                var xnb = db.md_xuatkhonb.Where(s => s.sochungtu == chungtuthamchieu & s.tukho == denkho).FirstOrDefault();
                 loaichuyen_id = xnb.md_xuatkhonb_id;
                 sctdathang = xnb.sctdathang;
                 if (check_cdh1.Count() <= 0)
                 {
                     msg = "false#Lỗi: Dòng " + chungtuthamchieu + " chưa có các dòng hàng.";
                 }
-                foreach (md_xuatkhonb_cdh cdh in check_cdh1)
+                foreach (md_xuatkhonb_cdh cdh in check_cdh1.ToList())
                 {
                     count = db.md_kho_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_kho_id == tukho).Count();
                     if(count > 0)
@@ -287,7 +297,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 {
                     msg = "false#Lỗi: Dòng " + chungtuthamchieu + " chưa có các dòng hàng.";
                 }
-                foreach (md_xuatban_cdh cdh in check_cdh2)
+                foreach (md_xuatban_cdh cdh in check_cdh2.ToList())
                 {
                     count = db.md_kho_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_kho_id == tukho).Count();
                     if(count > 0)
@@ -334,7 +344,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 {
                     if (a == 1)
                     {
-                        foreach (md_xuatkhonb_cdh xnb in check_cdh1)
+                        foreach (var xnb in check_cdh1.ToList())
                         {
                             int count_ = db.md_kho_sanpham.Where(s => s.md_sanpham_id == xnb.md_sanpham_id & s.md_kho_id == tukho).Count();
                             if(count_ > 0)
@@ -343,7 +353,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     }
                     else if (a == 2)
                     {
-                        foreach (md_xuatban_cdh xb in check_cdh2)
+                        foreach (var xb in check_cdh2.ToList())
                         {
                             int count_ = db.md_kho_sanpham.Where(s => s.md_sanpham_id == xb.md_sanpham_id & s.md_kho_id == tukho).Count();
                             if(count_ > 0)
@@ -352,10 +362,15 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     }
                 }
                 else {
-                    c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == sctdathang).Take(1).FirstOrDefault();
-                    foreach(c_dongdsdh ddh in db.c_dongdsdh.Where(s=>s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id)) {
-                        if(ddh.sl_conlai.Value > 0) {
-                            add_dongvanchuyen(db, ddh.md_sanpham_id, ddh.sl_conlai.Value, us, id_new);
+                    var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == sctdathang).Take(1).FirstOrDefault();
+                    if (dsdh != null)
+                    {
+                        foreach (c_dongdsdh ddh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id))
+                        {
+                            if (ddh.sl_conlai.Value > 0)
+                            {
+                                add_dongvanchuyen(db, ddh.md_sanpham_id, ddh.sl_conlai.Value, us, id_new);
+                            }
                         }
                     }
                 }

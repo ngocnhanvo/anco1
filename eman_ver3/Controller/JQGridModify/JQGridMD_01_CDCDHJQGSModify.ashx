@@ -69,7 +69,7 @@ public class JQGridMD_01_CDCDHJQGSModify : IHttpHandler, System.Web.SessionState
                 md_dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
             }
             string id = context.Request.Form["id"];
-            c_kehoachdathang_cdhcd object_ = db.c_kehoachdathang_cdhcd.Where(p => p.c_kehoachdathang_cdhcd_id == id)
+            var object_ = db.c_kehoachdathang_cdhcd.Where(p => p.c_kehoachdathang_cdhcd_id == id)
                     .Take(1)
                     .FirstOrDefault();
 			

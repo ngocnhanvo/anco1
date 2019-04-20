@@ -94,7 +94,7 @@ public static class Security
 	
     public static string UrlBase()
     {
-        return "/eman/";
+        return "/anco2/";
     }
 
     public static string id_taikhoan(HttpContext context)

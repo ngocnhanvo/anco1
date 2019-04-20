@@ -87,16 +87,13 @@ public class JQGridMD_01_DongKhoModify : IHttpHandler, System.Web.SessionState.I
 			string ma_sanpham = context.Request.Form["md_sanpham_id"];
             md_kho_sanpham object_ = db.md_kho_sanpham.Where(p => p.md_kho_sanpham_id == id).Take(1).FirstOrDefault();
             md_sanpham sp = db.md_sanpham.Where(s=>s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
-			string ngaytinh_tonkhocuoi = context.Request.Form["ngaytinh_tonkhocuoi"];
-			DateTime nttkc = VNN_Config.setDateTime(ngaytinh_tonkhocuoi);
+			//string ngaytinh_tonkhocuoi = context.Request.Form["ngaytinh_tonkhocuoi"];
+			//DateTime nttkc = VNN_Config.setDateTime(ngaytinh_tonkhocuoi);
 			
 			if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-			else if(nttkc == DateTime.MinValue.AddDays(1)){
-				msg = "false#Lỗi: Ngày \"" + ngaytinh_tonkhocuoi + "\" không đúng định dạng.";
-			}
 			else if(sp == null){
 				msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
 			}
@@ -109,7 +106,6 @@ public class JQGridMD_01_DongKhoModify : IHttpHandler, System.Web.SessionState.I
 			
             if (msg.Length <= 0)
             {
-				if(nttkc == DateTime.MinValue){ VNN_Function.SetFormValue("ngaytinh_tonkhocuoi", "null"); }
                 string action = "edit";
                 string[] column_ex = { };
                 string ten_table = "md_kho_sanpham";		

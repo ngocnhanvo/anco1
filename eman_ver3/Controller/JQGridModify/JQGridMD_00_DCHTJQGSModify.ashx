@@ -53,7 +53,7 @@ System.Web.SessionState.IRequiresSessionState
         string[] vnn = id.Split(',');
         try
         {
-            if (vnn.Count() > 1)
+            if (vnn.Count() < -1)
             {
                 msg = "<div style='color:red'>Lỗi:Chỉ được chọn 1 phiếu đối chiếu hàng tồn.</div>";
             }

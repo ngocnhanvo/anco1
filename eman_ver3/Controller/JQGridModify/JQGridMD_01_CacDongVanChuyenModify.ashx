@@ -84,9 +84,9 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         try
         {			
 			decimal soluong_dichchuyen = decimal.Parse(context.Request.Form["soluong_dichchuyen"]);
-            string id = context.Request.Form["id"];
+            string id = context.Request.Form["id_parent"];
 			int dem = db.md_vanchuyennoibo_cdvc.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_vanchuyennoibo_id == id).Count();
-			md_vanchuyennoibo vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
+			var vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
 			if (vnnb.md_trangthai_id == "HIEULUC") {
                 msg = "false#Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực.";
             }

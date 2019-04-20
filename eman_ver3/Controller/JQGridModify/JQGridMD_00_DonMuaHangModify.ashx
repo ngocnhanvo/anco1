@@ -520,7 +520,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
     {
         EntityContext db = new EntityContext();
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", msg_er = "", msg_err = "", sanpham = "";
+        string msg = "", msg_er = "", msg_err = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         string ma_dtkd = context.Request.Form["md_doitackinhdoanh_id"];
@@ -529,7 +529,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         string md_phienbangia_id2 = md_phienbangia_id;
         string md_doitackinhdoanh_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
         decimal dongiamua = 0;
-        // try
+        try
         {
             string id_parent = context.Request.Form["id_parent"];
             string id = context.Request.Form["id"];
@@ -780,9 +780,9 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 }
             }
         }
-        // catch (Exception ex)
+        catch (Exception ex)
         {
-            // msg = "false#" + ex.Message;
+            msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }

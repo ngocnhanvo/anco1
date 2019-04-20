@@ -359,12 +359,12 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
                    select new { a.md_sanpham_bom_id }).FirstOrDefault();
 
         var ngaydksxes = (from a in db.md_dondathangphanxuong_cdh
-                         join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-                         join c in db.md_chungloai on b.md_nhomnangluc_id equals c.md_chungloai_id
-                         where a.md_dondathangphanxuong_id == cdh.md_dondathangphanxuong_id
-                         select new { c.songaysx }).OrderByDescending(s => s.songaysx).FirstOrDefault();
+                          join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
+                          join c in db.md_chungloai on b.md_nhomnangluc_id equals c.md_chungloai_id
+                          where a.md_dondathangphanxuong_id == cdh.md_dondathangphanxuong_id
+                          select new { c.songaysx }).OrderByDescending(s => s.songaysx).FirstOrDefault();
 
-        foreach (var bom_vattu in db.md_sanpham_bom_vattu.Where(s => s.md_sanpham_bom_id == bom.md_sanpham_bom_id & s.hoatdong == true & s.soluong > 0).ToList())
+        foreach (var bom_vattu in db.md_sanpham_bom_vattu.Where(s => s.md_sanpham_bom_id == bom.md_sanpham_bom_id & s.soluong > 0).ToList())
         {
             //kiem tra          
             var check_px = db.md_dondathangphanxuong_vattu.Where(s => s.md_sanpham_id == bom_vattu.md_sanpham_id & s.md_dondathangphanxuong_id == cdh.md_dondathangphanxuong_id).FirstOrDefault();
@@ -386,10 +386,10 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
                     vattu.soluong = vattu.soluong + ((decimal)bom_vattu.soluong * cdh.tong_sl_dat);
                 }
 
-                if (sp.vattu == true)
-                {
-                    vattu.soluong = Math.Ceiling((decimal)(((decimal)bom_vattu.soluong * cdh.tong_sl_dat) / ngaydksxes.songaysx));
-                }
+                //if (sp.vattu == true)
+                //{
+                //    vattu.soluong = Math.Ceiling((decimal)(((decimal)bom_vattu.soluong * cdh.tong_sl_dat) / ngaydksxes.songaysx));
+                //}
 
                 vattu.md_sanpham_id = bom_vattu.md_sanpham_id;
 

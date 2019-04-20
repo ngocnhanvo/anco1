@@ -4290,6 +4290,10 @@
                             .HasColumnName("tong_tienhang")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.tygiaVND)
+                            .HasColumnName("tygiaVND")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

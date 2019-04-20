@@ -433,7 +433,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
             if(str_dtkd != "") {
                 str_dtkd = str_dtkd.Substring(0, str_dtkd.Length - 1);
             }
-            str += string.Format("<option dtkd='{2}' value=\"{0}\">{1}</option>", object_.md_banggia_id, object_.ten_banggia, str_dtkd);
+            str += string.Format(@"<option dtkd='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, str_dtkd);
         }
         context.Response.Write("<select>" + str + "</select>");
     }

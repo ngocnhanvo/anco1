@@ -43,14 +43,14 @@ function timkiem_dtkd(id_elem, type) {
                     if (ids != '<a style=\'color:red\'>Not data (404)</a>') {
                         cell = $('#gridMD_00_DTKD_cp').getRowData(ids);
                         if ($('#' + id_elem).prop('disabled') != true) {
-                            $('#' + id_elem).val(cell['ma_dtkd']);
+                            $('#' + id_elem).val(cell['ma_dtkd']).change();
                             if ($('.module_spanselect').hasClass('span_MD_00_HoaDon')) {
                                 $('#' + id_elem).val(cell['ten_dtkd']);
                             }
                             //--here
                             $('#bg_' + id_elem).val(cell['banggia_id']);
                             $('#diachi').val(cell['diachi']);
-                            $('#md_banggia_id').val(cell['banggia_id']);
+                            $('#md_banggia_id').val(cell['banggia_id']).change();
                             $('#ten_dtkd').val(cell['ten_dtkd']);
                             $('#diachigiaohang').val(cell['diachi']);
                             $('#nguoi_dathang').val(cell['daidien']);
@@ -61,8 +61,8 @@ function timkiem_dtkd(id_elem, type) {
                             $('#md_phienbangia_id').val(cell['phienbangia_id']);
                             mokhoa_column('sct_thamchieu');
 
-                            try { change_bg_dtkd(cell['ma_dtkd'], 1); } catch (r) { }
-                            try { check_exist_md_phienbangia_id(); } catch (r) { }
+                            //try { change_bg_dtkd(cell['ma_dtkd'], 1); } catch (r) { }
+                            //try { check_exist_md_phienbangia_id(); } catch (r) { }
                             try { selected_dongtien(); } catch (r) { }
                         }
                     }

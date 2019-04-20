@@ -51,9 +51,9 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
         foreach (md_phienbangia object_ in db.md_phienbangia.OrderBy(s=>s.ten_phienbangia))
         {
 			if(object_.hoatdong == true)
-				str += string.Format("<option bg='{2}' value=\"{0}\">{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
+				str += string.Format("<option bg='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
 			else
-				str += string.Format("<option bg='{2}' style='display:none' class='notsel_option' value=\"{0}\">{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
+				str += string.Format("<option bg='{2}' style='display:none' class='notsel_option' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
         }
         context.Response.Write("<select>" + str + "</select>");
 	}
