@@ -6,10 +6,9 @@ using System.Linq;
 using System.Data.SqlClient;
 using DataAcess;
 using NPOI.HSSF.UserModel;
-using NPOI.HPSF;
-using NPOI.POIFS.FileSystem;
+using System.Collections.Generic;
 using NPOI.SS.UserModel;
-using NPOI.SS.Util;
+using Newtonsoft.Json;
 using System.IO;
 public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -473,150 +472,150 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
+        string ma_module = context.Request.QueryString["ma_module"];
         string[] vnn = id.Split(',');
-        foreach (c_danhsachdathang dsdh in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).OrderByDescending(s => s.ngaylap))
+        using (var transaction = db.Database.BeginTransaction())
         {
-            if (dsdh.trangthai == "DAGUI" | dsdh.trangthai == "")
+            try
             {
-                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa được xác nhận .</div>";
+                foreach (var dsdh in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).OrderByDescending(s => s.ngaylap))
+                {
+                    if (dsdh.trangthai == "DAGUI" | dsdh.trangthai == "")
+                    {
+                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa được xác nhận .</div>";
+                    }
+                    else if (dsdh.trangthai == "HIEULUC")
+                    {
+                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã hiệu lực.</div>";
+                    }
+                    else if (dsdh.trangthai == "HUYBO")
+                    {
+                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã hủy.</div>";
+                    }
+                    else if (dsdh.trangthai == "KETTHUC")
+                    {
+                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã kết thúc.</div>";
+                    }
+                    else if (dsdh.md_trangthai_id != "HIEULUC")
+                    {
+                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã được đối chiếu hàng tồn.</div>";
+                    }
+                    else
+                    {
+                        string id_dc = Helper.getNewId();
+                        c_doichieuhangton dc = new c_doichieuhangton
+                        {
+                            c_doichieuhangton_id = id_dc,
+                            c_danhsachdathang_id = dsdh.c_danhsachdathang_id,
+                            so_donhang = dsdh.sochungtu,
+                            ten_donhang = "KHDH-" + dsdh.so_po,
+                            donhang_thamchieu = dsdh.so_po,
+                            kehoach = " ",
+                            doichieuht = false,
+                            phieuhangton = " ",
+                            ngaykehoach = DateTime.Now,
+                            ngayhoanthanh = dsdh.ngayhoanthanh,
+
+                            nguoitao = us.ad_user_id,
+                            vaitrotao = us.ad_role_id,
+                            bophantao = us.md_phongban_id,
+
+
+                            value_nguoitao = us.ma_user,
+                            value_vaitrotao = us.ten_role,
+                            value_bophantao = us.ten_phongban,
+
+                            nguoicapnhat = us.ad_user_id,
+                            vaitrocapnhat = us.ad_role_id,
+                            bophancapnhat = us.md_phongban_id,
+                            value_nguoicapnhat = us.ma_user,
+                            value_vaitrocapnhat = us.ten_role,
+                            value_bophancapnhat = us.ten_phongban,
+
+                            ngaytao = DateTime.Now,
+                            ngaycapnhat = DateTime.Now,
+                            hoatdong = true
+                        };
+                        db.c_doichieuhangton.Add(dc);
+
+                        //tao cac dong don hang
+                        foreach (c_dongdsdh ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id))
+                        {
+                            md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
+                            if (sp == null)
+                            {
+                                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa có dữ liệu của hàng hóa.</div>";
+                            }
+                            else if (sp.trangthai == "NHD")
+                            {
+                                msg += "<div style='color:red'>Lỗi:Mã hàng hóa " + sp.ma_sanpham + " đang có trạng thái \"Ngưng hoạt động\".</div>";
+                            }
+
+
+                            c_doichieuhangton_cddh cddh = new c_doichieuhangton_cddh
+                            {
+                                c_doichieuhangton_cddh_id = Helper.getNewId(),
+                                c_doichieuhangton_id = id_dc,
+                                md_sanpham_id = ddsdh.md_sanpham_id,
+                                md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
+                                mota_tiengviet = sp.mota_tiengviet,
+                                mota_tienganh = sp.mota_tienganh,
+                                sl_dathang = ddsdh.sl_dathang,
+                                mota = dsdh.mota,
+
+                                nguoitao = us.ad_user_id,
+                                vaitrotao = us.ad_role_id,
+                                bophantao = us.md_phongban_id,
+
+                                value_nguoitao = us.ma_user,
+                                value_vaitrotao = us.ten_role,
+                                value_bophantao = us.ten_phongban,
+
+                                nguoicapnhat = us.ad_user_id,
+                                vaitrocapnhat = us.ad_role_id,
+                                bophancapnhat = us.md_phongban_id,
+                                value_nguoicapnhat = us.ma_user,
+                                value_vaitrocapnhat = us.ten_role,
+                                value_bophancapnhat = us.ten_phongban,
+
+                                ngaytao = DateTime.Now,
+                                ngaycapnhat = DateTime.Now,
+                                hoatdong = true
+                            };
+                            db.c_doichieuhangton_cddh.Add(cddh);
+                        }
+                        dsdh.trangthai = "HIEULUC";
+                        dsdh.check_nangluc = true;
+                        msg_success += "<div style='color:blue'>Đơn hàng " + dsdh.sochungtu + " được hiệu lực thành công.</div>";
+                    }
+                }
+                if (msg.Length <= 0)
+                {
+                    var item = new Dictionary<string, object>();
+                    item["result"] = id;
+                    item["trangthai"] = "DAHIEULUC";
+                    msg = VNN_VariablePublic.GetModule(
+                        VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
+                        item
+                    );
+                }
             }
-            else if (dsdh.trangthai == "HIEULUC")
+            catch (Exception ex)
             {
-                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã hiệu lực.</div>";
+                msg = ex.Message;
             }
-            else if (dsdh.trangthai == "HUYBO")
+
+            if (msg.Length <= 0)
             {
-                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã hủy.</div>";
-            }
-            else if (dsdh.trangthai == "KETTHUC")
-            {
-                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã kết thúc.</div>";
-            }
-            else if (dsdh.md_trangthai_id != "HIEULUC")
-            {
-                msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã được đối chiếu hàng tồn.</div>";
+                db.SaveChanges();
+                msg = msg_success;
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                string id_dc = Helper.getNewId();
-                c_doichieuhangton dc = new c_doichieuhangton
-                {
-                    c_doichieuhangton_id = id_dc,
-                    c_danhsachdathang_id = dsdh.c_danhsachdathang_id,
-                    so_donhang = dsdh.sochungtu,
-                    ten_donhang = "KHDH-" + dsdh.so_po,
-                    donhang_thamchieu = dsdh.so_po,
-                    kehoach = " ",
-                    doichieuht = false,
-                    phieuhangton = " ",
-                    ngaykehoach = DateTime.Now,
-                    ngayhoanthanh = dsdh.ngayhoanthanh,
-
-                    nguoitao = us.ad_user_id,
-                    vaitrotao = us.ad_role_id,
-                    bophantao = us.md_phongban_id,
-
-
-                    value_nguoitao = us.ma_user,
-                    value_vaitrotao = us.ten_role,
-                    value_bophantao = us.ten_phongban,
-
-                    nguoicapnhat = us.ad_user_id,
-                    vaitrocapnhat = us.ad_role_id,
-                    bophancapnhat = us.md_phongban_id,
-                    value_nguoicapnhat = us.ma_user,
-                    value_vaitrocapnhat = us.ten_role,
-                    value_bophancapnhat = us.ten_phongban,
-
-                    ngaytao = DateTime.Now,
-                    ngaycapnhat = DateTime.Now,
-                    hoatdong = true
-                };
-                db.c_doichieuhangton.Add(dc);
-
-                //tao cac dong don hang
-                foreach (c_dongdsdh ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id))
-                {
-                    md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
-                    if (sp == null)
-                    {
-                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa có dữ liệu của hàng hóa.</div>";
-                    }
-                    else if (sp.trangthai == "NHD")
-                    {
-                        msg += "<div style='color:red'>Lỗi:Mã hàng hóa " + sp.ma_sanpham + " đang có trạng thái \"Ngưng hoạt động\".</div>";
-                    }
-
-
-                    c_doichieuhangton_cddh cddh = new c_doichieuhangton_cddh
-                    {
-                        c_doichieuhangton_cddh_id = Helper.getNewId(),
-                        c_doichieuhangton_id = id_dc,
-                        md_sanpham_id = ddsdh.md_sanpham_id,
-                        md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                        mota_tiengviet = sp.mota_tiengviet,
-                        mota_tienganh = sp.mota_tienganh,
-                        sl_dathang = ddsdh.sl_dathang,
-                        mota = dsdh.mota,
-
-                        nguoitao = us.ad_user_id,
-                        vaitrotao = us.ad_role_id,
-                        bophantao = us.md_phongban_id,
-
-                        value_nguoitao = us.ma_user,
-                        value_vaitrotao = us.ten_role,
-                        value_bophantao = us.ten_phongban,
-
-                        nguoicapnhat = us.ad_user_id,
-                        vaitrocapnhat = us.ad_role_id,
-                        bophancapnhat = us.md_phongban_id,
-                        value_nguoicapnhat = us.ma_user,
-                        value_vaitrocapnhat = us.ten_role,
-                        value_bophancapnhat = us.ten_phongban,
-
-                        ngaytao = DateTime.Now,
-                        ngaycapnhat = DateTime.Now,
-                        hoatdong = true
-                    };
-                    db.c_doichieuhangton_cddh.Add(cddh);
-                }
-
-                string str = VNN_VariablePublic.connectString_Anco(db);
-                SqlConnection cnn = new SqlConnection(str);
-
-                //disable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                SqlCommand cmd = new SqlCommand(@"
-				ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateGoiHDLH
-				ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateSLDaDatTrenPO
-				", cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-                //update c_danhsachdathang
-                cmd = new SqlCommand(@"
-				update c_danhsachdathang set trangthai = 'DAHIEULUC' where c_danhsachdathang_id = '" + dsdh.c_danhsachdathang_id + "'"
-                , cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-                //enable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                cmd = new SqlCommand(@"
-				ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateGoiHDLH
-				ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateSLDaDatTrenPO
-				", cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-
-                //dsdh.md_trangthai_id = "DATAO";
-                dsdh.trangthai = "HIEULUC";
-                msg_success += "<div style='color:blue'>Đơn hàng " + dsdh.sochungtu + " được hiệu lực thành công.</div>";
+                transaction.Rollback();
             }
-        }
-        if (msg.Length <= 0)
-        {
-            db.SaveChanges();
-            msg = msg_success;
         }
         context.Response.Write(msg);
     }
@@ -661,228 +660,135 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
     public void CA01DSAncotrading_MD00DSDHJQGS(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "";
+        string msg = "", msgSucess = "", strdata = "";
         string id = context.Request.Form["id"];
-        string thoigiansx = context.Request.Form["thoigiansx"];
-        string thoigianht = context.Request.Form["thoigianht"];
         string[] vnn = id.Split(',');
-
-        foreach (c_danhsachdathang dsdh1 in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).OrderByDescending(s => s.ngaylap))
+        var item = new Dictionary<string, object>();
+        item["result"] = id;
+        strdata = VNN_VariablePublic.GetModule(
+            VNN_VariablePublic.API_AncoTrading + "?oper=XacNhanDonHang",
+            item
+        );
+        var dsdhThanhCong = new List<string>();
+        var c_dongdonhangs = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(strdata);
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string msg_er = "";
-            string str_insert = "";
-            string str = VNN_VariablePublic.connectString_Anco1(db);
-            SqlConnection cnn = new SqlConnection(str);
-
-            if (dsdh1.trangthai == "HUYBO")
+            foreach (var dsdh1 in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).ToList())
             {
-                msg_er += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hủy.</div>";
-            }
-            else if (dsdh1.trangthai == "DANHAN")
-            {
-                msg_er += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã nhận hàng.</div>";
-            }
-            else if (dsdh1.trangthai == "KETTHUC")
-            {
-                msg_er += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã kết thúc.</div>";
-            }
-            else if (dsdh1.trangthai == "HIEULUC")
-            {
-                msg_er += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hiệu lực.</div>";
-            }
-            else if (dsdh1.md_trangthai_id == "DOICHIEUHANGTON")
-            {
-                msg_er += "<div style='color:red'>Lỗi: Dòng " + dsdh1.sochungtu + " đã đối chiếu hàng tồn.</div>";
-            }
-            else
-            {
-                //lay du lieu dong danh sach dat hang
-                SqlCommand cmd = new SqlCommand(@"select 
-				ddsdh.c_dongdsdh_id,
-				ddsdh.c_danhsachdathang_id,
-				ddsdh.c_dongdonhang_id,
-				(select ma_sanpham from md_sanpham where ddsdh.md_sanpham_id = md_sanpham_id) as md_sanpham_id,
-				ddsdh.mota_tiengviet,
-				ddsdh.mota_tienganh,
-				ddsdh.ma_sanpham_khach,
-				ddsdh.md_doitackinhdoanh_id,
-				ddsdh.huongdan_dathang,
-				ddsdh.han_giaohang,
-				ddsdh.tem_dan,
-				isnull(ddsdh.sl_conlai, 0) as sl_dathang,
-				0 as sl_dagiao,
-				ddsdh.sl_conlai,
-				ddsdh.gianhap,
-				ddsdh.sothutu,
-				ddsdh.ngaytao,
-				ddsdh.nguoitao,
-				ddsdh.ngaycapnhat,
-				ddsdh.nguoicapnhat,
-				ddsdh.mota,
-				ddsdh.hoatdong,
-				ddsdh.md_donggoi_id,
-				ddsdh.sl_inner,
-				ddsdh.l1,
-				ddsdh.w1,
-				ddsdh.h1,
-				ddsdh.sl_outer,
-				ddsdh.l2,
-				ddsdh.w2,
-				ddsdh.h2,
-				ddsdh.v2,
-				ddsdh.sl_cont,
-				ddsdh.vd,
-				ddsdh.vn,
-				ddsdh.vl,
-				ddsdh.ghichu_vachngan,
-				ddsdh.sl_huy,
-				dvt_i.ten_dvt as dvt_inner,
-				dvt_o.ten_dvt as dvt_outer
-				from c_dongdsdh ddsdh 
-				left join c_dongdonhang ddh on ddsdh.c_dongdonhang_id = ddh.c_dongdonhang_id
-				left join md_donggoi dg on ddsdh.md_donggoi_id = dg.md_donggoi_id
-				left join md_donvitinh dvt_i on dg.dvt_inner = dvt_i.md_donvitinh_id
-				left join md_donvitinh dvt_o on dg.dvt_outer = dvt_o.md_donvitinh_id
-				where ddsdh.sl_conlai > 0 and ddsdh.c_danhsachdathang_id = '" + dsdh1.c_danhsachdathang_id + "'", cnn);
-                DataTable dt = new DataTable();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
-
-                int count_col = 0;
-                string sql_column = "(";
-                string sql_values = "(";
-                foreach (System.Data.DataColumn col in dt.Columns)
+                string msgDetail = "";
+                try
                 {
-                    count_col++;
-                    sql_column += col.ColumnName + ",";
-                }
-
-                if (sql_column != "(") { sql_column += "anco_check, sl_hanngach" + ")"; }
-
-                foreach (System.Data.DataRow row in dt.Rows)
-                {
-                    string c_dongdsdh_id = row[0].ToString();
-                    c_dongdsdh dsdh = db.c_dongdsdh.Where(s => s.c_dongdsdh_id == c_dongdsdh_id).FirstOrDefault();
-                    if (dsdh == null)
+                    if (dsdh1.trangthai == "HUYBO")
                     {
-                        string sql_insert = "insert into c_dongdsdh" + sql_column + " values(";
-                        for (int i = 0; i < count_col; i++)
+                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hủy.</div>";
+                    }
+                    else if (dsdh1.trangthai == "DANHAN")
+                    {
+                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã nhận hàng.</div>";
+                    }
+                    else if (dsdh1.trangthai == "KETTHUC")
+                    {
+                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã kết thúc.</div>";
+                    }
+                    else if (dsdh1.trangthai == "HIEULUC")
+                    {
+                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hiệu lực.</div>";
+                    }
+                    else if (dsdh1.md_trangthai_id == "DOICHIEUHANGTON")
+                    {
+                        msgDetail += "<div style='color:red'>Lỗi: Dòng " + dsdh1.sochungtu + " đã đối chiếu hàng tồn.</div>";
+                    }
+                    else
+                    {
+                        db.c_dongdsdh.RemoveRange(db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh1.c_danhsachdathang_id));
+                        string msgDetail2 = "";
+                        foreach (var b in c_dongdonhangs)
                         {
-                            string cell_value = row[i].ToString();
-                            if (cell_value == null | cell_value == "")
+                            string ma_sanpham = b["md_sanpham_id"] + "";
+                            string ma_dtkd = b["md_sanpham_id"] + "";
+                            var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == ma_sanpham).FirstOrDefault();
+                            if (sp == null)
                             {
-                                sql_insert += "NULL,";
+                                msgDetail2 += string.Format(@"<div style='color:red'>Lỗi: Mã hàng ""{0}"" không tồn tại</div>", ma_sanpham);
                             }
                             else
                             {
-                                string c_val = cell_value;
-                                cell_value = cell_value.Replace("'", "''");
-                                if (i == 3)
-                                {
-                                    System.Data.DataTable tbl = Mbg.Data.SqlClient.SqlHelper.GetData("select md_sanpham_id from md_sanpham where ma_sanpham = N'" + cell_value + "'");
-                                    if (tbl.Rows.Count > 0)
-                                        sql_insert += "N'" + tbl.Rows[0][0] + "',";
-                                    else
-                                        msg_er += "<div style='color:red'>Lỗi:Sản phẩm \"" + c_val + "\" không có trong danh sách hàng hóa.</div>";
-                                }
-                                else
-                                {
-                                    sql_insert += "N'" + cell_value + "',";
-                                }
+                                var c_dongdsdh = new c_dongdsdh();
+                                c_dongdsdh.w2 = Convert.ToDecimal(b["w2"]);
+                                c_dongdsdh.w1 = Convert.ToDecimal(b["w1"]);
+                                c_dongdsdh.vn = Convert.ToDecimal(b["vn"]);
+                                c_dongdsdh.vl = Convert.ToDecimal(b["vl"]);
+                                c_dongdsdh.vd = Convert.ToDecimal(b["vd"]);
+                                c_dongdsdh.v2 = Convert.ToDecimal(b["v2"]);
+                                c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
+                                c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
+                                c_dongdsdh.sl_outer = Convert.ToDecimal(b["sl_outer"]);
+                                c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
+                                c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"]);
+                                c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
+                                c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
+                                c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
+                                c_dongdsdh.sl_conlai = Convert.ToDecimal(b["sl_conlai"]);
+                                c_dongdsdh.mota = b["mota"] + "";
+                                c_dongdsdh.md_sanpham_id = sp.md_sanpham_id + "";
+                                c_dongdsdh.md_donggoi_id = b["md_donggoi_id"] + "";
+                                c_dongdsdh.md_doitackinhdoanh_id = b["md_doitackinhdoanh_id"] + "";
+                                c_dongdsdh.ma_sanpham_khach = b["ma_sanpham_khach"] + "";
+                                c_dongdsdh.l2 = Convert.ToDecimal(b["l2"]);
+                                c_dongdsdh.l1 = Convert.ToDecimal(b["l1"]);
+                                c_dongdsdh.huongdan_dathang = b["huongdan_dathang"] + "";
+                                c_dongdsdh.hoatdong = true;
+                                c_dongdsdh.h2 = Convert.ToDecimal(b["h2"]);
+                                c_dongdsdh.h1 = Convert.ToDecimal(b["h1"]);
+                                c_dongdsdh.gianhap = Convert.ToDecimal(b["gianhap"]);
+                                c_dongdsdh.ghichu_vachngan = b["ghichu_vachngan"] + "";
+                                c_dongdsdh.c_dongdsdh_id = b["c_dongdsdh_id"] + "";
+                                c_dongdsdh.c_dongdonhang_id = b["c_dongdonhang_id"] + "";
+                                c_dongdsdh.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
+                                c_dongdsdh.anco_check = true;
+                                db.c_dongdsdh.Add(c_dongdsdh);
+                                db.SaveChanges();
                             }
                         }
-                        sql_insert += "1,0)";
-                        str_insert += sql_insert + "\n";
+                        msgDetail += msgDetail2;
                     }
+                    dsdh1.trangthai = "DANHAN";
+                    dsdh1.md_trangthai_id = "HIEULUC";
+                    db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    msgDetail += string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
                 }
 
-                if (dt.Rows.Count <= 0)
+                if (msgDetail.Length <= 0)
                 {
-                    msg_er += "<div style='color:red'>Lỗi: Đơn hàng \"" + dsdh1.sochungtu + "\" đã được giao hết.</div>";
+                    msgSucess += string.Format(@"<div style='color:blue'>Nhận đơn đặt hàng ""{0}"" thành công.</div>", dsdh1.sochungtu);
+                    dsdhThanhCong.Add(dsdh1.c_danhsachdathang_id);
                 }
+
+                msg += msgDetail;
             }
 
-            if (msg_er.Length <= 0 & str_insert != "")
+            if (msg.Length <= 0)
             {
-                Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(str_insert);
-                //lay du lieu tu Cac khoan phi
-                string str1 = VNN_VariablePublic.connectString_Anco(db);
-                SqlConnection cnn1 = new SqlConnection(str1);
-                SqlCommand cmd1 = new SqlCommand(@"select * from c_phidathang where c_danhsachdathang_id = '" + dsdh1.c_danhsachdathang_id + "'", cnn1);
-                DataTable dt1 = new DataTable();
-                SqlDataAdapter da1 = new SqlDataAdapter(cmd1);
-                da1.Fill(dt1);
+                item = new Dictionary<string, object>();
+                item["result"] = string.Join(",", dsdhThanhCong);
+                item["trangthai"] = "DANHAN";
+                strdata = VNN_VariablePublic.GetModule(
+                    VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
+                    item
+                );
+                msg += strdata;
+            }
 
-                int count_col1 = 0;
-                string sql_column1 = "(";
-                string sql_values1 = "(";
-                foreach (System.Data.DataColumn col in dt1.Columns)
-                {
-                    count_col1++;
-                    sql_column1 += col.ColumnName + ",";
-                }
-
-                if (sql_column1 != "(") { sql_column1 += "anco_check" + ")"; }
-
-                foreach (System.Data.DataRow row in dt1.Rows)
-                {
-                    string c_phidathang_id = row[0].ToString();
-                    c_phidathang dsdh2 = db.c_phidathang.Where(s => s.c_phidathang_id == c_phidathang_id).FirstOrDefault();
-                    if (dsdh2 == null)
-                    {
-                        string sql_insert = "insert into c_phidathang" + sql_column1 + " values(";
-                        for (int i = 0; i < count_col1; i++)
-                        {
-                            string cell_value = row[i].ToString();
-                            if (cell_value == null | cell_value == "")
-                            {
-                                sql_insert += "NULL,";
-                            }
-                            else
-                            {
-                                sql_insert += "N'" + cell_value.Replace("'", "''") + "',";
-                            }
-                        }
-                        sql_insert += "1)";
-                        Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql_insert);
-                    }
-                }
-
-                //disable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                SqlCommand cmd = new SqlCommand(@"
-				ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateGoiHDLH
-				ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateSLDaDatTrenPO
-				", cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-                //update c_danhsachdathang
-                cmd = new SqlCommand(@"
-				update c_danhsachdathang set trangthai = 'DANHAN' where c_danhsachdathang_id = '" + dsdh1.c_danhsachdathang_id + "'"
-                , cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-                //enable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                cmd = new SqlCommand(@"
-				ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateGoiHDLH
-				ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateSLDaDatTrenPO
-				", cnn);
-                cmd.Connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Connection.Close();
-
-                dsdh1.trangthai = "DANHAN";
-                dsdh1.thoigiansx = int.Parse(thoigiansx);
-                dsdh1.ngaybatdau = dsdh1.hangiaohang_po - TimeSpan.Parse(thoigiansx) - TimeSpan.Parse(thoigianht);
-                dsdh1.ngayhoanthanh = dsdh1.hangiaohang_po - TimeSpan.Parse(thoigianht);
-                db.SaveChanges();
-                msg += "<div style='color:blue'>Đơn hàng \"" + dsdh1.sochungtu + "\" đã xác nhận thành công.</div>";
+            if (msg.Length <= 0)
+            {
+                msg = msgSucess;
+                transaction.Commit();
             }
             else
-            {
-                msg += msg_er;
-            }
+                transaction.Rollback();
         }
         context.Response.Write(msg);
     }
@@ -980,103 +886,85 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         EntityContext db = new EntityContext();
         string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "c_danhsachdathang";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                string id = context.Request.Form["id"];
+                int count = id.Split(',').Count();
+                string[] id_del = new string[count];
+                id_del = context.Request.Form["id"].Split(',');
+                for (int i = 0; i < count; i++)
                 {
-                    msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
-                    msg += msg_del + "\n";
+                    msg_del = ""; var id_del_ = id_del[i];
+                    var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.trangthai == "HUYBO")
+                    {
+                        msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.</div>";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.trangthai == "KETTHUC")
+                    {
+                        msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã kết thúc.</div>";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.trangthai == "HIEULUC")
+                    {
+                        msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hiệu lực.</div>";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.md_trangthai_id != "HIEULUC")
+                    {
+                        msg_del = "Lỗi dòng: " + i + ":Đã hiệu lực không thể xóa.";
+                        msg += msg_del + "\n";
+                    }
+                    else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
+                    {
+                        msg_del = string.Format(@"Lỗi:Đơn hàng ""{0}"" đã tạo phiếu giảm hạn ngạch.", object_.sochungtu);
+                        msg += msg_del + "<br>";
+                    }
+                    else if (object_.dg_nangluc == true)
+                    {
+                        msg_del = string.Format(@"Lỗi Đơn hàng ""{0}"" đã từng hiệu lực không thể xóa.", object_.sochungtu);
+                        msg += msg_del + "\n";
+                    }
+                    else
+                    {
+                        db.c_danhsachdathang.Remove(object_);
+                    }
                 }
-                else if (object_.trangthai == "HUYBO")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "KETTHUC")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã kết thúc.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "HIEULUC")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hiệu lực.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.md_trangthai_id != "HIEULUC")
-                {
-                    msg_del = "Lỗi dòng: " + i + ":Đã hiệu lực không thể xóa.";
-                    msg += msg_del + "\n";
-                }
-                else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
-                {
-                    msg_del = string.Format(@"Lỗi:Đơn hàng ""{0}"" đã tạo phiếu giảm hạn ngạch.", object_.sochungtu);
-                    msg += msg_del + "<br>";
-                }
-                else
-                {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_.c_danhsachdathang_id);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
 
-                    string str = VNN_VariablePublic.connectString_Anco(db);
-                    SqlConnection cnn = new SqlConnection(str);
-                    SqlCommand cmd = new SqlCommand(@"select * from c_dongdsdh where c_danhsachdathang_id = '" + object_.c_danhsachdathang_id + "'", cnn);
-                    DataTable dt = new DataTable();
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    //disable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                    cmd = new SqlCommand(@"
-						ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateGoiHDLH
-						ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateSLDaDatTrenPO
-						", cnn);
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
-                    //update c_danhsachdathang
-                    cmd = new SqlCommand(@"
-						update c_danhsachdathang set trangthai = 'CHUAGUI' where c_danhsachdathang_id = '" + object_.c_danhsachdathang_id + "'"
-                    , cnn);
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
-                    //enable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                    cmd = new SqlCommand(@"
-						ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateGoiHDLH
-						ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateSLDaDatTrenPO
-						", cnn);
-                    cmd.Connection.Open();
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
+                if (msg.Length <= 0)
+                {
+                    db.SaveChanges();
+                    var item = new Dictionary<string, object>();
+                    item["result"] = id;
+                    item["trangthai"] = "CHUAGUI";
+                    msg = VNN_VariablePublic.GetModule(
+                        VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
+                        item
+                    );
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
-            {
-                msg = "true#Xóa thành công.";
-            }
-            else
-            {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
+            catch (Exception ex)
             {
                 msg = "false#Lỗi: " + ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"true#");
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

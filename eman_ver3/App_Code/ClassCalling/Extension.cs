@@ -124,4 +124,21 @@ public static class Extension
             value = tygia.chia_cho.GetValueOrDefault(0);
         return value;
     }
+
+    public static DateTime? ToDateTime(this object timestamp)
+    {
+        string a = timestamp + "";
+        if (string.IsNullOrEmpty(a))
+        {
+            return null;
+        }
+        else
+        {
+            a = a.Replace("/Date(", "");
+            a = a.Split(' ')[0];
+            double b = double.Parse(a);
+            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return origin.AddMilliseconds(b).ToLocalTime();
+        }
+    }
 }

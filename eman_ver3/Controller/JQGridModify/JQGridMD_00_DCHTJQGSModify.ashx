@@ -53,7 +53,7 @@ System.Web.SessionState.IRequiresSessionState
         string[] vnn = id.Split(',');
         try
         {
-            if (vnn.Count() < -1)
+            if (vnn.Count() > 1)
             {
                 msg = "<div style='color:red'>Lỗi:Chỉ được chọn 1 phiếu đối chiếu hàng tồn.</div>";
             }
@@ -1088,105 +1088,72 @@ System.Web.SessionState.IRequiresSessionState
         EntityContext db = new EntityContext();
         string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string str = VNN_VariablePublic.connectString_Anco(db);
-            SqlConnection cnn = new SqlConnection(str);
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                var object_ = db.c_doichieuhangton.Where(p => p.c_doichieuhangton_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                int count = context.Request.Form["id"].Split(',').Count();
+                string[] id_del = new string[count];
+                id_del = context.Request.Form["id"].Split(',');
+                for (int i = 0; i < count; i++)
                 {
-                    msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.kehoach != null & object_.kehoach != "" & object_.kehoach != " ")
-                {
-                    msg_del = "Lỗi dòng: " + i + ": Đã lập kế hoạch đặt hàng, không thể xóa.";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.phieuhangton != null & object_.phieuhangton != "" & object_.phieuhangton != " ")
-                {
-                    msg_del = "Lỗi dòng: " + i + ": Đã lập phiếu lấy hàng tồn, không thể xóa.";
-                    msg += msg_del + "\n";
-                }
-
-                if (msg_del.Length <= 0)
-                {
-                    var dsdh = db.c_danhsachdathang.
-                            Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Take(1).FirstOrDefault();
-                    dsdh.md_trangthai_id = "HIEULUC";
-                    db.c_doichieuhangton.Remove(object_);
-                    db.SaveChanges();
-                    if (dsdh.anco_check == false)
+                    msg_del = ""; var id_del_ = id_del[i];
+                    var object_ = db.c_doichieuhangton.Where(p => p.c_doichieuhangton_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
                     {
+                        msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.kehoach != null & object_.kehoach != "" & object_.kehoach != " ")
+                    {
+                        msg_del = "Lỗi dòng: " + i + ": Đã lập kế hoạch đặt hàng, không thể xóa.";
+                        msg += msg_del + "\n";
+                    }
+                    else if (object_.phieuhangton != null & object_.phieuhangton != "" & object_.phieuhangton != " ")
+                    {
+                        msg_del = "Lỗi dòng: " + i + ": Đã lập phiếu lấy hàng tồn, không thể xóa.";
+                        msg += msg_del + "\n";
+                    }
+
+                    if (msg_del.Length <= 0)
+                    {
+                        var dsdh = db.c_danhsachdathang.
+                                Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Take(1).FirstOrDefault();
+                        dsdh.md_trangthai_id = "HIEULUC";
+                        db.c_doichieuhangton.Remove(object_);
+                        db.SaveChanges();
                         dsdh.trangthai = "SOANTHAO";
-                    }
-                    else if (dsdh.anco_check == true)
-                    {
-                        dsdh.trangthai = "DANHAN";
-                        //disable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                        SqlCommand cmd = new SqlCommand(@"
-						ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateGoiHDLH
-						ALTER TABLE c_danhsachdathang DISABLE TRIGGER updateSLDaDatTrenPO
-						", cnn);
-                        cmd.Connection.Open();
-                        cmd.ExecuteNonQuery();
-                        cmd.Connection.Close();
-                        //update c_danhsachdathang
-                        cmd = new SqlCommand(@"
-						update c_danhsachdathang set trangthai = 'DANHAN' where c_danhsachdathang_id = '" + dsdh.c_danhsachdathang_id + "'"
-                        , cnn);
-                        cmd.Connection.Open();
-                        cmd.ExecuteNonQuery();
-                        cmd.Connection.Close();
-                        //enable 2 procedure updateGoiHDLH va updateSLDaDatTrenPO
-                        cmd = new SqlCommand(@"
-						ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateGoiHDLH
-						ALTER TABLE c_danhsachdathang ENABLE TRIGGER updateSLDaDatTrenPO
-						", cnn);
-                        cmd.Connection.Open();
-                        cmd.ExecuteNonQuery();
-                        cmd.Connection.Close();
-                    }
 
-                    foreach(var nangluc in db.c_danhsachdathang_nangluc.
-                            Where(s=>s.c_danhsachdathang_id == object_.c_danhsachdathang_id).ToList())
-                    {
-                        var dongNL = db.md_nangluc.
-                                Where(s => s.nam == nangluc.thoigianyeucau.Value.Year & s.tuan == nangluc.tuanthu & s.hehang == nangluc.dauma).FirstOrDefault();
-                        if (dongNL != null) {
-                            dongNL.soluongdadat -= (decimal)nangluc.CBMdatduoc.GetValueOrDefault(0);
-                            dongNL.soluongconlai = dongNL.nangsuat - dongNL.soluongdadat;
+                        foreach (var nangluc in db.c_danhsachdathang_nangluc.
+                                Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).ToList())
+                        {
+                            var dongNL = db.md_nangluc.
+                                    Where(s => s.nam == nangluc.thoigianyeucau.Value.Year & s.tuan == nangluc.tuanthu & s.hehang == nangluc.dauma).FirstOrDefault();
+                            if (dongNL != null)
+                            {
+                                dongNL.soluongdadat -= (decimal)nangluc.CBMdatduoc.GetValueOrDefault(0);
+                                dongNL.soluongconlai = dongNL.nangsuat - dongNL.soluongdadat;
+                            }
+                            db.c_danhsachdathang_nangluc.Remove(nangluc);
                         }
-                        db.c_danhsachdathang_nangluc.Remove(nangluc);
+                        db.SaveChanges();
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = "false#Lỗi: " + ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
+                msg = string.Format(@"true#");
+                transaction.Commit();
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

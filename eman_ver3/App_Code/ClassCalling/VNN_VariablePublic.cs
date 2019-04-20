@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using ExcelLibrary.SpreadSheet;
 using ExcelLibrary;
 using DataAcess;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text;
+using System.IO;
 
 public class VNN_VariablePublic
 {
@@ -18,8 +22,8 @@ public class VNN_VariablePublic
     public static bool view_origination = false;
 	public static string format_so = "";
 	public static Worksheet ws = null;
-    
-	public static string[] Module_script()
+    public static string API_AncoTrading = System.Web.Configuration.WebConfigurationManager.AppSettings["API_AncoTrading"];
+    public static string[] Module_script()
     {
         string[] kq = new string[3];
         ADmin_JSON json = new ADmin_JSON();
@@ -148,6 +152,23 @@ public class VNN_VariablePublic
         try { text = text.Replace("<", "0ψ0").Replace(">", "1Ψ1"); }
         catch { }
         return text;
+    }
+
+    public static string GetModule(string link, Dictionary<string, object> jsonData)
+    {
+        var myUri = new Uri(link);
+        string jsonString = JsonConvert.SerializeObject(jsonData);
+        var request = WebRequest.Create(myUri);
+        request.ContentType = "application/x-www-form-urlencoded";
+        request.Method = "POST";
+        string postData = string.Format(@"data={0}", jsonString);
+        Stream reqStream = request.GetRequestStream();
+        byte[] postArray = Encoding.UTF8.GetBytes(postData);
+        reqStream.Write(postArray, 0, postArray.Length);
+        reqStream.Close();
+        var sr = new StreamReader(request.GetResponse().GetResponseStream());
+        string result = sr.ReadToEnd();
+        return result;
     }
 }
 
