@@ -76,8 +76,12 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                         thanhtien = dongiamua * sl_dadat;
                     }
                 }
-                if (dongiamua <= 0)
-                    msg = "false#Bảng giá của đơn mua hàng \"" + dmh.sochungtu + "\" không có giá cho sản phẩm \"" + sp.ma_sanpham + "\".";
+                if (dongiamua <= 0 & 
+                        db.md_doitackinhdoanh.Where(s=>
+                            s.md_doitackinhdoanh_id == dmh.md_doitackinhdoanh_id & 
+                            s.ma_dtkd == "MUA NGOAI").FirstOrDefault() == null
+                )
+                    msg = string.Format(@"false#Bảng giá của đơn mua hàng ""{0}"" không có giá cho sản phẩm ""{1}"".", dmh.sochungtu, sp.ma_sanpham);
                 else if (dongiamua > giachuan)
                     msg = @"false#Giá mua không thể lớn hơn giá chuẩn.";
                 var check = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id & s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();

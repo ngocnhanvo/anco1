@@ -364,8 +364,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 Where(s => s.md_baotrivthh_id == btvtId & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
         if (hsd != null)
             hsd.soluong_dank += dh.sl_nhap;
-        else
-            msg = "Lỗi";
+
         return msg;
     }
 

@@ -109,8 +109,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 			inner join md_xuatban xb on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
 			inner join c_dongdsdh ddsdh on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id 
-			inner join ancotrading.dbo.c_donhang dh on dh.c_donhang_id = dsdh.c_donhang_id
-			inner join ancotrading.dbo.md_doitackinhdoanh dtkd on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
+			inner join md_doitackinhdoanh dtkd on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -121,9 +120,10 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 			from ( 
 				select sum(isnull(A.ttusd,0)) as ttusd, sum(isnull(A.ttvnd,0)) as ttvnd, A.tygia, A.ma_dtkd, A.ten_dtkd 
 				from ( 
-					select (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
+					select 
+                    (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
 					(case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap end)
-					as ttvnd, [dbo].[GET_TyGia](convert(nvarchar,dmh.ngaydonhang, 103)) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd 
+					as ttvnd, dmh.tygiaVND as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd 
 					from 
 					md_nhapkho_ncc_dh nkncc_dh 
 					inner join md_nhapkho_ncc nkncc on nkncc_dh.md_nhapkho_ncc_id = nkncc.md_nhapkho_ncc_id 
@@ -143,7 +143,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 		where 1=1 {3}
 		group by C.ma_khncc, C.ten_khncc 
 		order by C.ma_khncc, C.ten_khncc 
-		",ky_, ntc, "12345", dtkd);
+		", ky_, ntc, "12345", dtkd);
 		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
 		
 		return sql;

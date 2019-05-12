@@ -87,18 +87,16 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
             string id = context.Request.Form["id_parent"];
 			int dem = db.md_vanchuyennoibo_cdvc.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_vanchuyennoibo_id == id).Count();
 			var vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
-			if (vnnb.md_trangthai_id == "HIEULUC") {
+			if (vnnb.md_trangthai_id == "HIEULUC")
                 msg = "false#Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực.";
-            }
-			else if(vnnb.chungtuthamchieu != "") {
+			else if(vnnb.chungtuthamchieu != "")
 				msg = "false#Lỗi:Dòng \"" + vnnb.sochungtu + "\" thừa kế từ PXK \""+ vnnb.chungtuthamchieu +"\", không thể tạo dòng hàng.";
-			}
-			else if(dem > 0) {
+			else if(dem > 0)
 				msg = "false#Lỗi:Mã " + sp.ma_sanpham + " đã tồn tại.";
-			}
-			else if(soluong_dichchuyen <= 0) {
+			else if(soluong_dichchuyen <= 0)
 				msg = "false#Lỗi:Số lượng dịch chuyển phải lớn hơn 0.";
-			}
+            else if(db.md_kho_sanpham.Where(s=>s.md_kho_id == vnnb.tukho & s.md_sanpham_id == sp.md_sanpham_id & s.soluong > 0).Count() <= 0)
+                msg = string.Format(@"false#HHVT ""{0}"" không có trong kho.", ma_sanpham);
 			
 			string loaichuyen = context.Request.Form["loaichuyen"];
 			if(loaichuyen == "VCNB")

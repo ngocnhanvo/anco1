@@ -29,9 +29,16 @@ public partial class PrintControllers_Congno_phaithu_Default : System.Web.UI.Pag
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         DataSet ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<div align='center'><h1>Không có dữ liệu</h1></div>");
+        }
     }
 
     public String CreateSql()
@@ -65,8 +72,7 @@ public partial class PrintControllers_Congno_phaithu_Default : System.Web.UI.Pag
 		inner join c_dongdsdh ddsdh on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 		left join md_sanpham sp on sp.md_sanpham_id = xb_cdh.md_sanpham_id
 		left join md_donvitinhsanpham dvt_sp on dvt_sp.md_donvitinhsanpham_id = xb_cdh.md_donvitinhsanpham_id
-		inner join [ancotrading].[dbo].c_donhang dh on dh.c_donhang_id = dsdh.c_donhang_id
-		inner join [ancotrading].[dbo].md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dh.md_doitackinhdoanh_id 
+		inner join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xb.md_doitackinhdoanh_id 
 		where xb.trangthai = 'HIEULUC' and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id
 		and xb_cdh.sl_daxuat > 0 and xb.ngaychuyen >= convert(datetime,N'{0} 00:00',103) and xb.ngaychuyen <= convert(datetime,N'{1} 23:59',103) {2}
 		group by dtkd.ten_dtkd, xb.sochungtu, xb.ngaychuyen, dsdh.so_po, dsdh.ngaylap, dsdh.nguoi_phutrach,

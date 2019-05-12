@@ -22,7 +22,6 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
         TonKhoGT report = new TonKhoGT();
         String sql = this.CreateSql();
         this.viewReport(report, sql);
-		//Response.Write(sql);
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
@@ -30,10 +29,16 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         DataSet ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
-		
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<div align='center'><h1>Không có dữ liệu</h1></div>");
+        }
     }
 
     public String CreateSql()
@@ -76,14 +81,7 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 							thk.sl_nhaptrongky AS sl_nhaptrongky,
 							thk.sl_xuattrongky AS sl_xuattrongky,
 							isnull((SELECT top 1 isnull(thk.sl_cuoiky, 0) WHERE ky.ngayketthuc = CONVERT(datetime,N'{2}' + N' 23:59',103)), 0) AS sl_cuoiky,
-							(
-								SELECT top 1 cdh.quydoi
-								FROM md_taphopgia thg
-								INNER JOIN md_taphopgia_cdh cdh ON thg.md_taphopgia_id = cdh.md_taphopgia_id
-								WHERE	thg.md_taphopgia_id = '{3}'
-										AND thg.md_trangthai_id = 'HIEULUC' AND thg.hoatdong = 'true'
-										AND sp.md_sanpham_id = cdh.md_sanpham_id
-							) AS gia
+							isnull(sp.giabinhquan, 0) as gia
 							   
 					FROM md_tonghopkho thk
 					LEFT JOIN md_kho kho ON thk.md_kho_id = kho.md_kho_id
@@ -100,7 +98,7 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 			 A.dvt,
 			 A.gia
 		ORDER BY A.ma_sp
-		",kho ,ky.ngaybatdau.Value.ToString("dd/MM/yyyy") ,ky.ngayketthuc.Value.ToString("dd/MM/yyyy"), gia);		
+		", kho ,ky.ngaybatdau.Value.ToString("dd/MM/yyyy") ,ky.ngayketthuc.Value.ToString("dd/MM/yyyy"), gia);		
 		return sql;
     }
 }
@@ -118,7 +116,6 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
     private XRLabel ngay;
     private XRLabel xrLabel4;
     private XRLabel kho;
-    private XRLabel xrLabel2;
     private XRLabel xrLabel1;
     private XRTable xrTable2;
     private XRTableRow xrTableRow2;
@@ -212,7 +209,6 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private void InitializeComponent()
     {
-        string resourceFileName = "rpt_socongnochi.resx";
         DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary2 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary3 = new DevExpress.XtraReports.UI.XRSummary();
@@ -245,7 +241,6 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.ngay = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel4 = new DevExpress.XtraReports.UI.XRLabel();
         this.kho = new DevExpress.XtraReports.UI.XRLabel();
-        this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
         this.ReportFooter = new DevExpress.XtraReports.UI.ReportFooterBand();
         this.xrLabel16 = new DevExpress.XtraReports.UI.XRLabel();
@@ -307,8 +302,8 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTable2
         // 
         this.xrTable2.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable2.LocationFloat = new DevExpress.Utils.PointFloat(1.525879E-05F, 0F);
         this.xrTable2.Name = "xrTable2";
         this.xrTable2.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
@@ -367,7 +362,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "ten_sp")});
         this.ten_sp.Name = "ten_sp";
         this.ten_sp.StylePriority.UseBorders = false;
-        this.ten_sp.Weight = 1.0121394721811687D;
+        this.ten_sp.Weight = 0.969924719093758D;
         // 
         // dvt
         // 
@@ -378,7 +373,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.dvt.StylePriority.UseBorders = false;
         this.dvt.StylePriority.UseTextAlignment = false;
         this.dvt.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.dvt.Weight = 0.131448135012183D;
+        this.dvt.Weight = 0.17366288809959379D;
         // 
         // sl
         // 
@@ -397,7 +392,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         this.gt_sl.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)));
         this.gt_sl.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_sl", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_sl", "{0:#,#0}")});
         this.gt_sl.Name = "gt_sl";
         this.gt_sl.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.gt_sl.StylePriority.UseBorders = false;
@@ -423,7 +418,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         this.gt_nhap.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)));
         this.gt_nhap.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_nhap", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_nhap", "{0:#,#0}")});
         this.gt_nhap.Name = "gt_nhap";
         this.gt_nhap.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.gt_nhap.StylePriority.UseBorders = false;
@@ -449,7 +444,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         this.gt_xuat.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)));
         this.gt_xuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_xuat", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_xuat", "{0:#,#0}")});
         this.gt_xuat.Name = "gt_xuat";
         this.gt_xuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.gt_xuat.StylePriority.UseBorders = false;
@@ -475,7 +470,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         this.gt_cuoi.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)));
         this.gt_cuoi.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_cuoi", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_cuoi", "{0:#,#0}")});
         this.gt_cuoi.Name = "gt_cuoi";
         this.gt_cuoi.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.gt_cuoi.StylePriority.UseBorders = false;
@@ -487,9 +482,9 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // dgbq
         // 
         this.dgbq.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)));
+        | DevExpress.XtraPrinting.BorderSide.Right)));
         this.dgbq.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dgbq", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dgbq", "{0:#,#0}")});
         this.dgbq.Name = "dgbq";
         this.dgbq.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.dgbq.StylePriority.UseBorders = false;
@@ -507,6 +502,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         // BottomMargin
         // 
+        this.BottomMargin.HeightF = 0F;
         this.BottomMargin.Name = "BottomMargin";
         this.BottomMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
         this.BottomMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
@@ -517,7 +513,6 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
             this.ngay,
             this.xrLabel4,
             this.kho,
-            this.xrLabel2,
             this.xrLabel1});
         this.ReportHeader.HeightF = 96.00001F;
         this.ReportHeader.Name = "ReportHeader";
@@ -553,27 +548,14 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.kho.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "kho")});
         this.kho.Font = new System.Drawing.Font("Times New Roman", 11F, System.Drawing.FontStyle.Bold);
-        this.kho.LocationFloat = new DevExpress.Utils.PointFloat(963.2083F, 0F);
+        this.kho.LocationFloat = new DevExpress.Utils.PointFloat(257.9583F, 0F);
         this.kho.Multiline = true;
         this.kho.Name = "kho";
         this.kho.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.kho.SizeF = new System.Drawing.SizeF(186.7917F, 23F);
+        this.kho.SizeF = new System.Drawing.SizeF(892.0419F, 23F);
         this.kho.StylePriority.UseFont = false;
         this.kho.StylePriority.UseTextAlignment = false;
-        this.kho.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        // 
-        // xrLabel2
-        // 
-        this.xrLabel2.Font = new System.Drawing.Font("Times New Roman", 11F, System.Drawing.FontStyle.Bold);
-        this.xrLabel2.LocationFloat = new DevExpress.Utils.PointFloat(872.5833F, 0F);
-        this.xrLabel2.Multiline = true;
-        this.xrLabel2.Name = "xrLabel2";
-        this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel2.SizeF = new System.Drawing.SizeF(90.62494F, 23F);
-        this.xrLabel2.StylePriority.UseFont = false;
-        this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "TÊN KHO:";
-        this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+        this.kho.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
         // 
         // xrLabel1
         // 
@@ -583,7 +565,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel1.SizeF = new System.Drawing.SizeF(248.9583F, 46.95834F);
         this.xrLabel1.StylePriority.UseTextAlignment = false;
-        this.xrLabel1.Text = "CTY TNHH ANCO BINH DUONG\r\nXƯỞNG ANCO 1\r\nMã số thuế  :  3700318266";
+        this.xrLabel1.Text = "CTY TNHH ANCO BINH DUONG\r\nXƯỞNG ANCO 2\r\nMã số thuế  :  3700318266";
         this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
         // ReportFooter
@@ -594,37 +576,44 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel18,
             this.xrLabel19,
             this.xrTable3});
+        this.ReportFooter.HeightF = 100F;
         this.ReportFooter.Name = "ReportFooter";
         // 
         // xrLabel16
         // 
+        this.xrLabel16.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel16.LocationFloat = new DevExpress.Utils.PointFloat(712.5F, 62.74999F);
         this.xrLabel16.Multiline = true;
         this.xrLabel16.Name = "xrLabel16";
         this.xrLabel16.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel16.SizeF = new System.Drawing.SizeF(266F, 23F);
+        this.xrLabel16.StylePriority.UseFont = false;
         this.xrLabel16.StylePriority.UseTextAlignment = false;
         this.xrLabel16.Text = "Ban  Giám đốc\r\n";
         this.xrLabel16.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel17
         // 
+        this.xrLabel17.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel17.LocationFloat = new DevExpress.Utils.PointFloat(437.4998F, 62.74999F);
         this.xrLabel17.Multiline = true;
         this.xrLabel17.Name = "xrLabel17";
         this.xrLabel17.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel17.SizeF = new System.Drawing.SizeF(275.0001F, 23F);
+        this.xrLabel17.StylePriority.UseFont = false;
         this.xrLabel17.StylePriority.UseTextAlignment = false;
         this.xrLabel17.Text = "Kế toán \r\n";
         this.xrLabel17.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel18
         // 
+        this.xrLabel18.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel18.LocationFloat = new DevExpress.Utils.PointFloat(171.4999F, 62.75F);
         this.xrLabel18.Multiline = true;
         this.xrLabel18.Name = "xrLabel18";
         this.xrLabel18.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel18.SizeF = new System.Drawing.SizeF(266F, 23F);
+        this.xrLabel18.StylePriority.UseFont = false;
         this.xrLabel18.StylePriority.UseTextAlignment = false;
         this.xrLabel18.Text = "Người lập\r\n";
         this.xrLabel18.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
@@ -643,8 +632,8 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTable3
         // 
         this.xrTable3.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable3.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
         this.xrTable3.Name = "xrTable3";
         this.xrTable3.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
@@ -675,7 +664,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell11
         // 
         this.xrTableCell11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell11.Name = "xrTableCell11";
         this.xrTableCell11.StylePriority.UseBorders = false;
         this.xrTableCell11.Weight = 0.11965668989540951D;
@@ -683,7 +672,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell14
         // 
         this.xrTableCell14.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell14.Name = "xrTableCell14";
         this.xrTableCell14.StylePriority.UseBorders = false;
         this.xrTableCell14.Weight = 0.38149192509546437D;
@@ -691,16 +680,18 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell15
         // 
         this.xrTableCell15.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrTableCell15.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell15.Name = "xrTableCell15";
         this.xrTableCell15.StylePriority.UseBorders = false;
+        this.xrTableCell15.StylePriority.UseFont = false;
         this.xrTableCell15.Text = "TỔNG CỘNG";
         this.xrTableCell15.Weight = 1.1435877709541535D;
         // 
         // tong_sl
         // 
         this.tong_sl.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_sl.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl")});
         this.tong_sl.Multiline = true;
@@ -718,7 +709,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // tong_gt_sl
         // 
         this.tong_gt_sl.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_gt_sl.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_sl")});
         this.tong_gt_sl.Multiline = true;
@@ -727,7 +718,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.tong_gt_sl.StylePriority.UseBorders = false;
         this.tong_gt_sl.StylePriority.UsePadding = false;
         this.tong_gt_sl.StylePriority.UseTextAlignment = false;
-        xrSummary3.FormatString = "{0:#,#0.00}";
+        xrSummary3.FormatString = "{0:#,#0}";
         xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_gt_sl.Summary = xrSummary3;
         this.tong_gt_sl.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -736,7 +727,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // tong_sl_nhap
         // 
         this.tong_sl_nhap.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_sl_nhap.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl_nhap")});
         this.tong_sl_nhap.Multiline = true;
@@ -754,7 +745,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // tong_gt_nhap
         // 
         this.tong_gt_nhap.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_gt_nhap.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_nhap")});
         this.tong_gt_nhap.Multiline = true;
@@ -763,7 +754,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.tong_gt_nhap.StylePriority.UseBorders = false;
         this.tong_gt_nhap.StylePriority.UsePadding = false;
         this.tong_gt_nhap.StylePriority.UseTextAlignment = false;
-        xrSummary5.FormatString = "{0:#,#0.00}";
+        xrSummary5.FormatString = "{0:#,#0}";
         xrSummary5.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_gt_nhap.Summary = xrSummary5;
         this.tong_gt_nhap.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -773,7 +764,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         this.tong_sl_xuat.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
         this.tong_sl_xuat.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_sl_xuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl_xuat")});
         this.tong_sl_xuat.Multiline = true;
@@ -791,17 +782,19 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         // tong_gt_xuat
         // 
+        this.tong_gt_xuat.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
         this.tong_gt_xuat.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_gt_xuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_xuat")});
         this.tong_gt_xuat.Multiline = true;
         this.tong_gt_xuat.Name = "tong_gt_xuat";
         this.tong_gt_xuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
+        this.tong_gt_xuat.StylePriority.UseBorderDashStyle = false;
         this.tong_gt_xuat.StylePriority.UseBorders = false;
         this.tong_gt_xuat.StylePriority.UsePadding = false;
         this.tong_gt_xuat.StylePriority.UseTextAlignment = false;
-        xrSummary7.FormatString = "{0:#,#0.00}";
+        xrSummary7.FormatString = "{0:#,#0}";
         xrSummary7.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_gt_xuat.Summary = xrSummary7;
         this.tong_gt_xuat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -809,9 +802,8 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // 
         // tong_sl_cuoi
         // 
-        this.tong_sl_cuoi.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.tong_sl_cuoi.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_sl_cuoi.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl_cuoi")});
         this.tong_sl_cuoi.Multiline = true;
@@ -829,7 +821,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // tong_gt_cuoi
         // 
         this.tong_gt_cuoi.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_gt_cuoi.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "gt_cuoi")});
         this.tong_gt_cuoi.Multiline = true;
@@ -838,7 +830,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.tong_gt_cuoi.StylePriority.UseBorders = false;
         this.tong_gt_cuoi.StylePriority.UsePadding = false;
         this.tong_gt_cuoi.StylePriority.UseTextAlignment = false;
-        xrSummary9.FormatString = "{0:#,#0.00}";
+        xrSummary9.FormatString = "{0:#,#0}";
         xrSummary9.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_gt_cuoi.Summary = xrSummary9;
         this.tong_gt_cuoi.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -847,8 +839,8 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // tong_dgbq
         // 
         this.tong_dgbq.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_dgbq.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "dgbq")});
         this.tong_dgbq.Multiline = true;
@@ -857,7 +849,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.tong_dgbq.StylePriority.UseBorders = false;
         this.tong_dgbq.StylePriority.UsePadding = false;
         this.tong_dgbq.StylePriority.UseTextAlignment = false;
-        xrSummary10.FormatString = "{0:#,#0.00}";
+        xrSummary10.FormatString = "{0:#,#0}";
         xrSummary10.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_dgbq.Summary = xrSummary10;
         this.tong_dgbq.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -873,8 +865,8 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTable1
         // 
         this.xrTable1.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable1.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTable1.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
         this.xrTable1.Name = "xrTable1";
@@ -925,7 +917,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell2.StylePriority.UseTextAlignment = false;
         this.xrTableCell2.Text = "Tên VTHH";
         this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell2.Weight = 0.92801013929155773D;
+        this.xrTableCell2.Weight = 0.88930418578253934D;
         // 
         // xrTableCell3
         // 
@@ -937,7 +929,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell3.StylePriority.UseTextAlignment = false;
         this.xrTableCell3.Text = "ĐVT";
         this.xrTableCell3.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell3.Weight = 0.120522122383462D;
+        this.xrTableCell3.Weight = 0.15922807589248042D;
         // 
         // xrTableCell7
         // 
@@ -984,7 +976,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel6.LocationFloat = new DevExpress.Utils.PointFloat(57.99993F, 24.96934F);
         this.xrLabel6.Name = "xrLabel6";
         this.xrLabel6.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel6.SizeF = new System.Drawing.SizeF(92.88202F, 25.03066F);
+        this.xrLabel6.SizeF = new System.Drawing.SizeF(92.88F, 25.03066F);
         this.xrLabel6.StylePriority.UseBorders = false;
         this.xrLabel6.StylePriority.UseTextAlignment = false;
         this.xrLabel6.Text = "GT";
@@ -1146,7 +1138,7 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell8
         // 
         this.xrTableCell8.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)));
+        | DevExpress.XtraPrinting.BorderSide.Right)));
         this.xrTableCell8.Name = "xrTableCell8";
         this.xrTableCell8.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 5, 0, 100F);
         this.xrTableCell8.StylePriority.UseBorders = false;
@@ -1166,11 +1158,11 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
             this.ReportFooter,
             this.PageHeader});
         this.Landscape = true;
-        this.Margins = new System.Drawing.Printing.Margins(9, 10, 0, 100);
+        this.Margins = new System.Drawing.Printing.Margins(9, 10, 0, 0);
         this.PageHeight = 827;
         this.PageWidth = 1169;
         this.PaperKind = System.Drawing.Printing.PaperKind.A4;
-        this.Version = "15.1";
+        this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
@@ -1180,5 +1172,4 @@ public class TonKhoGT : DevExpress.XtraReports.UI.XtraReport
 
     #endregion
 }
-
 

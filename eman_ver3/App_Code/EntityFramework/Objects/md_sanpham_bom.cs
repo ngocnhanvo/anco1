@@ -37,6 +37,12 @@
                         public string md_donvitinhsanpham_id { get; set; }
                 
 						
+                        #region md_sanpham_bom_md_phanxuong_id_wintaFN
+                        
+                        #endregion md_sanpham_bom_md_phanxuong_id_wintaFN
+                        public string md_phanxuong_id { get; set; }
+                
+						
                         #region md_sanpham_bom_md_sanpham_bom_id_wintaFN
                         
                         #endregion md_sanpham_bom_md_sanpham_bom_id_wintaFN
@@ -49,10 +55,22 @@
                         public string md_sanpham_id { get; set; }
                 
 						
+                        #region md_sanpham_bom_md_to_id_wintaFN
+                        
+                        #endregion md_sanpham_bom_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_sanpham_bom_mota_wintaFN
                         
                         #endregion md_sanpham_bom_mota_wintaFN
                         public string mota { get; set; }
+                
+						
+                        #region md_sanpham_bom_ngay_hieuluc_wintaFN
+                        
+                        #endregion md_sanpham_bom_ngay_hieuluc_wintaFN
+                        public DateTime? ngay_hieuluc { get; set; }
                 
 						
                         #region md_sanpham_bom_ngaycapnhat_wintaFN

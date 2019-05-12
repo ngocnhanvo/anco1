@@ -73,6 +73,12 @@
                         public string mota { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_ngay_hethan_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_ngay_hethan_wintaFN
+                        public DateTime? ngay_hethan { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_ngaycapnhat_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_ngaycapnhat_wintaFN

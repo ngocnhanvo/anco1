@@ -81,17 +81,6 @@ public partial class PrintControllers_Congno_tonghop_phaichi_Default : System.We
 			}
 		}
 			
-		/*string sql = string.Format(@"
-		select 
-		(sum(thcn.nocuoiky) + sum(thcn.nocuoiky_usd * thcn.tygia)) as psn,
-		(sum(thcn.cocuoiky) + sum(thcn.cocuoiky_usd * thcn.tygia)) as psc,
-		thcn.ma_dtkd as ma_khncc,
-		thcn.ma_dtkd as ten_khncc
-		from md_tonghopcongno thcn
-		where thcn.md_namtaichinh_ky_id = N'{0}'
-		group by thcn.ma_dtkd
-		order by thcn.ma_dtkd
-		", ky.md_namtaichinh_ky_id);*/
 		string sql = string.Format(@"
 		select sum(C.psn) as psc, sum(C.psc) as psn, sum(C.psn_thue) AS psc_thue ,sum(C.tt_thue) AS tt_thue, C.ma_khncc, C.ten_khncc , 
 				(N'Từ ngày ' + convert(nvarchar,convert(datetime,N'{0}',103), 103) + N' đến ngày ' + convert(nvarchar,convert(datetime,N'{1}',103), 103)) as lbl_tungaydenngay
@@ -108,11 +97,12 @@ public partial class PrintControllers_Congno_tonghop_phaichi_Default : System.We
 			from ( 
 				select sum(isnull(A.ttusd,0)) as ttusd, sum(isnull(A.ttvnd,0)) as ttvnd , sum(isnull(A.thue, 0)) AS thue , A.tygia, A.ma_dtkd, A.ten_dtkd 
 				from ( 
-					select (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
+					select 
+                    (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
 					(case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap end) as ttvnd,
 					(case when thue.giatri = 0 then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap  * thue.giatri / 100 end ) as thue,
 					thue.giatri,
-					[dbo].[GET_TyGia](convert(nvarchar,dmh.ngaydonhang, 103)) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd 
+					isnull(dmh.tygiaVND, 1) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd 
 					from 
 					md_nhapkho_ncc_dh nkncc_dh 
 					inner join md_nhapkho_ncc nkncc on nkncc_dh.md_nhapkho_ncc_id = nkncc.md_nhapkho_ncc_id 
@@ -133,7 +123,7 @@ public partial class PrintControllers_Congno_tonghop_phaichi_Default : System.We
 		where 1=1 {3}
 		group by C.ma_khncc, C.ten_khncc 
 		order by C.ma_khncc, C.ten_khncc 
-		",ky_, ntc, "12345", dtkd);
+		", ky_, ntc, "12345", dtkd);
 		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
 							
 		return sql;
@@ -221,7 +211,6 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private void InitializeComponent()
     {
-        string resourceFileName = "XtraReport1.resx";
         DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary2 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary3 = new DevExpress.XtraReports.UI.XRSummary();
@@ -315,7 +304,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         xrSummary1.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.xrTableCell8.Summary = xrSummary1;
         this.xrTableCell8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell8.Weight = 0.42139990921747278D;
+        this.xrTableCell8.Weight = 0.42086929762207265D;
         // 
         // ma_khncc
         // 
@@ -326,7 +315,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.ma_khncc.StylePriority.UseBorders = false;
         this.ma_khncc.StylePriority.UseTextAlignment = false;
         this.ma_khncc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        this.ma_khncc.Weight = 1.3224447352641613D;
+        this.ma_khncc.Weight = 1.3207718864416653D;
         // 
         // ten_khncc
         // 
@@ -338,13 +327,13 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.ten_khncc.StylePriority.UseTextAlignment = false;
         this.ten_khncc.Text = "01/07/16";
         this.ten_khncc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        this.ten_khncc.Weight = 2.8565515509888053D;
+        this.ten_khncc.Weight = 2.8587550114067013D;
         // 
         // psc
         // 
         this.psc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.psc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0}")});
         this.psc.Name = "psc";
         this.psc.StylePriority.UseBorders = false;
         this.psc.StylePriority.UseTextAlignment = false;
@@ -356,7 +345,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         this.psc_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0}")});
         this.psc_thue.Name = "psc_thue";
         this.psc_thue.StylePriority.UseBorders = false;
         this.psc_thue.StylePriority.UseTextAlignment = false;
@@ -368,7 +357,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.tt_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0}")});
         this.tt_thue.Name = "tt_thue";
         this.tt_thue.StylePriority.UseBorders = false;
         this.tt_thue.StylePriority.UseTextAlignment = false;
@@ -450,7 +439,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.sum_psc.Name = "sum_psc";
         this.sum_psc.StylePriority.UseBorders = false;
         this.sum_psc.StylePriority.UseTextAlignment = false;
-        xrSummary2.FormatString = "{0:#,#0.00}";
+        xrSummary2.FormatString = "{0:#,#0}";
         xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_psc.Summary = xrSummary2;
         this.sum_psc.Text = "sum_psc";
@@ -459,15 +448,15 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // sum_psc_thue
         // 
-        this.sum_psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0.00}")});
         this.sum_psc_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.sum_psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0}")});
         this.sum_psc_thue.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.sum_psc_thue.Name = "sum_psc_thue";
         this.sum_psc_thue.StylePriority.UseBorders = false;
         this.sum_psc_thue.StylePriority.UseFont = false;
         this.sum_psc_thue.StylePriority.UseTextAlignment = false;
-        xrSummary3.FormatString = "{0:#,#.00}";
+        xrSummary3.FormatString = "{0:#,#0}";
         xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_psc_thue.Summary = xrSummary3;
         this.sum_psc_thue.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -475,16 +464,16 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // sum_tt_thue
         // 
-        this.sum_tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0.00}")});
         this.sum_tt_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.sum_tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0}")});
         this.sum_tt_thue.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.sum_tt_thue.Name = "sum_tt_thue";
         this.sum_tt_thue.StylePriority.UseBorders = false;
         this.sum_tt_thue.StylePriority.UseFont = false;
         this.sum_tt_thue.StylePriority.UseTextAlignment = false;
-        xrSummary4.FormatString = "{0:#,#.00}";
+        xrSummary4.FormatString = "{0:#,#}";
         xrSummary4.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_tt_thue.Summary = xrSummary4;
         this.sum_tt_thue.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -492,11 +481,11 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // xrTable4
         // 
-        this.xrTable4.LocationFloat = new DevExpress.Utils.PointFloat(0.0001589457F, 83.8333F);
+        this.xrTable4.LocationFloat = new DevExpress.Utils.PointFloat(0.0001589457F, 83.83331F);
         this.xrTable4.Name = "xrTable4";
         this.xrTable4.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
             this.xrTableRow4});
-        this.xrTable4.SizeF = new System.Drawing.SizeF(819.9998F, 25F);
+        this.xrTable4.SizeF = new System.Drawing.SizeF(819.9997F, 25F);
         this.xrTable4.StylePriority.UseTextAlignment = false;
         this.xrTable4.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
         // 
@@ -517,19 +506,19 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell28.StylePriority.UseTextAlignment = false;
         this.xrTableCell28.Text = "Người lập";
         this.xrTableCell28.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell28.Weight = 1.3249808893747315D;
+        this.xrTableCell28.Weight = 1.1563474655458177D;
         // 
         // xrTableCell29
         // 
         this.xrTableCell29.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell29.Name = "xrTableCell29";
-        this.xrTableCell29.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 20, 0, 0, 100F);
+        this.xrTableCell29.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
         this.xrTableCell29.StylePriority.UseFont = false;
         this.xrTableCell29.StylePriority.UsePadding = false;
         this.xrTableCell29.StylePriority.UseTextAlignment = false;
         this.xrTableCell29.Text = "Kế toán";
-        this.xrTableCell29.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-        this.xrTableCell29.Weight = 1D;
+        this.xrTableCell29.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+        this.xrTableCell29.Weight = 1.1686334238289136D;
         // 
         // xrTableCell30
         // 
@@ -539,7 +528,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell30.StylePriority.UseTextAlignment = false;
         this.xrTableCell30.Text = "Ban giám đốc";
         this.xrTableCell30.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell30.Weight = 1.6898570830825084D;
+        this.xrTableCell30.Weight = 1.1563474509417779D;
         // 
         // xrLabel9
         // 
@@ -625,7 +614,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel2.SizeF = new System.Drawing.SizeF(238.5417F, 19.875F);
         this.xrLabel2.StylePriority.UseFont = false;
         this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "XƯỞNG ANCO 1";
+        this.xrLabel2.Text = "XƯỞNG ANCO 2";
         this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
         // xrLabel4
@@ -713,8 +702,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // xrTableCell3
         // 
-        this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Right)
+        this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell3.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell3.Name = "xrTableCell3";
@@ -727,8 +715,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // xrTableCell13
         // 
-        this.xrTableCell13.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Right)
+        this.xrTableCell13.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell13.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell13.Name = "xrTableCell13";
@@ -766,7 +753,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.PageHeight = 1169;
         this.PageWidth = 827;
         this.PaperKind = System.Drawing.Printing.PaperKind.A4;
-        this.Version = "15.1";
+        this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).EndInit();

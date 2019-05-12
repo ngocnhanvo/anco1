@@ -85,6 +85,7 @@ public partial class PrintControllers_Congno_phaitra_Default : System.Web.UI.Pag
     }
 }
 
+
 /// <summary>
 /// Summary description for rpt_socongnochi
 /// </summary>
@@ -188,14 +189,14 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private void InitializeComponent()
     {
-        string resourceFileName = "rpt_socongnochi.resx";
+        DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary2 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary3 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary4 = new DevExpress.XtraReports.UI.XRSummary();
-        DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         this.Detail = new DevExpress.XtraReports.UI.DetailBand();
         this.xrTable3 = new DevExpress.XtraReports.UI.XRTable();
         this.xrTableRow3 = new DevExpress.XtraReports.UI.XRTableRow();
+        this.xrTableCell21 = new DevExpress.XtraReports.UI.XRTableCell();
         this.cel_sopxk = new DevExpress.XtraReports.UI.XRTableCell();
         this.cel_ngayxk = new DevExpress.XtraReports.UI.XRTableCell();
         this.cel_donhang = new DevExpress.XtraReports.UI.XRTableCell();
@@ -211,6 +212,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.GroupHeader1 = new DevExpress.XtraReports.UI.GroupHeaderBand();
         this.xrTable2 = new DevExpress.XtraReports.UI.XRTable();
         this.xrTableRow2 = new DevExpress.XtraReports.UI.XRTableRow();
+        this.xrTableCell19 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell4 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell5 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell6 = new DevExpress.XtraReports.UI.XRTableCell();
@@ -222,6 +224,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.lbl_tenkh = new DevExpress.XtraReports.UI.XRLabel();
         this.xrTable1 = new DevExpress.XtraReports.UI.XRTable();
         this.xrTableRow1 = new DevExpress.XtraReports.UI.XRTableRow();
+        this.xrTableCell20 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell8 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell15 = new DevExpress.XtraReports.UI.XRTableCell();
         this.xrTableCell9 = new DevExpress.XtraReports.UI.XRTableCell();
@@ -254,9 +257,6 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel4 = new DevExpress.XtraReports.UI.XRLabel();
-        this.xrTableCell19 = new DevExpress.XtraReports.UI.XRTableCell();
-        this.xrTableCell20 = new DevExpress.XtraReports.UI.XRTableCell();
-        this.xrTableCell21 = new DevExpress.XtraReports.UI.XRTableCell();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
@@ -300,6 +300,19 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
             this.cel_thanhtien});
         this.xrTableRow3.Name = "xrTableRow3";
         this.xrTableRow3.Weight = 1D;
+        // 
+        // xrTableCell21
+        // 
+        this.xrTableCell21.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrTableCell21.Name = "xrTableCell21";
+        this.xrTableCell21.StylePriority.UseBorders = false;
+        this.xrTableCell21.StylePriority.UseTextAlignment = false;
+        xrSummary1.Func = DevExpress.XtraReports.UI.SummaryFunc.RecordNumber;
+        xrSummary1.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
+        this.xrTableCell21.Summary = xrSummary1;
+        this.xrTableCell21.Text = "xrTableCell21";
+        this.xrTableCell21.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+        this.xrTableCell21.Weight = 0.338545372128356D;
         // 
         // cel_sopxk
         // 
@@ -411,7 +424,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // cel_thanhtien
         // 
         this.cel_thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.cel_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "cel_thanhtien", "{0:#,#}")});
         this.cel_thanhtien.Name = "cel_thanhtien";
@@ -430,6 +443,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // 
         // BottomMargin
         // 
+        this.BottomMargin.HeightF = 0F;
         this.BottomMargin.Name = "BottomMargin";
         this.BottomMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
         this.BottomMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
@@ -474,10 +488,23 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrTableRow2.Name = "xrTableRow2";
         this.xrTableRow2.Weight = 1D;
         // 
+        // xrTableCell19
+        // 
+        this.xrTableCell19.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrTableCell19.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
+        this.xrTableCell19.Name = "xrTableCell19";
+        this.xrTableCell19.StylePriority.UseBorders = false;
+        this.xrTableCell19.StylePriority.UseFont = false;
+        this.xrTableCell19.StylePriority.UseTextAlignment = false;
+        this.xrTableCell19.Text = "STT";
+        this.xrTableCell19.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
+        this.xrTableCell19.Weight = 0.33854403533020544D;
+        // 
         // xrTableCell4
         // 
         this.xrTableCell4.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell4.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell4.Multiline = true;
         this.xrTableCell4.Name = "xrTableCell4";
@@ -491,7 +518,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell5
         // 
         this.xrTableCell5.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell5.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell5.Name = "xrTableCell5";
         this.xrTableCell5.StylePriority.UseBorders = false;
@@ -564,7 +591,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell3
         // 
         this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)));
+        | DevExpress.XtraPrinting.BorderSide.Right)));
         this.xrTableCell3.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell3.Name = "xrTableCell3";
         this.xrTableCell3.StylePriority.UseBorders = false;
@@ -616,6 +643,13 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrTableRow1.Name = "xrTableRow1";
         this.xrTableRow1.Weight = 1D;
         // 
+        // xrTableCell20
+        // 
+        this.xrTableCell20.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrTableCell20.Name = "xrTableCell20";
+        this.xrTableCell20.StylePriority.UseBorders = false;
+        this.xrTableCell20.Weight = 0.33854546694816723D;
+        // 
         // xrTableCell8
         // 
         this.xrTableCell8.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
@@ -662,14 +696,14 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell17.StylePriority.UseTextAlignment = false;
         this.xrTableCell17.Text = "Ngày";
         this.xrTableCell17.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell17.Weight = 0.68285624773948594D;
+        this.xrTableCell17.Weight = 0.682856930442126D;
         // 
         // xrTableCell10
         // 
         this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell10.Name = "xrTableCell10";
         this.xrTableCell10.StylePriority.UseBorders = false;
-        this.xrTableCell10.Weight = 0.935492789116833D;
+        this.xrTableCell10.Weight = 0.93549210641419289D;
         // 
         // xrTableCell18
         // 
@@ -704,7 +738,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell14
         // 
         this.xrTableCell14.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell14.Name = "xrTableCell14";
         this.xrTableCell14.StylePriority.UseBorders = false;
         this.xrTableCell14.Weight = 1.12249976377464D;
@@ -802,7 +836,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         // sum_thanhtien
         // 
         this.sum_thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.sum_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "cel_thanhtien")});
         this.sum_thanhtien.Name = "sum_thanhtien";
@@ -951,7 +985,7 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel2.SizeF = new System.Drawing.SizeF(238.5417F, 19.875F);
         this.xrLabel2.StylePriority.UseFont = false;
         this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "XƯỞNG ANCO 1";
+        this.xrLabel2.Text = "XƯỞNG ANCO 2";
         this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
         // xrLabel4
@@ -966,39 +1000,6 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel4.Text = "3700318266";
         this.xrLabel4.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
-        // xrTableCell19
-        // 
-        this.xrTableCell19.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrTableCell19.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
-        this.xrTableCell19.Name = "xrTableCell19";
-        this.xrTableCell19.StylePriority.UseBorders = false;
-        this.xrTableCell19.StylePriority.UseFont = false;
-        this.xrTableCell19.StylePriority.UseTextAlignment = false;
-        this.xrTableCell19.Text = "STT";
-        this.xrTableCell19.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
-        this.xrTableCell19.Weight = 0.33854403533020544D;
-        // 
-        // xrTableCell20
-        // 
-        this.xrTableCell20.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrTableCell20.Name = "xrTableCell20";
-        this.xrTableCell20.StylePriority.UseBorders = false;
-        this.xrTableCell20.Weight = 0.33854546694816723D;
-        // 
-        // xrTableCell21
-        // 
-        this.xrTableCell21.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrTableCell21.Name = "xrTableCell21";
-        this.xrTableCell21.StylePriority.UseBorders = false;
-        this.xrTableCell21.StylePriority.UseTextAlignment = false;
-        xrSummary1.Func = DevExpress.XtraReports.UI.SummaryFunc.RecordNumber;
-        xrSummary1.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
-        this.xrTableCell21.Summary = xrSummary1;
-        this.xrTableCell21.Text = "xrTableCell21";
-        this.xrTableCell21.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell21.Weight = 0.338545372128356D;
-        // 
         // rpt_socongnochi
         // 
         this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
@@ -1008,11 +1009,11 @@ public class rpt_socongnochi : DevExpress.XtraReports.UI.XtraReport
             this.GroupHeader1,
             this.ReportFooter,
             this.ReportHeader});
-        this.Margins = new System.Drawing.Printing.Margins(4, 3, 4, 100);
+        this.Margins = new System.Drawing.Printing.Margins(4, 3, 4, 0);
         this.PageHeight = 1169;
         this.PageWidth = 827;
         this.PaperKind = System.Drawing.Printing.PaperKind.A4;
-        this.Version = "12.2";
+        this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();

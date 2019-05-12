@@ -81,13 +81,7 @@ public partial class PrintControllers_ChiPhiBOM_Default : System.Web.UI.Page
 					 sp.ma_sanpham AS ma_vthh,
 					 nknb_cdh.sl_daxuat AS sl,
 					 dvt.ten_dvt AS ten_dvt,
-
-			 (SELECT top 1 bg.quydoi
-			  FROM md_taphopgia gsp
-			  INNER JOIN md_taphopgia_cdh bg ON bg.md_taphopgia_id = gsp.md_taphopgia_id
-			  WHERE gsp.md_taphopgia_id = '{3}'
-				AND gsp.md_trangthai_id = 'HIEULUC'
-				AND sp.md_sanpham_id = bg.md_sanpham_id) AS gia
+                     sp.giabinhquan AS gia
 		   FROM md_xuatkhonb nknb
 		   LEFT JOIN md_xuatkhonb_cdh nknb_cdh ON nknb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
 		   LEFT join md_lenhsanxuat lsx ON nknb.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
@@ -97,7 +91,7 @@ public partial class PrintControllers_ChiPhiBOM_Default : System.Web.UI.Page
 				from md_phanxuong px2 
 				union 
 				select px2.md_phongban_id as md_phanxuong_id, px2.ten_phongban as ten_phanxuong 
-				from md_phongban px2 
+				from ad_department px2 
 		   )px on nknb.xuatden = px.md_phanxuong_id
 		   LEFT join md_sanpham sp ON nknb_cdh.md_sanpham_id = sp.md_sanpham_id
 		   LEFT JOIN md_donvitinhsanpham dvt ON dvt.md_donvitinhsanpham_id = nknb_cdh.md_donvitinhsanpham_id
@@ -113,7 +107,7 @@ public partial class PrintControllers_ChiPhiBOM_Default : System.Web.UI.Page
 			group by sp.ma_sanpham
 			 )
 		ORDER BY A.sct_pnk,A.sodonhang,A.ngaychuyen, A.ma_vthh ASC
-		",tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy"), md_phanxuong_id, gia);
+		", tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy"), md_phanxuong_id, gia);
 		return sql;
     }
 

@@ -528,6 +528,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         string md_phienbangia_id = context.Request.Form["md_phienbangia_id"];
         string md_phienbangia_id2 = md_phienbangia_id;
         string md_doitackinhdoanh_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
+        string khmvtId = "";
         decimal dongiamua = 0;
         try
         {
@@ -540,21 +541,21 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (count <= 0)
+            else if (ma_dtkd == "MUA NGOAI" & md_trangthai_id == "HIEULUC")
             {
-                msg = "false#Lỗi:Đối tượng chưa có mặc hàng cần mua.";
+                msg = "false#Lỗi:Không thể hiệu lực khi đối tác kinh doanh là \"" + ma_dtkd + "\".";
             }
-            else if (object_.tong_tienhang <= 0 & object_.tong_tatca <= 0)
+            else if (count <= 0 & md_trangthai_id == "HIEULUC")
+            {
+                msg = "false#Lỗi:Đối tượng chưa có HHVT cần mua.";
+            }
+            else if (object_.tong_tienhang <= 0 & object_.tong_tatca <= 0 & md_trangthai_id == "HIEULUC")
             {
                 msg = "false#Lỗi:Đối tượng chưa có tổng tiền hàng.";
             }
             else if (md_doitackinhdoanh_id == null)
             {
                 msg = "false#Lỗi:Không tồn tại đối tác kinh doanh \"" + ma_dtkd + "\".";
-            }
-            else if (ma_dtkd == "MUA NGOAI" & md_trangthai_id == "HIEULUC")
-            {
-                msg = "false#Lỗi:Không thể hiệu lực khi đối tác kinh doanh là \"" + ma_dtkd + "\".";
             }
             else if (object_.md_trangthai_id != "SOANTHAO")
             {
@@ -591,6 +592,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
             if (msg.Length <= 0)
             {
+                khmvtId = object_.c_kehoachmuavt_id;
                 md_phienbangia_id2 = object_.md_phienbangia_id;
                 md_banggia bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).Take(1).FirstOrDefault();
                 md_phienbangia pbg = db.md_phienbangia.Where(s => s.md_banggia_id == bg.md_banggia_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
@@ -775,7 +777,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                     VNN_Function.SetFormValue("md_dongtien_id", "VNN_notpost");
                     VNN_Function.Set_DefaultvalueColumn(context, action);
                     VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                    VNN_Function.loaddulieu_Auto(db, ma_module);
+                    db.SaveChanges();
                     msg = "true#Cập nhật thành công.";
                 }
             }
@@ -783,6 +785,20 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         catch (Exception ex)
         {
             msg = "false#" + ex.Message;
+        }
+
+        if(msg.LastIndexOf("false#") <= -1)
+        {
+            if(db.c_kehoachmuavt_cdh.Where(s=>
+                s.c_kehoachmuavt_id == khmvtId &
+                s.sl_conlai < s.sl_duyet
+            ).Count() <= 0)
+            {
+                var kh = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == khmvtId).FirstOrDefault();
+                if (kh != null)
+                    kh.md_trangthai_id = "KETTHUC";
+            }
+            VNN_Function.loaddulieu_Auto(db, ma_module);
         }
         context.Response.Write(msg);
     }

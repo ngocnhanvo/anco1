@@ -42,9 +42,16 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         DataSet ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<div align='center'><h1>Không có dữ liệu</h1></div>");
+        }
     }
 
     public String CreateSql()
@@ -113,9 +120,8 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 			from md_xuatban_cdh xb_cdh  WITH (NOLOCK)
 			inner join md_xuatban xb WITH (NOLOCK) on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh WITH (NOLOCK) on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
-			inner join c_dongdsdh ddsdh WITH (NOLOCK) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-			inner join ancotrading.dbo.c_donhang dh WITH (NOLOCK) on dh.c_donhang_id = dsdh.c_donhang_id				
-			inner join ancotrading.dbo.md_doitackinhdoanh dtkd WITH (NOLOCK) on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id	
+			inner join c_dongdsdh ddsdh WITH (NOLOCK) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id				
+			inner join md_doitackinhdoanh dtkd WITH (NOLOCK) on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id	
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -128,9 +134,10 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 				sum(isnull( (case when A.giatri = 0 then A.ttvnd else A.ttvnd + (A.ttvnd * A.giatri / 100) end) ,0)) as ttvnd,
 				A.tygia, A.ma_dtkd, A.ten_dtkd 
 				from ( 
-					select (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
+					select 
+                    (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
 					(case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap end)
-					as ttvnd, [dbo].[GET_TyGia](convert(nvarchar,dmh.ngaydonhang, 103)) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd, thue.giatri
+					as ttvnd, dmh.tygiaVND as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd, thue.giatri
 					from md_nhapkho_ncc_dh nkncc_dh WITH (NOLOCK)
 					INNER join md_nhapkho_ncc nkncc WITH (NOLOCK) on nkncc_dh.md_nhapkho_ncc_id = nkncc.md_nhapkho_ncc_id
 					INNER join c_donmuahang_cdmh dmh_cdh WITH (NOLOCK) on nkncc.c_donmuahang_id = dmh_cdh.c_donmuahang_id
@@ -168,9 +175,8 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 			from md_xuatban_cdh xb_cdh WITH (NOLOCK)
 			inner join md_xuatban xb WITH (NOLOCK) on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh WITH (NOLOCK) on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
-			inner join c_dongdsdh ddsdh WITH (NOLOCK) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-			inner join ancotrading2018.dbo.c_donhang dh WITH (NOLOCK) on dh.c_donhang_id = dsdh.c_donhang_id				
-			inner join ancotrading2018.dbo.md_doitackinhdoanh dtkd WITH (NOLOCK) on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id	
+			inner join c_dongdsdh ddsdh WITH (NOLOCK) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id				
+			inner join md_doitackinhdoanh dtkd WITH (NOLOCK) on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id	
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -185,7 +191,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 				from ( 
 					select (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
 					(case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap end)
-					as ttvnd, [dbo].[GET_TyGia](convert(nvarchar,dmh.ngaydonhang, 103)) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd, thue.giatri
+					as ttvnd, dmh.tygiaVND as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd, thue.giatri
 					from md_nhapkho_ncc_dh nkncc_dh  WITH (NOLOCK)
 					INNER join md_nhapkho_ncc nkncc WITH (NOLOCK) on nkncc_dh.md_nhapkho_ncc_id = nkncc.md_nhapkho_ncc_id
 					INNER join c_donmuahang_cdmh dmh_cdh WITH (NOLOCK) on nkncc.c_donmuahang_id = dmh_cdh.c_donmuahang_id
@@ -208,7 +214,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
 		group by C.ma_khncc, C.ten_khncc
 		)T
 		order by T.ma_khncc, T.ten_khncc
-		",ky_, ntc, "12345", dtkd);
+		", ky_, ntc, "12345", dtkd);
 		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
 		
 		return sql;
@@ -397,7 +403,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
             // 
             this.psn.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.psn.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psn", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psn", "{0:#,#0}")});
             this.psn.Name = "psn";
             this.psn.StylePriority.UseBorders = false;
             this.psn.StylePriority.UseTextAlignment = false;
@@ -410,7 +416,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
             this.psc.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
                         | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.psc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0}")});
             this.psc.Name = "psc";
             this.psc.StylePriority.UseBorders = false;
             this.psc.StylePriority.UseTextAlignment = false;
@@ -491,7 +497,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
             this.sum_psn.Name = "sum_psc";
             this.sum_psn.StylePriority.UseBorders = false;
             this.sum_psn.StylePriority.UseTextAlignment = false;
-            xrSummary2.FormatString = "{0:#,#0.00}";
+            xrSummary2.FormatString = "{0:#,#0}";
             xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_psn.Summary = xrSummary2;
             this.sum_psn.Text = "[psn]";
@@ -508,7 +514,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
             this.sum_psc.Name = "sum_psc";
             this.sum_psc.StylePriority.UseBorders = false;
             this.sum_psc.StylePriority.UseTextAlignment = false;
-            xrSummary3.FormatString = "{0:#,#0.00}";
+            xrSummary3.FormatString = "{0:#,#0}";
             xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_psc.Summary = xrSummary3;
             this.sum_psc.Text = "sum_psc";
@@ -650,7 +656,7 @@ public partial class PrintControllers_Congno_tonghop_Default : System.Web.UI.Pag
             this.xrLabel2.SizeF = new System.Drawing.SizeF(238.5417F, 19.875F);
             this.xrLabel2.StylePriority.UseFont = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
-            this.xrLabel2.Text = "XƯỞNG ANCO 1";
+            this.xrLabel2.Text = "XƯỞNG ANCO 2";
             this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel4

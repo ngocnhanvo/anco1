@@ -29,9 +29,16 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         DataSet ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<div align='center'><h1>Không có dữ liệu</h1></div>");
+        }
 
     }
 
@@ -42,7 +49,6 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 		string tungay = context.Request.QueryString["tu"];
 		string denngay = context.Request.QueryString["den"];
 		string kho = context.Request.QueryString["kho"];
-		string where_ex = "";
 
 		string sql = string.Format(@"				
 		select sp.ma_sanpham as ma_sp ,kho.ten_kho as kho, 		
@@ -53,9 +59,9 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 		left join md_sanpham sp on thk.md_sanpham_id = sp.md_sanpham_id
 		left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
 		
-		where kho.md_kho_id = '{0}'
+		where kho.md_kho_id = '{0}' and thk.soluong > 0
 		order by sp.ma_sanpham
-		",kho, DateTime.Now.ToString("dd-MM-yyyy"));
+		", kho, DateTime.Now.ToString("dd-MM-yyyy"));
 		return sql;
     }
 }
@@ -72,7 +78,6 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
     private XRLabel ngay;
     private XRLabel xrLabel4;
     private XRLabel kho;
-    private XRLabel xrLabel2;
     private XRLabel xrLabel1;
     private XRTable xrTable2;
     private XRTableRow xrTableRow2;
@@ -135,7 +140,6 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private void InitializeComponent()
     {
-        string resourceFileName = "rpt_socongnochi.resx";
         DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary2 = new DevExpress.XtraReports.UI.XRSummary();
         this.Detail = new DevExpress.XtraReports.UI.DetailBand();
@@ -152,7 +156,6 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         this.ngay = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel4 = new DevExpress.XtraReports.UI.XRLabel();
         this.kho = new DevExpress.XtraReports.UI.XRLabel();
-        this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
         this.ReportFooter = new DevExpress.XtraReports.UI.ReportFooterBand();
         this.xrLabel9 = new DevExpress.XtraReports.UI.XRLabel();
@@ -190,8 +193,8 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTable2
         // 
         this.xrTable2.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable2.Font = new System.Drawing.Font("Times New Roman", 9.75F);
         this.xrTable2.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
         this.xrTable2.Name = "xrTable2";
@@ -260,7 +263,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // sl
         // 
         this.sl.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)));
+        | DevExpress.XtraPrinting.BorderSide.Right)));
         this.sl.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl", "{0:#,#0.00}")});
         this.sl.Name = "sl";
@@ -280,7 +283,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // 
         // BottomMargin
         // 
-        this.BottomMargin.HeightF = 100.2604F;
+        this.BottomMargin.HeightF = 0F;
         this.BottomMargin.Name = "BottomMargin";
         this.BottomMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
         this.BottomMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
@@ -291,7 +294,6 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
             this.ngay,
             this.xrLabel4,
             this.kho,
-            this.xrLabel2,
             this.xrLabel1});
         this.ReportHeader.HeightF = 96F;
         this.ReportHeader.Name = "ReportHeader";
@@ -327,27 +329,14 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         this.kho.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "kho")});
         this.kho.Font = new System.Drawing.Font("Times New Roman", 11F, System.Drawing.FontStyle.Bold);
-        this.kho.LocationFloat = new DevExpress.Utils.PointFloat(631.9447F, 0F);
+        this.kho.LocationFloat = new DevExpress.Utils.PointFloat(248.9583F, 0F);
         this.kho.Multiline = true;
         this.kho.Name = "kho";
         this.kho.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.kho.SizeF = new System.Drawing.SizeF(166.0553F, 35.5F);
+        this.kho.SizeF = new System.Drawing.SizeF(549.0417F, 35.5F);
         this.kho.StylePriority.UseFont = false;
         this.kho.StylePriority.UseTextAlignment = false;
-        this.kho.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        // 
-        // xrLabel2
-        // 
-        this.xrLabel2.Font = new System.Drawing.Font("Times New Roman", 11F, System.Drawing.FontStyle.Bold);
-        this.xrLabel2.LocationFloat = new DevExpress.Utils.PointFloat(548.6113F, 0F);
-        this.xrLabel2.Multiline = true;
-        this.xrLabel2.Name = "xrLabel2";
-        this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel2.SizeF = new System.Drawing.SizeF(83.33337F, 35.5F);
-        this.xrLabel2.StylePriority.UseFont = false;
-        this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "TÊN KHO:";
-        this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+        this.kho.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
         // 
         // xrLabel1
         // 
@@ -357,7 +346,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel1.SizeF = new System.Drawing.SizeF(248.9583F, 46.95834F);
         this.xrLabel1.StylePriority.UseTextAlignment = false;
-        this.xrLabel1.Text = "CTY TNHH ANCO BINH DUONG\r\nXƯỞNG ANCO 1\r\nMã số thuế  :  3700318266";
+        this.xrLabel1.Text = "CTY TNHH ANCO BINH DUONG\r\nXƯỞNG ANCO 2\r\nMã số thuế  :  3700318266";
         this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
         // ReportFooter
@@ -368,37 +357,44 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel7,
             this.xrLabel6,
             this.xrTable3});
+        this.ReportFooter.HeightF = 100F;
         this.ReportFooter.Name = "ReportFooter";
         // 
         // xrLabel9
         // 
+        this.xrLabel9.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(531.9999F, 48F);
         this.xrLabel9.Multiline = true;
         this.xrLabel9.Name = "xrLabel9";
         this.xrLabel9.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel9.SizeF = new System.Drawing.SizeF(266F, 23F);
+        this.xrLabel9.StylePriority.UseFont = false;
         this.xrLabel9.StylePriority.UseTextAlignment = false;
         this.xrLabel9.Text = "Ban  Giám đốc\r\n";
         this.xrLabel9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel8
         // 
+        this.xrLabel8.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel8.LocationFloat = new DevExpress.Utils.PointFloat(266F, 48F);
         this.xrLabel8.Multiline = true;
         this.xrLabel8.Name = "xrLabel8";
         this.xrLabel8.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel8.SizeF = new System.Drawing.SizeF(266F, 23F);
+        this.xrLabel8.StylePriority.UseFont = false;
         this.xrLabel8.StylePriority.UseTextAlignment = false;
         this.xrLabel8.Text = "Kế toán \r\n";
         this.xrLabel8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel7
         // 
+        this.xrLabel7.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(6.35783E-05F, 48F);
         this.xrLabel7.Multiline = true;
         this.xrLabel7.Name = "xrLabel7";
         this.xrLabel7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
         this.xrLabel7.SizeF = new System.Drawing.SizeF(266F, 23F);
+        this.xrLabel7.StylePriority.UseFont = false;
         this.xrLabel7.StylePriority.UseTextAlignment = false;
         this.xrLabel7.Text = "Người lập\r\n";
         this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
@@ -417,8 +413,8 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTable3
         // 
         this.xrTable3.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable3.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
         this.xrTable3.Name = "xrTable3";
         this.xrTable3.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
@@ -443,7 +439,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell7
         // 
         this.xrTableCell7.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell7.Name = "xrTableCell7";
         this.xrTableCell7.StylePriority.UseBorders = false;
         this.xrTableCell7.Weight = 0.18503311113323015D;
@@ -451,7 +447,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell9
         // 
         this.xrTableCell9.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell9.Name = "xrTableCell9";
         this.xrTableCell9.StylePriority.UseBorders = false;
         this.xrTableCell9.Weight = 0.379366223086524D;
@@ -459,7 +455,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell10
         // 
         this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell10.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell10.Name = "xrTableCell10";
         this.xrTableCell10.StylePriority.UseBorders = false;
@@ -470,8 +466,8 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // tong_sl
         // 
         this.tong_sl.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tong_sl.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sl")});
         this.tong_sl.Name = "tong_sl";
@@ -495,8 +491,8 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTable1
         // 
         this.xrTable1.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)
-                    | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Right)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTable1.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTable1.LocationFloat = new DevExpress.Utils.PointFloat(9.934107E-05F, 0F);
         this.xrTable1.Name = "xrTable1";
@@ -556,7 +552,7 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
         // xrTableCell4
         // 
         this.xrTableCell4.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-                    | DevExpress.XtraPrinting.BorderSide.Right)));
+        | DevExpress.XtraPrinting.BorderSide.Right)));
         this.xrTableCell4.Name = "xrTableCell4";
         this.xrTableCell4.StylePriority.UseBorders = false;
         this.xrTableCell4.Text = "SL";
@@ -571,11 +567,11 @@ public class SoTonKho : DevExpress.XtraReports.UI.XtraReport
             this.ReportHeader,
             this.ReportFooter,
             this.PageHeader});
-        this.Margins = new System.Drawing.Printing.Margins(12, 17, 0, 100);
+        this.Margins = new System.Drawing.Printing.Margins(12, 17, 0, 0);
         this.PageHeight = 1169;
         this.PageWidth = 827;
         this.PaperKind = System.Drawing.Printing.PaperKind.A4;
-        this.Version = "15.1";
+        this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();

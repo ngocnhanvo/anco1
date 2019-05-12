@@ -29,9 +29,16 @@ public partial class PrintControllers_Congno_phaitra_Default : System.Web.UI.Pag
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         DataSet ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        if (ds.Tables[0].Rows.Count > 0)
+        {
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<div align='center'><h1>Không có dữ liệu</h1></div>");
+        }
     }
 
     public String CreateSql()

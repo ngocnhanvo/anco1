@@ -287,7 +287,7 @@ System.Web.SessionState.IRequiresSessionState
 
                                 if (sp.nhacungung == null || sp.nhacungung == "" || sp.nhacungung == " ")
                                 {
-                                    var dtkd_ht = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "NCC TONG HOP").FirstOrDefault();
+                                    var dtkd_ht = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "MUA NGOAI").FirstOrDefault();
                                     if (dtkd_ht != null)
                                     {
                                         nhacungung = dtkd_ht.md_doitackinhdoanh_id;
@@ -337,10 +337,10 @@ System.Web.SessionState.IRequiresSessionState
                         {
                             int dem_sl = db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == id_khdh).Count();
                             c_kehoachdathang kh1 = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == id_khdh).FirstOrDefault();
-                            if (dem_sl <= 0)
-                            {
-                                kh1.trangthai = "DAHET";
-                            }
+                            //if (dem_sl <= 0)
+                            //{
+                            //    kh1.trangthai = "DAHET";
+                            //}
                         }
                     }
                 }

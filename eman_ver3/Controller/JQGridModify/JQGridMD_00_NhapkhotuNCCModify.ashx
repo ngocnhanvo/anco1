@@ -68,7 +68,17 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                             msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
                             commit = false;
                         }
-                        else
+                        else if (string.IsNullOrEmpty(px.kho) | px.kho == " ")
+                        {
+                            msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho đến.</div>";
+                        }
+                        else if(px.trangthai == "SOANTHAO")
+                        {
+                            msg_success += string.Format(@"
+                                <div style='color:blue'>Dòng ""{0}"" đã xác nhận thành công</div>
+                            ", px.sochungtu);
+                        }
+                        else if(px.trangthai == "DANHAN")
                         {
                             var check_kho = db.md_nhapkho_ncc_dh.Where(s => s.check_kho == true & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
                             var check_ma = db.md_nhapkho_ncc_dh.Where(s => s.md_sanpham_id != null & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
@@ -78,11 +88,8 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                             foreach (var dh in md_nhapkho_ncc_dhs)
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-                                if (px.kho == null | px.kho == " ")
-                                {
-                                    msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho đến.</div>";
-                                }
-                                else if (dh.sl_nhap > 0)
+
+                                if (dh.sl_nhap > 0)
                                 {
                                     try
                                     {
@@ -105,7 +112,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                                         db.SaveChanges();
 
                                         msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" +
-                                        VNN_VariablePublic.autoRound(soluong_nhap, 4) + "\"</div>";
+                                        soluong_nhap.DropTrailingZeros() + "\"</div>";
                                     }
                                     catch (Exception ex)
                                     {
@@ -115,7 +122,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                             }
                         }
 
-                        if (count_slnhap <= 0)
+                        if (count_slnhap <= 0 & px.trangthai == "DANHAN")
                         {
                             msgDT += "<div style='color:red'>Dòng \"" + px.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
                         }
@@ -123,27 +130,30 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                         if (msgDT.Length <= 0)
                         {
                             msgDT = msg_success + msgDT;
-                            px.trangthai = "HIEULUC";
+                            px.trangthai = px.trangthai == "DANHAN" ? "HIEULUC" : "DANHAN";
                             db.SaveChanges();
 
-                            foreach (var dmh_cdmh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).ToList())
+                            if (px.trangthai == "HIEULUC")
                             {
-                                if (dmh_cdmh.sl_dadat - dmh_cdmh.sl_hanngach > 0)
+                                foreach (var dmh_cdmh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).ToList())
                                 {
-                                    dem_count = 1;
+                                    if (dmh_cdmh.sl_dadat - dmh_cdmh.sl_hanngach > 0)
+                                    {
+                                        dem_count = 1;
+                                    }
                                 }
-                            }
 
-                            var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).FirstOrDefault();
-                            if (dem_count == 0)
-                            {
-                                dmh.md_trangthai_id = "DAXONG";
+                                var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).FirstOrDefault();
+                                if (dem_count == 0)
+                                {
+                                    dmh.md_trangthai_id = "DAXONG";
+                                }
+                                else if (dem_count == 1)
+                                {
+                                    dmh.md_trangthai_id = "CHUAXONG";
+                                }
+                                db.SaveChanges();
                             }
-                            else if (dem_count == 1)
-                            {
-                                dmh.md_trangthai_id = "CHUAXONG";
-                            }
-                            db.SaveChanges();
                         }
                         else
                             commit = false;
@@ -386,7 +396,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.trangthai != "SOANTHAO")
+            else if (!new string[] { "SOANTHAO", "DANHAN"}.Contains(object_.trangthai))
             {
                 msg = "false#Lỗi:Đã nhập kho";
             }

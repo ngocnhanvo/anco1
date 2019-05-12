@@ -98,7 +98,7 @@ public partial class PrintControllers_ChiPhiSX_Default : System.Web.UI.Page
 			from md_phanxuong px2
 			UNION SELECT px2.md_phongban_id AS md_phanxuong_id,
 			px2.ten_phongban AS ten_phanxuong
-			FROM md_phongban px2)px ON nknb.xuatden = px.md_phanxuong_id
+			FROM ad_department px2)px ON nknb.xuatden = px.md_phanxuong_id
 			LEFT join md_sanpham sp ON nknb_cdh.md_sanpham_id = sp.md_sanpham_id
 			LEFT JOIN md_donvitinhsanpham dvt ON dvt.md_donvitinhsanpham_id = nknb_cdh.md_donvitinhsanpham_id
 			WHERE nknb.ngaychuyen >= convert(datetime,N'{0} 00:00',103)

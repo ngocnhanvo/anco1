@@ -79,12 +79,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_Default : System.Web.UI.
 		LEFT join md_sanpham sp ON sp.md_sanpham_id = ddhpx_vt.md_sanpham_id
 		LEFT JOIN md_donvitinhsanpham dvt ON dvt.md_donvitinhsanpham_id = ddhpx_vt.md_donvitinhsanpham_id
 		LEFT join md_phanxuong px ON px.md_phanxuong_id = ddhpx.md_phanxuong_id
+        LEFT join c_danhsachdathang dsdh ON dsdh.sochungtu = ddhpx.sctdathang
 		WHERE ddhpx.md_trangthai_id != N'SOANTHAO'
 		{0}
-		AND ddhpx.ngayhoanthanh >= convert(datetime,N'{1} 00:00',103)
-		AND ddhpx.ngayhoanthanh <= convert(datetime,N'{2} 23:59',103)
+		AND dsdh.ngaylap >= convert(datetime,N'{1} 00:00',103)
+		AND dsdh.ngaylap <= convert(datetime,N'{2} 23:59',103)
 		ORDER BY ddhpx.ngayhoanthanh asc, ddhpx.donhang_thamchieu asc, sp.ma_sanpham asc
-		",phanxuong,tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy"));
+		", phanxuong,tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy"));
 		return sql;
     }
 }

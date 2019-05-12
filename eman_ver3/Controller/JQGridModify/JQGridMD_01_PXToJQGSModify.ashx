@@ -9,7 +9,7 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
     public void ProcessRequest (HttpContext context) {
         string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
         {
             case "add":
@@ -34,14 +34,30 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
         try
         {
             string id_parent = context.Request.Form["id_parent"];
+            string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
+            string ma_to = context.Request.Form["ma_to"];
+            string ten_to = context.Request.Form["ten_to"];
+            
+            if(db.md_phanxuong_to.Where(p => p.ma_to == ma_to).Count() > 0)
+            {
+                msg = string.Format(@"false#Lỗi:Mã tổ ""{0}"" đã tồn tại", ma_to);
+            }
+            else if(db.md_phanxuong_to.Where(p => p.ten_to == ten_to & 
+                p.md_phanxuong_id ==id_parent).Count() > 0)
+            {
+                msg = string.Format(@"false#Lỗi:Tên tổ ""{0}"" đã tồn tại", ma_to);
+            }
+
             if (msg.Length <= 0)
             {
                 string action = context.Request.Params["oper"];
                 string[] column_ex = {"md_phanxuong_id"};
                 VNN_Function.SetFormValue("md_phanxuong_id", id_parent);
                 string ten_table = "md_phanxuong_to";
+                VNN_Function.SetFormValue("sapxep", sapxep);
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", id_parent, "ma_to", ma_to, null);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Thêm thành công." + "#" + id_new;
             }
@@ -58,22 +74,37 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string ma_to = context.Request.Form["ma_to"];
+        string ten_to = context.Request.Form["ten_to"];
         try
         {
             string id = context.Request.Form["id"];
-            string object_ = db.md_phanxuong_to.Where(p => p.md_to_id == id).Select(s => s.md_to_id).Take(1).FirstOrDefault();
+            var object_ = db.md_phanxuong_to.Where(p => p.md_to_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            
+            else if(db.md_phanxuong_to.Where(p => p.ma_to == ma_to & p.md_to_id != object_.md_to_id).Count() > 0)
+            {
+                msg = string.Format(@"false#Lỗi:Mã tổ ""{0}"" đã tồn tại", ma_to);
+            }
+            else if(db.md_phanxuong_to.Where(p => p.ten_to == ten_to & 
+                p.md_phanxuong_id == object_.md_phanxuong_id & 
+                p.md_to_id != object_.md_to_id).Count() > 0)
+            {
+                msg = string.Format(@"false#Lỗi:Tên tổ ""{0}"" đã tồn tại", ma_to);
+            }
+
             if (msg.Length <= 0)
             {
+                string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
                 string action = "edit";
                 string[] column_ex = { };
                 string ten_table = "md_phanxuong_to";
+                VNN_Function.SetFormValue("sapxep", sapxep);
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", object_.md_phanxuong_id, "ma_to", ma_to, null);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }
@@ -98,7 +129,7 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
+                msg_del = ""; var id_del_ = id_del[i];
                 string object_ = db.md_phanxuong_to.Where(p => p.md_to_id == id_del_).Select(s => s.md_to_id).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {

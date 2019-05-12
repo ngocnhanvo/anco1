@@ -244,39 +244,44 @@ public class JQGridMD_01_DHNCCJQGSModify : IHttpHandler, System.Web.SessionState
                 dem_sct++;
                 string sochungtu = VNN_VariablePublic.sochungtu(db, "DMH", dem_sct);
                 //Kiem tra bang gia
-                var bg = db.md_banggia.Where(s => s.md_banggia_id == dhncc.banggia).Take(1).FirstOrDefault();
+                string ma_dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dhncc.md_doitackinhdoanh_id).Select(s => s.ma_dtkd).FirstOrDefault();
+                md_banggia bg = null;
                 md_phienbangia pbg = null;
                 int gia = 0;
-                //Kiem tra tap hop gia
                 var thg = db.md_taphopgia.Where(s => s.hoatdong == true).OrderByDescending(s => s.nam).OrderByDescending(s => s.soky).Take(1).FirstOrDefault();
-                if (bg != null)
+                if (ma_dtkd != "MUA NGOAI")
                 {
-                    pbg = db.md_phienbangia.Where(s => s.md_banggia_id == dhncc.banggia & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
-                    if(pbg != null)
-                        gia = db.md_giasanpham.Where(s => s.md_phienbangia_id == pbg.md_phienbangia_id).Count();
-                }
-
-                if (thg != null & gia == 0)
-                {
-                    gia = db.md_taphopgia_cdh.Where(s => s.md_taphopgia_id == thg.md_taphopgia_id).Count();
-                }
-
-                if (bg == null & gia <= 0)
-                {
-                    if (bg == null)
+                    bg = db.md_banggia.Where(s => s.md_banggia_id == dhncc.banggia).Take(1).FirstOrDefault();
+                    //Kiem tra tap hop gia
+                    if (bg != null)
                     {
-                        msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có bảng giá.</div>";
-                        break;
+                        pbg = db.md_phienbangia.Where(s => s.md_banggia_id == dhncc.banggia & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
+                        if (pbg != null)
+                            gia = db.md_giasanpham.Where(s => s.md_phienbangia_id == pbg.md_phienbangia_id).Count();
                     }
-                    else if (pbg == null)
+
+                    if (thg != null & gia == 0)
                     {
-                        msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có phiên bảng giá.</div>";
-                        break;
+                        gia = db.md_taphopgia_cdh.Where(s => s.md_taphopgia_id == thg.md_taphopgia_id).Count();
                     }
-                    else if (gia <= 0)
+
+                    if (bg == null & gia <= 0)
                     {
-                        msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có giá sản phẩm.</div>";
-                        break;
+                        if (bg == null)
+                        {
+                            msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có bảng giá.</div>";
+                            break;
+                        }
+                        else if (pbg == null)
+                        {
+                            msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có phiên bảng giá.</div>";
+                            break;
+                        }
+                        else if (gia <= 0)
+                        {
+                            msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"" + dtkd.ma_dtkd + "\" không có giá sản phẩm.</div>";
+                            break;
+                        }
                     }
                 }
                 dhncc.chungtu = sochungtu;
@@ -345,42 +350,42 @@ public class JQGridMD_01_DHNCCJQGSModify : IHttpHandler, System.Web.SessionState
                         {
                             if (dtkd.ma_dtkd == "MUA NGOAI")
                             {
-                                var gia_muangoai = (from a in db.md_giasanpham.Where(s => s.md_sanpham_id == cdh_ncc.md_sanpham_id)
-                                                    join b in db.md_phienbangia on a.md_phienbangia_id equals b.md_phienbangia_id
-                                                    join c in db.md_banggia on b.md_banggia_id equals c.md_banggia_id
-                                                    where a.md_sanpham_id == cdh_ncc.md_sanpham_id & c.banggiaban == false
-                                                    select new { a.gia, b.ngay_hieuluc }
-                                                    ).OrderByDescending(s => s.ngay_hieuluc).Take(1);
+                                //                      var gia_muangoai = (from a in db.md_giasanpham.Where(s => s.md_sanpham_id == cdh_ncc.md_sanpham_id)
+                                //                                          join b in db.md_phienbangia on a.md_phienbangia_id equals b.md_phienbangia_id
+                                //                                          join c in db.md_banggia on b.md_banggia_id equals c.md_banggia_id
+                                //                                          where a.md_sanpham_id == cdh_ncc.md_sanpham_id & c.banggiaban == false
+                                //                                          select new { a.gia, b.ngay_hieuluc }
+                                //                                          ).OrderByDescending(s => s.ngay_hieuluc).Take(1);
 
-                                if (gia_muangoai.Count() > 0)
-                                {
-                                    try
-                                    {
-                                        dongiamua = gia_muangoai.FirstOrDefault().gia.Value;
-                                    }
-                                    catch
-                                    {
-                                        dongiamua = 0;
-                                    }
-                                    string sql = string.Format(
-                                    @"insert into md_giasanpham(
-										[md_giasanpham_id]
-									   ,[md_phienbangia_id]
-									   ,[md_sanpham_id]
-									   ,[gia]
-									   ,[nguoitao]
-									   ,[nguoicapnhat]
-									   ,[ngaytao]
-									   ,[ngaycapnhat]
-									   ,[mota]
-									   ,[hoatdong]) values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{4}',getdate(),getdate(),N'',1)",
-                                    Helper.getNewId(), pbg.md_phienbangia_id, cdh_ncc.md_sanpham_id, "" + dongiamua, us.ad_user_id);
-                                    Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql);
-                                }
-                                else
-                                {
-                                    msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"<b>" + dtkd.ma_dtkd + "</b>\" không có giá của sản phẩm \"<b>" + sp.ma_sanpham + "</b>\"</div>";
-                                }
+                                //                      if (gia_muangoai.Count() > 0)
+                                //                      {
+                                //                          try
+                                //                          {
+                                //                              dongiamua = gia_muangoai.FirstOrDefault().gia.Value;
+                                //                          }
+                                //                          catch
+                                //                          {
+                                //                              dongiamua = 0;
+                                //                          }
+                                //                          string sql = string.Format(
+                                //                          @"insert into md_giasanpham(
+                                //[md_giasanpham_id]
+                                //  ,[md_phienbangia_id]
+                                //  ,[md_sanpham_id]
+                                //  ,[gia]
+                                //  ,[nguoitao]
+                                //  ,[nguoicapnhat]
+                                //  ,[ngaytao]
+                                //  ,[ngaycapnhat]
+                                //  ,[mota]
+                                //  ,[hoatdong]) values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{4}',getdate(),getdate(),N'',1)",
+                                //                          Helper.getNewId(), pbg.md_phienbangia_id, cdh_ncc.md_sanpham_id, "" + dongiamua, us.ad_user_id);
+                                //                          Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql);
+                                //                      }
+                                //                      else
+                                //                      {
+                                //                          msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"<b>" + dtkd.ma_dtkd + "</b>\" không có giá của sản phẩm \"<b>" + sp.ma_sanpham + "</b>\"</div>";
+                                //                      }
                             }
                             else
                             {
@@ -390,11 +395,14 @@ public class JQGridMD_01_DHNCCJQGSModify : IHttpHandler, System.Web.SessionState
                     }
                     else
                     {
-                        var thg_cdh = db.md_taphopgia_cdh.Where(s => s.md_taphopgia_id == thg.md_taphopgia_id & s.md_sanpham_id == cdh_ncc.md_sanpham_id).FirstOrDefault();
-                        if(thg_cdh != null)
-                            dongiamua = thg_cdh.gia.Value;
-                        else
-                            msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"<b>" + dtkd.ma_dtkd + "</b>\" không có giá của sản phẩm \"<b>" + sp.ma_sanpham + "</b>\"</div>";
+                        if (ma_dtkd != "MUA NGOAI")
+                        {
+                            var thg_cdh = db.md_taphopgia_cdh.Where(s => s.md_taphopgia_id == thg.md_taphopgia_id & s.md_sanpham_id == cdh_ncc.md_sanpham_id).FirstOrDefault();
+                            if (thg_cdh != null)
+                                dongiamua = thg_cdh.gia.Value;
+                            else
+                                msg += "<div style='color:red'>Lỗi:Nhà cung cấp \"<b>" + dtkd.ma_dtkd + "</b>\" không có giá của sản phẩm \"<b>" + sp.ma_sanpham + "</b>\"</div>";
+                        }
                     }
 
                     var thue_sp = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == sp.md_thue_sanpham_id).FirstOrDefault();

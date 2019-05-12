@@ -51,11 +51,17 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
         string msg = "";
         string sochungtu = "goc";
         string ten_kehoach = context.Request.Form["ten_kh"];
-        DateTime tungay = VNN_Config.setDateTime(context.Request.Form["tungay"]);
-        DateTime denngay = VNN_Config.setDateTime(context.Request.Form["denngay"]);
+        DateTime? tungay = null;
+        DateTime? denngay = null;
 
         foreach (c_yeucaumuavt ycmvt in db.c_yeucaumuavt.Where(s => vnn.Contains(s.c_yeucaumuavt_id)).ToList())
         {
+            if (ycmvt.ngaycan <= tungay | tungay == null)
+                tungay = ycmvt.ngaycan;
+
+            if (ycmvt.ngaycan >= denngay | denngay == null)
+                denngay = ycmvt.ngaycan;
+
             if (ycmvt.md_trangthai_id != "HIEULUC")
             {
                 msg = "<div style='color:red'>Lỗi: Dòng \"" + ycmvt.sochungtu + "\" Chưa hiệu lực.</div>";
@@ -64,6 +70,11 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
             else if (db.c_yeucaumuavt_cdh.Where(s => s.sapxep == null & s.c_yeucaumuavt_id == ycmvt.c_yeucaumuavt_id).Count() <= 0)
             {
                 msg = "<div style='color:red'>Lỗi: Dòng \"" + ycmvt.sochungtu + "\" không thể tạo thêm kế hoạch mua vật tư.</div>";
+                break;
+            }
+            else if (!string.IsNullOrEmpty(ycmvt.c_kehoachmuavt_id) & ycmvt.c_kehoachmuavt_id != " ")
+            {
+                msg = "<div style='color:red'>Lỗi: Dòng \"" + ycmvt.sochungtu + "\" đã tạo kế hoạch mua vật tư.</div>";
                 break;
             }
             else
@@ -304,8 +315,10 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     }
                 }
 
-                if (sct_chung != "")
+                if (sct_chung.LastIndexOf(",") > -1)
                     ycmvt.c_kehoachmuavt_id = sct_chung.Remove(sct_chung.Length - 1);
+                else if (!string.IsNullOrEmpty(sct_chung))
+                    ycmvt.c_kehoachmuavt_id = sct_chung;
                 else
                     ycmvt.c_kehoachmuavt_id = " ";
             }

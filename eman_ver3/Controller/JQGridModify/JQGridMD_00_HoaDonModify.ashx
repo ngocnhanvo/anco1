@@ -258,14 +258,15 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
         string ten_dtkd = context.Request.Form["md_doitackinhdoanh_id"];
         string phieunhapkho = context.Request.Form["phieunhapkho"];
         string[] pnk = phieunhapkho.Split('\n');
-        // try
+        try
         {
             string id = context.Request.Form["id"];
             string md_doitackinhdoanh_id = db.md_doitackinhdoanh.Where(s => s.ten_dtkd == ten_dtkd).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
             string pnk_ = "";
             for(int i = 0; i <= (pnk.Count() - 1); i++)
             {
-                string md_nhapkho_ncc_id = db.md_nhapkho_ncc.Where(s => s.sochungtu == pnk[i]).Select(s => s.md_nhapkho_ncc_id).FirstOrDefault();
+                string pnkI = pnk[i];
+                string md_nhapkho_ncc_id = db.md_nhapkho_ncc.Where(s => s.sochungtu == pnkI).Select(s => s.md_nhapkho_ncc_id).FirstOrDefault();
                 pnk_ += md_nhapkho_ncc_id + ",";
             }
             string[] pnk_id = pnk_.Split(',');
@@ -282,7 +283,7 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
 
                 int m = 0;
                 string donvitinh = "";
-                foreach(md_nhapkho_ncc_dh dh in db.md_nhapkho_ncc_dh.Where(s => pnk_id.Contains(s.md_nhapkho_ncc_id)))
+                foreach(var dh in db.md_nhapkho_ncc_dh.Where(s => pnk_id.Contains(s.md_nhapkho_ncc_id)).ToList())
                 {
                     if(dh != null)
                     {
@@ -291,9 +292,9 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
                                   join c in db.c_donmuahang on b.c_donmuahang_id equals c.c_donmuahang_id
                                   where a.md_nhapkho_ncc_id == dh.md_nhapkho_ncc_id & b.md_sanpham_id == dh.md_sanpham_id
                                   select new { b.dongiamua, b.thue , c.md_dongtien_id };
-                        foreach (var yhm_ in yhm)
+                        foreach (var yhm_ in yhm.ToList())
                         {
-                            md_hoadon_chitiet hd_ct = db.md_hoadon_chitiet.Where(s => s.md_sanpham_id == dh.md_sanpham_id & s.md_hoadon_id == id_new & s.dongiamua == yhm_.dongiamua).Take(1).FirstOrDefault();
+                            var hd_ct = db.md_hoadon_chitiet.Where(s => s.md_sanpham_id == dh.md_sanpham_id & s.md_hoadon_id == id_new & s.dongiamua == yhm_.dongiamua).Take(1).FirstOrDefault();
                             md_hoadon_chitiet chitiet = hd_ct;
 
                             if(hd_ct == null)
@@ -308,7 +309,7 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
                                 try
                                 {
                                     donvitinh = db.md_dongtien.Where(s => s.md_dongtien_id == yhm_.md_dongtien_id).Select(s => s.ma_iso).FirstOrDefault();;
-                                    md_thue_sanpham thue = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == yhm_.thue).FirstOrDefault();
+                                    var thue = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == yhm_.thue).FirstOrDefault();
                                     chitiet.dongiamua = (decimal)yhm_.dongiamua.Value;
                                     chitiet.thanhtien = (decimal)yhm_.dongiamua.Value * dh.sl_danhap;
                                     chitiet.vat = (int)thue.giatri.Value;
@@ -326,7 +327,7 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
                                 try
                                 {
                                     donvitinh = db.md_dongtien.Where(s => s.md_dongtien_id == yhm_.md_dongtien_id).Select(s => s.ma_iso).FirstOrDefault();;
-                                    md_thue_sanpham thue = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == yhm_.thue).FirstOrDefault();
+                                    var thue = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == yhm_.thue).FirstOrDefault();
                                     chitiet.dongiamua = (decimal)yhm_.dongiamua.Value;
                                     chitiet.thanhtien += (decimal)yhm_.dongiamua.Value * dh.sl_danhap;
                                     chitiet.vat = (int)thue.giatri.Value;
@@ -369,7 +370,7 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
                 }
 
                 md_hoadon hd = db.md_hoadon.Where(s => s.md_hoadon_id == id_new).Take(1).FirstOrDefault();
-                foreach(md_hoadon_chitiet dh_c in db.md_hoadon_chitiet.Where(s => id_new == s.md_hoadon_id))
+                foreach(md_hoadon_chitiet dh_c in db.md_hoadon_chitiet.Where(s => id_new == s.md_hoadon_id).ToList())
                 {
                     hd.tong_tienhang += dh_c.thanhtien;
                     hd.tong_vat += dh_c.tong_vat;
@@ -380,9 +381,9 @@ public class JQGridMD_00_HoaDonModify : IHttpHandler, System.Web.SessionState.IR
                 db.SaveChanges();
             }
         }
-        // catch(Exception ex)
+        catch(Exception ex)
         {
-            //msg = "false#" + ex.Message;
+            msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }

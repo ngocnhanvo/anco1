@@ -97,6 +97,12 @@
                         public string sctdathang { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_tinh_ncvt_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_tinh_ncvt_wintaFN
+                        public bool? tinh_ncvt { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_vaitrocapnhat_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_vaitrocapnhat_wintaFN

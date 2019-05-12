@@ -80,18 +80,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 				thang = "0" + denngay.Month;
 			}
 		}
-			
-		/*string sql = string.Format(@"
-		select 
-		(sum(thcn.nocuoiky) + sum(thcn.nocuoiky_usd * thcn.tygia)) as psn,
-		(sum(thcn.cocuoiky) + sum(thcn.cocuoiky_usd * thcn.tygia)) as psc,
-		thcn.ma_dtkd as ma_khncc,
-		thcn.ma_dtkd as ten_khncc
-		from md_tonghopcongno thcn
-		where thcn.md_namtaichinh_ky_id = N'{0}'
-		group by thcn.ma_dtkd
-		order by thcn.ma_dtkd
-		", ky.md_namtaichinh_ky_id);*/
+
 		string sql = string.Format(@"
 		select distinct T.* from (
 		select 	sum(C.psn) as psn, sum(C.psc) as psc, C.ma_khncc, C.ten_khncc , 
@@ -111,8 +100,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 			inner join md_xuatban xb with (nolock) on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh with (nolock) on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
 			inner join c_dongdsdh ddsdh with (nolock) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id 
-			inner join ancotrading.dbo.c_donhang dh with (nolock) on dh.c_donhang_id = dsdh.c_donhang_id
-			inner join ancotrading.dbo.md_doitackinhdoanh dtkd with (nolock) on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
+			inner join md_doitackinhdoanh dtkd with (nolock) on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -138,8 +126,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 			inner join md_xuatban xb with (nolock) on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh with (nolock) on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
 			inner join c_dongdsdh ddsdh with (nolock) on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id 
-			inner join ancotrading2018.dbo.c_donhang dh with (nolock) on dh.c_donhang_id = dsdh.c_donhang_id
-			inner join ancotrading2018.dbo.md_doitackinhdoanh dtkd with (nolock) on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
+			inner join md_doitackinhdoanh dtkd with (nolock) on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -149,7 +136,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 		group by C.ma_khncc, C.ten_khncc 
 		 )T
 		order by T.ma_khncc, T.ten_khncc
-		",ky_, ntc, "12345", dtkd);
+		", ky_, ntc, "12345", dtkd);
 		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
 							
 		return sql;
@@ -343,7 +330,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
             this.psc.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.psc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0}")});
             this.psc.Name = "psc";
             this.psc.StylePriority.UseBorders = false;
             this.psc.StylePriority.UseTextAlignment = false;
@@ -425,7 +412,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
             this.sum_psc.Name = "sum_psc";
             this.sum_psc.StylePriority.UseBorders = false;
             this.sum_psc.StylePriority.UseTextAlignment = false;
-            xrSummary2.FormatString = "{0:#,#0.00}";
+            xrSummary2.FormatString = "{0:#,#0}";
             xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_psc.Summary = xrSummary2;
             this.sum_psc.Text = "sum_psc";
@@ -567,7 +554,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
             this.xrLabel2.SizeF = new System.Drawing.SizeF(238.5417F, 19.875F);
             this.xrLabel2.StylePriority.UseFont = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
-            this.xrLabel2.Text = "XƯỞNG ANCO 1";
+            this.xrLabel2.Text = "XƯỞNG ANCO 2";
             this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel4

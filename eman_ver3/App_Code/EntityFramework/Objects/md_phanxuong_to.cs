@@ -73,6 +73,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_phanxuong_to_sapxep_wintaFN
+                        
+                        #endregion md_phanxuong_to_sapxep_wintaFN
+                        public string sapxep { get; set; }
+                
+						
                         #region md_phanxuong_to_ten_to_wintaFN
                         
                         #endregion md_phanxuong_to_ten_to_wintaFN

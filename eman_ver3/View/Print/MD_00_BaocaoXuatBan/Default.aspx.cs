@@ -320,7 +320,7 @@ public class XuatBan : DevExpress.XtraReports.UI.XtraReport
             // 
             this.don_gia.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)));
             this.don_gia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "don_gia", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "don_gia", "{0:#,#0}")});
             this.don_gia.Name = "don_gia";
             this.don_gia.StylePriority.UseBorders = false;
             this.don_gia.StylePriority.UseTextAlignment = false;
@@ -332,7 +332,7 @@ public class XuatBan : DevExpress.XtraReports.UI.XtraReport
             this.thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Right)));
             this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0}")});
             this.thanhtien.Name = "thanhtien";
             this.thanhtien.StylePriority.UseBorders = false;
             this.thanhtien.StylePriority.UseTextAlignment = false;
@@ -487,7 +487,7 @@ public class XuatBan : DevExpress.XtraReports.UI.XtraReport
             this.total_thanhtien.StylePriority.UseBorders = false;
             this.total_thanhtien.StylePriority.UsePadding = false;
             this.total_thanhtien.StylePriority.UseTextAlignment = false;
-            xrSummary3.FormatString = "{0:#,#0.00}";
+            xrSummary3.FormatString = "{0:#,#0}";
             xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.total_thanhtien.Summary = xrSummary3;
             this.total_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -622,7 +622,7 @@ public class XuatBan : DevExpress.XtraReports.UI.XtraReport
             this.tong_thanhtien.StylePriority.UseBorders = false;
             this.tong_thanhtien.StylePriority.UsePadding = false;
             this.tong_thanhtien.StylePriority.UseTextAlignment = false;
-            xrSummary5.FormatString = "{0:#,#0.00}";
+            xrSummary5.FormatString = "{0:#,#0}";
             xrSummary5.Running = DevExpress.XtraReports.UI.SummaryRunning.Group;
             this.tong_thanhtien.Summary = xrSummary5;
             this.tong_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;

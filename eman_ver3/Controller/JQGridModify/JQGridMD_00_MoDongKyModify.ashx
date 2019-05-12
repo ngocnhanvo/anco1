@@ -33,164 +33,104 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_MoDongKy(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "";
+        var db = new EntityContext();
+        string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
-        md_modongky mdk = db.md_modongky.Where(s => s.md_modongky_id == id).FirstOrDefault();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        if (mdk == null)
+        var mdk = db.md_modongky.Where(s => s.md_modongky_id == id).FirstOrDefault();
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            msg = "<div style='color:red'>Lỗi: Không tìm thấy đối tượng đã chọn.</div>";
-        }
-        else if (mdk.hieuluc == true)
-        {
-            msg = "<div style='color:red'>Lỗi: Đối tượng đã thực hiện \"" + mdk.ky_hoatdong + "\".</div>";
-        }
-        else
-        {
-            string type = mdk.loai_baocao;
-            if (mdk.ky_hoatdong == "Mở kỳ")
+            try
             {
-                md_namtaichinh_ky kmo = db.md_namtaichinh_ky.Where(s => s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
-                md_namtaichinh_ky kdong = db.md_namtaichinh_ky.Where(p => p.ngayketthuc.Value == kmo.ngaybatdau.Value.AddMinutes(-1)).FirstOrDefault();
-                if(type == "KHO" | type == "") {
-                    moky_Kho(db, us, mdk, kmo, kdong);
+                if (mdk == null)
+                {
+                    msg = "<div style='color:red'>Lỗi: Không tìm thấy đối tượng đã chọn.</div>";
                 }
+                else if (mdk.hieuluc == true)
+                {
+                    msg = string.Format(@"<div style='color:red'>Lỗi: Đối tượng đã thực hiện ""{0}"".</div>", mdk.ky_hoatdong);
+                }
+                else
+                {
+                    string type = mdk.loai_baocao;
+                    if (mdk.ky_hoatdong == "Mở kỳ")
+                    {
+                        var kmo = db.md_namtaichinh_ky.Where(s => s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
+                        var nbd_kt = kmo.ngaybatdau.Value.AddMinutes(-1);
+                        var kdong = db.md_namtaichinh_ky.Where(p => p.ngayketthuc.Value == nbd_kt).FirstOrDefault();
+                        if (type == "KHO" | type == "")
+                        {
+                            moky_Kho(db, us, mdk, kmo, kdong);
+                        }
 
-                if(type == "CNKH" | type == "") {
-                    moky_congnoKH(db, us, mdk, kmo, kdong);
-                }
+                        if (type == "CNKH" | type == "")
+                        {
+                            moky_congnoKH(db, us, mdk, kmo, kdong);
+                        }
 
-                if(type == "CNNCC" | type == "") {
-                    moky_congnoNCC(db, us, mdk, kmo, kdong);
+                        if (type == "CNNCC" | type == "")
+                        {
+                            moky_congnoNCC(db, us, mdk, kmo, kdong);
+                        }
+                        msg_success = string.Format(@"<div style=""color:blue"">Mở kỳ thành công</div>");
+                    }
+                    else
+                    {
+                        var kdong = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
+                        if (type == "KHO" | type == "")
+                        {
+                            msg = dongky_Kho(db, us, mdk, kdong);
+                        }
+
+                        if (type == "CNKH" | type == "")
+                        {
+                            msg = dongky_CNKH(db, us, mdk, kdong);
+                        }
+
+                        if (type == "CNNCC" | type == "")
+                        {
+                            msg = dongky_CNNCC(db, us, mdk, kdong);
+                        }
+                        msg_success = string.Format(@"<div style=""color:blue"">Đóng kỳ thành công</div>");
+                    }
+                    mdk.hieuluc = true;
+                    db.SaveChanges();
                 }
-                mdk.hieuluc = true;
-                msg = "<div style='color:blue'>Mở kỳ thành công: " + msg + ".</div>";
+            }
+            catch(Exception ex)
+            {
+                msg = string.Format(@"<div style='color:red'>Lỗi: {0}</div>", ex.Message);
+            }
+
+            if (msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = msg_success;
             }
             else
-            {
-                md_namtaichinh_ky kdong = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
-                if(type == "KHO" | type == "") {
-                    msg = dongky_Kho(db, us, mdk, kdong);
-                }
-
-                if(type == "CNKH" | type == "") {
-                    msg = dongky_CNKH(db, us, mdk, kdong);
-                }
-
-                if(type == "CNNCC" | type == "") {
-                    msg = dongky_CNNCC(db, us, mdk, kdong);
-                }
-                if(!msg.Contains("color:red"))
-                    mdk.hieuluc = true;
-            }
-            db.SaveChanges();
-            context.Response.Write(msg);
+                transaction.Rollback();
         }
+        context.Response.Write(msg);
     }
     //Mo ky
-    public string moky_Kho(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kmo, md_namtaichinh_ky kdong)
+    public void moky_Kho(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kmo, md_namtaichinh_ky kdong)
     {
-        string md_namtaichinh_id = "";
-        if(kdong != null)
-            md_namtaichinh_id = kdong.md_namtaichinh_ky_id;
-        /*string sql = string.Format(@"select a.md_sanpham_id, a.md_kho_id, a.md_donvitinhsanpham_id, c.ma_sanpham,
-		isnull((
-			select sl_cuoiky from md_tonghopkho 
-			where md_kho_id = a.md_kho_id 
-			and	md_sanpham_id = a.md_sanpham_id
-			and	md_namtaichinh_ky_id = N'{1}'
-		),0) as sl_cuoiky
-		from md_kho_giaodich a
-		inner join md_kho_sanpham b on a.md_sanpham_id = b.md_sanpham_id
-		inner join md_sanpham c on a.md_sanpham_id = c.md_sanpham_id
-		where 
-		a.ngaychuyen <= convert(datetime,N'{0} 23:59',103)
-		and a.md_kho_id = b.md_kho_id
-		group by a.md_kho_id, a.md_sanpham_id, a.md_donvitinhsanpham_id, c.ma_sanpham", 
-		kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), md_namtaichinh_id);
-		
-		
-		DataTable dt_kho = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
-		foreach (DataRow row in dt_kho.Rows)
-		{
-			decimal sl_dauky = 0, sl_nhaptrongky = 0, sl_xuattrongky = 0, sl_cuoiky = 0;
-			string md_sanpham_id = row[0].ToString(), md_kho_id = row[1].ToString(), md_donvitinhsanpham_id = row[2].ToString(), ma_sanpham = row[3].ToString();
-			sl_dauky = decimal.Parse(row[4].ToString());
-			sl_cuoiky = sl_dauky;
-			md_tonghopkho thk_new = new md_tonghopkho {
-				md_tonghopkho_id = Helper.getNewId(),
-				md_namtaichinh_ky_id = kmo.md_namtaichinh_ky_id,
-				md_namtaichinh_id = kmo.md_namtaichinh_id,
-				md_kho_id = md_kho_id,
-				md_sanpham_id = md_sanpham_id,
-				md_donvitinhsanpham_id = md_donvitinhsanpham_id,
-				ma_sanpham = ma_sanpham,
-				nam = mdk.nam,
-				soky = mdk.ky,
-				sl_dauky = sl_dauky,
-				sl_nhaptrongky = sl_nhaptrongky,
-				sl_xuattrongky = sl_xuattrongky,
-				sl_cuoiky = sl_cuoiky,
-				nguoitao = us.ad_user_id,
-				vaitrotao = us.ad_role_id,
-				bophantao = us.md_phongban_id,
-				value_nguoitao = us.ma_user,
-				value_vaitrotao = us.ten_role,
-				value_bophantao = us.ten_phongban,
-				nguoicapnhat = us.ad_user_id,
-				vaitrocapnhat = us.ad_role_id,
-				bophancapnhat = us.md_phongban_id,
-				value_nguoicapnhat = us.ma_user,
-				value_vaitrocapnhat = us.ten_role,
-				value_bophancapnhat = us.ten_phongban,
-				ngaytao = DateTime.Now,
-				ngaycapnhat = DateTime.Now,
-				mota = ""
-			};
-			db.md_tonghopkho.Add(thk_new);
-		}*/
-
+        string md_namtaichinh_id = kdong != null ? kdong.md_namtaichinh_ky_id : "";
         string sql = string.Format(@"
-		insert into md_tonghopkho(md_tonghopkho_id, md_namtaichinh_ky_id, md_namtaichinh_id, md_kho_id, md_sanpham_id, md_donvitinhsanpham_id,
-		ma_sanpham, nam, soky, sl_dauky, sl_nhaptrongky, sl_xuattrongky, sl_cuoiky, nguoitao, vaitrotao, bophantao, value_nguoitao, 
-		value_vaitrotao, value_bophantao, nguoicapnhat, vaitrocapnhat, bophancapnhat, value_nguoicapnhat, value_vaitrocapnhat, value_bophancapnhat,
-		ngaytao, ngaycapnhat, mota, hoatdong)
-		(
-			select replace(newid(),'-','') as md_tonghopkho_id,
-			N'{2}' as md_namtaichinh_ky_id,
-			N'{3}' as md_namtaichinh_id,
+			select
 			A.md_kho_id as md_kho_id,
 			A.md_sanpham_id as md_sanpham_id, 
 			A.md_donvitinhsanpham_id as md_donvitinhsanpham_id, 
 			A.ma_sanpham as ma_sanpham,
-			N'{4}' as nam,
-			N'{5}' as soky,
 			A.sl_cuoiky as sl_dauky,
 			0 as sl_nhaptrongky,
 			0 as sl_xuattrongky,
-			A.sl_cuoiky as sl_cuoiky,
-			N'{6}' as nguoitao,
-			N'{7}' as vaitrotao,
-			N'{8}' as bophantao,
-			N'{9}' as value_nguoitao,
-			N'{10}' as value_vaitrotao,
-			N'{11}' as value_bophantao,
-			N'{6}' as nguoicapnhat,
-			N'{7}' as vaitrocapnhat,
-			N'{8}' as bophancapnhat,
-			N'{9}' as value_nguoicapnhat,
-			N'{10}' as value_vaitrocapnhat,
-			N'{11}' as value_bophancapnhat,
-			getdate() as ngaytao,
-			getdate() as ngaycapnhat,
-			'' as mota,
-			1 as hoatdong
+			A.sl_cuoiky as sl_cuoiky
 			from (
 				select 
 				a.md_sanpham_id, a.md_kho_id, c.md_donvitinhsanpham_id, c.ma_sanpham,
 				isnull((
-					---- select sum(sl_cuoiky) as sl_cuoiky from md_tonghopkho
 					select top 1 sl_cuoiky as sl_cuoiky from md_tonghopkho with (NOLOCK)
 					where md_kho_id = a.md_kho_id 
 					and	md_sanpham_id = a.md_sanpham_id
@@ -205,33 +145,65 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 				and a.md_kho_id = b.md_kho_id
 				group by a.md_kho_id, a.md_sanpham_id, c.md_donvitinhsanpham_id, c.ma_sanpham
 			)A
-		)
-		", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), md_namtaichinh_id, kmo.md_namtaichinh_ky_id, kmo.md_namtaichinh_id,
-        mdk.nam, mdk.ky, us.ad_user_id, us.ad_role_id, us.md_phongban_id, us.ma_user, us.ten_role, us.ten_phongban);
-
-        Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql);
-        return sql;
+		", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), kmo.md_namtaichinh_ky_id);
+        var dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+        foreach (DataRow row in dt_dtkd.Rows)
+        {
+            var thk = new md_tonghopkho();
+            thk.md_tonghopkho_id = Helper.getNewId();
+            thk.md_namtaichinh_ky_id = kmo.md_namtaichinh_ky_id;
+            thk.md_namtaichinh_id = kmo.md_namtaichinh_id;
+            thk.md_kho_id = row["md_kho_id"] + "";
+            thk.md_sanpham_id = row["md_sanpham_id"] + "";
+            thk.md_donvitinhsanpham_id = row["md_donvitinhsanpham_id"] + "";
+            thk.ma_sanpham = row["ma_sanpham"] + "";
+            thk.nam = mdk.nam;
+            thk.soky = mdk.ky;
+            thk.sl_dauky = row["sl_dauky"] as decimal?;
+            thk.sl_nhaptrongky = row["sl_nhaptrongky"] as decimal?;
+            thk.sl_xuattrongky = row["sl_xuattrongky"] as decimal?;
+            thk.sl_cuoiky = row["sl_cuoiky"] as decimal?;
+            thk.nguoitao = us.ad_user_id;
+            thk.vaitrotao = us.ad_role_id;
+            thk.bophantao = us.md_phongban_id;
+            thk.value_nguoitao = us.ma_user;
+            thk.value_vaitrotao = us.ten_role;
+            thk.value_bophantao = us.ten_phongban;
+            thk.nguoicapnhat = us.ad_user_id;
+            thk.vaitrocapnhat = us.ad_role_id;
+            thk.bophancapnhat = us.md_phongban_id;
+            thk.value_nguoicapnhat = us.ma_user;
+            thk.value_vaitrocapnhat = us.ten_role;
+            thk.value_bophancapnhat = us.ten_phongban;
+            thk.ngaytao = DateTime.Now;
+            thk.ngaycapnhat = DateTime.Now;
+            thk.mota = "";
+            thk.hoatdong = true;
+            db.md_tonghopkho.Add(thk);
+        }
+        db.SaveChanges();
     }
 
     public void moky_congnoKH(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kmo, md_namtaichinh_ky kdong)
     {
-        string sql =string.Format(@"select distinct dtkd.ma_dtkd, dtkd.ten_dtkd
+        string sql =string.Format(@"
+            select distinct dtkd.ma_dtkd, dtkd.ten_dtkd
 					from md_xuatban xb
-					inner join ancotrading.dbo.c_donhang dh on xb.donhang_thamchieu = dh.sochungtu
-					inner join ancotrading.dbo.md_doitackinhdoanh dtkd on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
+					inner join c_danhsachdathang dh on xb.sctdathang = dh.sochungtu
+					inner join md_doitackinhdoanh dtkd on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
 					where xb.ngaychuyen <= convert(datetime,N'{0} 23:59',103) and 
 					dtkd.hoatdong = 1 and xb.trangthai = 'HIEULUC' 
 					", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"));
 
-        DataTable dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
-        DataTable dt_tygia = Mbg.Data.SqlClient.SqlHelper.GetData("select [dbo].[GET_TyGia](N'"+ DateTime.Now.ToString("dd/MM/yyyy") +"')");
+        var dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+        var dt_tygia = Mbg.Data.SqlClient.SqlHelper.GetData("select [dbo].[GET_TyGia](N'"+ DateTime.Now.ToString("dd/MM/yyyy") +"')");
         decimal tygia = decimal.Parse(dt_tygia.Rows[0][0].ToString());
         foreach (DataRow row in dt_dtkd.Rows)
         {
             decimal nodauky = 0, codauky = 0, notrongky = 0, cotrongky = 0, nocuoiky = 0, cocuoiky = 0;
             decimal nodauky_usd = 0, codauky_usd = 0, notrongky_usd = 0, cotrongky_usd = 0, nocuoiky_usd = 0, cocuoiky_usd = 0;
             if(kdong != null) {
-                md_tonghopcongno thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == row[0].ToString() &
+                var thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == row[0].ToString() &
                 s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id & s.iskh == true).FirstOrDefault();
                 if (thk != null) {
                     //Nếu kỳ trước có khách hàng này
@@ -251,7 +223,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 }
             }
 
-            md_tonghopcongno thk_new = new md_tonghopcongno {
+            var thk_new = new md_tonghopcongno {
                 md_tonghopcongno_id = Helper.getNewId(),
                 md_namtaichinh_ky_id = kmo.md_namtaichinh_ky_id,
                 md_namtaichinh_id = kmo.md_namtaichinh_id,
@@ -279,11 +251,12 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             };
             db.md_tonghopcongno.Add(thk_new);
         }
+        db.SaveChanges();
     }
 
     public void moky_congnoNCC(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kmo, md_namtaichinh_ky kdong)
     {
-        string sql =string.Format(@"select distinct dtkd.ma_dtkd, dtkd.ten_dtkd
+        string sql = string.Format(@"select distinct dtkd.ma_dtkd, dtkd.ten_dtkd
 					from md_nhapkho_ncc nkncc
 					inner join c_donmuahang dmh on nkncc.c_donmuahang_id = dmh.c_donmuahang_id
 					inner join md_doitackinhdoanh dtkd on dmh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
@@ -291,14 +264,15 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 					dtkd.hoatdong = 1 and nkncc.trangthai = 'HIEULUC' 
 					", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"));
 
-        DataTable dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+        var dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
         decimal tygia = 0;
         foreach (DataRow row in dt_dtkd.Rows)
         {
             decimal nodauky = 0, codauky = 0, notrongky = 0, cotrongky = 0, nocuoiky = 0, cocuoiky = 0;
             decimal nodauky_usd = 0, codauky_usd = 0, notrongky_usd = 0, cotrongky_usd = 0, nocuoiky_usd = 0, cocuoiky_usd = 0;
             if(kdong != null) {
-                md_tonghopcongno thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == row[0].ToString() &
+                string ma_dtkd = row[0].ToString();
+                var thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == ma_dtkd &
                 s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id & s.isncc == true).FirstOrDefault();
                 if (thk != null) {
                     //Nếu kỳ trước có khách hàng này
@@ -319,12 +293,12 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 }
             }
 
-            md_tonghopcongno thk_new = new md_tonghopcongno {
+            var thk_new = new md_tonghopcongno {
                 md_tonghopcongno_id = Helper.getNewId(),
                 md_namtaichinh_ky_id = kmo.md_namtaichinh_ky_id,
                 md_namtaichinh_id = kmo.md_namtaichinh_id,
-                ma_dtkd = row[0].ToString(),
-                ten_dtkd = row[1].ToString(),
+                ma_dtkd = row[0] + "",
+                ten_dtkd = row[1] + "",
                 nam = mdk.nam,
                 soky = mdk.ky,
                 nodauky = nodauky,
@@ -347,6 +321,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             };
             db.md_tonghopcongno.Add(thk_new);
         }
+        db.SaveChanges();
     }
     /*-----------------------------------------------------------------------------------------------------*/
     //Dong ky
@@ -357,16 +332,6 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
         if(tk == null) {
             msg = "<div style='color:red'>Đóng kỳ thất bại, bạn chưa mở kỳ tháng "+ mdk.ky +" năm "+ mdk.nam +" loại \"Kho\".</div>";
         }
-        /*var kho_ths =(from a in db.md_kho_giaodich
-					  join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-					  where a.ngaychuyen <= kdong.ngayketthuc
-					  select new {b.md_sanpham_id, b.ma_sanpham, b.md_donvitinhsanpham_id}).Distinct();
-		
-		var khosp = from a in db.md_kho_sanpham
-					join b in db.md_kho on a.md_kho_id equals b.md_kho_id
-					join c in kho_th on a.md_sanpham_id equals c.md_sanpham_id
-					where b.hoatdong == true & a.hoatdong == true
-					select new { a.md_kho_id, a.md_sanpham_id, c.ma_sanpham, c.md_donvitinhsanpham_id };*/
 
         string sql = string.Format(@"
 		select 
@@ -395,8 +360,8 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             soluongnhap = decimal.Parse(row[0].ToString());
             soluongxuat = decimal.Parse(row[1].ToString());
             string md_sanpham_id = row[3].ToString(), md_kho_id = row[2].ToString(), md_donvitinhsanpham_id = row[4].ToString(), ma_sanpham = row[5].ToString();
-            md_tonghopkho thk = db.md_tonghopkho.Where(s => s.md_kho_id == md_kho_id & s.md_sanpham_id == md_sanpham_id
-            & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
+            var thk = db.md_tonghopkho.Where(s => s.md_kho_id == md_kho_id & s.md_sanpham_id == md_sanpham_id
+                & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
             if (thk != null)
             {
                 thk.sl_nhaptrongky = soluongnhap;
@@ -405,7 +370,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             }
             else
             {
-                md_tonghopkho thk_new = new md_tonghopkho();
+                var thk_new = new md_tonghopkho();
                 thk_new.md_tonghopkho_id = Helper.getNewId();
                 thk_new.md_namtaichinh_ky_id = kdong.md_namtaichinh_ky_id;
                 thk_new.md_namtaichinh_id = kdong.md_namtaichinh_id;
@@ -439,13 +404,14 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 db.md_tonghopkho.Add(thk_new);
             }
         }
+        db.SaveChanges();
         return msg;
     }
 
     public string dongky_CNKH(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kdong)
     {
-        string msg = "<div style='color:blue'>Đóng kỳ tháng "+ mdk.ky +" năm "+ mdk.nam +" thành công.</div>";
-        md_tonghopcongno tk = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id & s.nam == mdk.nam & s.soky == mdk.ky
+        string msg = "";
+        var tk = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id & s.nam == mdk.nam & s.soky == mdk.ky
         & s.iskh == true).FirstOrDefault();
         if(tk == null) {
             msg = "<div style='color:red'>Đóng kỳ thất bại, bạn chưa mở kỳ tháng "+ mdk.ky +" năm "+ mdk.nam +" loại \"Công nợ khách hàng\".</div>";
@@ -458,8 +424,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 			inner join md_xuatban xb on xb.md_xuatban_id = xb_cdh.md_xuatban_id
 			inner join c_danhsachdathang dsdh on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
 			inner join c_dongdsdh ddsdh on xb.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
-			inner join ancotrading.dbo.c_donhang dh on dh.c_donhang_id = dsdh.c_donhang_id
-			inner join ancotrading.dbo.md_doitackinhdoanh dtkd on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
+			inner join md_doitackinhdoanh dtkd on xb.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
 			where xb.trangthai = 'HIEULUC'
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103)
@@ -468,11 +433,15 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 		group by A.ma_dtkd, A.ten_dtkd
 		", kdong.ngaybatdau.Value.ToString("dd/MM/yyyy"), kdong.ngayketthuc.Value.ToString("dd/MM/yyyy"));
 
-        DataTable dt_slnslx = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+        var dt_slnslx = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
         foreach (DataRow row in dt_slnslx.Rows)
         {
+            string ma_dtkd = row[1].ToString();
             decimal notrongky = 0, cotrongky = decimal.Parse(row[0].ToString());
-            md_tonghopcongno thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == row[1].ToString() & s.iskh == true & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
+            var thk = db.md_tonghopcongno.Where(s =>
+                s.ma_dtkd == ma_dtkd
+                & s.iskh == true
+                & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
 
             if(thk != null) {
                 thk.notrongky = notrongky;
@@ -481,7 +450,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 thk.cocuoiky = cotrongky + thk.codauky;
             }
             else {
-                md_tonghopcongno thk_new = new md_tonghopcongno();
+                var thk_new = new md_tonghopcongno();
                 thk_new.md_tonghopcongno_id = Helper.getNewId();
                 thk_new.md_namtaichinh_ky_id = kdong.md_namtaichinh_ky_id;
                 thk_new.md_namtaichinh_id = kdong.md_namtaichinh_id;
@@ -508,14 +477,18 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 db.md_tonghopcongno.Add(thk_new);
             }
         }
+        db.SaveChanges();
         return msg;
     }
 
     public string dongky_CNNCC(EntityContext db, User_TK us, md_modongky mdk, md_namtaichinh_ky kdong)
     {
-        string msg = "<div style='color:blue'>Đóng kỳ tháng "+ mdk.ky +" năm "+ mdk.nam +" thành công.</div>";
-        md_tonghopcongno tk = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id & s.nam == mdk.nam & s.soky == mdk.ky
-        & s.isncc == true).FirstOrDefault();
+        string msg = "";
+        var tk = db.md_tonghopcongno.Where(s =>
+            s.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id &
+            s.nam == mdk.nam &
+            s.soky == mdk.ky &
+            s.isncc == true).FirstOrDefault();
         if(tk == null) {
             msg = "<div style='color:red'>Đóng kỳ thất bại, bạn chưa mở kỳ tháng "+ mdk.ky +" năm "+ mdk.nam +" loại \"Công nợ khách hàng\".</div>";
         }
@@ -547,12 +520,13 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 		group by A.ma_dtkd, A.ten_dtkd, A.tygia
 		", kdong.ngaybatdau.Value.ToString("dd/MM/yyyy"), kdong.ngayketthuc.Value.ToString("dd/MM/yyyy"));
 
-        DataTable dt_slnslx = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+        var dt_slnslx = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
         foreach (DataRow row in dt_slnslx.Rows)
         {
+            string ma_dtkd = row[3].ToString();
             decimal notrongky_usd = decimal.Parse(row[0].ToString()), notrongky = decimal.Parse(row[1].ToString()), tygia = decimal.Parse(row[2].ToString());
             decimal cotrongky = 0, cotrongky_usd = 0;
-            md_tonghopcongno thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == row[3].ToString() & s.isncc == true & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
+            var thk = db.md_tonghopcongno.Where(s => s.ma_dtkd == ma_dtkd & s.isncc == true & s.md_namtaichinh_ky_id == kdong.md_namtaichinh_ky_id).FirstOrDefault();
 
             if(thk != null) {
                 thk.notrongky = notrongky;
@@ -567,7 +541,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 thk.tygia = tygia;
             }
             else {
-                md_tonghopcongno thk_new = new md_tonghopcongno();
+                var thk_new = new md_tonghopcongno();
                 thk_new.md_tonghopcongno_id = Helper.getNewId();
                 thk_new.md_namtaichinh_ky_id = kdong.md_namtaichinh_ky_id;
                 thk_new.md_namtaichinh_id = kdong.md_namtaichinh_id;
@@ -595,6 +569,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 db.md_tonghopcongno.Add(thk_new);
             }
         }
+        db.SaveChanges();
         return msg;
     }
     /*-----------------------------------------------------------------------------------------------------*/

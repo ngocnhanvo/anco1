@@ -86,7 +86,7 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 				from md_phanxuong px2 
 				union 
 				select px2.md_phongban_id as md_phanxuong_id, px2.ten_phongban as ten_phanxuong 
-				from md_phongban px2 
+				from ad_department px2 
 				)px on nknb.nhaptu = px.md_phanxuong_id
 				LEFT join md_sanpham sp ON nknb_cdh.md_sanpham_id = sp.md_sanpham_id
 				where nknb.ngaychuyen >= convert(datetime,N'{0} 00:00',103)
@@ -101,12 +101,7 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 			FROM
 			(
 				SELECT sp.ma_sanpham AS ma_vthh, nknb_cdh.sl_daxuat AS sl, px.ten_phanxuong , 
-				(SELECT top 1 bg.quydoi
-				FROM md_taphopgia gsp
-				INNER JOIN md_taphopgia_cdh bg ON bg.md_taphopgia_id = gsp.md_taphopgia_id
-				WHERE gsp.md_taphopgia_id = '{3}'
-				AND gsp.md_trangthai_id = 'HIEULUC'
-				AND sp.md_sanpham_id = bg.md_sanpham_id) AS gia
+				sp.giabinhquan AS gia
 				FROM md_xuatkhonb nknb
 				LEFT JOIN md_xuatkhonb_cdh nknb_cdh ON nknb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id  
 				INNER JOIN (
@@ -114,7 +109,7 @@ public partial class PrintControllers_MD_00_BaoCaoXNTon_Default : System.Web.UI.
 				from md_phanxuong px2 
 				union 
 				select px2.md_phongban_id as md_phanxuong_id, px2.ten_phongban as ten_phanxuong 
-				from md_phongban px2 
+				from ad_department px2 
 				)px on nknb.xuatden = px.md_phanxuong_id
 				LEFT join md_sanpham sp ON nknb_cdh.md_sanpham_id = sp.md_sanpham_id
 				WHERE nknb.ngaychuyen >= convert(datetime,N'{0} 00:00',103)

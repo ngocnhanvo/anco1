@@ -177,7 +177,7 @@
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Data\LenhSanXuat.cs">
+    <Compile Include="App_Data\TonKhoSL.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="App_Data\rpPhieuDeNghiVT.cs">
@@ -248,8 +248,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App_Data\LenhSanXuat.resx">
-      <DependentUpon>LenhSanXuat.cs</DependentUpon>
+    <EmbeddedResource Include="App_Data\TonKhoSL.resx">
+      <DependentUpon>TonKhoSL.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="App_Data\rpPhieuDeNghiVT.resx">
       <DependentUpon>rpPhieuDeNghiVT.cs</DependentUpon>

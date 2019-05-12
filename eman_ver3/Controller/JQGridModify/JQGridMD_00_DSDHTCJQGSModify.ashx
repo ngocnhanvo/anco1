@@ -348,8 +348,9 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         }
                         else
                         {
-                            var range = db.c_danhsachdathang_nangluc.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id);
+                            var range = db.c_danhsachdathang_nangluc.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList();
                             db.c_danhsachdathang_nangluc.RemoveRange(range);
+                            db.SaveChanges();
                             foreach (var item in vNNs)
                             {
                                 var nangluc = new c_danhsachdathang_nangluc
@@ -362,9 +363,16 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                                     thoigiandukien = item.ngaydukien,
                                     thoigianyeucau = item.ngayketthuc,
                                     tuanthu = item.tuan,
-                                    danhgia = true
+                                    danhgia = true,
+                                    hoatdong = true,
+                                    ngaycapnhat = DateTime.Now,
+                                    ngaytao = DateTime.Now,
+                                    nguoicapnhat = us.ad_user_id,
+                                    nguoitao = us.ad_user_id,
+                                    mota = ""
                                 };
                                 db.c_danhsachdathang_nangluc.Add(nangluc);
+                                db.SaveChanges();
 
                                 var dongNL = db.md_nangluc.
                                         Where(s => s.nam == item.nam & s.tuan == item.tuan & s.hehang == item.dauma).FirstOrDefault();
@@ -372,6 +380,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                                 {
                                     dongNL.soluongdadat = dongNL.soluongdadat + item.cbmDatDuoc.GetValueOrDefault(0);
                                     dongNL.soluongconlai = dongNL.nangsuat - dongNL.soluongdadat.GetValueOrDefault(0);
+                                     db.SaveChanges();
                                 }
                             }
 
@@ -409,9 +418,9 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                                 hoatdong = true
                             };
                             db.c_doichieuhangton.Add(dc);
-
+                            db.SaveChanges();
                             //tao cac dong don hang
-                            foreach (var ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id))
+                            foreach (var ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
                                 if (sp == null)
@@ -452,6 +461,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                                 };
                                 db.c_doichieuhangton_cddh.Add(cddh);
                             }
+                            db.SaveChanges();
                             if (dsdh.anco_check == true)
                             {
                                 dsdhId.Add(dsdh.c_danhsachdathang_id);
@@ -459,9 +469,9 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                             //dsdh.md_trangthai_id = "DATAO";
                             dsdh.trangthai = "HIEULUC";
                             dsdh.dg_nangluc = true;
+                            db.SaveChanges();
                             msg_success += "<div style='color:blue'>Đơn hàng " + dsdh.sochungtu + " được hiệu lực thành công.</div>";
                         }
-                        db.SaveChanges();
                     }
                 }
             }

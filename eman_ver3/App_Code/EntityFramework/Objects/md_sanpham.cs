@@ -31,6 +31,12 @@
                         public Decimal? dientich { get; set; }
                 
 						
+                        #region md_sanpham_dinhkhoan_wintaFN
+                        
+                        #endregion md_sanpham_dinhkhoan_wintaFN
+                        public int? dinhkhoan { get; set; }
+                
+						
                         #region md_sanpham_dokho_wintaFN
                         
                         #endregion md_sanpham_dokho_wintaFN

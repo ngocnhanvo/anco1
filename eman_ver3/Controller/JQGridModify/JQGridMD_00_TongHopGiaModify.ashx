@@ -407,8 +407,8 @@ public class JQGridMD_00_TongHopGiaModify : IHttpHandler, System.Web.SessionStat
         string msg = "";
         string id = context.Request.Form["id"];
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        EntityContext db = new EntityContext();
-        md_taphopgia thg = db.md_taphopgia.Where(s => s.md_taphopgia_id == id).FirstOrDefault();
+        var db = new EntityContext();
+        var thg = db.md_taphopgia.Where(s => s.md_taphopgia_id == id).FirstOrDefault();
         if (thg == null)
         {
             msg = "<div style='color:red'>Không tìm thấy đối tượng đã chọn</div>";
@@ -419,16 +419,20 @@ public class JQGridMD_00_TongHopGiaModify : IHttpHandler, System.Web.SessionStat
         }
         else
         {
-            md_namtaichinh_ky ntc_ky = db.md_namtaichinh_ky.Where(s => s.md_namtaichinh_id == thg.nam & s.soky == thg.soky).FirstOrDefault();
-            int kytruoc = thg.soky.Value - 1;
-            md_namtaichinh_ky ntc_kytruoc = db.md_namtaichinh_ky.Where(s => s.md_namtaichinh_id == thg.nam & s.soky == kytruoc).FirstOrDefault();
-            string kytruoc_nbd = ntc_ky.ngaybatdau.Value.ToString("dd/MM/yyyy"), kytruoc_nkt = ntc_ky.ngayketthuc.Value.ToString("dd/MM/yyyy");
+            string ntcId = db.md_namtaichinh.Where(s => s.giatri + "" == thg.nam).Select(s => s.md_namtaichinh_id).FirstOrDefault();
+            var ntc_ky = db.md_namtaichinh_ky.Where(s => s.md_namtaichinh_id == ntcId & s.soky == thg.soky).FirstOrDefault();
+            var nkt_kytruoc = ntc_ky.ngaybatdau.Value;
+            var ntc_kytruoc = db.md_namtaichinh_ky.Where(s => s.ngayketthuc == nkt_kytruoc).FirstOrDefault();
+            string kytruoc_nbd = ntc_ky.ngaybatdau.Value.ToString("dd/MM/yyyy"),
+                    kytruoc_nkt = ntc_ky.ngayketthuc.Value.ToString("dd/MM/yyyy"),
+                    soky = "0";
             if (ntc_kytruoc != null)
             {
                 kytruoc_nbd = ntc_kytruoc.ngaybatdau.Value.ToString("dd/MM/yyyy");
                 kytruoc_nkt = ntc_kytruoc.ngayketthuc.Value.ToString("dd/MM/yyyy");
+                soky = ntc_kytruoc.soky + "";
             }
-            DataTable dt_tygia = Mbg.Data.SqlClient.SqlHelper.GetData("select [dbo].[GET_TyGia](N'" + DateTime.Now.ToString("dd/MM/yyyy") + "')");
+            var dt_tygia = Mbg.Data.SqlClient.SqlHelper.GetData("select [dbo].[GET_TyGia](N'" + DateTime.Now.ToString("dd/MM/yyyy") + "')");
             string tygia = dt_tygia.Rows[0][0].ToString();
 
             string sql = string.Format(@"
@@ -498,7 +502,6 @@ public class JQGridMD_00_TongHopGiaModify : IHttpHandler, System.Web.SessionStat
 								thg_cdh.mota
 					  FROM      md_taphopgia_cdh thg_cdh
 								INNER JOin md_taphopgia thg ON thg_cdh.md_taphopgia_id = thg.md_taphopgia_id
-
 					  UNION
 					  SELECT    REPLACE(NEWID(), '-', '') ,
 								N'{2}' ,
@@ -537,10 +540,14 @@ public class JQGridMD_00_TongHopGiaModify : IHttpHandler, System.Web.SessionStat
 					  WHERE     thg.soky = {4}
 								AND thg.nam = '{5}'
 					)
-				", ntc_ky.ngaybatdau.Value.ToString("dd/MM/yyyy"), ntc_ky.ngayketthuc.Value.ToString("dd/MM/yyyy"),
-               thg.md_taphopgia_id, tygia, kytruoc + "", thg.nam
+				",
+                ntc_ky.ngaybatdau.Value.ToString("dd/MM/yyyy"),
+                ntc_ky.ngayketthuc.Value.ToString("dd/MM/yyyy"),
+                thg.md_taphopgia_id,
+                tygia,
+                soky,
+                thg.nam
            );
-
             string ex = Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery2(sql);
 
             if (ex == "")

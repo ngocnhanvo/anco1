@@ -55,6 +55,12 @@
                         public string md_donvitinhsanpham_id { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_cdh_md_sanpham_bom_id_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_cdh_md_sanpham_bom_id_wintaFN
+                        public string md_sanpham_bom_id { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_cdh_md_sanpham_id_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_cdh_md_sanpham_id_wintaFN

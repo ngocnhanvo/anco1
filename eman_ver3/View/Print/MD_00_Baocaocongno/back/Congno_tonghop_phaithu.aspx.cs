@@ -18,8 +18,8 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        EntityContext db = new EntityContext();
-        rpt_congnotonghop report = new rpt_congnotonghop();
+        var db = new EntityContext();
+        var report = new rpt_congnotonghop();
         String sql = this.CreateSql();
         this.viewReport(report, sql);
 		//Response.Write(sql);
@@ -80,18 +80,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 				thang = "0" + denngay.Month;
 			}
 		}
-			
-		/*string sql = string.Format(@"
-		select 
-		(sum(thcn.nocuoiky) + sum(thcn.nocuoiky_usd * thcn.tygia)) as psn,
-		(sum(thcn.cocuoiky) + sum(thcn.cocuoiky_usd * thcn.tygia)) as psc,
-		thcn.ma_dtkd as ma_khncc,
-		thcn.ma_dtkd as ten_khncc
-		from md_tonghopcongno thcn
-		where thcn.md_namtaichinh_ky_id = N'{0}'
-		group by thcn.ma_dtkd
-		order by thcn.ma_dtkd
-		", ky.md_namtaichinh_ky_id);*/
+
 		string sql = string.Format(@"
 		select sum(C.psn) as psn, sum(C.psc) as psc, C.ma_khncc, C.ten_khncc ,
 		(N'Từ ngày ' + convert(nvarchar,convert(datetime,N'{0}',103), 103) + N' đến ngày ' + convert(nvarchar,convert(datetime,N'{1}',103), 103)) as lbl_tungaydenngay
@@ -110,8 +99,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 			inner join md_xuatban xb on xb.md_xuatban_id = xb_cdh.md_xuatban_id 
 			inner join c_danhsachdathang dsdh on dsdh.c_danhsachdathang_id = xb.c_danhsachdathang_id
 			inner join c_dongdsdh ddsdh on ddsdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id 
-			inner join ancotrading.dbo.c_donhang dh on dh.c_donhang_id = dsdh.c_donhang_id
-			inner join ancotrading.dbo.md_doitackinhdoanh dtkd on dh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
+			inner join md_doitackinhdoanh dtkd on dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
 			where xb.trangthai = 'HIEULUC' 
 			and ddsdh.md_sanpham_id = xb_cdh.md_sanpham_id 
 			and xb.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
@@ -120,7 +108,7 @@ public partial class PrintControllers_Congno_tonghop_phaithu_Default : System.We
 		where 1=1 {3}
 		group by C.ma_khncc, C.ten_khncc 
 		order by C.ma_khncc, C.ten_khncc 
-		",ky_, ntc, "12345", dtkd);
+		", ky_, ntc, "12345", dtkd);
 		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
 							
 		return sql;

@@ -171,21 +171,33 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         string sochungtu = VNN_VariablePublic.sochungtu(db, "DMH", 1);
         string ma_dtkd = context.Request.Form["md_doitackinhdoanh_id"];
         string md_banggia_id = context.Request.Form["md_banggia_id"];
+        string md_dongtien_id = "";
         string i = "1";
         bool tr = true;
         string ngaydonhang = context.Request.Form["ngaydonhang"];
+        string ngaygiaohang = context.Request.Form["ngaygiaohang"];
+        string sctdathang = context.Request.Form["sctdathang"];
         try
         {
             var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == ma_dtkd).FirstOrDefault();
             var bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).FirstOrDefault();
-            if (bg == null)
-                msg = "false#Không tìm thấy bảng giá";
+            if (bg == null & ma_dtkd != "MUA NGOAI")
+                msg = @"false#Không tìm thấy bảng giá";
             if (dtkd == null)
-                msg = "false#Không tìm thấy đối tác kinh doanh";
+                msg = @"false#Không tìm thấy đối tác kinh doanh";
+            else if (db.c_danhsachdathang.Where(s=>s.sochungtu == sctdathang).FirstOrDefault() == null)
+                msg = @"false#""SCT đơn hàng"" không tồn tại";
+            else if (string.IsNullOrEmpty(ngaydonhang))
+                msg = @"false#""Ngày đơn hàng"" không thể để trống";
+            else if (string.IsNullOrEmpty(ngaygiaohang))
+                msg = @"false#""Ngày giao hàng"" không thể để trống";
             string id = context.Request.Form["id"];
             if (msg.Length <= 0)
             {
-
+                if (ma_dtkd == "MUA NGOAI")
+                    md_dongtien_id = db.md_dongtien.Where(s => s.ma_iso == "VND").Select(s => s.md_dongtien_id).FirstOrDefault();
+                else
+                    md_dongtien_id = bg.md_dongtien_id;
                 string action = "add";
                 string[] column_ex = { "c_kehoachdathang_dhncc_id", "bosung", "md_dongtien_id", "tygiaVND" };
                 string ten_table = "c_donmuahang";
@@ -193,8 +205,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 VNN_Function.SetFormValue("c_kehoachdathang_dhncc_id", i);
                 VNN_Function.SetFormValue("bosung", tr.ToString());
                 VNN_Function.SetFormValue("sochungtu", sochungtu);
-                VNN_Function.SetFormValue("md_dongtien_id", bg.md_dongtien_id);
-                VNN_Function.SetFormValue("tygiaVND", Extension.TyGiaVND(bg.md_dongtien_id, VNN_Config.setDateTime(ngaydonhang), db).ToString());
+                VNN_Function.SetFormValue("md_dongtien_id", md_dongtien_id);
+                VNN_Function.SetFormValue("tygiaVND", Extension.TyGiaVND(md_dongtien_id, VNN_Config.setDateTime(ngaydonhang), db).ToString());
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -232,9 +244,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
+            else if (ma_dtkd == "MUA NGOAI" & md_trangthai_id == "HIEULUC")
+            {
+                msg = string.Format(@"false#Lỗi:Không thể ""Hiệu Lực"" khi đối tác kinh doanh là ""{0}"".", ma_dtkd);
+            }
             else if (count <= 0 & md_trangthai_id == "HIEULUC")
             {
-                msg = "false#Lỗi:Đối tượng chưa có mặc hàng cần mua.";
+                msg = "false#Lỗi:Đối tượng chưa có mặt hàng cần mua.";
             }
             else if (object_.tong_tienhang <= 0 & object_.tong_tatca <= 0 & md_trangthai_id == "HIEULUC")
             {
@@ -243,10 +259,6 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             else if (md_doitackinhdoanh_id == null)
             {
                 msg = "false#Lỗi:Không tồn tại đối tác kinh doanh \"" + ma_dtkd + "\".";
-            }
-            else if (ma_dtkd == "MUA NGOAI" & md_trangthai_id == "HIEULUC")
-            {
-                msg = "false#Lỗi:Không thể hiệu lực khi đối tác kinh doanh là \"" + ma_dtkd + "\".";
             }
             else if (object_.md_trangthai_id != "SOANTHAO")
             {
@@ -467,7 +479,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {

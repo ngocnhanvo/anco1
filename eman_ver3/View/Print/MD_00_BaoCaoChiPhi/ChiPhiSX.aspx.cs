@@ -103,7 +103,7 @@ public partial class PrintControllers_ChiPhiSX_Default : System.Web.UI.Page
 				from md_phanxuong px2 
 				union 
 				select px2.md_phongban_id as md_phanxuong_id, px2.ten_phongban as ten_phanxuong 
-				from md_phongban px2 
+				from ad_department px2 
 		   )px on nknb.xuatden = px.md_phanxuong_id
 		   LEFT join md_sanpham sp ON nknb_cdh.md_sanpham_id = sp.md_sanpham_id
 		   LEFT JOIN md_donvitinhsanpham dvt ON dvt.md_donvitinhsanpham_id = nknb_cdh.md_donvitinhsanpham_id

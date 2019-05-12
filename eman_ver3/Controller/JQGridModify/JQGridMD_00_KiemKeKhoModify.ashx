@@ -32,17 +32,17 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
             case "CA_01_KiemKe":
                 this.CA_01_KiemKe(context);
                 break;
-			case "savefile":
+            case "savefile":
                 this.SaveFile(context);
                 break;
-			case "CA_01_ExportBBKK":
+            case "CA_01_ExportBBKK":
                 this.CA_01_ExportBBKK(context);
                 break;
             default:
                 break;
         }
     }
-	
+
     public void CA_01_KiemKe(HttpContext context)
     {
         EntityContext db = new EntityContext();
@@ -50,51 +50,118 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
         string[] nht = id.Split(',');
-        string kho = "";
-		string ngay_dichchuyen = context.Request.Form["ngay_dichchuyen"];
+        string ngay_dichchuyen = context.Request.Form["ngay_dichchuyen"];
         DateTime nkk = VNN_Config.setDateTime(ngay_dichchuyen);
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            foreach (md_kiemke kk in db.md_kiemke.Where(s => nht.Contains(s.md_kiemke_id)))
+            try
             {
-                var check = db.md_kiemke_cdh.Where(s => s.md_kiemke_id == kk.md_kiemke_id);
-                if (check.Count() <= 0)
+                foreach (var kk in db.md_kiemke.Where(s => nht.Contains(s.md_kiemke_id)).ToList())
                 {
-                    msg += "<div style='color:red'>Lỗi: Các dòng kiểm kê chưa có dữ liệu.</div>";
-                }
-				else if(ngay_dichchuyen == null)
-				{
-					msg += "<div style='color:red'>Lỗi:Chưa chọn thời gian dịch chuyển.</div>";
-				}			 
-                else if (kk.ma_kiemke == "O")
-                {
-                    msg += "<div style='color:red'>Lỗi:" + kk.ten_kiemke + " đã kiểm kê rồi.</div>";
-                }				
-                else
-                {
-                    foreach (md_kiemke_cdh cdh in check)
+                    var check = db.md_kiemke_cdh.Where(s => s.md_kiemke_id == kk.md_kiemke_id);
+                    if (check.Count() <= 0)
                     {
-                        if (cdh.sl_demduoc != cdh.sl_sosach)
-                        {
-                            //--cap nhat vao kho
-                            capnhat_kho(db, cdh, kk, us, nkk);
-                            //--tao lich su nhap kho
-                            add_kho_ls(db, cdh, kk, us, nkk);
-                        }
+                        msg += "<div style='color:red'>Lỗi: Các dòng kiểm kê chưa có dữ liệu.</div>";
                     }
-                    md_kho kho1 = db.md_kho.Where(s => s.md_kho_id == kk.md_kho_id).FirstOrDefault();
-                    msg_success += "<div style='color:blue'>Cập nhật \"" + kk.ten_kiemke + "\" tại kho : \"" + kho1.ma_kho + "\" thành công.</div>";
-                    kk.ma_kiemke = "O";
-                    db.SaveChanges();
+                    else if (ngay_dichchuyen == null)
+                    {
+                        msg += "<div style='color:red'>Lỗi:Chưa chọn thời gian dịch chuyển.</div>";
+                    }
+                    else if (kk.ma_kiemke == "O")
+                    {
+                        msg += "<div style='color:red'>Lỗi:" + kk.ten_kiemke + " đã kiểm kê rồi.</div>";
+                    }
+                    else
+                    {
+                        foreach (var cdh in check.ToList())
+                        {
+                            if (cdh.sl_demduoc != cdh.sl_sosach)
+                            {
+                                //--cap nhat vao kho
+                                string khospId = capnhat_kho(db, cdh, kk, us, nkk);
+                                db.SaveChanges();
+                                //--tao lich su nhap kho
+                                add_kho_ls(db, cdh, kk, us, nkk);
+                                db.SaveChanges();
+                                //--
+                                add_kho_hsd(db, cdh, kk, us, nkk, khospId);
+                                db.SaveChanges();
+                            }
+                        }
+                        var kho1 = db.md_kho.Where(s => s.md_kho_id == kk.md_kho_id).FirstOrDefault();
+                        msg_success += string.Format(@"
+                            <div style='color:blue'>
+                                Cập nhật ""{0}"" tại kho : ""{1}"" thành công.
+                            </div>", kk.ten_kiemke, kho1.ma_kho);
+                        kk.ma_kiemke = "O";
+                        db.SaveChanges();
+                    }
                 }
             }
-            msg = msg_success + msg;
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            catch (Exception ex)
+            {
+                msg = "false#" + ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = msg_success;
+                transaction.Commit();
+            }
+            else
+                transaction.Rollback();
         }
         context.Response.Write(msg);
+    }
+
+    public string add_kho_hsd(EntityContext db,md_kiemke_cdh dh, md_kiemke kk, User_TK us, DateTime nkk, string khospId)
+    {
+        string id_new = Helper.getNewId();
+        var check_khospHSD = db.md_kho_sanpham_hansudung.
+                Where(s =>
+                    s.md_sanpham_id == dh.md_sanpham_id &
+                    s.ngay_hethan.Value == null &
+                    s.md_kho_sanpham_id == khospId).FirstOrDefault();
+        var spHSD = check_khospHSD;
+        if (check_khospHSD == null)
+        {
+            spHSD = new md_kho_sanpham_hansudung();
+            spHSD.md_kho_sanpham_hansudung_id = id_new;
+            spHSD.soluong = dh.sl_demduoc;
+            spHSD.ngay_hethan = null;
+        }
+        else
+        {
+            id_new = spHSD.md_kho_sanpham_hansudung_id;
+            spHSD.soluong = dh.sl_demduoc;
+        }
+        spHSD.md_kho_sanpham_id = khospId;
+        spHSD.md_sanpham_id = dh.md_sanpham_id;
+        spHSD.nguoitao = us.ad_user_id;
+        spHSD.vaitrotao = us.ad_role_id;
+        spHSD.bophantao = us.md_phongban_id;
+        spHSD.value_nguoitao = us.ma_user;
+        spHSD.value_vaitrotao = us.ten_role;
+        spHSD.value_bophantao = us.ten_phongban;
+        spHSD.nguoicapnhat = us.ad_user_id;
+        spHSD.vaitrocapnhat = us.ad_role_id;
+        spHSD.bophancapnhat = us.md_phongban_id;
+        spHSD.value_nguoicapnhat = us.ma_user;
+        spHSD.value_vaitrocapnhat = us.ten_role;
+        spHSD.value_bophancapnhat = us.ten_phongban;
+        spHSD.hoatdong = true;
+        if (check_khospHSD == null)
+        {
+            spHSD.ngaytao = DateTime.Now;
+            spHSD.ngaycapnhat = DateTime.Now;
+            db.md_kho_sanpham_hansudung.Add(spHSD);
+        }
+        else
+        {
+            spHSD.ngaycapnhat = DateTime.Now;
+        }
+        return id_new;
     }
 
     //kho
@@ -153,8 +220,8 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         giao.md_kho_giaodich_id = id_new;
         giao.md_kho_id = kk.md_kho_id;
         giao.md_sanpham_id = cdh.md_sanpham_id;
-		giao.ngaychuyen = nkk;
-		
+        giao.ngaychuyen = nkk;
+
         if (cdh.sl_demduoc > cdh.sl_sosach)
         {
             giao.kieuchuyen = "Nhập kho kiểm kê";
@@ -202,7 +269,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         string ma_module = context.Request.QueryString["ma_module"];
         string kho = context.Request.Form["md_kho_id"];
         string ngay_kiemke = context.Request.Form["ngay_kiemke"];
-		string sochungtu = VNN_VariablePublic.sochungtu(db, "BBKK", 1);
+        string sochungtu = VNN_VariablePublic.sochungtu(db, "BBKK", 1);
         DateTime nkk = VNN_Config.setDateTime(ngay_kiemke);
         try
         {
@@ -210,12 +277,12 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
             if (kk != null)
             {
                 msg = "false#Lỗi:Ngày kiểm kê phải lớn hơn ngày \"" + kk.ngay_kiemke.Value.ToString("dd/MM/yyyy") + "\".";
-            }			
-			kk = db.md_kiemke.Where(s => s.ngay_kiemke <= nkk & s.md_kho_id == kho & s.ma_kiemke == "X").OrderByDescending(p => p.ngay_kiemke).FirstOrDefault();
-			if(kk != null)
-			{
-				msg = "false#Lỗi:Biên bản \"" + kk.ten_kiemke + "\" chưa thực thi."; 
-			}
+            }
+            kk = db.md_kiemke.Where(s => s.ngay_kiemke <= nkk & s.md_kho_id == kho & s.ma_kiemke == "X").OrderByDescending(p => p.ngay_kiemke).FirstOrDefault();
+            if(kk != null)
+            {
+                msg = "false#Lỗi:Biên bản \"" + kk.ten_kiemke + "\" chưa thực thi.";
+            }
             string id = context.Request.Form["id"];
             if (msg.Length <= 0)
             {
@@ -258,8 +325,8 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                     kk_cdh.ngaycapnhat = DateTime.Now;
                     db.md_kiemke_cdh.Add(kk_cdh);
                 }
-				VNN_Function.loaddulieu_Auto(db, ma_module);
-				msg = "true#Thêm thành công." + "#" + id_new;
+                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "true#Thêm thành công." + "#" + id_new;
             }
         }
         catch (Exception ex)
@@ -357,7 +424,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
+                msg_del = ""; var id_del_ = id_del[i];
                 md_kiemke object_ = db.md_kiemke.Where(p => p.md_kiemke_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
@@ -397,16 +464,16 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         }
         context.Response.Write(msg);
     }
-	
-	public void CA_01_ExportBBKK(HttpContext context)
+
+    public void CA_01_ExportBBKK(HttpContext context)
     {
-		string msg = "";
+        string msg = "";
         EntityContext db = new EntityContext();
         //string str = "Data Source=.;Initial Catalog=eMan;Persist Security Info=True;User ID=eMan;Password=edoc,123";
-		string id = context.Request.Form["id"];
-		try {
-			SqlConnection cnn = Mbg.Data.SqlClient.SqlHelper.GetConnection;
-			SqlCommand cmd = new SqlCommand(@"
+        string id = context.Request.Form["id"];
+        try {
+            SqlConnection cnn = Mbg.Data.SqlClient.SqlHelper.GetConnection;
+            SqlCommand cmd = new SqlCommand(@"
 			 select
 			 kk.sochungtu as md_kiemke_id,
 			 kk_cdh.ma_sanpham as ma_sanpham,
@@ -417,324 +484,324 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
 			left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = kk_cdh.md_donvitinhsanpham_id
 			left join md_kiemke kk on kk_cdh.md_kiemke_id = kk.md_kiemke_id
 			where kk_cdh.hoatdong = 1 and kk.md_kiemke_id = '" + id +"' order by kk_cdh.ma_sanpham", cnn);
-			cmd.CommandTimeout = 60;
-			DataTable dt = new DataTable();
-			SqlDataAdapter da = new SqlDataAdapter(cmd);
-			da.Fill(dt);
-			EXport_BBKK(context, dt);
-			msg = "<div style='color:blue'>Đã lấy về "+ dt.Rows.Count +" dòng</div>";			
-		}
-		catch(Exception ex) {
-			msg = "<div style='color:red'>Lỗi: "+ ex.Message +"</div>";
-		}
-		context.Response.Write(msg);
+            cmd.CommandTimeout = 60;
+            DataTable dt = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dt);
+            EXport_BBKK(context, dt);
+            msg = "<div style='color:blue'>Đã lấy về "+ dt.Rows.Count +" dòng</div>";
+        }
+        catch(Exception ex) {
+            msg = "<div style='color:red'>Lỗi: "+ ex.Message +"</div>";
+        }
+        context.Response.Write(msg);
     }
-	
-	public void EXport_BBKK(HttpContext context, DataTable dt) 
-	{
-		context.Session["hsswb"] = null;
-		HSSFWorkbook hssfworkbook = new HSSFWorkbook();
-		ISheet s1 = hssfworkbook.CreateSheet("Sheet1");
-		IFont font12 = hssfworkbook.CreateFont();
-		font12.FontHeightInPoints = 12;
-		
-		IFont font10 = hssfworkbook.CreateFont();
-		font12.FontHeightInPoints = 8;
-		
-		IFont font12Bold = hssfworkbook.CreateFont();
-		font12Bold.FontHeightInPoints = 12;
-		font12Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		IFont font10Bold = hssfworkbook.CreateFont();
-		font10Bold.FontHeightInPoints = 8;
-		font10Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
-		
-		IFont font16Bold = hssfworkbook.CreateFont();
-		font16Bold.FontHeightInPoints = 16;
-		font16Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+    public void EXport_BBKK(HttpContext context, DataTable dt)
+    {
+        context.Session["hsswb"] = null;
+        HSSFWorkbook hssfworkbook = new HSSFWorkbook();
+        ISheet s1 = hssfworkbook.CreateSheet("Sheet1");
+        IFont font12 = hssfworkbook.CreateFont();
+        font12.FontHeightInPoints = 12;
 
-		IFont font12BoldItalic = hssfworkbook.CreateFont();
-		font12BoldItalic.FontHeightInPoints = 12;
-		font12BoldItalic.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
-		font12BoldItalic.IsItalic = true;
+        IFont font10 = hssfworkbook.CreateFont();
+        font12.FontHeightInPoints = 8;
 
-		IFont font22Bold = hssfworkbook.CreateFont();
-		font22Bold.FontHeightInPoints = 22;
-		font22Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+        IFont font12Bold = hssfworkbook.CreateFont();
+        font12Bold.FontHeightInPoints = 12;
+        font12Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		IFont font14Bold = hssfworkbook.CreateFont();
-		font14Bold.FontHeightInPoints = 14;
-		font14Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+        IFont font10Bold = hssfworkbook.CreateFont();
+        font10Bold.FontHeightInPoints = 8;
+        font10Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		IFont font18Bold = hssfworkbook.CreateFont();
-		font18Bold.FontHeightInPoints = 18;
-		font18Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+        IFont font16Bold = hssfworkbook.CreateFont();
+        font16Bold.FontHeightInPoints = 16;
+        font16Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		// Cell Style 
-		ICellStyle styleCenter18Bold = hssfworkbook.CreateCellStyle();
-		styleCenter18Bold.SetFont(font18Bold);
-		styleCenter18Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleCenter18Bold.Alignment = HorizontalAlignment.Center;
-		styleCenter18Bold.WrapText = true;
+        IFont font12BoldItalic = hssfworkbook.CreateFont();
+        font12BoldItalic.FontHeightInPoints = 12;
+        font12BoldItalic.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+        font12BoldItalic.IsItalic = true;
 
-		ICellStyle styleTop14Bold = hssfworkbook.CreateCellStyle();
-		styleTop14Bold.SetFont(font14Bold);
-		styleTop14Bold.VerticalAlignment = VerticalAlignment.Top;
-		styleTop14Bold.WrapText = true;
+        IFont font22Bold = hssfworkbook.CreateFont();
+        font22Bold.FontHeightInPoints = 22;
+        font22Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		ICellStyle styleCenter22Bold = hssfworkbook.CreateCellStyle();
-		styleCenter22Bold.SetFont(font22Bold);
-		styleCenter22Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleCenter22Bold.Alignment = HorizontalAlignment.Center;
-		styleCenter22Bold.WrapText = true;
+        IFont font14Bold = hssfworkbook.CreateFont();
+        font14Bold.FontHeightInPoints = 14;
+        font14Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		ICellStyle styleCenter12Bold = hssfworkbook.CreateCellStyle();
-		styleCenter12Bold.SetFont(font12Bold);
-		styleCenter12Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleCenter12Bold.Alignment = HorizontalAlignment.Center;
-		styleCenter12Bold.WrapText = true;
+        IFont font18Bold = hssfworkbook.CreateFont();
+        font18Bold.FontHeightInPoints = 18;
+        font18Bold.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
 
-		ICellStyle styleCenter16Bold = hssfworkbook.CreateCellStyle();
-		styleCenter16Bold.SetFont(font16Bold);
-		styleCenter16Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleCenter16Bold.Alignment = HorizontalAlignment.Center;
-		styleCenter16Bold.WrapText = true;
+        // Cell Style 
+        ICellStyle styleCenter18Bold = hssfworkbook.CreateCellStyle();
+        styleCenter18Bold.SetFont(font18Bold);
+        styleCenter18Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleCenter18Bold.Alignment = HorizontalAlignment.Center;
+        styleCenter18Bold.WrapText = true;
 
-		ICellStyle styleRight12Bold = hssfworkbook.CreateCellStyle();
-		styleRight12Bold.SetFont(font12Bold);
-		styleRight12Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleRight12Bold.Alignment = HorizontalAlignment.Right;
-		styleRight12Bold.WrapText = true;
+        ICellStyle styleTop14Bold = hssfworkbook.CreateCellStyle();
+        styleTop14Bold.SetFont(font14Bold);
+        styleTop14Bold.VerticalAlignment = VerticalAlignment.Top;
+        styleTop14Bold.WrapText = true;
 
-		ICellStyle styleCenterBorder12Bold = hssfworkbook.CreateCellStyle();
-		styleCenterBorder12Bold.SetFont(font10Bold);
-		styleCenterBorder12Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleCenterBorder12Bold.Alignment = HorizontalAlignment.Center;
-		styleCenterBorder12Bold.WrapText = true;
+        ICellStyle styleCenter22Bold = hssfworkbook.CreateCellStyle();
+        styleCenter22Bold.SetFont(font22Bold);
+        styleCenter22Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleCenter22Bold.Alignment = HorizontalAlignment.Center;
+        styleCenter22Bold.WrapText = true;
 
-		ICellStyle styleBorder12Bold = hssfworkbook.CreateCellStyle();
-		styleBorder12Bold.SetFont(font12Bold);
-		styleBorder12Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleBorder12Bold.WrapText = true;
-		styleBorder12Bold.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12Bold.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12Bold.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12Bold.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle styleCenter12Bold = hssfworkbook.CreateCellStyle();
+        styleCenter12Bold.SetFont(font12Bold);
+        styleCenter12Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleCenter12Bold.Alignment = HorizontalAlignment.Center;
+        styleCenter12Bold.WrapText = true;
 
-		ICellStyle styleCenterBorderBottom12 = hssfworkbook.CreateCellStyle();
-		styleCenterBorderBottom12.SetFont(font12);
-		styleCenterBorderBottom12.VerticalAlignment = VerticalAlignment.Center;
-		styleCenterBorderBottom12.Alignment = HorizontalAlignment.Center;
-		styleCenterBorderBottom12.WrapText = true;
-		styleCenterBorderBottom12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle styleCenter16Bold = hssfworkbook.CreateCellStyle();
+        styleCenter16Bold.SetFont(font16Bold);
+        styleCenter16Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleCenter16Bold.Alignment = HorizontalAlignment.Center;
+        styleCenter16Bold.WrapText = true;
 
-		ICellStyle style12BoldItalic = hssfworkbook.CreateCellStyle();
-		style12BoldItalic.SetFont(font12BoldItalic);
-		style12BoldItalic.VerticalAlignment = VerticalAlignment.Center;
-		style12BoldItalic.WrapText = true;
+        ICellStyle styleRight12Bold = hssfworkbook.CreateCellStyle();
+        styleRight12Bold.SetFont(font12Bold);
+        styleRight12Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleRight12Bold.Alignment = HorizontalAlignment.Right;
+        styleRight12Bold.WrapText = true;
 
-		ICellStyle styleCenter12 = hssfworkbook.CreateCellStyle();
-		styleCenter12.SetFont(font12);
-		styleCenter12.VerticalAlignment = VerticalAlignment.Center;
-		styleCenter12.Alignment = HorizontalAlignment.Center;
-		styleCenter12.WrapText = true;
+        ICellStyle styleCenterBorder12Bold = hssfworkbook.CreateCellStyle();
+        styleCenterBorder12Bold.SetFont(font10Bold);
+        styleCenterBorder12Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleCenterBorder12Bold.Alignment = HorizontalAlignment.Center;
+        styleCenterBorder12Bold.WrapText = true;
 
-		ICellStyle style12 = hssfworkbook.CreateCellStyle();
-		style12.SetFont(font12);
-		style12.VerticalAlignment = VerticalAlignment.Center;
-		style12.WrapText = true;
+        ICellStyle styleBorder12Bold = hssfworkbook.CreateCellStyle();
+        styleBorder12Bold.SetFont(font12Bold);
+        styleBorder12Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleBorder12Bold.WrapText = true;
+        styleBorder12Bold.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12Bold.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12Bold.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12Bold.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
 
-		ICellStyle style12Bold = hssfworkbook.CreateCellStyle();
-		style12Bold.SetFont(font12Bold);
-		style12Bold.VerticalAlignment = VerticalAlignment.Center;
-		style12Bold.WrapText = true;
+        ICellStyle styleCenterBorderBottom12 = hssfworkbook.CreateCellStyle();
+        styleCenterBorderBottom12.SetFont(font12);
+        styleCenterBorderBottom12.VerticalAlignment = VerticalAlignment.Center;
+        styleCenterBorderBottom12.Alignment = HorizontalAlignment.Center;
+        styleCenterBorderBottom12.WrapText = true;
+        styleCenterBorderBottom12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
 
-		ICellStyle style12TopBold = hssfworkbook.CreateCellStyle();
-		style12TopBold.SetFont(font12Bold);
-		style12TopBold.VerticalAlignment = VerticalAlignment.Top;
-		style12TopBold.WrapText = true;
+        ICellStyle style12BoldItalic = hssfworkbook.CreateCellStyle();
+        style12BoldItalic.SetFont(font12BoldItalic);
+        style12BoldItalic.VerticalAlignment = VerticalAlignment.Center;
+        style12BoldItalic.WrapText = true;
 
-		ICellStyle style12Top = hssfworkbook.CreateCellStyle();
-		style12Top.SetFont(font12);
-		style12Top.VerticalAlignment = VerticalAlignment.Top;
-		style12Top.WrapText = true;
+        ICellStyle styleCenter12 = hssfworkbook.CreateCellStyle();
+        styleCenter12.SetFont(font12);
+        styleCenter12.VerticalAlignment = VerticalAlignment.Center;
+        styleCenter12.Alignment = HorizontalAlignment.Center;
+        styleCenter12.WrapText = true;
 
-		ICellStyle styleBorder12 = hssfworkbook.CreateCellStyle();
-		styleBorder12.SetFont(font12);
-		styleBorder12.VerticalAlignment = VerticalAlignment.Center;
-		styleBorder12.WrapText = true;
-		styleBorder12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorder12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle style12 = hssfworkbook.CreateCellStyle();
+        style12.SetFont(font12);
+        style12.VerticalAlignment = VerticalAlignment.Center;
+        style12.WrapText = true;
 
-		ICellStyle styleBorderCenter12 = hssfworkbook.CreateCellStyle();
-		styleBorderCenter12.SetFont(font12);
-		styleBorderCenter12.VerticalAlignment = VerticalAlignment.Center;
-		styleBorderCenter12.Alignment = HorizontalAlignment.Center;
-		styleBorderCenter12.WrapText = true;
-		styleBorderCenter12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorderCenter12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorderCenter12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleBorderCenter12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle style12Bold = hssfworkbook.CreateCellStyle();
+        style12Bold.SetFont(font12Bold);
+        style12Bold.VerticalAlignment = VerticalAlignment.Center;
+        style12Bold.WrapText = true;
 
-		ICellStyle styleNumber0Border12 = hssfworkbook.CreateCellStyle();
-		styleNumber0Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
-		styleNumber0Border12.SetFont(font12);
-		styleNumber0Border12.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0Border12.Alignment = HorizontalAlignment.Right;
-		styleNumber0Border12.WrapText = true;
-		styleNumber0Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle style12TopBold = hssfworkbook.CreateCellStyle();
+        style12TopBold.SetFont(font12Bold);
+        style12TopBold.VerticalAlignment = VerticalAlignment.Top;
+        style12TopBold.WrapText = true;
 
+        ICellStyle style12Top = hssfworkbook.CreateCellStyle();
+        style12Top.SetFont(font12);
+        style12Top.VerticalAlignment = VerticalAlignment.Top;
+        style12Top.WrapText = true;
 
-		ICellStyle styleNumber0i0Border12 = hssfworkbook.CreateCellStyle();
-		styleNumber0i0Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
-		styleNumber0i0Border12.SetFont(font12);
-		styleNumber0i0Border12.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i0Border12.Alignment = HorizontalAlignment.Right;
-		styleNumber0i0Border12.WrapText = true;
-		styleNumber0i0Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i0Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i0Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i0Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle styleBorder12 = hssfworkbook.CreateCellStyle();
+        styleBorder12.SetFont(font12);
+        styleBorder12.VerticalAlignment = VerticalAlignment.Center;
+        styleBorder12.WrapText = true;
+        styleBorder12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorder12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
 
-		ICellStyle styleNumber0i00Border12 = hssfworkbook.CreateCellStyle();
-		styleNumber0i00Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
-		styleNumber0i00Border12.SetFont(font12);
-		styleNumber0i00Border12.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i00Border12.Alignment = HorizontalAlignment.Right;
-		styleNumber0i00Border12.WrapText = true;
-		styleNumber0i00Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i00Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i00Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i00Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle styleBorderCenter12 = hssfworkbook.CreateCellStyle();
+        styleBorderCenter12.SetFont(font12);
+        styleBorderCenter12.VerticalAlignment = VerticalAlignment.Center;
+        styleBorderCenter12.Alignment = HorizontalAlignment.Center;
+        styleBorderCenter12.WrapText = true;
+        styleBorderCenter12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorderCenter12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorderCenter12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleBorderCenter12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+
+        ICellStyle styleNumber0Border12 = hssfworkbook.CreateCellStyle();
+        styleNumber0Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
+        styleNumber0Border12.SetFont(font12);
+        styleNumber0Border12.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0Border12.Alignment = HorizontalAlignment.Right;
+        styleNumber0Border12.WrapText = true;
+        styleNumber0Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
 
 
-		ICellStyle styleNumber0i000Border12 = hssfworkbook.CreateCellStyle();
-		styleNumber0i000Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
-		styleNumber0i000Border12.SetFont(font12);
-		styleNumber0i000Border12.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i000Border12.Alignment = HorizontalAlignment.Right;
-		styleNumber0i000Border12.WrapText = true;
-		styleNumber0i000Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i000Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i000Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-		styleNumber0i000Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        ICellStyle styleNumber0i0Border12 = hssfworkbook.CreateCellStyle();
+        styleNumber0i0Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
+        styleNumber0i0Border12.SetFont(font12);
+        styleNumber0i0Border12.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i0Border12.Alignment = HorizontalAlignment.Right;
+        styleNumber0i0Border12.WrapText = true;
+        styleNumber0i0Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i0Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i0Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i0Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+
+        ICellStyle styleNumber0i00Border12 = hssfworkbook.CreateCellStyle();
+        styleNumber0i00Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
+        styleNumber0i00Border12.SetFont(font12);
+        styleNumber0i00Border12.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i00Border12.Alignment = HorizontalAlignment.Right;
+        styleNumber0i00Border12.WrapText = true;
+        styleNumber0i00Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i00Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i00Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i00Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
 
 
-		ICellStyle styleNumber012 = hssfworkbook.CreateCellStyle();
-		styleNumber012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
-		styleNumber012.SetFont(font12);
-		styleNumber012.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber012.Alignment = HorizontalAlignment.Right;
-		styleNumber012.WrapText = true;
+        ICellStyle styleNumber0i000Border12 = hssfworkbook.CreateCellStyle();
+        styleNumber0i000Border12.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
+        styleNumber0i000Border12.SetFont(font12);
+        styleNumber0i000Border12.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i000Border12.Alignment = HorizontalAlignment.Right;
+        styleNumber0i000Border12.WrapText = true;
+        styleNumber0i000Border12.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i000Border12.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i000Border12.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+        styleNumber0i000Border12.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
 
 
-		ICellStyle styleNumber0i012 = hssfworkbook.CreateCellStyle();
-		styleNumber0i012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
-		styleNumber0i012.SetFont(font12);
-		styleNumber0i012.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i012.Alignment = HorizontalAlignment.Right;
-		styleNumber0i012.WrapText = true;
+        ICellStyle styleNumber012 = hssfworkbook.CreateCellStyle();
+        styleNumber012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
+        styleNumber012.SetFont(font12);
+        styleNumber012.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber012.Alignment = HorizontalAlignment.Right;
+        styleNumber012.WrapText = true;
 
 
-		ICellStyle styleNumber0i0012 = hssfworkbook.CreateCellStyle();
-		styleNumber0i0012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
-		styleNumber0i0012.SetFont(font12);
-		styleNumber0i0012.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i0012.Alignment = HorizontalAlignment.Right;
-		styleNumber0i0012.WrapText = true;
-
-		ICellStyle styleNumber0i00012 = hssfworkbook.CreateCellStyle();
-		styleNumber0i00012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
-		styleNumber0i00012.SetFont(font12);
-		styleNumber0i00012.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i00012.Alignment = HorizontalAlignment.Right;
-		styleNumber0i00012.WrapText = true;
+        ICellStyle styleNumber0i012 = hssfworkbook.CreateCellStyle();
+        styleNumber0i012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
+        styleNumber0i012.SetFont(font12);
+        styleNumber0i012.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i012.Alignment = HorizontalAlignment.Right;
+        styleNumber0i012.WrapText = true;
 
 
-		ICellStyle styleNumber012Bold = hssfworkbook.CreateCellStyle();
-		styleNumber012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
-		styleNumber012Bold.SetFont(font12Bold);
-		styleNumber012Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber012Bold.Alignment = HorizontalAlignment.Right;
-		styleNumber012Bold.WrapText = true;
+        ICellStyle styleNumber0i0012 = hssfworkbook.CreateCellStyle();
+        styleNumber0i0012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
+        styleNumber0i0012.SetFont(font12);
+        styleNumber0i0012.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i0012.Alignment = HorizontalAlignment.Right;
+        styleNumber0i0012.WrapText = true;
+
+        ICellStyle styleNumber0i00012 = hssfworkbook.CreateCellStyle();
+        styleNumber0i00012.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
+        styleNumber0i00012.SetFont(font12);
+        styleNumber0i00012.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i00012.Alignment = HorizontalAlignment.Right;
+        styleNumber0i00012.WrapText = true;
 
 
-		ICellStyle styleNumber0i012Bold = hssfworkbook.CreateCellStyle();
-		styleNumber0i012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
-		styleNumber0i012Bold.SetFont(font12Bold);
-		styleNumber0i012Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i012Bold.Alignment = HorizontalAlignment.Right;
-		styleNumber0i012Bold.WrapText = true;
+        ICellStyle styleNumber012Bold = hssfworkbook.CreateCellStyle();
+        styleNumber012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0");
+        styleNumber012Bold.SetFont(font12Bold);
+        styleNumber012Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber012Bold.Alignment = HorizontalAlignment.Right;
+        styleNumber012Bold.WrapText = true;
 
 
-		ICellStyle styleNumber0i0012Bold = hssfworkbook.CreateCellStyle();
-		styleNumber0i0012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
-		styleNumber0i0012Bold.SetFont(font12Bold);
-		styleNumber0i0012Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i0012Bold.Alignment = HorizontalAlignment.Right;
-		styleNumber0i0012Bold.WrapText = true;
+        ICellStyle styleNumber0i012Bold = hssfworkbook.CreateCellStyle();
+        styleNumber0i012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.0");
+        styleNumber0i012Bold.SetFont(font12Bold);
+        styleNumber0i012Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i012Bold.Alignment = HorizontalAlignment.Right;
+        styleNumber0i012Bold.WrapText = true;
 
-		ICellStyle styleNumber0i00012Bold = hssfworkbook.CreateCellStyle();
-		styleNumber0i00012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
-		styleNumber0i00012Bold.SetFont(font12Bold);
-		styleNumber0i00012Bold.VerticalAlignment = VerticalAlignment.Center;
-		styleNumber0i00012Bold.Alignment = HorizontalAlignment.Right;
-		styleNumber0i00012Bold.WrapText = true;
 
-		IPrintSetup print = s1.PrintSetup;
-		print.PaperSize = (short)PaperSize.A4;
-		print.Scale = (short)80;
-		print.FitWidth = (short)1;
-		print.FitHeight = (short)0;
-		
-		for (int i = 0; i < dt.Columns.Count; i++)
-		{
-			s1.SetColumnWidth(i, 5000);
-		}
+        ICellStyle styleNumber0i0012Bold = hssfworkbook.CreateCellStyle();
+        styleNumber0i0012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.00");
+        styleNumber0i0012Bold.SetFont(font12Bold);
+        styleNumber0i0012Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i0012Bold.Alignment = HorizontalAlignment.Right;
+        styleNumber0i0012Bold.WrapText = true;
 
-		IRow rTitle = s1.CreateRow(0);
-		rTitle.CreateCell(0).SetCellValue("Số chứng từ");
-		rTitle.CreateCell(1).SetCellValue("Mã SP");
-		rTitle.CreateCell(2).SetCellValue("SL đếm được");
-		rTitle.CreateCell(3).SetCellValue("SL trển sổ");
-		
-		for (int j = 0; j <= 3; j++)
-		{
-			rTitle.GetCell(j).CellStyle = styleCenterBorder12Bold;
-		}
+        ICellStyle styleNumber0i00012Bold = hssfworkbook.CreateCellStyle();
+        styleNumber0i00012Bold.DataFormat = NPOIUtils.GetDataFormat(hssfworkbook, "#,#0.000");
+        styleNumber0i00012Bold.SetFont(font12Bold);
+        styleNumber0i00012Bold.VerticalAlignment = VerticalAlignment.Center;
+        styleNumber0i00012Bold.Alignment = HorizontalAlignment.Right;
+        styleNumber0i00012Bold.WrapText = true;
 
-		/*rDetails.CreateCell(9).SetCellValue(row["ngaycongvan"].ToString() != "" ? DateTime.Parse(row["ngaycongvan"].ToString()).ToString("dd/MM/yyyy") : "");
+        IPrintSetup print = s1.PrintSetup;
+        print.PaperSize = (short)PaperSize.A4;
+        print.Scale = (short)80;
+        print.FitWidth = (short)1;
+        print.FitHeight = (short)0;
+
+        for (int i = 0; i < dt.Columns.Count; i++)
+        {
+            s1.SetColumnWidth(i, 5000);
+        }
+
+        IRow rTitle = s1.CreateRow(0);
+        rTitle.CreateCell(0).SetCellValue("Số chứng từ");
+        rTitle.CreateCell(1).SetCellValue("Mã SP");
+        rTitle.CreateCell(2).SetCellValue("SL đếm được");
+        rTitle.CreateCell(3).SetCellValue("SL trển sổ");
+
+        for (int j = 0; j <= 3; j++)
+        {
+            rTitle.GetCell(j).CellStyle = styleCenterBorder12Bold;
+        }
+
+        /*rDetails.CreateCell(9).SetCellValue(row["ngaycongvan"].ToString() != "" ? DateTime.Parse(row["ngaycongvan"].ToString()).ToString("dd/MM/yyyy") : "");
 		rDetails.CreateCell(10).SetCellValue(row["ngaybatdau"].ToString() != "" ? DateTime.Parse(row["ngaybatdau"].ToString()).ToString("dd/MM/yyyy") : "");
 		rDetails.CreateCell(11).SetCellValue(row["ngayketthuc"].ToString() != "" ? DateTime.Parse(row["ngayketthuc"].ToString()).ToString("dd/MM/yyyy") : "");
 		rDetails.CreateCell(12).SetCellValue(row["trichyeu"].ToString().Length > 32767 ? row["trichyeu"].ToString().Substring(32767) : row["trichyeu"].ToString());*/
-		int dem_row = 1;
-		foreach (DataRow row in dt.Rows)
-		{
-			IRow rDetails = s1.CreateRow(dem_row);
-			for (int dem = 0; dem < dt.Columns.Count; dem++)
-			{
-				string noidung = row[dem].ToString();
-				if(noidung == "True")
-					noidung = "1";
-				else if(noidung == "False")
-					noidung = "0";
-				rDetails.CreateCell(dem).SetCellValue(noidung);
-				//rDetails.GetCell(dem).CellStyle = styleBorder12;
-			}
-			dem_row++;
-		}
-		context.Session["hsswb"] = hssfworkbook;
-	}
-	
-	public void SaveFile(HttpContext context)
+        int dem_row = 1;
+        foreach (DataRow row in dt.Rows)
+        {
+            IRow rDetails = s1.CreateRow(dem_row);
+            for (int dem = 0; dem < dt.Columns.Count; dem++)
+            {
+                string noidung = row[dem].ToString();
+                if(noidung == "True")
+                    noidung = "1";
+                else if(noidung == "False")
+                    noidung = "0";
+                rDetails.CreateCell(dem).SetCellValue(noidung);
+                //rDetails.GetCell(dem).CellStyle = styleBorder12;
+            }
+            dem_row++;
+        }
+        context.Session["hsswb"] = hssfworkbook;
+    }
+
+    public void SaveFile(HttpContext context)
     {
-		HSSFWorkbook hsswb = (HSSFWorkbook)context.Session["hsswb"];
-		String saveAsFileName = String.Format("BBKK-{0}.xls", DateTime.Now.ToString("dd-MM-yyyy"));
+        HSSFWorkbook hsswb = (HSSFWorkbook)context.Session["hsswb"];
+        String saveAsFileName = String.Format("BBKK-{0}.xls", DateTime.Now.ToString("dd-MM-yyyy"));
         MemoryStream exportData = new MemoryStream();
         hsswb.Write(exportData);
         context.Response.ContentType = "application/vnd.ms-excel";

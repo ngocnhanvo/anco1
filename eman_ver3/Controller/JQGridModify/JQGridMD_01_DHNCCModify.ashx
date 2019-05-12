@@ -187,7 +187,7 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 if (ncc.trangthai == "HIEULUC")
                 {
-                    msg = "false#Đơn hàng đã hiệu lực !";
+                    msg = "false#Phiếu nhập kho đã hiệu lực.";
                 }
             }
 

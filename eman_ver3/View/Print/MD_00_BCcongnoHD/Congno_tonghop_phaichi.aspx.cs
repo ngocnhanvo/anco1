@@ -80,18 +80,7 @@ public partial class PrintControllers_Congno_tonghop_phaichi_Default : System.We
 				thang = "0" + denngay.Month;
 			}
 		}
-			
-		/*string sql = string.Format(@"
-		select 
-		(sum(thcn.nocuoiky) + sum(thcn.nocuoiky_usd * thcn.tygia)) as psn,
-		(sum(thcn.cocuoiky) + sum(thcn.cocuoiky_usd * thcn.tygia)) as psc,
-		thcn.ma_dtkd as ma_khncc,
-		thcn.ma_dtkd as ten_khncc
-		from md_tonghopcongno thcn
-		where thcn.md_namtaichinh_ky_id = N'{0}'
-		group by thcn.ma_dtkd
-		order by thcn.ma_dtkd
-		", ky.md_namtaichinh_ky_id);*/
+
 		string sql = string.Format(@"		
 		 select
 			(N'Từ ngày ' + convert(nvarchar,convert(datetime,N'{0}',103), 103) + N' đến ngày ' + convert(nvarchar,convert(datetime,N'{1}',103), 103)) AS lbl_tungaydenngay,
@@ -103,64 +92,17 @@ public partial class PrintControllers_Congno_tonghop_phaichi_Default : System.We
 		FROM md_hoadon_chitiet nkncc_dh
 		INNER JOIN md_hoadon nkncc ON nkncc_dh.md_hoadon_id = nkncc.md_hoadon_id
 		INNER join c_donmuahang dmh ON nkncc.sct_thamchieu LIKE '%' + dmh.sochungtu + '%'
-		INNER JOIN (
-						select p1.c_donmuahang_id, p1.ngaychuyen from md_nhapkho_ncc p1
-						inner join c_donmuahang dmh on p1.c_donmuahang_id = dmh.c_donmuahang_id
-						where	 p1.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103)
-							 AND p1.ngaychuyen <= CONVERT(datetime,N'{1} 23:59',103)
-					) as ncc 
-					ON ncc.c_donmuahang_id = dmh.c_donmuahang_id
 		INNER join c_donmuahang_cdmh dmh_cdh ON dmh.c_donmuahang_id = dmh_cdh.c_donmuahang_id
 		INNER join md_doitackinhdoanh dtkd ON nkncc.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
 		WHERE nkncc.md_trangthai_id = N'HIEULUC'
-				AND dmh_cdh.md_sanpham_id = nkncc_dh.md_sanpham_id
-				AND ncc.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103)
-				AND ncc.ngaychuyen <= CONVERT(datetime,N'{1} 23:59',103)
+		    AND dmh_cdh.md_sanpham_id = nkncc_dh.md_sanpham_id
+		    AND nkncc.ngaylap >= CONVERT(datetime,N'{0} 00:00',103)
+		    AND nkncc.ngaylap <= CONVERT(datetime,N'{1} 23:59',103)
 		GROUP BY dtkd.ma_dtkd,
 				 dtkd.ten_dtkd
 		order by dtkd.ma_dtkd asc
 		
-		",ky_, ntc, "12345", dtkd);
-		//",denngay.ToString("01-"+ thang +"-yyyy"), ntc, "12345", dtkd);
-				
-/* 		select sum(C.psn) as psc, sum(C.psc) as psn, C.ma_khncc, C.ten_khncc , 
-						(N'Từ ngày ' + convert(nvarchar,convert(datetime,N'{0}',103), 103) + N' đến ngày ' + convert(nvarchar,convert(datetime,N'{1}',103), 103)) as lbl_tungaydenngay
-				from( 
-					select newid() as id, (sum(thcn.nocuoiky) + sum(thcn.nocuoiky_usd * thcn.tygia)) as psn, 
-					(sum(thcn.cocuoiky) + sum(thcn.cocuoiky_usd * thcn.tygia)) as psc, 
-					thcn.ma_dtkd as ma_khncc, 
-					thcn.ten_dtkd as ten_khncc 
-					from md_tonghopcongno thcn 
-					where thcn.md_namtaichinh_ky_id = N'{2}' group by thcn.ma_dtkd, thcn.ten_dtkd 			
-					
-					union 
-					select newid() as id, (B.ttusd * B.tygia + B.ttvnd) as psn, 0 as psc, B.ma_dtkd, B.ten_dtkd 
-					from ( 
-						select sum(isnull(A.ttusd,0)) as ttusd, sum(isnull(A.ttvnd,0)) as ttvnd, A.tygia, A.ma_dtkd, A.ten_dtkd 
-						from ( 
-							select (case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then dmh_cdh.dongiamua * nkncc_dh.sl_danhap else 0 end) as ttusd, 
-							(case when bg.md_dongtien_id = '385ec93024915838c98ef66e58b02e9b' then 0 else dmh_cdh.dongiamua * nkncc_dh.sl_danhap end)
-							as ttvnd, [dbo].[GET_TyGia](convert(nvarchar,dmh.ngaydonhang, 103)) as tygia, dtkd.ma_dtkd, dtkd.ten_dtkd 
-							from 
-							md_nhapkho_ncc_dh nkncc_dh 
-							inner join md_nhapkho_ncc nkncc on nkncc_dh.md_nhapkho_ncc_id = nkncc.md_nhapkho_ncc_id 
-							inner join c_donmuahang_cdmh dmh_cdh on nkncc.c_donmuahang_id = dmh_cdh.c_donmuahang_id 
-							inner join c_donmuahang dmh on dmh.c_donmuahang_id = dmh_cdh.c_donmuahang_id 
-							inner join md_doitackinhdoanh dtkd on dmh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id 
-							inner join md_phienbangia pbg on pbg.md_phienbangia_id = dmh.md_phienbangia_id 
-							inner join md_banggia bg on bg.md_banggia_id = pbg.md_banggia_id 
-							where nkncc.trangthai = 'HIEULUC' 
-							
-							and dmh_cdh.md_sanpham_id = nkncc_dh.md_sanpham_id 
-							and nkncc.ngaychuyen >= CONVERT(datetime,N'{0} 00:00',103) 
-							and nkncc.ngaychuyen <= CONVERT(datetime,N'{1} 23:59',103) 
-						)A group by A.ma_dtkd, A.ten_dtkd, A.tygia 
-					)B 
-				)C 
-				where 1=1 {3}
-				group by C.ma_khncc, C.ten_khncc 
-				order by C.ma_khncc, C.ten_khncc
- */				
+		", ky_, ntc, "12345", dtkd);			
 		return sql;
     }
 }
@@ -246,7 +188,6 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private void InitializeComponent()
     {
-        string resourceFileName = "XtraReport1.resx";
         DevExpress.XtraReports.UI.XRSummary xrSummary1 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary2 = new DevExpress.XtraReports.UI.XRSummary();
         DevExpress.XtraReports.UI.XRSummary xrSummary3 = new DevExpress.XtraReports.UI.XRSummary();
@@ -340,7 +281,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         xrSummary1.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.xrTableCell8.Summary = xrSummary1;
         this.xrTableCell8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell8.Weight = 0.42139990921747278D;
+        this.xrTableCell8.Weight = 0.42086929762207265D;
         // 
         // ma_khncc
         // 
@@ -351,7 +292,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.ma_khncc.StylePriority.UseBorders = false;
         this.ma_khncc.StylePriority.UseTextAlignment = false;
         this.ma_khncc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        this.ma_khncc.Weight = 1.3224447352641613D;
+        this.ma_khncc.Weight = 1.3207718864416653D;
         // 
         // ten_khncc
         // 
@@ -363,13 +304,13 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.ten_khncc.StylePriority.UseTextAlignment = false;
         this.ten_khncc.Text = "01/07/16";
         this.ten_khncc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-        this.ten_khncc.Weight = 2.8565515509888053D;
+        this.ten_khncc.Weight = 2.8587550114067013D;
         // 
         // psc
         // 
         this.psc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.psc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc", "{0:#,#0}")});
         this.psc.Name = "psc";
         this.psc.StylePriority.UseBorders = false;
         this.psc.StylePriority.UseTextAlignment = false;
@@ -381,7 +322,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         this.psc_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0}")});
         this.psc_thue.Name = "psc_thue";
         this.psc_thue.StylePriority.UseBorders = false;
         this.psc_thue.StylePriority.UseTextAlignment = false;
@@ -393,7 +334,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.tt_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0}")});
         this.tt_thue.Name = "tt_thue";
         this.tt_thue.StylePriority.UseBorders = false;
         this.tt_thue.StylePriority.UseTextAlignment = false;
@@ -452,7 +393,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell2.StylePriority.UseBorders = false;
         this.xrTableCell2.StylePriority.UseTextAlignment = false;
         this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell2.Weight = 1.743844644481634D;
+        this.xrTableCell2.Weight = 1.7416413354485603D;
         // 
         // xrTableCell6
         // 
@@ -464,7 +405,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrTableCell6.StylePriority.UseTextAlignment = false;
         this.xrTableCell6.Text = "Tổng cộng";
         this.xrTableCell6.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        this.xrTableCell6.Weight = 2.856550944142012D;
+        this.xrTableCell6.Weight = 2.858754253175086D;
         // 
         // sum_psc
         // 
@@ -475,7 +416,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.sum_psc.Name = "sum_psc";
         this.sum_psc.StylePriority.UseBorders = false;
         this.sum_psc.StylePriority.UseTextAlignment = false;
-        xrSummary2.FormatString = "{0:#,#0.00}";
+        xrSummary2.FormatString = "{0:#,#0}";
         xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_psc.Summary = xrSummary2;
         this.sum_psc.Text = "sum_psc";
@@ -484,15 +425,15 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // sum_psc_thue
         // 
-        this.sum_psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0.00}")});
         this.sum_psc_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.sum_psc_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "psc_thue", "{0:#,#0}")});
         this.sum_psc_thue.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.sum_psc_thue.Name = "sum_psc_thue";
         this.sum_psc_thue.StylePriority.UseBorders = false;
         this.sum_psc_thue.StylePriority.UseFont = false;
         this.sum_psc_thue.StylePriority.UseTextAlignment = false;
-        xrSummary3.FormatString = "{0:#,#.00}";
+        xrSummary3.FormatString = "{0:#,#0}";
         xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_psc_thue.Summary = xrSummary3;
         this.sum_psc_thue.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -500,16 +441,16 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // sum_tt_thue
         // 
-        this.sum_tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0.00}")});
         this.sum_tt_thue.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.sum_tt_thue.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tt_thue", "{0:#,#0}")});
         this.sum_tt_thue.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.sum_tt_thue.Name = "sum_tt_thue";
         this.sum_tt_thue.StylePriority.UseBorders = false;
         this.sum_tt_thue.StylePriority.UseFont = false;
         this.sum_tt_thue.StylePriority.UseTextAlignment = false;
-        xrSummary4.FormatString = "{0:#,#.00}";
+        xrSummary4.FormatString = "{0:#,#0}";
         xrSummary4.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_tt_thue.Summary = xrSummary4;
         this.sum_tt_thue.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -650,7 +591,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel2.SizeF = new System.Drawing.SizeF(238.5417F, 19.875F);
         this.xrLabel2.StylePriority.UseFont = false;
         this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "XƯỞNG ANCO 1";
+        this.xrLabel2.Text = "XƯỞNG ANCO 2";
         this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
         // xrLabel4
@@ -738,8 +679,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // xrTableCell3
         // 
-        this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Right)
+        this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell3.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell3.Name = "xrTableCell3";
@@ -752,8 +692,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         // 
         // xrTableCell13
         // 
-        this.xrTableCell13.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Right)
+        this.xrTableCell13.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.xrTableCell13.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Bold);
         this.xrTableCell13.Name = "xrTableCell13";
@@ -791,7 +730,7 @@ public class rpt_congnotonghop : DevExpress.XtraReports.UI.XtraReport
         this.PageHeight = 1169;
         this.PageWidth = 827;
         this.PaperKind = System.Drawing.Printing.PaperKind.A4;
-        this.Version = "15.1";
+        this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).EndInit();

@@ -19,7 +19,7 @@ public partial class PrintControllers_MD_00_BaocaoNVL_TQ_Default : System.Web.UI
     protected void Page_Load(object sender, EventArgs e)
     {
         EntityContext db = new EntityContext();
-        SoPhanTichBOM report = new SoPhanTichBOM();
+        SoPhanTichBOMVT report = new SoPhanTichBOMVT();
         String sql = this.CreateSql();
         this.viewReport(report, sql);
 		// Response.Write(sql);
@@ -80,14 +80,7 @@ public partial class PrintControllers_MD_00_BaocaoNVL_TQ_Default : System.Web.UI
 				   sp.ma_sanpham AS ma_sp,
 				   sp.mota_tiengviet AS ten_sp,
 				   dvt.ten_dvt AS dvt,
-
-			 (SELECT top 1 cdh.gia
-			  FROM md_taphopgia thg
-			  INNER JOIN md_taphopgia_cdh cdh ON thg.md_taphopgia_id = cdh.md_taphopgia_id
-			  where thg.md_taphopgia_id = '{3}'
-				AND thg.md_trangthai_id = 'HIEULUC'
-				AND thg.hoatdong = 'true'
-				AND sp.md_sanpham_id = cdh.md_sanpham_id ) AS gia
+			       sp.giabinhquan AS gia
 		   FROM md_dondathangphanxuong ddhpx
 		   LEFT JOIN md_dondathangphanxuong_vattu ddhpx_vt ON ddhpx.md_dondathangphanxuong_id = ddhpx_vt.md_dondathangphanxuong_id
 		   LEFT join md_phanxuong px ON px.md_phanxuong_id = ddhpx.md_phanxuong_id
@@ -96,23 +89,24 @@ public partial class PrintControllers_MD_00_BaocaoNVL_TQ_Default : System.Web.UI
 		   WHERE (ddhpx.md_trangthai_id = 'HIEULUC'
 				  OR ddhpx.md_trangthai_id = 'KETTHUC')
 			 {0}
-			 AND ddhpx.ngaytao >= convert(datetime,N'{1} 00:00',103)
-			 AND ddhpx.ngaytao <= convert(datetime,N'{2} 23:59',103)
+			 AND ddhpx.ngay_hieuluc >= convert(datetime,N'{1} 00:00',103)
+			 AND ddhpx.ngay_hieuluc <= convert(datetime,N'{2} 23:59',103)
 		   GROUP BY px.ten_phanxuong,
 					sp.ma_sanpham,
 					sp.mota_tiengviet,
 					dvt.ten_dvt,
-					sp.md_sanpham_id )a
+					sp.md_sanpham_id,
+                    sp.giabinhquan) a
 		ORDER BY a.ma_sp
-		",phanxuong,tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy") ,gia );
+		", phanxuong,tu.ToString("dd/MM/yyyy"), den.ToString("dd/MM/yyyy") ,gia );
 		return sql;
     }
 }
 
 /// <summary>
-/// Summary description for SoPhanTichBOM
+/// Summary description for SoPhanTichBOMVT
 /// </summary>
-public class SoPhanTichBOM : DevExpress.XtraReports.UI.XtraReport
+public class SoPhanTichBOMVT : DevExpress.XtraReports.UI.XtraReport
 {
     private DevExpress.XtraReports.UI.DetailBand Detail;
     private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
@@ -152,7 +146,7 @@ public class SoPhanTichBOM : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    public SoPhanTichBOM()
+    public SoPhanTichBOMVT()
     {
         InitializeComponent();
         //
@@ -317,7 +311,7 @@ public class SoPhanTichBOM : DevExpress.XtraReports.UI.XtraReport
         // 
         this.dongia.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0}")});
         this.dongia.Name = "dongia";
         this.dongia.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.dongia.StylePriority.UseBorders = false;
@@ -331,7 +325,7 @@ public class SoPhanTichBOM : DevExpress.XtraReports.UI.XtraReport
         this.thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0}")});
         this.thanhtien.Name = "thanhtien";
         this.thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 5, 0, 0, 100F);
         this.thanhtien.StylePriority.UseBorders = false;
@@ -568,7 +562,7 @@ public class SoPhanTichBOM : DevExpress.XtraReports.UI.XtraReport
         this.xuong.StylePriority.UseTextAlignment = false;
         this.xuong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
-        // SoPhanTichBOM
+        // SoPhanTichBOMVT
         // 
         this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.Detail,

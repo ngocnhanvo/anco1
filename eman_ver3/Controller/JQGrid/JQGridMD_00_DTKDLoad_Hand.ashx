@@ -12,8 +12,6 @@ public class JQGridMD_00_DTKDLoad_Hand : IHttpHandler , System.Web.SessionState.
 			string sql = @"select distinct A.* from
 			(
 			select ma_dtkd, ten_dtkd, diachi, isncc from md_doitackinhdoanh
-			union
-			select ma_dtkd, ten_dtkd, diachi, isncc from ancotrading.dbo.md_doitackinhdoanh
 			)A where 1=1 " + filter;
 
             string sqlcount = string.Format("select count(A.ma_dtkd) from (" + sql + ")A");
