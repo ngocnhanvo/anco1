@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using DataAcess;
-using Newtonsoft.Json;
-using System.Web;
-using System.IO;
 using System.ComponentModel;
 using System.Data;
-using System.Text;
-using System.Globalization;
 
 /// <summary>
 /// Summary description for Extension
@@ -79,11 +73,6 @@ public static class Extension
         return value.ToString("0.####");
     }
 
-    public static decimal ToDecimal(this string value)
-    {
-        return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-    }
-
     public static decimal? Set0WhenlessThan0(this decimal value)
     {
         if(value < 0)
@@ -140,5 +129,32 @@ public static class Extension
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
             return origin.AddMilliseconds(b).ToLocalTime();
         }
+    }
+
+    public static md_lenhsanxuat_tosx getLSXToId_NKNB(string id_parent, EntityContext db)
+    {
+        var nknb = db.md_nhapkhonb.Where(s => s.md_nhapkhonb_id == id_parent).FirstOrDefault();
+        var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == nknb.md_lenhsanxuat_id).FirstOrDefault();
+        string[] arr = nknb.md_lenhsanxuat_tosx_id.Split(new[] { " --- " }, StringSplitOptions.None);
+        string sctLSX = arr[0];
+        string tentoLSX = arr[1];
+        string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
+        s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
+        var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                            & s.md_phanxuong_to_id == toId).FirstOrDefault();
+        return lsxTSX;
+    }
+
+    public static md_lenhsanxuat_tosx getLSXToId_NKNB(md_nhapkhonb nknb, EntityContext db)
+    {
+        var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == nknb.md_lenhsanxuat_id).FirstOrDefault();
+        string[] arr = nknb.md_lenhsanxuat_tosx_id.Split(new[] { " --- " }, StringSplitOptions.None);
+        string sctLSX = arr[0];
+        string tentoLSX = arr[1];
+        string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
+        s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
+        var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                            & s.md_phanxuong_to_id == toId).FirstOrDefault();
+        return lsxTSX;
     }
 }

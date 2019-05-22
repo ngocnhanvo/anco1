@@ -25,8 +25,8 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             case "del":
                 this.del(context);
                 break;
-            case "CA01UpdateDDSAncotradingMD01DDSDHJQGS_MD01DDSDHTNJQGS":
-                this.CA01UpdateDDSAncotradingMD01DDSDHJQGS_MD01DDSDHTNJQGS(context);
+            case "selectBOM":
+                this.selectBOM(context);
                 break;
 
             default:
@@ -34,64 +34,30 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         }
     }
 
-    public void CA01UpdateDDSAncotradingMD01DDSDHJQGS_MD01DDSDHTNJQGS(HttpContext context)
+    public void selectBOM(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string str = VNN_VariablePublic.connectString_Anco(db);
-        string start = context.Request.Form["start"];
-        string end = context.Request.Form["end"];
-        SqlConnection cnn = new SqlConnection(str);
+        var db = new EntityContext();
+        bool firstnull = bool.Parse(context.Request.QueryString["firstnull"]);
+        string str = "<select>";
 
-        SqlCommand cmd = new SqlCommand(@"select * from (select *, ROW_NUMBER() over (order by ngaytao) as rownum 
-		from c_dongdsdh where hoatdong = 1 and md_doitackinhdoanh_id = 'e36c38e0982d1b0372708eaa0c6162ed') P where P.rownum >= " + start + " and P.rownum <= " + end, cnn);
-        DataTable dt = new DataTable();
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        da.Fill(dt);
-
-        int count_col = 0;
-        string sql_column = "(";
-        foreach (System.Data.DataColumn col in dt.Columns)
+        str += firstnull ? string.Format(@"<option px="""" value=""""></option>") : "";
+        foreach (var cn in db.md_sanpham_bom.Where(s =>
+            string.IsNullOrEmpty(s.md_phanxuong_id) & string.IsNullOrEmpty(s.md_to_id))
+                .OrderBy(s => s.trangthai).ToList())
         {
-            if (col.ColumnName != "rownum")
-            {
-                count_col++;
-                sql_column += col.ColumnName + ",";
-            }
+            str += string.Format(@"<option sp=""{2}"" value=""{0}"">{1}</option>", cn.md_sanpham_bom_id, cn.ten_phienban, cn.md_sanpham_id);
         }
-
-        if (sql_column != "(") { sql_column += "anco_check" + ")"; }
-
-        foreach (System.Data.DataRow row in dt.Rows)
-        {
-            string c_dongdsdh_id = row[0].ToString();
-            c_dongdsdh dsdh = db.c_dongdsdh.Where(s => s.c_dongdsdh_id == c_dongdsdh_id).FirstOrDefault();
-            if (dsdh == null)
-            {
-                string sql_insert = "insert into c_dongdsdh" + sql_column + " values(";
-                for (int i = 0; i < count_col; i++)
-                {
-                    string cell_value = row[i].ToString();
-                    if (cell_value == null | cell_value == "")
-                    {
-                        sql_insert += "NULL,";
-                    }
-                    else
-                    {
-                        sql_insert += "N'" + cell_value.Replace("'", "''") + "',";
-                    }
-                }
-                sql_insert += "1)";
-                Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql_insert);
-            }
-        }
+        str += "</select>";
+        context.Response.Write(str);
     }
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["md_sanpham_id"];
+        string ten_phienban = context.Request.Form["md_sanpham_bom_id"];
         int sl_dathang = int.Parse(context.Request.Form["sl_dathang"]);
         try
         {
@@ -99,14 +65,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             decimal gianhap = decimal.Parse(context.Request.Form["gianhap"]);
             string id = context.Request.Form["id_parent"];
             string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "VINHGIA").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
-            md_sanpham sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
+            var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
             int ddsdh = db.c_dongdsdh.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.c_danhsachdathang_id == id).Count();
-            c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
-            md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
-            if (dtkd != null)
-            {
-                md_phienbangia pbg = db.md_phienbangia.Where(s => s.md_banggia_id == dtkd.md_banggia_id & s.md_trangthai_id == "HIEULUC").FirstOrDefault();
-            }
+            var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
+            var dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+            var bom_sp = db.md_sanpham_bom.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.ten_phienban == ten_phienban).FirstOrDefault();
 
             if (dsdh.trangthai == "HIEULUC")
             {
@@ -136,6 +99,16 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 msg = "false#Lỗi:CBM phải lớn hơn 0";
             }
+            else if(bom_sp == null)
+            {
+                var bom = (from a in db.md_sanpham_bom
+                           where a.md_sanpham_id == sp.md_sanpham_id & a.trangthai == "HIEULUC"
+                           select new { a.md_sanpham_bom_id }).FirstOrDefault();
+                if (bom == null)
+                    msg = string.Format(@"false#HHVT {0} không có BOM", sp.ma_sanpham);
+                else
+                    ten_phienban = bom.md_sanpham_bom_id;
+            }
 
             if (msg.Length <= 0)
             {
@@ -148,6 +121,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 VNN_Function.SetFormValue("sl_hanngach", "0");
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk_id);
                 VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
+                VNN_Function.SetFormValue("md_sanpham_bom_id", bom_sp == null ? ten_phienban : bom_sp.md_sanpham_bom_id);
                 string ten_table = "c_dongdsdh";
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
@@ -168,6 +142,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["md_sanpham_id"];
+        string ten_phienban = context.Request.Form["md_sanpham_bom_id"];
         int sl_dathang = int.Parse(context.Request.Form["sl_dathang"]);
         string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "ANCO1").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
         try
@@ -176,14 +151,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             decimal cbm = decimal.Parse(context.Request.Form["v2"]);
             string id = context.Request.Form["id"];
             string id_parent = context.Request.Form["id_parent"];
-            md_sanpham sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
-            c_dongdsdh object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).FirstOrDefault();
-            c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id_parent).FirstOrDefault();
-            md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
-            if (dtkd != null)
-            {
-                md_phienbangia pbg = db.md_phienbangia.Where(s => s.md_banggia_id == dtkd.md_banggia_id & s.md_trangthai_id == "HIEULUC").FirstOrDefault();
-            }
+            var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
+            var object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).FirstOrDefault();
+            var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id_parent).FirstOrDefault();
+            var dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+            var bom_sp = db.md_sanpham_bom.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.ten_phienban == ten_phienban).FirstOrDefault();
 
             if (object_ == null)
             {
@@ -214,6 +186,10 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 msg = "false#Lỗi:CBM phải lớn hơn 0";
             }
+            else if(bom_sp == null)
+            {
+                msg = string.Format(@"false#HHVT {0} không có BOM", sp.ma_sanpham);
+            }
 
             if (msg.Length <= 0)
             {
@@ -224,6 +200,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 VNN_Function.SetFormValue("sl_dagiao", "0");
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk_id);
                 VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
+                VNN_Function.SetFormValue("md_sanpham_bom_id", bom_sp.md_sanpham_bom_id);
                 string ten_table = "c_dongdsdh";
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);

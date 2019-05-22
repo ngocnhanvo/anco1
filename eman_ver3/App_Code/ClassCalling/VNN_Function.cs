@@ -97,12 +97,13 @@ public static class VNN_Function
         json.ClearCache(context, json.urlData);
         var selectoptions = json.ad_selectoptionJSON();
         string table = "";
-        foreach (ad_selectop_save sel_save in db.ad_selectop_save.OrderBy(p => p.ten_table).ToList())
+        var ad_selectop_saves = db.ad_selectop_save.Select(s => new { s.ten_table }).Distinct().ToList();
+        foreach (var sel_save in ad_selectop_saves)
         {
             if (sel_save.ten_table != table)
             {
                 table = sel_save.ten_table;
-                foreach (ad_selectoption sel in db.ad_selectoption.Where(s => s.from_sql.Contains(table + " ")).ToList())
+                foreach (var sel in db.ad_selectoption.Where(s => s.from_sql.Contains(table + " ")).ToList())
                 {
                     string id_count = sel.select_sql.Split(',')[0];
                     id_count = id_count.Replace("distinct", "");
@@ -135,7 +136,7 @@ public static class VNN_Function
                     selectoptions.Add(sel);
                 }
             }
-            db.ad_selectop_save.Remove(sel_save);
+            db.ad_selectop_save.RemoveRange(db.ad_selectop_save.Where(s=>s.ten_table == sel_save.ten_table));
         }
         db.SaveChanges();
         db.Dispose();

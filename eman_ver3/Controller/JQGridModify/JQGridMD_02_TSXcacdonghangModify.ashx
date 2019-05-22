@@ -97,10 +97,10 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
 
         html += "<table style='width:100%'>";
         html += "<tr><th style='border: 1px solid #E3D892;'><input type='checkbox' class='checkall_slchiato' name='checkall_slchiato' /></th><th>Mã sản phẩm</th><th>SL đặt hàng</th><th>SL chia tổ</th></tr>";
-        var sp_dhpx = from a in db.md_dondathangphanxuong_cdh
+        var sp_dhpx = from a in db.md_lenhsanxuat_tosx_cdh
                       join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-                      where a.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id
-                      select new { b.md_sanpham_id, b.ma_sanpham, a.tong_sl_dat, a.sl_giamhanngach, a.sl_chiato };
+                      where a.md_lenhsanxuat_tosx_id == lsx_tosx.md_lenhsanxuat_tosx_id
+                      select new { b.md_sanpham_id, b.ma_sanpham, a.sl_dat, a.sl_giamhanngach, a.sl_chiato };
 
         foreach (var sp in sp_dhpx.OrderBy(s => s.ma_sanpham).ToList())
         {
@@ -120,7 +120,7 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
                 html += "<td style='text-align:center;'><input class='chk_tosx' type='checkbox' " + checked_ + " value='" + sp.md_sanpham_id + "' /></td>";
 
             html += "<td style='text-align:center;color:blue'>" + sp.ma_sanpham + "</td>";
-            html += "<td style='text-align:center;color:blue'>" + (sp.tong_sl_dat - sp.sl_giamhanngach.GetValueOrDefault(0)).Value.DropTrailingZeros() + "</td>";
+            html += "<td style='text-align:center;color:blue'>" + (sp.sl_dat - sp.sl_giamhanngach.GetValueOrDefault(0)).Value.DropTrailingZeros() + "</td>";
 
             if(sl_danhapkho > 0 | taophieu_xuatkho > 0)
                 html += "<td><input disabled class='nhan_disable input_soluong input_" + sp.md_sanpham_id + "' style='width:90px;text-align:right;' type='text' value='" + Math.Round(sl_chiato, 0) + "'/></td>";
@@ -156,11 +156,8 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
         if (msg.Length <= 0)
         {
             var md_lenhsanxuat_tosx_cdh = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == id);
-            foreach (md_lenhsanxuat_tosx_cdh lsx_tsx_cdh in md_lenhsanxuat_tosx_cdh)
+            foreach (md_lenhsanxuat_tosx_cdh lsx_tsx_cdh in md_lenhsanxuat_tosx_cdh.ToList())
             {
-                md_dondathangphanxuong_cdh dhpx_cdh = db.md_dondathangphanxuong_cdh.Where(s => s.md_sanpham_id == lsx_tsx_cdh.md_sanpham_id & s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
-                dhpx_cdh.sl_chiato -= lsx_tsx_cdh.sl_chiato;
-                dhpx_cdh.sl_hoanthanh -= lsx_tsx_cdh.sl_hoanthanh;
                 db.md_lenhsanxuat_tosx_cdh.Remove(lsx_tsx_cdh);
             }
 

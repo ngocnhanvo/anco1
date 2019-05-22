@@ -97,6 +97,18 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_sapxep_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_sapxep_wintaFN
+                        public string sapxep { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_stt_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_stt_wintaFN
+                        public int? stt { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_vaitrocapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_vaitrocapnhat_wintaFN

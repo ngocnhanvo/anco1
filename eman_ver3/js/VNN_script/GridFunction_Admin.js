@@ -265,10 +265,12 @@ function get_MLname(ma_column, Model_infor) {
 
 function Logo_Center(logo, center, id_dialog) {
 	if(id_dialog == null | id_dialog == ''){
-		if (logo.indexOf("/") > -1) {
+        if (logo.indexOf("/") > -1) {
+            $('.ui-dialog > .ui-dialog-titlebar').find('.img_title_jqgrid').remove();
 			$('.ui-dialog > .ui-dialog-titlebar').prepend('<img class="img_title_jqgrid" alt="" src="' + logo + '" />');
 		}
-		else {
+        else {
+            $('.ui-dialog > .ui-dialog-titlebar').find('.img_title_jqgrid').remove();
 			$('.ui-dialog > .ui-dialog-titlebar').prepend('<span class="img_title_jqgrid ' + logo + '" />');
 		}
 		if (center == "False") {
@@ -278,20 +280,27 @@ function Logo_Center(logo, center, id_dialog) {
 	}
 	else {
 		var ui_dialog = $('#' + id_dialog).prev();
-		if (logo.indexOf("/") > -1) 
-			$(ui_dialog).prepend('<img class="img_title_jqgrid" alt="" src="' + logo + '" />');
-		else
-			$(ui_dialog).prepend('<span class="img_title_jqgrid ' + logo + '" />');
-		
+        if (logo.indexOf("/") > -1) {
+            $(ui_dialog).find('.img_title_jqgrid').remove();
+            $(ui_dialog).prepend('<img class="img_title_jqgrid" alt="" src="' + logo + '" />');
+        }
+        else {
+            $(ui_dialog).find('.img_title_jqgrid').remove();
+            $(ui_dialog).prepend('<span class="img_title_jqgrid ' + logo + '" />');
+        }
+			
 		if (center == "False") {
 			$(ui_dialog).css('top', 0);
 			$(ui_dialog).css('left', 0);
 		}
-	}
-	
-	$('#btn-ok').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
-	$('#btn-close').prepend('<span class=\"span_button ui-icon ui-icon-close\"></span>');
-	$('#btn-ok_').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
+    }
+    $('#btn-ok').find('.span_button.ui-icon.ui-icon-disk').remove();
+    $('#btn-ok').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
+    $('#btn-close').find('.span_button.ui-icon.ui-icon-close').remove();
+    $('#btn-close').prepend('<span class=\"span_button ui-icon ui-icon-close\"></span>');
+    $('#btn-ok_').find('.span_button.ui-icon.ui-icon-disk').remove();
+    $('#btn-ok_').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
+    $('#btn-close_').find('.span_button.ui-icon.ui-icon-close').remove();
 	$('#btn-close_').prepend('<span class=\"span_button ui-icon ui-icon-close\"></span>');
 }
 

@@ -29,7 +29,7 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 break;
         }
     }
-	
+
     public void CA_01_CapnhatSLcanchuyen(HttpContext context)
     {
         EntityContext db = new EntityContext();
@@ -40,18 +40,20 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         foreach (md_vanchuyennoibo_cdvc cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)))
         {
             md_vanchuyennoibo vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id).FirstOrDefault();
-            if(vcnb.md_trangthai_id == "HIEULUC")
+            if (vcnb.md_trangthai_id == "HIEULUC")
             {
                 msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
                 break;
             }
-            else {
+            else
+            {
                 decimal sltd = cdvc.soluong_toida.Value - cdvc.soluong_dachuyen.Value;
                 if (sel_val == "0")
                 {
                     cdvc.soluong_dichchuyen = sltd;
                 }
-                else {
+                else
+                {
                     if (slvc_case <= sltd)
                     {
                         cdvc.soluong_dichchuyen = slvc_case;
@@ -78,41 +80,41 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-		string ma_sanpham = context.Request.Form["md_sanpham_id"];
-		md_sanpham sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_sanpham);
-		
+        string ma_sanpham = context.Request.Form["md_sanpham_id"];
+        md_sanpham sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_sanpham);
+
         try
-        {			
-			decimal soluong_dichchuyen = decimal.Parse(context.Request.Form["soluong_dichchuyen"]);
+        {
+            decimal soluong_dichchuyen = decimal.Parse(context.Request.Form["soluong_dichchuyen"]);
             string id = context.Request.Form["id_parent"];
-			int dem = db.md_vanchuyennoibo_cdvc.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_vanchuyennoibo_id == id).Count();
-			var vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
-			if (vnnb.md_trangthai_id == "HIEULUC")
+            int dem = db.md_vanchuyennoibo_cdvc.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_vanchuyennoibo_id == id).Count();
+            var vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
+            if (vnnb.md_trangthai_id == "HIEULUC")
                 msg = "false#Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực.";
-			else if(vnnb.chungtuthamchieu != "")
-				msg = "false#Lỗi:Dòng \"" + vnnb.sochungtu + "\" thừa kế từ PXK \""+ vnnb.chungtuthamchieu +"\", không thể tạo dòng hàng.";
-			else if(dem > 0)
-				msg = "false#Lỗi:Mã " + sp.ma_sanpham + " đã tồn tại.";
-			else if(soluong_dichchuyen <= 0)
-				msg = "false#Lỗi:Số lượng dịch chuyển phải lớn hơn 0.";
-            else if(db.md_kho_sanpham.Where(s=>s.md_kho_id == vnnb.tukho & s.md_sanpham_id == sp.md_sanpham_id & s.soluong > 0).Count() <= 0)
+            else if (vnnb.chungtuthamchieu != "")
+                msg = "false#Lỗi:Dòng \"" + vnnb.sochungtu + "\" thừa kế từ PXK \"" + vnnb.chungtuthamchieu + "\", không thể tạo dòng hàng.";
+            else if (dem > 0)
+                msg = "false#Lỗi:Mã " + sp.ma_sanpham + " đã tồn tại.";
+            else if (soluong_dichchuyen <= 0)
+                msg = "false#Lỗi:Số lượng dịch chuyển phải lớn hơn 0.";
+            else if (db.md_kho_sanpham.Where(s => s.md_kho_id == vnnb.tukho & s.md_sanpham_id == sp.md_sanpham_id & s.soluong > 0).Count() <= 0)
                 msg = string.Format(@"false#HHVT ""{0}"" không có trong kho.", ma_sanpham);
-			
-			string loaichuyen = context.Request.Form["loaichuyen"];
-			if(loaichuyen == "VCNB")
-			{
-				VNN_Function.SetFormValue("chungtuthamchieu","VNN_notpost");
-			}
+
+            string loaichuyen = context.Request.Form["loaichuyen"];
+            if (loaichuyen == "VCNB")
+            {
+                VNN_Function.SetFormValue("chungtuthamchieu", "VNN_notpost");
+            }
             if (msg.Length <= 0)
             {
                 string action = "add";
-                string[] column_ex = {"md_vanchuyennoibo_id", "denkho" };
+                string[] column_ex = { "md_vanchuyennoibo_id", "denkho" };
                 string ten_table = "md_vanchuyennoibo_cdvc";
-				VNN_Function.SetFormValue("md_vanchuyennoibo_id",id);
-				VNN_Function.SetFormValue("md_sanpham_id",sp.md_sanpham_id);
-				VNN_Function.SetFormValue("soluong_dichchuyen", soluong_dichchuyen + "");
-				VNN_Function.SetFormValue("soluong_toida", soluong_dichchuyen + "");
-				VNN_Function.SetFormValue("denkho",sp.khomacdinh);
+                VNN_Function.SetFormValue("md_vanchuyennoibo_id", id);
+                VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
+                VNN_Function.SetFormValue("soluong_dichchuyen", soluong_dichchuyen + "");
+                VNN_Function.SetFormValue("soluong_toida", soluong_dichchuyen + "");
+                VNN_Function.SetFormValue("denkho", sp.khomacdinh);
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -177,7 +179,7 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
@@ -187,20 +189,30 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.md_vanchuyennoibo_cdvc.Where(p => p.md_vanchuyennoibo_cdvc_id == id_del_).Select(s => s.md_vanchuyennoibo_cdvc_id).Take(1).FirstOrDefault();
+                msg_del = ""; var id_del_ = id_del[i];
+                var object_ = db.md_vanchuyennoibo_cdvc.Where(p => p.md_vanchuyennoibo_cdvc_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
                     msg += msg_del + "\n";
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    var vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id).FirstOrDefault();
+                    if(vcnb.md_trangthai_id == "HIEULUC")
+                    {
+                        msg_del = string.Format(@"Lỗi:Phiếu ""{0}"" đã ""Hiệu Lực""", vcnb.sochungtu);
+                        msg += msg_del + "\n";
+                    }
+
+                    if (msg_del.Length <= 0)
+                    {
+                        string action = "del";
+                        string[] column_ex = { };
+                        VNN_Function.SetFormValue("id", object_.md_vanchuyennoibo_cdvc_id);
+                        VNN_Function.Set_DefaultvalueColumn(context, action);
+                        VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    }
                 }
             }
             VNN_Function.loaddulieu_Auto(db, ma_module);

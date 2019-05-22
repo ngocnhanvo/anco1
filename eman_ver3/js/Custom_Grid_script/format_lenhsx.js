@@ -11,6 +11,8 @@ function format_lenhsx(elem) {
 }
 
 function timkiem_lenhsx(id_elem, type) {
+    if ($(`#${id_elem}`).prop('disabled') == true)
+        return;
     var load_sp = 0;
     var namegrid = "gridMD_00_Lenhsanxuat_cp";
     $('body').append('<div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục Lệnh sản xuất">' +
@@ -21,6 +23,7 @@ function timkiem_lenhsx(id_elem, type) {
     if (tengrid0 == 'gridMD_00_Xuatnoibo') {
         multi = true;
     }
+    
     $('#dlg_gridSmal_2').dialog({
         modal: true,
         dialogClass: "dialog_index",

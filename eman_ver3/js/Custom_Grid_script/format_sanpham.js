@@ -1,14 +1,16 @@
 ﻿//Start San pham
 function format_sanpham(elem) {
-    var id_elem = $(elem).attr('id');
     $(elem).keypress(function (e) {
         if (e.which == '13') {
-            timkiem_sanpham(id_elem, 1);
+            timkiem_sanpham($(this).next(), 1);
         }
     });
-    $(elem).parent().append(`<span onclick="timkiem_sanpham('${id_elem}')"
+    
+    $(elem).parent().append(`<span onclick="timkiem_sanpham(this)"
         class="span_format_sanpham glyphicon glyphicon-search" 
         style="position: absolute;margin: 1px 0 0 -21px;background-color: rgb(248, 249, 243);padding: 3.5px;cursor: pointer;border-left: 1px solid rgba(204, 204, 204, 0.63)" />`);
+
+    setTimeout(function () { $('#tr_sanpham_id').hide(); }, 10);
 }
 
 function timkiem_sanpham(id_elem, type) {
@@ -25,6 +27,7 @@ function timkiem_sanpham(id_elem, type) {
         tp = true;
     }
 
+    id_elem = $(id_elem).prev();
     $('#dlg_gridSmal_2').dialog({
         modal: true,
         dialogClass: "dialog_index",
@@ -51,8 +54,10 @@ function timkiem_sanpham(id_elem, type) {
                     if (ids != '<a style=\'color:red\'>Not data (404)</a>') {
 
                         cell = $('#gridMD_00_DSHangHoaVG_cp').getRowData(ids);
-                        if ($('#' + id_elem).prop('disabled') != true)
-                            $('#' + id_elem).val(cell['ma_sanpham']);
+                        if (id_elem.prop('disabled') != true) {
+                            id_elem.val(cell['ma_sanpham']);
+                            $(`#sanpham_id`).val(cell['md_sanpham_id']);
+                        }
                         $('#mota_tiengviet').val(cell['mota_tiengviet']);
                         $('#tenhang').val(cell['mota_tiengviet']);
                         $('#mota_tienganh').val(cell['mota_tienganh']);
@@ -90,7 +95,8 @@ function timkiem_sanpham(id_elem, type) {
                     }
                 },
                 colModel: [
-                    { key: true, fixed: true, label: 'Mã Sản Phẩm', name: 'ma_sanpham', index: ' sp.ma_sanpham ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 255 }, frozen: true, formoptions: { label: 'Mã Sản Phẩm' } },
+                    { key: true, fixed: true, label: 'Sản Phẩm Id', name: 'md_sanpham_id', index: ' sp.md_sanpham_id ', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 255 }, frozen: true, formoptions: { label: 'Sản Phẩm Id' } },
+                    { key: false, fixed: true, label: 'Mã Sản Phẩm', name: 'ma_sanpham', index: ' sp.ma_sanpham ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 255 }, frozen: true, formoptions: { label: 'Mã Sản Phẩm' } },
                     { key: false, fixed: true, label: 'md_kieudang_id', name: 'md_kieudang_id', index: ' sp.md_kieudang_id ', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'md_kieudang_id' } },
                     { key: false, fixed: true, label: 'md_chucnang_id', name: 'md_chucnang_id', index: ' sp.md_chucnang_id ', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'md_chucnang_id' } },
                     { key: false, fixed: true, label: 'ma_sanphamcu', name: 'ma_sanphamcu', index: ' sp.ma_sanphamcu ', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'ma_sanphamcu' } },
@@ -108,8 +114,8 @@ function timkiem_sanpham(id_elem, type) {
                 beforeRequest: function () {
                     //giữ focus
                     $('#gridMD_00_DSHangHoaVG_cp').jqGrid('getGridParam', 'postData').where_ex = where_ex;
-                    if ($('#' + id_elem).val() != '' & load_sp == 0) {
-                        $('#gridMD_00_DSHangHoaVG_cp').jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" sp.ma_sanpham ","op":"bw","data":"' + $('#' + id_elem).val() + '"}]}';
+                    if (id_elem.val() != '' & load_sp == 0) {
+                        $('#gridMD_00_DSHangHoaVG_cp').jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" sp.ma_sanpham ","op":"bw","data":"' + id_elem.val() + '"}]}';
                     }
                     input_focus = $('input:focus').attr('class');
                 },
@@ -121,12 +127,11 @@ function timkiem_sanpham(id_elem, type) {
                 },
                 loadComplete: function (data) {
                     var top_rowid = $('#gridMD_00_DSHangHoaVG_cp tr:nth-child(2)').attr('id');
-                    var countrow = jQuery("#gridMD_00_DSHangHoaVG_cp").jqGrid('getGridParam', 'records');
+                    var countrow = $("#gridMD_00_DSHangHoaVG_cp").jqGrid('getGridParam', 'records');
                     if (load_sp == 0) {
-                        $('.gs_ma_sanpham').val($('#' + id_elem).val());
-                        //$('.gs_ma_sanpham').focus
-                        $('#gridMD_00_DSHangHoaVG_cp').jqGrid('setSelection', $('#' + id_elem).val());
+                        $('.gs_ma_sanpham').val(id_elem.val());
                         load_sp = 1;
+                        $('#gridMD_00_DSHangHoaVG_cp').jqGrid('setSelection', top_rowid);
                         if (top_rowid.indexOf('<a style=\'color:red\'>') <= -1 & type == 1 & countrow == 1) {
                             $('#dlg_gridSmal_2').dialog('destroy').remove();
                         }

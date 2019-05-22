@@ -88,6 +88,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
     {
         EntityContext db = new EntityContext();
         string id = context.Request.Form["id"];
+        string khoNH = context.Request.Form["kho"];
         string msg = "";
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == id).Take(1).FirstOrDefault();
@@ -135,7 +136,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             sochungtu = sochungtu,
                             donhang_thamchieu = dmh.donhang_thamchieu,
                             ngaychuyen = DateTime.Now,
-                            kho = sp.khomacdinh,
+                            kho = khoNH,
                             trangthai = "SOANTHAO",
                             check_hieuluc = false,
                             md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id,

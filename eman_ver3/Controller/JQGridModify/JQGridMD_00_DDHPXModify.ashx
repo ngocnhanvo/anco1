@@ -417,27 +417,27 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 var dsdh = db.c_danhsachdathang.FirstOrDefault(s => s.sochungtu == object_.sctdathang);
                 if (object_ == null)
                 {
-                    msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
                 }
                 else if ((object_.md_trangthai_id == "SOANTHAO" | object_.md_trangthai_id == "KETTHUC") & md_trangthai_id == "HUY")
                 {
-                    msg = string.Format(@"false#Lỗi: Dòng {0} không thể hủy.", object_.sochungtu);
+                    msg = string.Format(@"Lỗi: Dòng {0} không thể hủy.", object_.sochungtu);
                 }
                 else if (object_.md_trangthai_id == "SOANTHAO" & md_trangthai_id == "KETTHUC")
                 {
-                    msg = string.Format(@"false#Lỗi: Dòng {0} không thể kết thúc.", object_.sochungtu);
+                    msg = string.Format(@"Lỗi: Dòng {0} không thể kết thúc.", object_.sochungtu);
                 }
                 else if (object_.md_trangthai_id == "HIEULUC" & md_trangthai_id == "SOANTHAO")
                 {
-                    msg = string.Format(@"false#Lỗi: Dòng {0} không thể Hiệu lực.", object_.sochungtu);
+                    msg = string.Format(@"Lỗi: Dòng {0} không thể Hiệu lực.", object_.sochungtu);
                 }
                 else if (object_.md_trangthai_id == "HUY" & md_trangthai_id == "HIEULUC")
                 {
-                    msg = "false#Lỗi: Dòng " + object_.sochungtu + " đã Hủy không thể Hiệu lực lại.";
+                    msg = "Lỗi: Dòng " + object_.sochungtu + " đã Hủy không thể Hiệu lực lại.";
                 }
                 else if (string.IsNullOrEmpty(ngay_hieuluc))
                 {
-                    msg = "false#Lỗi: Hãy chọn ngày bắt đầu sản xuất.";
+                    msg = "Lỗi: Hãy chọn ngày bắt đầu sản xuất.";
                 }
 
                 if (msg.Length <= 0)
@@ -452,13 +452,16 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                     if (md_trangthai_id == "HIEULUC" & old_trangthai_id == "SOANTHAO")
                     {
-                        var toDauTien = "";
+                        var lsxId = Helper.getNewId();
+                        var px_to_ = db.md_phanxuong_to.
+                                Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).OrderBy(s=>s.sapxep).ToList();
+                        var tdt = "";
+                        var countPXT = px_to_.Count;
                         foreach (var ddh in db.md_dondathangphanxuong.
                                 Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).ToList())
                         {
-                            //start
                             var lsx = new md_lenhsanxuat();
-                            lsx.md_lenhsanxuat_id = Helper.getNewId();
+                            lsx.md_lenhsanxuat_id = lsxId;
                             lsx.md_dondathangphanxuong_id = ddh.md_dondathangphanxuong_id;
                             lsx.md_phanxuong_id = ddh.md_phanxuong_id;
                             lsx.md_trangthai_id = "CHUAHOANTHANH";
@@ -482,19 +485,12 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             lsx.ngaytao = DateTime.Now;
                             lsx.ngaycapnhat = DateTime.Now;
                             lsx.hoatdong = true;
-
-                            var px_to_ = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == ddh.md_phanxuong_id);
-                            if (px_to_.Count() == 1)
-                            {
+                            if (countPXT == 1)
                                 lsx.md_trangthai_id = "CHUAHOANTHANH";
-                            }
-                            //--end
                             db.md_lenhsanxuat.Add(lsx);
-
-                            //--start
-                            foreach (var px_to in px_to_.OrderBy(s=>s.sapxep).ToList())
+                            db.SaveChanges();
+                            foreach (var px_to in px_to_.Select((s, index) => new { s.md_phanxuong_id, s.md_to_id, s.sapxep, index }))
                             {
-                                //--start
                                 var tosx = new md_lenhsanxuat_tosx();
                                 tosx.md_lenhsanxuat_tosx_id = Helper.getNewId();
                                 tosx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
@@ -502,7 +498,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 tosx.md_phanxuong_id = px_to.md_phanxuong_id;
                                 tosx.ngaydkht = lsx.ngayketthuc;
                                 tosx.check_hoanthanh = false;
-
+                                tosx.sapxep = px_to.sapxep;
+                                tosx.stt = px_to.index + 1 == countPXT ? 9999 : px_to.index;
                                 tosx.nguoitao = us.ad_user_id;
                                 tosx.vaitrotao = us.ad_role_id;
                                 tosx.bophantao = us.md_phongban_id;
@@ -518,83 +515,164 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 tosx.ngaytao = DateTime.Now;
                                 tosx.ngaycapnhat = DateTime.Now;
                                 tosx.hoatdong = true;
-
-                                if(string.IsNullOrEmpty(toDauTien))
-                                    toDauTien = tosx.md_lenhsanxuat_tosx_id;
-                                //--end
                                 db.md_lenhsanxuat_tosx.Add(tosx);
+                                db.SaveChanges();
+                                tdt = px_to.index == 0 ? px_to.md_to_id : tdt;
                             }
-                            db.SaveChanges();
                         }
 
-                        foreach (var dhpx_cdh in db.md_dondathangphanxuong_cdh.
-                                        Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).ToList())
+                        var lsxTSX = db.md_lenhsanxuat_tosx.
+                                Where(s => s.md_lenhsanxuat_id == lsxId);
+                        foreach (var px_to in lsxTSX
+                                .OrderBy(s => s.sapxep)
+                                .ToList())
                         {
-                            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                            var lsx_tosx_cdh = new md_lenhsanxuat_tosx_cdh
+                            foreach (var dhpx_cdh in db.md_dondathangphanxuong_cdh.
+                                                Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id)
+                                                .ToList())
                             {
-                                md_lenhsanxuat_tosx_cdh_id = Helper.getNewId(),
-                                md_lenhsanxuat_tosx_id = toDauTien,
-                                md_sanpham_id = dhpx_cdh.md_sanpham_id,
-                                noigiaohang = dhpx_cdh.noigiaohang,
-                                sl_dat = dhpx_cdh.tong_sl_dat,
-                                sl_chiato = dhpx_cdh.tong_sl_dat,
-                                sl_tinhvattu = dhpx_cdh.tong_sl_dat,
-                                sl_hoanthanh = 0,
-                                sl_dahoanthanh = 0,
-                                sl_nhapkho = 0,
-                                sl_danhapkho = 0,
-                                macuoi = dhpx_cdh.macuoi,
-                                md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                                nguoitao = us.ad_user_id,
-                                vaitrotao = us.ad_role_id,
-                                bophantao = us.md_phongban_id,
-                                value_nguoitao = us.ma_user,
-                                value_vaitrotao = us.ten_role,
-                                value_bophantao = us.ten_phongban,
+                                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id).Take(1).FirstOrDefault();
+                                string ma_caiTemp = sp.ma_sanpham.Substring(0, 9) + "{0}" + sp.ma_sanpham.Substring(11);
+                                string bo = sp.ma_sanpham.Substring(9, 2);
+                                string bo_lon = db.md_sanpham.Where(s => s.ma_sanpham.StartsWith(sp.ma_sanpham.Substring(0, 9) + "S")).Select(s => s.ma_sanpham.Substring(9, 2)).FirstOrDefault();
+                                string mdBoId = db.md_bo.Where(s => s.ma_bo == bo & s.ma_bo_cha == bo_lon).Select(s => s.md_bo_id).FirstOrDefault();
+                                var bocais = db.md_bo_chitiet.Where(s => s.md_bo_id == mdBoId).OrderByDescending(s => s.md_bo_detail).Select(s=>s.md_bo_detail).ToList();
+                                if (bocais.Count <= 0)
+                                    bocais.Add(bo);
+                                foreach (var bocai in bocais)
+                                {
+                                    string ma_cai = string.Format(ma_caiTemp, bocai);
+                                    string ma_bo = string.Format(ma_caiTemp, bo);
+                                    var spCai = db.md_sanpham.
+                                            Where(s => s.ma_sanpham == ma_cai).
+                                            Select(s => new { s.md_sanpham_id, s.md_donvitinhsanpham_id, s.ma_sanpham }).
+                                            FirstOrDefault();
+                                    var lsx_tosx_cdh = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_sanpham_id == spCai.md_sanpham_id &
+                                        s.md_lenhsanxuat_tosx_id == px_to.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                    var addLSX = lsx_tosx_cdh;
+                                    if (lsx_tosx_cdh == null)
+                                    {
+                                        lsx_tosx_cdh = new md_lenhsanxuat_tosx_cdh();
+                                        lsx_tosx_cdh.md_lenhsanxuat_tosx_cdh_id = Helper.getNewId();
+                                        lsx_tosx_cdh.md_lenhsanxuat_tosx_id = px_to.md_lenhsanxuat_tosx_id;
+                                        lsx_tosx_cdh.md_sanpham_id = spCai.md_sanpham_id;
+                                        lsx_tosx_cdh.noigiaohang = dhpx_cdh.noigiaohang;
+                                        lsx_tosx_cdh.sl_hoanthanh = 0;
+                                        lsx_tosx_cdh.sl_nhapkho = 0;
+                                        lsx_tosx_cdh.sl_danhapkho = 0;
+                                        lsx_tosx_cdh.macuoi = ma_bo;
+                                        lsx_tosx_cdh.md_donvitinhsanpham_id = spCai.md_donvitinhsanpham_id;
+                                        lsx_tosx_cdh.nguoitao = us.ad_user_id;
+                                        lsx_tosx_cdh.vaitrotao = us.ad_role_id;
+                                        lsx_tosx_cdh.bophantao = us.md_phongban_id;
+                                        lsx_tosx_cdh.value_nguoitao = us.ma_user;
+                                        lsx_tosx_cdh.value_vaitrotao = us.ten_role;
+                                        lsx_tosx_cdh.value_bophantao = us.ten_phongban;
 
-                                nguoicapnhat = us.ad_user_id,
-                                vaitrocapnhat = us.ad_role_id,
-                                bophancapnhat = us.md_phongban_id,
-                                value_nguoicapnhat = us.ma_user,
-                                value_vaitrocapnhat = us.ten_role,
-                                value_bophancapnhat = us.ten_phongban,
+                                        lsx_tosx_cdh.nguoicapnhat = us.ad_user_id;
+                                        lsx_tosx_cdh.vaitrocapnhat = us.ad_role_id;
+                                        lsx_tosx_cdh.bophancapnhat = us.md_phongban_id;
+                                        lsx_tosx_cdh.value_nguoicapnhat = us.ma_user;
+                                        lsx_tosx_cdh.value_vaitrocapnhat = us.ten_role;
+                                        lsx_tosx_cdh.value_bophancapnhat = us.ten_phongban;
 
-                                ngaytao = DateTime.Now,
-                                ngaycapnhat = DateTime.Now,
-                                mota = "",
-                                hoatdong = true
-                            };
-                            db.md_lenhsanxuat_tosx_cdh.Add(lsx_tosx_cdh);
-                            dhpx_cdh.sl_chiato = dhpx_cdh.tong_sl_dat;
-                            db.SaveChanges();
+                                        lsx_tosx_cdh.ngaytao = DateTime.Now;
+                                        lsx_tosx_cdh.ngaycapnhat = DateTime.Now;
+                                        lsx_tosx_cdh.mota = "";
+                                        lsx_tosx_cdh.hoatdong = true;
+                                    }
+
+                                    decimal? sltd = dhpx_cdh.tong_sl_dat - dhpx_cdh.sl_hoanthanh.GetValueOrDefault(0) - dhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
+                                    lsx_tosx_cdh.sl_dat = lsx_tosx_cdh.sl_dat.GetValueOrDefault(0) + sltd;
+                                    lsx_tosx_cdh.sl_chiato = lsx_tosx_cdh.sl_chiato.GetValueOrDefault(0) + sltd;
+                                    lsx_tosx_cdh.sl_tinhvattu = lsx_tosx_cdh.sl_tinhvattu.GetValueOrDefault(0) + sltd;
+                                    if (px_to.md_phanxuong_to_id == tdt)
+                                        lsx_tosx_cdh.sl_dahoanthanh = lsx_tosx_cdh.sl_dahoanthanh.GetValueOrDefault(0) + sltd;
+                                    else
+                                        lsx_tosx_cdh.sl_dahoanthanh = 0;
+                                    if (!lsx_tosx_cdh.macuoi.Contains(ma_bo))
+                                        lsx_tosx_cdh.macuoi += "," + ma_bo;
+                                    if (addLSX == null)
+                                    {
+                                        db.md_lenhsanxuat_tosx_cdh.Add(lsx_tosx_cdh);
+                                    }
+                                    db.SaveChanges();
+
+                                    var bomSP = (from a in db.md_sanpham_bom.
+                                            Where(s => s.md_sanpham_id == spCai.md_sanpham_id &
+                                            s.md_phanxuong_id == object_.md_phanxuong_id &
+                                            s.md_to_id == px_to.md_phanxuong_to_id)
+                                                 join b in db.md_sanpham_bom_vattu on a.md_sanpham_bom_id equals b.md_sanpham_bom_id
+                                                 orderby a.ngay_hieuluc descending
+                                                 select new { b.md_sanpham_id, b.md_donvitinhsanpham_id, b.soluong }).ToList();
+
+                                    if (bomSP.Count > 0)
+                                    {
+                                        foreach (var vattusp in bomSP)
+                                        {
+                                            var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
+                                               s.md_sanpham_id == vattusp.md_sanpham_id &
+                                               s.md_lenhsanxuat_tosx_id == px_to.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                            var addVTLSX = vtlsxto;
+                                            if (addVTLSX == null)
+                                            {
+                                                vtlsxto = new md_lenhsanxuat_tosx_vattu();
+                                                vtlsxto.md_lenhsanxuat_tosx_vattu_id = Helper.getNewId();
+                                                vtlsxto.md_lenhsanxuat_tosx_id = px_to.md_lenhsanxuat_tosx_id;
+                                                vtlsxto.md_sanpham_id = vattusp.md_sanpham_id;
+                                                vtlsxto.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
+                                                vtlsxto.sl_hanngach = 0;
+                                                vtlsxto.sl_giamhanngach = 0;
+                                            }
+                                            vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) + (decimal)vattusp.soluong.GetValueOrDefault(0) * lsx_tosx_cdh.sl_dat.GetValueOrDefault(0);
+                                            if (addVTLSX == null)
+                                                db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string err = string.Format(@"<br>HHVT ""{0}"" chưa có BOM cho tổ ""{2} - {1}""",
+                                            spCai.ma_sanpham,
+                                            db.md_phanxuong.Where(s=>s.md_phanxuong_id == px_to.md_phanxuong_id).Select(s=>s.ten_phanxuong).FirstOrDefault(),
+                                            db.md_phanxuong_to.Where(s=>s.md_to_id == px_to.md_phanxuong_to_id).Select(s=>s.ten_to).FirstOrDefault());
+                                        if (!msg.Contains(err)) {
+                                            msg += err;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
 
-                if (msg.Length <= 0)
-                {
-                    if (md_trangthai_id == "HUY" & object_.md_trangthai_id == "HIEULUC")
+                    if (msg.Length <= 0)
                     {
-                        var lsx_2 = db.md_lenhsanxuat.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).FirstOrDefault();
-                        lsx_2.md_trangthai_id = "KETTHUC";
+                        if (md_trangthai_id == "HUY" & object_.md_trangthai_id == "HIEULUC")
+                        {
+                            var lsx_2 = db.md_lenhsanxuat.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).FirstOrDefault();
+                            lsx_2.md_trangthai_id = "KETTHUC";
+                        }
+                        db.SaveChanges();
+                        msg_success = "Cập nhật thành công.";
                     }
-                    db.SaveChanges();
-                    msg_success = "true#Cập nhật thành công.";
                 }
             }
             catch (Exception ex)
             {
-                msg = "false#" + ex.Message;
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                msg = msg_success;
+                msg = "true#" + msg_success;
                 transaction.Commit();
             }
             else
+            {
+                msg = "false#" + msg;
                 transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }

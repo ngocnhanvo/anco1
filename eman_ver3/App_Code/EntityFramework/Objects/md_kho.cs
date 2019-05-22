@@ -139,6 +139,12 @@
                         public string value_vaitrotao { get; set; }
                 
 						
+                        #region md_kho_vattu_wintaFN
+                        
+                        #endregion md_kho_vattu_wintaFN
+                        public bool? vattu { get; set; }
+                
+						
                     }
                 }
             

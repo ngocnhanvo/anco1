@@ -330,7 +330,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 //--Them moi cac dong hang cua phan xuong
                                 add_phanxuong_cdh(db, dhcpx.c_kehoachdathang_id, dhcpx.c_kehoachdathang_dhcpx_id,
                                     item.md_sanpham_id, item.macuoi, item.md_donvitinhsanpham_id, item.sl_phanphoi.Value, item.mota,
-                                    item.noigiaohang, 1, us);
+                                    item.noigiaohang, 1, us, item.sodonhang);
                             }
                             var count = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
                             if (count.Count() == 0)
@@ -530,15 +530,17 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
     //them cac dong hang cua phan xuong
     public string add_phanxuong_cdh(EntityContext db, string c_kehoachdathang_id, string c_kehoachdathang_dhcpx_id, string md_sanpham_id, string macuoi,
-    string md_donvitinhsanpham_id, decimal sl_phanphoi, string mota, string noigiaohang, int i, User_TK us)
+    string md_donvitinhsanpham_id, decimal sl_phanphoi, string mota, string noigiaohang, int i, User_TK us, string sodonhang)
     {
         //lay bom san pham vat tu
-        var bom = (from a in db.md_sanpham_bom
-                   where a.md_sanpham_id == md_sanpham_id & a.trangthai == "HIEULUC"
-                   select new { a.md_sanpham_bom_id }).FirstOrDefault();
+        string dsdhId = db.c_danhsachdathang.Where(s => s.sochungtu == sodonhang).Select(s => s.c_danhsachdathang_id).FirstOrDefault();
+        string spBomId = db.c_dongdsdh.Where(s =>
+                            s.md_sanpham_id == md_sanpham_id &
+                            s.c_danhsachdathang_id == dsdhId)
+                            .Select(s => s.md_sanpham_bom_id).FirstOrDefault();
 
         string id_new = Helper.getNewId();
-        c_kehoachdathang_dhcpx_cdh check_px = db.c_kehoachdathang_dhcpx_cdh.FirstOrDefault(s => s.md_sanpham_id == md_sanpham_id & s.c_kehoachdathang_dhcpx_id == c_kehoachdathang_dhcpx_id);
+        var check_px = db.c_kehoachdathang_dhcpx_cdh.FirstOrDefault(s => s.md_sanpham_id == md_sanpham_id & s.c_kehoachdathang_dhcpx_id == c_kehoachdathang_dhcpx_id);
 
         c_kehoachdathang_dhcpx_cdh dhcpx = check_px;
         if (check_px == null)
@@ -559,7 +561,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         dhcpx.noigiaohang = noigiaohang;
         dhcpx.mota = mota;
         dhcpx.soluong = sl_phanphoi;
-        dhcpx.md_sanpham_bom_id = bom.md_sanpham_bom_id;
+        dhcpx.md_sanpham_bom_id = spBomId;
         dhcpx.nguoitao = us.ad_user_id;
         dhcpx.vaitrotao = us.ad_role_id;
         dhcpx.bophantao = us.md_phongban_id;

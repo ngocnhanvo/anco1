@@ -37,9 +37,9 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
-        foreach (md_xuatkhonb_cdh xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)))
+        foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
         {
-            md_xuatkhonb vcnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
+            var vcnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
             if(vcnb.trangthai == "HIEULUC")
             {
                 msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
@@ -50,22 +50,24 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 if (sel_val == "0")
                 {
                     xb_cdh.sl_xuat = sltd;
+                    xb_cdh.sl_xuat2 = sltd;
                 }
                 else {
                     if (slvc_case <= sltd)
                     {
                         xb_cdh.sl_xuat = slvc_case;
+                        xb_cdh.sl_xuat2 = slvc_case;
                     }
                     else
                     {
-                        md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + VNN_VariablePublic.autoRound(sltd, 4) + "</div>";
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
+                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + sltd.DropTrailingZeros() + "</div>";
                         break;
                     }
                 }
             }
         }
-        if (msg == "")
+        if (msg.Length <= 0)
         {
             msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
             db.SaveChanges();

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Web;
 /// <summary>
 /// Summary description for Helper
@@ -42,5 +41,34 @@ public static class Helper
             kq = int.Parse(context.Request.QueryString["page"]);
         }
         return kq;
+    }
+
+    public static int Week_(DateTime? nullable)
+    {
+        if (nullable.HasValue)
+        {
+            GregorianCalendar gCalendar = new GregorianCalendar();
+            int WeekNumber = gCalendar.GetWeekOfYear(nullable.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            return WeekNumber;
+        }
+        else
+            return 0;
+    }
+
+    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    {
+        DateTime jan1 = new DateTime(year, 1, 1);
+        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+        DateTime firstThursday = jan1.AddDays(daysOffset);
+        var cal = CultureInfo.CurrentCulture.Calendar;
+        int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var weekNum = weekOfYear;
+        if (firstWeek == 1)
+        {
+            weekNum -= 1;
+        }
+        var result = firstThursday.AddDays(weekNum * 7);
+        return result.AddDays(-3);
     }
 }

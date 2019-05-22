@@ -115,6 +115,12 @@
                         public string md_donggoi_id { get; set; }
                 
 						
+                        #region c_dongdsdh_md_sanpham_bom_id_wintaFN
+                        
+                        #endregion c_dongdsdh_md_sanpham_bom_id_wintaFN
+                        public string md_sanpham_bom_id { get; set; }
+                
+						
                         #region c_dongdsdh_md_sanpham_id_wintaFN
                         
                         #endregion c_dongdsdh_md_sanpham_id_wintaFN

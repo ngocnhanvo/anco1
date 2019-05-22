@@ -591,44 +591,135 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
-        try
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            var object_ = db.c_kehoachmuavt.Where(p => p.c_kehoachmuavt_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = @"false#Lỗi:Không tìm thấy đối tượng cần sửa.";
+                string id = context.Request.Form["id"];
+                var ngaykehoach = VNN_Config.setDateTime(context.Request.Form["ngaykehoach"]);
+                var tungay = VNN_Config.setDateTime(context.Request.Form["tungay"]);
+                var denngay = VNN_Config.setDateTime(context.Request.Form["denngay"]);
+                var object_ = db.c_kehoachmuavt.Where(p => p.c_kehoachmuavt_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = @"Lỗi:Không tìm thấy đối tượng cần sửa.";
+                }
+                else if (md_trangthai_id == "SOANTHAO" & object_.md_trangthai_id == "HIEULUC")
+                {
+                    msg = @"Lỗi:Không thể sửa trạng thái ""Hiệu lực"" thành ""Soạn Thảo"".";
+                }
+                else if (md_trangthai_id == "KETTHUC" & object_.md_trangthai_id == "SOANTHAO")
+                {
+                    msg = @"Lỗi:Không thể sửa trạng thái ""Soạn Thảo"" thành ""Kết Thúc"".";
+                }
+                else if (ngaykehoach == DateTime.MinValue | ngaykehoach == DateTime.MinValue.AddDays(1))
+                {
+                    msg = @"Lỗi:""Ngày kế hoạch"" có giá trị sai.";
+                }
+                else if (tungay == DateTime.MinValue | tungay == DateTime.MinValue.AddDays(1))
+                {
+                    msg = @"Lỗi:""Từ ngày"" có giá trị sai.";
+                }
+                else if (denngay == DateTime.MinValue | denngay == DateTime.MinValue.AddDays(1))
+                {
+                    msg = @"Lỗi:""Đến ngày"" có giá trị sai.";
+                }
+                else if (md_trangthai_id == "HIEULUC")
+                {
+                    int count = db.c_kehoachmuavt_cdh.
+                            Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.sl_duyet > 0).Count();
+                    if (count <= 0)
+                        msg = @"Lỗi:Phải có ít nhất 1 dòng hàng được duyệt.";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    object_.md_trangthai_id = md_trangthai_id;
+                    object_.ngaykehoach = ngaykehoach;
+                    object_.tungay = tungay;
+                    object_.denngay = denngay;
+                    db.SaveChanges();
+
+                    var khohangVT = from a in db.md_kho
+                                    join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
+                                    join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
+                                    where a.vattu == true
+                                    select new
+                                    {
+                                        a.md_kho_id,
+                                        a.ten_kho,
+                                        c.ma_sanpham,
+                                        b.md_sanpham_id,
+                                        c.md_donvitinhsanpham_id,
+                                        c.mota_tiengviet,
+                                        c.mota_tienganh,
+                                        b.soluong,
+                                        c.mota,
+                                        c.sanpham
+                                    };
+
+                    foreach (var dklht in db.c_kehoachmuavt_dklht.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).ToList())
+                    {
+                        var tht = khohangVT.Where(s =>
+                                        s.md_sanpham_id == dklht.md_sanpham_id
+                                    )
+                                    .ToList()
+                                    .Select(s =>
+                                    s.soluong -
+                                    db.md_kho_giucho.Where(t =>
+                                                    t.md_sanpham_id == s.md_sanpham_id &
+                                                    t.md_kho_id == s.md_kho_id
+                                                    )
+                                                    .Select(t => t.soluong_giucho)
+                                                    .Sum().GetValueOrDefault(0)
+                                    ).Sum();
+
+                        if (dklht.sl_tonkho != tht.GetValueOrDefault(0))
+                        {
+                            msg += "<div style='color:red'>Lỗi: dòng " + object_.ten_kehoach + " đã có sự thay đổi số lượng tồn kho.</div>";
+                            break;
+                        }
+
+                        var giucho = new md_kho_giucho();
+                        giucho.md_kho_giucho_id = Helper.getNewId();
+                        giucho.md_kho_id = dklht.md_kho_id;
+                        giucho.md_sanpham_id = dklht.md_sanpham_id;
+                        giucho.md_donvitinhsanpham_id = dklht.md_donvitinhsanpham_id;
+                        giucho.soluong_giucho = dklht.sl_layton;
+                        giucho.sctlienquan = object_.sochungtu;
+                        giucho.ngaygiu = DateTime.Now;
+                        giucho.nguoitao = us.ad_user_id;
+                        giucho.nguoicapnhat = us.ad_user_id;
+                        giucho.ngaytao = DateTime.Now;
+                        giucho.ngaycapnhat = DateTime.Now;
+                        giucho.bophantao = us.md_phongban_id;
+                        giucho.bophancapnhat = us.md_phongban_id;
+                        giucho.vaitrotao = us.ad_role_id;
+                        giucho.vaitrocapnhat = us.ad_role_id;
+                        giucho.hoatdong = true;
+                        giucho.mota = "";
+                        giucho.lydo = "";
+                        db.md_kho_giucho.Add(giucho);
+                        db.SaveChanges();
+                    }
+                }
             }
-            else if (md_trangthai_id == "SOANTHAO" & object_.md_trangthai_id == "HIEULUC")
+            catch (Exception ex)
             {
-                msg = @"false#Lỗi:Không thể sửa trạng thái ""Hiệu lực"" thành ""Soạn Thảo"".";
-            }
-            else if (md_trangthai_id == "KETTHUC" & object_.md_trangthai_id == "SOANTHAO")
-            {
-                msg = @"false#Lỗi:Không thể sửa trạng thái ""Soạn Thảo"" thành ""Kết Thúc"".";
-            }
-            else if (md_trangthai_id == "HIEULUC")
-            {
-                int count = db.c_kehoachmuavt_cdh.
-                        Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.sl_duyet > 0).Count();
-                if (count <= 0)
-                    msg = @"false#Lỗi:Phải có ít nhất 1 dòng hàng được duyệt.";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_kehoachmuavt";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
+                transaction.Commit();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = "false#" + msg;
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }

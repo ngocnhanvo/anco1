@@ -45,6 +45,10 @@ table.view-capacity tr td {
     background-position: 49%;
 }
 
+textarea:read-only {
+    cursor: default;
+}
+
 .ui-search-input input, .ui-search-input select {
     height: 19px;
     text-align: center;

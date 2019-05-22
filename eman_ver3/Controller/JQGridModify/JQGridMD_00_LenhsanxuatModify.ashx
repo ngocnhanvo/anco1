@@ -260,99 +260,33 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                         {
                             lsx.check_dtvt = true;
                             lsx.md_trangthai_id = "DAXL";
+                            db.SaveChanges();
                         }
                         else
                         {
-                            msg = "<div style='color:red'>Dòng: \"" + lsx.sochungtu + "\" vẫn chưa chia tổ.</div>";
+                            msg = "Dòng: \"" + lsx.sochungtu + "\" vẫn chưa chia tổ.</div>";
                             break;
-                        }
-
-                        foreach (var lsx_vt in db.md_lenhsanxuat_vattu.Where(s => s.md_lenhsanxuat_tosx_id == tosx.md_lenhsanxuat_tosx_id).ToList())
-                        {
-                            lsx_vt.soluong = 0;
-                        }
-                        db.SaveChanges();
-                        foreach (var cdh in check_count)
-                        {
-                            if (cdh.sl_tinhvattu > 0)
-                            {
-                                var bom = (from a in db.md_sanpham_bom
-                                           where a.md_sanpham_id == cdh.md_sanpham_id & a.trangthai == "HIEULUC"
-                                           select new { a.md_sanpham_bom_id }).FirstOrDefault();
-                                if (bom != null)
-                                {
-                                    foreach (var bom_vattu in db.md_sanpham_bom_vattu.
-                                            Where(s => s.md_sanpham_bom_id == bom.md_sanpham_bom_id).ToList())
-                                    {
-                                        //kiem tra
-                                        var sp = db.md_sanpham.FirstOrDefault(s => s.md_sanpham_id == bom_vattu.md_sanpham_id);
-
-                                        var chk_lsx_vt = db.md_lenhsanxuat_vattu.FirstOrDefault(s => s.md_sanpham_id == bom_vattu.md_sanpham_id & s.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id);
-                                        var vattu = chk_lsx_vt;
-                                        if (chk_lsx_vt == null)
-                                        {
-                                            vattu = new md_lenhsanxuat_vattu();
-                                            vattu.md_lenhsanxuat_vattu_id = Helper.getNewId();
-                                            vattu.sl_daxuat = 0;
-                                            vattu.md_lenhsanxuat_id = "";
-                                            vattu.md_dondathangphanxuong_id = "";
-
-                                            vattu.md_sanpham_id = bom_vattu.md_sanpham_id;
-                                            vattu.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id;
-                                            vattu.md_donvitinhsanpham_id = bom_vattu.md_donvitinhsanpham_id;
-                                            vattu.mota_tiengviet = sp.mota_tiengviet;
-                                            vattu.mota_tienganh = sp.mota_tienganh;
-                                            vattu.nguoitao = us.ad_user_id;
-                                            vattu.vaitrotao = us.ad_role_id;
-                                            vattu.bophantao = us.md_phongban_id;
-                                            vattu.value_nguoitao = us.ma_user;
-                                            vattu.value_vaitrotao = us.ten_role;
-                                            vattu.value_bophantao = us.ten_phongban;
-                                            vattu.bosung = false;
-                                            vattu.soluong = (decimal)bom_vattu.soluong * cdh.sl_tinhvattu;
-                                        }
-                                        else
-                                        {
-                                            vattu.soluong += (decimal)bom_vattu.soluong * cdh.sl_tinhvattu;
-                                        }
-
-                                        vattu.nguoicapnhat = us.ad_user_id;
-                                        vattu.vaitrocapnhat = us.ad_role_id;
-                                        vattu.bophancapnhat = us.md_phongban_id;
-                                        vattu.value_nguoicapnhat = us.ma_user;
-                                        vattu.value_vaitrocapnhat = us.ten_role;
-                                        vattu.value_bophancapnhat = us.ten_phongban;
-                                        vattu.hoatdong = true;
-
-                                        vattu.ngaycapnhat = DateTime.Now;
-                                        if (chk_lsx_vt == null)
-                                        {
-                                            vattu.ngaytao = DateTime.Now;
-                                            db.md_lenhsanxuat_vattu.Add(vattu);
-                                        }
-                                        db.SaveChanges();
-                                    }
-                                }
-                            }
-                        }
-                        if (db.md_lenhsanxuat_vattu.Where(s => s.md_lenhsanxuat_tosx_id == tosx.md_lenhsanxuat_tosx_id).Count() <= 0)
-                        {
-                            msg += "<div style='color:red'>Dòng: \"" + lsx.sochungtu + "\"Đã tạo phiếu xuất kho đủ cho số lượng chia tổ.</div>";
-                        }
-                        else
-                        {
-                            msg = "<div style='color:blue'>Tính vật tư cho lệnh sản xuất thành công.</div>";
                         }
                     }
                 }
-                transaction.Commit();
             }
             catch (Exception ex)
             {
-                msg = "false#" + ex.Message;
+                msg = ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = "<div style='color:blue'>Hiệu lực lệnh sản xuất thành công.</div>";
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"<div style='color:red'>{0}</div>", msg);
                 transaction.Rollback();
             }
         }
+        
         context.Response.Write(msg);
     }
 
@@ -626,15 +560,15 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                     msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã tạo phiếu xuất kho, không thể xóa.";
                     msg += msg_del + ",";
                 }
-                else if (db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == object_.md_lenhsanxuat_id).Count() > 0)
+                else if (object_.md_trangthai_id != "CHUAHOANTHANH")
                 {
-                    msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã chia tổ, không thể xóa.";
+                    msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã hiệu lực.";
                     msg += msg_del + ",";
                 }
                 else
                 {
                     db.md_lenhsanxuat.Remove(object_);
-                    md_dondathangphanxuong dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
+                    var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
                     if (dhpx != null)
                     {
                         dhpx.md_trangthai_id = "SOANTHAO";

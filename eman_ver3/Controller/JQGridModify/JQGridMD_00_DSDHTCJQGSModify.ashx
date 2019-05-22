@@ -21,6 +21,8 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     }
 
     List<VNN> vNNs = new List<VNN>();
+    EntityContext db = new EntityContext();
+    Public pub = new Public();
     public void ProcessRequest(HttpContext context)
     {
         string oper = "vnn";
@@ -50,27 +52,25 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 this.CA_01_HuyBoDonHangTN(context);
                 break;
             case "CA_01_TinhNangLuc":
-                this.CA_01_TinhNangLuc(context, 0);
+                this.CA_01_TinhNangLuc(context, 0, db);
                 break;
             default:
                 break;
         }
     }
 
-    public string CA_01_TinhNangLuc(HttpContext context, int type)
+    public string CA_01_TinhNangLuc(HttpContext context, int type, EntityContext db)
     {
-        EntityContext db = new EntityContext();
         string poId = context.Request.Form["id"];
         var donhang = db.c_danhsachdathang.Where(dh => dh.c_danhsachdathang_id == poId).FirstOrDefault();
+         DataTable dt = pub.TinhNangLuc(donhang, db);
         string result = "";
         string ngaylap = donhang.ngaylap.Value.ToString("dd/MM/yyyy");
-        string selCapacity = "select count(*) as count from dbo.f_tinhNangLucCungUng('" + poId + "') where result_nhandh=0 or result=0";
-        int check = (int)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(selCapacity);
-        bool dg_nangluc = false;
-        DataTable dt = Mbg.Data.SqlClient.SqlHelper.GetData("select * from dbo.f_tinhNangLucCungUng('" + poId + "')");
+        //DataTable dt = Mbg.Data.SqlClient.SqlHelper.GetData("select * from dbo.f_tinhNangLucCungUng('" + poId + "')");
         DateTime maxDate = DateTime.ParseExact("01/01/1900", "dd/MM/yyyy", null);
         int colCount = dt.Columns.Count;
         int rowCount = dt.Select("tong_cbmcandat >= 0").Count();
+        int check = dt.Select("result_nhandh = 0 or result = 0").Count();
         string folder = Security.UrlBase() + "images/icon/";
         if (rowCount > 0)
         {
@@ -144,7 +144,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     if (check == 0 && slCanDat >= slTongCanDat)
                     {
                         result = "<div style=\"padding:15px; border:1px sold green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>Năng lực Cung Ứng: " + slCanDat.DropTrailingZeros() + ", CBM Đơn Hàng: " + slTongCanDat.DropTrailingZeros() + "</div>" + result;
-                        dg_nangluc = true;
                     }
                     else
                     {
@@ -154,7 +153,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         if (slCanDat >= sl_chk_lai_TongCanDat)
                         {
                             result = "<div style=\"padding:15px; border:1px solid green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>" + (slCanDat >= slTongCanDat) + "</div>" + result;
-                            dg_nangluc = true;
                         }
                         else
                         {
@@ -178,9 +176,11 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 </div>", dt.Rows[0]["tuanthu"], dt.Rows[0]["nam"]);
         }
 
-        db.Dispose();
         if (type == 0)
+        {
+            db.Dispose();
             context.Response.Write(result);
+        }
         return result;
     }
 
@@ -305,7 +305,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
     public void CA01DCHT_MD00DSDHTCJQGS(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         User_TK us = VNN_Function.get_user(
             Security.id_taikhoan(context),
             Security.id_vaitro(context),
@@ -341,14 +340,14 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     else
                     {
                         VNN_Function.SetFormValue("id", dsdh.c_danhsachdathang_id);
-                        string msgTNL = CA_01_TinhNangLuc(context, 1);
+                        string msgTNL = CA_01_TinhNangLuc(context, 1, db);
                         if (!msgTNL.ToLower().Contains("năng lực nhà cung ứng đáp ứng được đơn hàng này"))
                         {
                             msg += "<div style='color:red'>Lỗi:không đủ năng lực để nhận Đơn hàng " + dsdh.sochungtu + " .</div>";
                         }
                         else
                         {
-                            var range = db.c_danhsachdathang_nangluc.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList();
+                            var range = db.c_danhsachdathang_nangluc.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id);
                             db.c_danhsachdathang_nangluc.RemoveRange(range);
                             db.SaveChanges();
                             foreach (var item in vNNs)
@@ -380,7 +379,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                                 {
                                     dongNL.soluongdadat = dongNL.soluongdadat + item.cbmDatDuoc.GetValueOrDefault(0);
                                     dongNL.soluongconlai = dongNL.nangsuat - dongNL.soluongdadat.GetValueOrDefault(0);
-                                     db.SaveChanges();
+                                    db.SaveChanges();
                                 }
                             }
 

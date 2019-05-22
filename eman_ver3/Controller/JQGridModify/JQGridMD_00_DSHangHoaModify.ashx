@@ -63,7 +63,7 @@ public class JQGridMD_00_DSHangHoaModify : IHttpHandler, System.Web.SessionState
         string str = "<select>";
 
         str += firstnull ? string.Format("<option px=\"\" value=\"\"></option>") : "";
-        foreach (md_phanxuong_to cn in db.md_phanxuong_to.OrderBy(s => s.ten_to).ToList())
+        foreach (md_phanxuong_to cn in db.md_phanxuong_to.OrderBy(s => s.sapxep).ToList())
         {
             str += string.Format("<option px=\"{2}\" value=\"{0}\">{1}</option>", cn.md_to_id, cn.ten_to, cn.md_phanxuong_id);
         }

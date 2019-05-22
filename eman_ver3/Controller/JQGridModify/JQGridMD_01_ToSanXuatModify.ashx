@@ -427,7 +427,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         md_lenhsanxuat lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == id).Take(1).FirstOrDefault();
         var md_lenhsanxuat_tosx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == id);
         html += "<table>";
-        foreach (md_phanxuong_to px_to in db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id).OrderBy(s => s.ten_to))
+        foreach (var px_to in db.md_phanxuong_to.
+                Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id).OrderBy(s => s.sapxep))
         {
             md_lenhsanxuat_tosx lsx_to = md_lenhsanxuat_tosx.Where(s => s.md_phanxuong_to_id == px_to.md_to_id).Take(1).FirstOrDefault();
             int count_lsx_to_cdh = 0;
