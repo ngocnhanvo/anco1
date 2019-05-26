@@ -31,6 +31,12 @@
                         public int? bosung { get; set; }
                 
 						
+                        #region md_nhapkhonb_chungtu_lenhsx_wintaFN
+                        
+                        #endregion md_nhapkhonb_chungtu_lenhsx_wintaFN
+                        public string chungtu_lenhsx { get; set; }
+                
+						
                         #region md_nhapkhonb_denkho_wintaFN
                         
                         #endregion md_nhapkhonb_denkho_wintaFN

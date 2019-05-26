@@ -1,13 +1,15 @@
 ﻿//Start Lệnh sản xuất
 function format_lenhsx(elem) {
     var id_elem = $(elem).attr('id');
-    $(elem).keypress(function (e) {
-        if (e.which == '13') {
-            timkiem_lenhsx(id_elem, 1);
-        }
-    });
     $(elem).parent().append('<span onclick="timkiem_lenhsx(\'' + id_elem + '\')" ' +
         'class="span_format_lenhsx glyphicon glyphicon-search" style="position: absolute;margin: 1px 0 0 -21px;background-color: rgb(248, 249, 243);padding: 3.5px;cursor: pointer;border-left: 1px solid rgba(204, 204, 204, 0.63)" />');
+    $(elem).attr('readonly', true);
+    $(elem).css('cursor', 'default');
+    $(elem).keypress(function (e) {
+        if (e.which == '13') {
+            $(elem).next().click();
+        }
+    });
 }
 
 function timkiem_lenhsx(id_elem, type) {
@@ -20,7 +22,8 @@ function timkiem_lenhsx(id_elem, type) {
         '<div id="pagergridMD_00_Lenhsanxuat_cp"></div>' +
         '</div>');
     var multi = false;
-    if (tengrid0 == 'gridMD_00_Xuatnoibo') {
+    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo')
+    {
         multi = true;
     }
     
@@ -79,8 +82,13 @@ function timkiem_lenhsx(id_elem, type) {
                 ],
                 postData: {
                     where_ex: function () {
-                        if (tengrid0 == 'gridMD_00_Xuatnoibo')
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                        if (tengrid0 == 'gridMD_00_Xuatnoibo') {
+                            let khdhpx = $('#kh_ddhpx').val();
+                            let dkc = " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                            if ($('#bosung').val() == '3')
+                                dkc = `${dkc} and lsx.md_dondathangphanxuong_id in (select md_dondathangphanxuong_id from md_dondathangphanxuong where N'${khdhpx}' like N'%' + c_kehoachdathang_dhcpx_id + '%')`;
+                            return dkc;
+                        }
                         else if (tengrid0 == 'gridMD_00_Nhapnoibo')
                             return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
                         else
@@ -156,7 +164,8 @@ function timkiem_lenhsx(id_elem, type) {
                 id: 'btn-ok_',
                 text: 'OK',
                 click: function () {
-                    if (tengrid0 == 'gridMD_00_Xuatnoibo') {
+                    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo')
+                    {
                         var ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
                         for (var i = 0; i < ids_sel.length; i++) {
                             var cel_s = $('#' + namegrid).getRowData(ids_sel[i]);

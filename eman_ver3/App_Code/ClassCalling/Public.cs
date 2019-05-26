@@ -7,7 +7,7 @@ using System.Data;
 public class Public
 {
     public string urlData { get; set; }
-     
+
     public Public()
     {
 
@@ -76,10 +76,10 @@ public class Public
         return id_new;
     }
 
-    public void capnhatGiuCho_VCNB(string sct, string sctlq, string vcnbId, string trangthai, EntityContext db)
+    public void capnhatGiuCho_VCNB(string sct, string sctlq, string khoId, string vcnbId, string trangthai, EntityContext db)
     {
         var sctlqs = new List<string> { sct, sctlq };
-        foreach (var giucho in db.md_kho_giucho.Where(s => sctlqs.Contains(s.sctlienquan)).ToList())
+        foreach (var giucho in db.md_kho_giucho.Where(s => sctlqs.Contains(s.sctlienquan) & s.md_kho_id == khoId).ToList())
         {
             var dvc = db.md_vanchuyennoibo_cdvc.Where(s =>
                 s.md_vanchuyennoibo_id == vcnbId &
@@ -87,7 +87,7 @@ public class Public
 
             if (dvc != null)
             {
-                if(trangthai == "SOANTHAO")
+                if (trangthai == "SOANTHAO")
                     giucho.soluong_giucho = giucho.soluong_giucho - dvc.soluong_toida;
                 else
                     giucho.soluong_giucho = giucho.soluong_giucho - dvc.soluong_dachuyen;
@@ -97,47 +97,71 @@ public class Public
         }
     }
 
+    public void capnhatGiuCho_XKVatTuTon(string sct, string sctlq, string khoId, string vcnbId, string trangthai, EntityContext db)
+    {
+        var sctlqs = new List<string> { sct, sctlq };
+        foreach (var giucho in db.md_kho_giucho.Where(s => sctlqs.Contains(s.sctlienquan) & s.md_kho_id == khoId).ToList())
+        {
+            var dvc = db.md_xuatkhonb_cdh.Where(s =>
+                s.md_xuatkhonb_id == vcnbId &
+                s.md_sanpham_id == giucho.md_sanpham_id).FirstOrDefault();
+
+            if (dvc != null)
+            {
+                if (trangthai == "SOANTHAO")
+                    giucho.soluong_giucho = giucho.soluong_giucho - dvc.tong_sl_xuat;
+                else
+                    giucho.soluong_giucho = giucho.soluong_giucho - dvc.sl_daxuat;
+            }
+            if (giucho.soluong_giucho <= 0)
+                db.md_kho_giucho.Remove(giucho);
+        }
+    }
+
+
     public DataTable TinhNangLuc(c_danhsachdathang dsdh, EntityContext db)
     {
         var tbl = new DataTable();
         tbl.Columns.Add("dauma");
         tbl.Columns.Add("hehang");
-        tbl.Columns.Add("tong_cbmcandat");
-        tbl.Columns.Add("cbm_candat");
-        tbl.Columns.Add("thoigiandukien");
-        tbl.Columns.Add("tuanthu");
-        tbl.Columns.Add("thoigianyeucau");
-        tbl.Columns.Add("tgantoan_dh");
-        tbl.Columns.Add("tgnhan_dh");
-        tbl.Columns.Add("result_nhandh");
-        tbl.Columns.Add("result");
-        tbl.Columns.Add("slconlai");
-        tbl.Columns.Add("nam");
+        tbl.Columns.Add("tong_cbmcandat").DataType = typeof(decimal);
+        tbl.Columns.Add("cbm_candat").DataType = typeof(decimal);
+        tbl.Columns.Add("thoigiandukien").DataType = typeof(DateTime);
+        tbl.Columns.Add("tuanthu").DataType = typeof(int);
+        tbl.Columns.Add("thoigianyeucau").DataType = typeof(DateTime);
+        tbl.Columns.Add("tgantoan_dh").DataType = typeof(int);
+        tbl.Columns.Add("tgnhan_dh").DataType = typeof(int);
+        tbl.Columns.Add("result_nhandh").DataType = typeof(bool);
+        tbl.Columns.Add("result").DataType = typeof(bool);
+        tbl.Columns.Add("slconlai").DataType = typeof(decimal);
+        tbl.Columns.Add("nam").DataType = typeof(int);
 
         var tgantoan_dh = (dsdh.hangiaohang_po - dsdh.ngaylap).Value.TotalDays;
         var nnl = from dgh in db.c_dongdsdh
                   join sp in db.md_sanpham on dgh.md_sanpham_id equals sp.md_sanpham_id
                   where dgh.c_danhsachdathang_id == dsdh.c_danhsachdathang_id
-                  select new {
-                      nhomnangluc_id = db.md_chungloai.Where(s=>s.md_chungloai_id == sp.md_nhomnangluc_id).Take(1).Select(s=>s.code_cl).FirstOrDefault(),
+                  select new
+                  {
+                      nhomnangluc_id = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).Take(1).Select(s => s.code_cl).FirstOrDefault(),
                       cbmdat = dgh.v2 * dgh.sl_conlai
                   };
-
+        string dauma = "", tenhehang = "";
         var nnl_group = nnl.GroupBy(n => n.nhomnangluc_id).Select(s => new { nhomnangluc_id = s.Key, cbmdat = s.Sum(t => t.cbmdat) });
-        foreach(var item in nnl_group.ToList())
+        int tuanthu = 0, nam = 0;
+        foreach (var item in nnl_group.ToList())
         {
             int thoigianlamhang = 0;
             var ngaydonhang = DateTime.Now.AddDays(thoigianlamhang);
             var ngayyeucau = dsdh.hangiaohang_po == null ? DateTime.Now : dsdh.hangiaohang_po;
             var tuandonhang = Helper.Week_(ngaydonhang);
             tuandonhang = tuandonhang > 52 ? 52 : tuandonhang;
-            var nam = ngaydonhang.Year;
+            nam = ngaydonhang.Year;
             var tuannangluc_id = db.md_nangluc.Where(s => s.tuan == tuandonhang & s.nam == nam & s.hehang == item.nhomnangluc_id)
                 .Select(s => s.md_nangluc_id).FirstOrDefault();
 
             var count_nnl = db.md_nangluc.Where(s => s.md_nangluc_id == tuannangluc_id).Count();
-            string dauma = db.md_nangluc.Where(s => s.md_nangluc_id == tuannangluc_id).Select(s => s.hehang).FirstOrDefault();
-            string tenhehang = item.nhomnangluc_id;
+            dauma = db.md_nangluc.Where(s => s.md_nangluc_id == tuannangluc_id).Select(s => s.hehang).FirstOrDefault();
+            tenhehang = item.nhomnangluc_id;
             if (count_nnl == 0)
             {
                 if (!string.IsNullOrEmpty(dauma))
@@ -159,14 +183,14 @@ public class Public
                     tbl.Rows.Add(row);
                 }
             }
-            var tuanthu = tuandonhang;
+            tuanthu = tuandonhang;
             var ngaydukien = Helper.FirstDateOfWeekISO8601(nam, tuanthu).AddDays(7);
             var slconlai_tuan = db.md_nangluc.Where(s => s.md_nangluc_id == tuannangluc_id).Select(s => s.soluongconlai).FirstOrDefault();
             var tgnhan_dh = 0;
             var sl_dcdat = item.cbmdat;
             var sl_dcdatcp = sl_dcdat;
             var count_loop = 0;
-            
+
             if (slconlai_tuan < 0)
             {
                 var row = tbl.NewRow();
@@ -180,14 +204,14 @@ public class Public
                 row["tgantoan_dh"] = tgantoan_dh;
                 row["tgnhan_dh"] = tgnhan_dh;
                 row["result_nhandh"] = true;
-                row["result"] = ngaydukien  >= ngayyeucau ? false : true;
+                row["result"] = ngaydukien >= ngayyeucau ? false : true;
                 row["slconlai"] = 0;
                 row["nam"] = nam;
                 tbl.Rows.Add(row);
             }
             else
             {
-                while(sl_dcdat > 0 & !string.IsNullOrEmpty(dauma))
+                while (sl_dcdat > 0 & !string.IsNullOrEmpty(dauma))
                 {
                     tuannangluc_id = db.md_nangluc
                         .Where(s => s.tuan == tuandonhang & s.nam == nam & s.hehang == item.nhomnangluc_id)
@@ -198,7 +222,7 @@ public class Public
 
                     if (slconlai_tuan <= sl_dcdat)
                     {
-                        if(slconlai_tuan > 0 & sl_dcdat > 0)
+                        if (slconlai_tuan > 0 & sl_dcdat > 0)
                         {
                             var row = tbl.NewRow();
                             row["dauma"] = dauma;
@@ -224,60 +248,91 @@ public class Public
                                 tuanthu = 1;
                                 nam += 1;
                             }
-
-                            slconlai_tuan = db.md_nangluc
-                                .Where(s => s.hehang == item.nhomnangluc_id &
-                                s.tuan == tuanthu & s.nam == nam).Select(s => s.soluongconlai).FirstOrDefault();
                         }
 
-                        if(slconlai_tuan > sl_dcdat & sl_dcdat > 0 & slconlai_tuan > 0)
-                        {
-                            var row = tbl.NewRow();
-                            row["dauma"] = dauma;
-                            row["hehang"] = tenhehang;
-                            row["tong_cbmcandat"] = item.cbmdat;
-                            row["cbm_candat"] = slconlai_tuan;
-                            row["thoigiandukien"] = ngaydukien;
-                            row["tuanthu"] = tuanthu;
-                            row["thoigianyeucau"] = ngayyeucau;
-                            row["tgantoan_dh"] = tgantoan_dh;
-                            row["tgnhan_dh"] = tgnhan_dh;
-                            row["result_nhandh"] = true;
-                            row["result"] = ngaydukien >= ngayyeucau ? false : true;
-                            row["slconlai"] = 0;
-                            row["nam"] = nam;
-                            tbl.Rows.Add(row);
+                        slconlai_tuan = db.md_nangluc
+                               .Where(s => s.hehang == item.nhomnangluc_id &
+                               s.tuan == tuanthu & s.nam == nam).Select(s => s.soluongconlai).FirstOrDefault();
+                    }
 
-                            sl_dcdat = 0;
-                        }
+                    if (slconlai_tuan > sl_dcdat & sl_dcdat > 0 & slconlai_tuan > 0)
+                    {
+                        var row = tbl.NewRow();
+                        row["dauma"] = dauma;
+                        row["hehang"] = tenhehang;
+                        row["tong_cbmcandat"] = item.cbmdat;
+                        row["cbm_candat"] = sl_dcdat;
+                        row["thoigiandukien"] = ngaydukien;
+                        row["tuanthu"] = tuanthu;
+                        row["thoigianyeucau"] = ngayyeucau;
+                        row["tgantoan_dh"] = tgantoan_dh;
+                        row["tgnhan_dh"] = tgnhan_dh;
+                        row["result_nhandh"] = true;
+                        row["result"] = ngaydukien >= ngayyeucau ? false : true;
+                        row["slconlai"] = 0;
+                        row["nam"] = nam;
+                        tbl.Rows.Add(row);
 
-                        if(slconlai_tuan == 0 & sl_dcdat > 0)
-                        {
-                            if (tuanthu < 52)
-                                tuanthu = tuanthu + 1;
-                            else
-                            {
-                                tuanthu = 1;
-                                nam += 1;
-                            }
-                        }
+                        sl_dcdat = 0;
+                    }
 
-                        if (sl_dcdatcp == sl_dcdat)
-                        {
-                            count_loop = count_loop + 1;
-                        }
+                    if (slconlai_tuan == 0 & sl_dcdat > 0)
+                    {
+                        if (tuanthu < 52)
+                            tuanthu = tuanthu + 1;
                         else
                         {
-                            sl_dcdatcp = sl_dcdat;
-                            count_loop = 0;
+                            tuanthu = 1;
+                            nam += 1;
                         }
-
-                        if (count_loop > 50)
-                            sl_dcdat = 0;
                     }
+
+                    if (sl_dcdatcp == sl_dcdat)
+                    {
+                        count_loop = count_loop + 1;
+                    }
+                    else
+                    {
+                        sl_dcdatcp = sl_dcdat;
+                        count_loop = 0;
+                    }
+
+                    if (count_loop > 50)
+                        sl_dcdat = 0;
                 }
             }
         }
+
+        if(tbl.Rows.Count <= 0)
+        {
+            var row = tbl.NewRow();
+            row["dauma"] = dauma;
+            row["hehang"] = tenhehang;
+            row["tong_cbmcandat"] =-1;
+            row["cbm_candat"] = -1;
+            row["thoigiandukien"] = DateTime.MinValue;
+            row["tuanthu"] = tuanthu;
+            row["thoigianyeucau"] = DateTime.MinValue;
+            row["tgantoan_dh"] = 0;
+            row["tgnhan_dh"] = 0;
+            row["result_nhandh"] = true;
+            row["result"] = false;
+            row["slconlai"] = 0;
+            row["nam"] = nam;
+            tbl.Rows.Add(row);
+        }
         return tbl;
+    }
+
+    public string getBOMHieuLuc(string spId, EntityContext db)
+    {
+        string bomId = (from a in db.md_sanpham_bom
+                   where a.md_sanpham_id == spId
+                   & string.IsNullOrEmpty(a.md_phanxuong_id)
+                   & string.IsNullOrEmpty(a.md_to_id)
+                   orderby a.ngay_hieuluc descending
+                   select a.md_sanpham_bom_id).FirstOrDefault();
+
+        return bomId;
     }
 }

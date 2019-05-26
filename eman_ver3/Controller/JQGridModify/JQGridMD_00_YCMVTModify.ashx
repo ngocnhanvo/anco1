@@ -49,7 +49,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "", msg_success = "";
-        string sochungtu = "goc";
+        string sochungtu = "goc", id_new = Helper.getNewId();
         string ten_kehoach = context.Request.Form["ten_kh"];
         DateTime? tungay = null;
         DateTime? denngay = null;
@@ -58,7 +58,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
         {
             try
             {
-                foreach (c_yeucaumuavt ycmvt in db.c_yeucaumuavt.Where(s => vnn.Contains(s.c_yeucaumuavt_id)).ToList())
+                foreach (var ycmvt in db.c_yeucaumuavt.Where(s => vnn.Contains(s.c_yeucaumuavt_id)).ToList())
                 {
                     if (ycmvt.ngaycan <= tungay | tungay == null)
                         tungay = ycmvt.ngaycan;
@@ -66,12 +66,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     if (ycmvt.ngaycan >= denngay | denngay == null)
                         denngay = ycmvt.ngaycan;
 
-                    if (ycmvt.md_trangthai_id != "HIEULUC")
-                    {
-                        msg = string.Format(@"Lỗi: Dòng ""{0}"" chưa hiệu lực.", ycmvt.sochungtu);
-                        break;
-                    }
-                    else if (db.c_yeucaumuavt_cdh.Where(s => s.sapxep == null & s.c_yeucaumuavt_id == ycmvt.c_yeucaumuavt_id).Count() <= 0)
+                    if (db.c_yeucaumuavt_cdh.Where(s => s.sapxep == null & s.c_yeucaumuavt_id == ycmvt.c_yeucaumuavt_id).Count() <= 0)
                     {
                         msg = string.Format(@"Lỗi: Dòng ""{0}"" không thể tạo thêm kế hoạch mua vật tư.", ycmvt.sochungtu);
                         break;
@@ -87,10 +82,9 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     }
                 }
 
-                string id_new = Helper.getNewId();
                 if (msg.Length <= 0)
                 {
-                    c_kehoachmuavt khmvt = new c_kehoachmuavt
+                    var khmvt = new c_kehoachmuavt
                     {
                         c_kehoachmuavt_id = id_new,
                         c_donmuavattu_id = " ",
@@ -122,7 +116,8 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
 
                     foreach (var ycmvt_cdh in db.c_yeucaumuavt_cdh.Where(s => vnn.Contains(s.c_yeucaumuavt_id) & s.sapxep == null).ToList())
                     {
-                        c_kehoachmuavt_cdh khmvt_cdh_chk = db.c_kehoachmuavt_cdh.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id &
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id).Take(1).FirstOrDefault();
+                        var khmvt_cdh_chk = db.c_kehoachmuavt_cdh.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id &
                         s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).Take(1).FirstOrDefault();
                         c_kehoachmuavt_cdh khmvt_cdh = khmvt_cdh_chk;
                         if (khmvt_cdh_chk == null)
@@ -135,50 +130,53 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             string nhacungung = db.md_sanpham.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id).Select(s => s.nhacungung).FirstOrDefault();
                             if (nhacungung == null)
                             {
-                                nhacungung = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "TONGHOP").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
+                                nhacungung = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "MUA NGOAI").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
                             }
                             khmvt_cdh.md_doitackinhdoanh_id = nhacungung;
                             khmvt_cdh.ngayphaico = tungay;
                             khmvt_cdh.sl_can = ycmvt_cdh.soluong_yeucau;
-                            khmvt_cdh.sl_duyet = 0;
-                            var tonkho = from a in db.md_kho_sanpham
-                                         join b in db.md_kho on a.md_kho_id equals b.md_kho_id
-                                         where b.vattu == true & a.md_sanpham_id == ycmvt_cdh.md_sanpham_id
-                                         select new { a.md_sanpham_id, a.md_kho_id, a.soluong };
-                            decimal sl_tonkho = 0, sl_tonkho_toithieu = 0;
+                            khmvt_cdh.sl_duyet = null;
+                            var tonkho = (from a in db.md_kho_sanpham
+                                          join b in db.md_kho on a.md_kho_id equals b.md_kho_id
+                                          where b.vattu == true & a.md_sanpham_id == ycmvt_cdh.md_sanpham_id
+                                          select new { a.md_sanpham_id, a.md_kho_id, a.soluong }).ToList();
+                            decimal sl_tonkho = 0,
+                                    sl_tonkhotoithieu = sp.sl_tonkho_toithieu.GetValueOrDefault(0),
+                                    sl_khmvtCan = khmvt_cdh.sl_can.GetValueOrDefault(0);
 
-                            foreach (var tonkho_ in tonkho.ToList())
+                            if (tonkho.Count > 0)
                             {
-                                decimal sl_tonkho_ = tonkho_.soluong.GetValueOrDefault(0) - db.md_kho_giucho.Where(s =>
-                                                s.md_sanpham_id == tonkho_.md_sanpham_id &
-                                                s.md_kho_id == tonkho_.md_kho_id
-                                                ).Select(s => s.soluong_giucho).Sum()
-                                                .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
-                                sl_tonkho += sl_tonkho_;
-                                var dklht = new c_kehoachmuavt_dklht();
-                                dklht.c_kehoachmuavt_dklht_id = Helper.getNewId();
-                                dklht.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id;
-                                dklht.md_kho_id = tonkho_.md_kho_id;
-                                dklht.md_sanpham_id = tonkho_.md_sanpham_id;
-                                dklht.sl_tonkho = sl_tonkho_;
-                                dklht.sl_layton = sl_tonkho_ > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho_;
-                                db.c_kehoachmuavt_dklht.Add(dklht);
+                                foreach (var tonkho_ in tonkho)
+                                {
+                                    decimal sl_tonkho_ = tonkho_.soluong.GetValueOrDefault(0) - db.md_kho_giucho.Where(s =>
+                                                    s.md_sanpham_id == tonkho_.md_sanpham_id &
+                                                    s.md_kho_id == tonkho_.md_kho_id
+                                                    ).Select(s => s.soluong_giucho).Sum()
+                                                    .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+
+                                    sl_tonkho += sl_tonkho_;
+                                }
                             }
                             db.SaveChanges();
 
-                            md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                            if (sp.sl_tonkho_toithieu != null) { sl_tonkho_toithieu = sp.sl_tonkho_toithieu.Value; }
+
                             khmvt_cdh.sl_tonkho = sl_tonkho;
-                            khmvt_cdh.sl_tonkho_toithieu = sl_tonkho_toithieu;
+                            khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
+                            khmvt_cdh.sl_tonkho_toithieu = sp.sl_tonkho_toithieu.GetValueOrDefault(0);
+                            khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
 
-                            khmvt_cdh.sl_denghi = sl_tonkho_toithieu - sl_tonkho + khmvt_cdh.sl_can;
-
-                            if (khmvt_cdh.sl_denghi < 0) { khmvt_cdh.sl_denghi = 0; }
+                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton 
+                                    + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
                         else
                         {
                             khmvt_cdh.sl_can += ycmvt_cdh.soluong_yeucau;
-                            khmvt_cdh.sl_denghi += ycmvt_cdh.soluong_yeucau;
+                            khmvt_cdh.sl_layton = khmvt_cdh.sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : khmvt_cdh.sl_tonkho;
+                            khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
+                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton 
+                                    + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
 
                         khmvt_cdh.sapxep = ycmvt_cdh.c_yeucaumuavt_cdh_id;
@@ -223,8 +221,6 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         }
                     }
 
-                    //string[] id_nd = id_nguoidung.Split(',');
-                    //tao id_new2
                     string id_new2 = "";
                     string sct_chung = "";
 
@@ -339,6 +335,8 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             ycmvt.c_kehoachmuavt_id = sct_chung;
                         else
                             ycmvt.c_kehoachmuavt_id = " ";
+
+                        ycmvt.md_trangthai_id = "HIEULUC";
                     }
 
                     var remove_kh = db.c_kehoachmuavt.Where(s => s.sochungtu == "goc").FirstOrDefault();
@@ -358,8 +356,17 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
 
             if (msg.Length <= 0)
             {
-                msg = string.Format("<div style='color:blue'>{0}</div>",msg_success);
                 transaction.Commit();
+
+                string postData = "";
+                postData += "oper=CA_01_LamMoiHangTonKho";
+                postData += string.Format(@"&id={0}", id_new);
+                msg = VNN_VariablePublic.GetModule("Controller/JQGridModify/JQGridMD_01_CDKHVattuModify.ashx", postData);
+
+                if (msg.Length <= 0)
+                {
+                    msg = string.Format("<div style='color:blue'>{0}</div>", msg_success);
+                }
             }
             else
             {

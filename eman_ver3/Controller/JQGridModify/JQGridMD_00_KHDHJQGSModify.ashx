@@ -274,7 +274,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
                     if (msg.Length <= 0)
                     {
-                        del_kehoachdathang(db, vnn);
+                        del_kehoachdathang(db, khdh.c_kehoachdathang_id);
                         var candat = from a in db.c_kehoachdathang_cdhcd
                                      join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
                                      join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
@@ -648,16 +648,12 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
     }
 
     //Xoa cac du lieu lien quan den lap ke hoach de doi chieu lai 
-    public void del_kehoachdathang(EntityContext db, string[] c_kehoachdathang_id)
+    public void del_kehoachdathang(EntityContext db, string kehoachdathang_id)
     {
-        for (int i = 0; i < c_kehoachdathang_id.Length; i++)
-        {
-            string kehoachdathang_id = c_kehoachdathang_id[i];
-            db.c_kehoachdathang_dhcpx.RemoveRange(db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-            db.c_kehoachdathang_dhcpx_cdh.RemoveRange(db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-            db.c_kehoachdathang_dhncc.RemoveRange(db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-            db.c_kehoachdathang_dhncc_cdh.RemoveRange(db.c_kehoachdathang_dhncc_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-        }
+        db.c_kehoachdathang_dhcpx.RemoveRange(db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
+        db.c_kehoachdathang_dhcpx_cdh.RemoveRange(db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
+        db.c_kehoachdathang_dhncc.RemoveRange(db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
+        db.c_kehoachdathang_dhncc_cdh.RemoveRange(db.c_kehoachdathang_dhncc_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
         db.SaveChanges();
     }
 

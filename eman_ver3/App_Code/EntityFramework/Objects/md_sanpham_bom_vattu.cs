@@ -79,6 +79,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_sanpham_bom_vattu_sanphamId_wintaFN
+                        
+                        #endregion md_sanpham_bom_vattu_sanphamId_wintaFN
+                        public string sanphamId { get; set; }
+                
+						
                         #region md_sanpham_bom_vattu_soluong_wintaFN
                         
                         #endregion md_sanpham_bom_vattu_soluong_wintaFN

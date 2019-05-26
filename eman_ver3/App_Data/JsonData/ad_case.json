@@ -2008,7 +2008,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000000",
@@ -2025,9 +2025,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:27:52",
-    "ngaycapnhat": "21/12/2015 10:07:22",
+    "ngaycapnhat": "23/05/2019 15:55:23",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "24BE229091F5447FA2653D2BD2DD3B1C",
@@ -2200,9 +2200,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:35:38",
-    "ngaycapnhat": "02/05/2019 17:54:23",
+    "ngaycapnhat": "25/05/2019 12:12:04",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "200FC3B7BF9A45B2B9A609E676016A48",
@@ -3810,9 +3810,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:38:07",
-    "ngaycapnhat": "26/12/2015 15:38:07",
+    "ngaycapnhat": "25/05/2019 12:12:33",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "1A1A4BA908E544D490A8D2676CF85532",
@@ -4496,7 +4496,7 @@
     "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
-    "sapxep": "0000000001",
+    "sapxep": "0000000002",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -4685,9 +4685,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:39:25",
-    "ngaycapnhat": "02/05/2019 17:54:54",
+    "ngaycapnhat": "24/05/2019 23:53:16",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "4121B028E227441F8DF3827C854BC861",
@@ -4765,18 +4765,18 @@
     "ma_menu": "MN_01_Xuatnoibo",
     "ma_module": "MD_00_Xuatnoibo",
     "ma_case": "CA_01_XuatKhoNB",
-    "ten_case": "Xác nhận / Hiệu lực phiếu xuất kho",
+    "ten_case": "Hiệu Lực Phiếu Xuất Kho",
     "logo": "glyphicon glyphicon-download",
     "hamxuly": "CA_01_XuatKhoNB(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
     "tieude": "",
     "isview": "False",
     "canhgiua": "True",
-    "id_parent": "False",
+    "id_parent": "True",
     "dodaiForm": "300",
     "docaoForm": "110",
     "thuake": "",
     "hidden_modify": "False",
-    "sapxep": "0000000006",
+    "sapxep": "0000000007",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -4790,7 +4790,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "29/12/2015 16:15:39",
-    "ngaycapnhat": "13/05/2019 04:08:13",
+    "ngaycapnhat": "26/05/2019 02:12:26",
     "mota": "",
     "hoatdong": "True"
   },
@@ -4983,7 +4983,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000005",
@@ -5000,7 +5000,7 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:07:07",
-    "ngaycapnhat": "21/12/2015 09:07:07",
+    "ngaycapnhat": "23/05/2019 15:55:12",
     "mota": "",
     "hoatdong": "True"
   },
@@ -7105,6 +7105,41 @@
     "hoatdong": "True"
   },
   {
+    "ad_case_id": "0239bee5094b482287e81cd1ac5abef1",
+    "ad_module_id": "B31DE7F6CC1A44CD8D0C91BCD0063C28",
+    "ma_menu": "MN_01_NhapkhotuNCC",
+    "ma_module": "MD_00_NhapkhotuNCC",
+    "ma_case": "CA_01_XacNhanNKNCC",
+    "ten_case": "Xác nhận phiếu nhập kho",
+    "logo": "glyphicon glyphicon-ok",
+    "hamxuly": "CA_01_XacNhanNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
+    "tieude": "",
+    "isview": "False",
+    "canhgiua": "True",
+    "id_parent": "False",
+    "dodaiForm": "300",
+    "docaoForm": "110",
+    "thuake": "",
+    "hidden_modify": "True",
+    "sapxep": "0000000007",
+    "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
+    "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
+    "bophantao": "8B82E40773764BFB86F105041599C913",
+    "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
+    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
+    "value_nguoitao": "",
+    "value_vaitrotao": "",
+    "value_bophantao": "",
+    "value_nguoicapnhat": "",
+    "value_vaitrocapnhat": "",
+    "value_bophancapnhat": "",
+    "ngaytao": "24/05/2019 13:12:47",
+    "ngaycapnhat": "24/05/2019 13:13:03",
+    "mota": "",
+    "hoatdong": "True"
+  },
+  {
     "ad_case_id": "03128AF50F884BDF852C9654BC3C2056",
     "ad_module_id": "29A9C05564A14C5AA482B10432F474BA",
     "ma_menu": "MN_01_KHDHJQGS",
@@ -7258,7 +7293,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
     "sapxep": "0000000002",
@@ -7275,9 +7310,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:07:05",
-    "ngaycapnhat": "21/12/2015 09:41:26",
+    "ngaycapnhat": "23/05/2019 15:55:08",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "078661CD4CFD4B42975237A315A09569",
@@ -7835,7 +7870,7 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "28/12/2015 16:19:00",
-    "ngaycapnhat": "28/12/2015 16:19:00",
+    "ngaycapnhat": "26/05/2019 01:27:12",
     "mota": "",
     "hoatdong": "True"
   },
@@ -10745,6 +10780,41 @@
     "hoatdong": "True"
   },
   {
+    "ad_case_id": "52cbe90613ee4609a578209a8a4f0ee8",
+    "ad_module_id": "4A163AE516FC4F7FB8361602663F8211",
+    "ma_menu": "MN_01_Xuatnoibo",
+    "ma_module": "MD_00_Xuatnoibo",
+    "ma_case": "CA_01_XacNhanPXKNB",
+    "ten_case": "Xác Nhận Phiếu Xuất Kho",
+    "logo": "glyphicon glyphicon-ok",
+    "hamxuly": "CA_01_XacNhanPXKNB(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
+    "tieude": "",
+    "isview": "False",
+    "canhgiua": "True",
+    "id_parent": "",
+    "dodaiForm": "300",
+    "docaoForm": "110",
+    "thuake": "",
+    "hidden_modify": "True",
+    "sapxep": "0000000006",
+    "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
+    "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
+    "bophantao": "8B82E40773764BFB86F105041599C913",
+    "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
+    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
+    "value_nguoitao": "",
+    "value_vaitrotao": "",
+    "value_bophantao": "",
+    "value_nguoicapnhat": "",
+    "value_vaitrocapnhat": "",
+    "value_bophancapnhat": "",
+    "ngaytao": "26/05/2019 02:11:37",
+    "ngaycapnhat": "26/05/2019 02:11:37",
+    "mota": "",
+    "hoatdong": "True"
+  },
+  {
     "ad_case_id": "5327FCAF7FDF49928C631C19CE97E87E",
     "ad_module_id": "0B431CBF108B4788A515F599F80E6709",
     "ma_menu": "MN_01_DSDHJQGS",
@@ -11531,7 +11601,7 @@
     "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
-    "sapxep": "0000000002",
+    "sapxep": "0000000003",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -13680,9 +13750,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "21/12/2015 10:39:42",
-    "ngaycapnhat": "21/12/2015 10:56:36",
+    "ngaycapnhat": "23/05/2019 15:53:45",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "8530D21D4A734C218F7B892B80CFAED5",
@@ -14221,7 +14291,7 @@
     "tieude": "",
     "isview": "False",
     "canhgiua": "True",
-    "id_parent": "",
+    "id_parent": "False",
     "dodaiForm": "300",
     "docaoForm": "110",
     "thuake": "",
@@ -14240,9 +14310,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "21/12/2015 10:46:42",
-    "ngaycapnhat": "21/12/2015 10:46:42",
+    "ngaycapnhat": "23/05/2019 15:54:09",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "8F07BCAD14DA4112BA8240C0EA3F9A70",
@@ -16060,9 +16130,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:39:26",
-    "ngaycapnhat": "02/05/2019 17:54:57",
+    "ngaycapnhat": "24/05/2019 23:53:20",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "b57c69ad689d4c23a3ed7d7ca00a083c",
@@ -16185,7 +16255,7 @@
     "dodaiForm": "440",
     "docaoForm": "",
     "thuake": "",
-    "hidden_modify": "True",
+    "hidden_modify": "False",
     "sapxep": "0000000001",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
@@ -16200,7 +16270,7 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "28/12/2015 16:24:04",
-    "ngaycapnhat": "10/04/2019 10:57:42",
+    "ngaycapnhat": "26/05/2019 23:21:32",
     "mota": "",
     "hoatdong": "True"
   },
@@ -17355,9 +17425,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:38:05",
-    "ngaycapnhat": "02/05/2019 17:54:36",
+    "ngaycapnhat": "25/05/2019 12:12:21",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "CDA1A71C4D5E4948BBB163812CFEB20A",
@@ -17408,7 +17478,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
     "sapxep": "0000000001",
@@ -17425,9 +17495,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:27:53",
-    "ngaycapnhat": "21/12/2015 10:07:25",
+    "ngaycapnhat": "23/05/2019 15:55:27",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "CE8D8019C345498F8A4043BF6AA72FF5",
@@ -17680,7 +17750,7 @@
     "ma_menu": "MN_01_NhapkhotuNCC",
     "ma_module": "MD_00_NhapkhotuNCC",
     "ma_case": "CA_01_XLNKNCC",
-    "ten_case": "Xác nhận / Hiệu lực phiếu nhập kho",
+    "ten_case": "Hiệu lực phiếu nhập kho",
     "logo": "glyphicon glyphicon-yen",
     "hamxuly": "CA_01_XLNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
     "tieude": "",
@@ -17691,7 +17761,7 @@
     "docaoForm": "110",
     "thuake": "",
     "hidden_modify": "False",
-    "sapxep": "0000000007",
+    "sapxep": "0000000008",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -17705,7 +17775,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "26/12/2015 14:54:09",
-    "ngaycapnhat": "02/05/2019 11:22:17",
+    "ngaycapnhat": "24/05/2019 13:13:11",
     "mota": "",
     "hoatdong": "True"
   },
@@ -18636,7 +18706,7 @@
     "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
-    "sapxep": "0000000005",
+    "sapxep": "0000000006",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -19385,9 +19455,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "28/12/2015 16:24:03",
-    "ngaycapnhat": "10/04/2019 10:57:38",
+    "ngaycapnhat": "26/05/2019 01:27:20",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "F1CE68B9BBCB4DBB940EABC16649D942",
@@ -21030,7 +21100,7 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "28/12/2015 16:18:58",
-    "ngaycapnhat": "10/04/2019 10:57:10",
+    "ngaycapnhat": "26/05/2019 01:27:06",
     "mota": "",
     "hoatdong": "True"
   },
@@ -21695,9 +21765,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:39:27",
-    "ngaycapnhat": "26/12/2015 15:39:27",
+    "ngaycapnhat": "24/05/2019 23:53:24",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "4A681EA48CE2483BB5E13852A980A436",
@@ -21873,6 +21943,41 @@
     "ngaycapnhat": "23/04/2016 10:39:40",
     "mota": "",
     "hoatdong": "False"
+  },
+  {
+    "ad_case_id": "4cfd2a806f2b4565ad73ed27e284b62a",
+    "ad_module_id": "7D25B582A9FB48FD837280D85B1E6EF0",
+    "ma_menu": "MN_01_KHMVT",
+    "ma_module": "MD_01_CDKHVattu",
+    "ma_case": "CA_01_LamMoiHangTonKho",
+    "ten_case": "Làm mới dữ liệu tồn kho",
+    "logo": "glyphicon glyphicon-refresh",
+    "hamxuly": "CA_01_LamMoiHangTonKho(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
+    "tieude": "",
+    "isview": "False",
+    "canhgiua": "True",
+    "id_parent": "False",
+    "dodaiForm": "300",
+    "docaoForm": "110",
+    "thuake": "",
+    "hidden_modify": "True",
+    "sapxep": "0000000001",
+    "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
+    "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
+    "bophantao": "8B82E40773764BFB86F105041599C913",
+    "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
+    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
+    "value_nguoitao": "",
+    "value_vaitrotao": "",
+    "value_bophantao": "",
+    "value_nguoicapnhat": "",
+    "value_vaitrocapnhat": "",
+    "value_bophancapnhat": "",
+    "ngaytao": "24/05/2019 16:53:19",
+    "ngaycapnhat": "24/05/2019 23:06:51",
+    "mota": "",
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "DB91780105FB4EC9BFDD0DC2AF40C81E",
@@ -23340,9 +23445,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:27:54",
-    "ngaycapnhat": "21/12/2015 10:07:30",
+    "ngaycapnhat": "23/05/2019 15:54:21",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "51BB05A5ADE240929565A0DFF133720D",
@@ -23656,6 +23761,41 @@
     "value_bophancapnhat": "",
     "ngaytao": "28/02/2019 10:00:07",
     "ngaycapnhat": "28/02/2019 10:05:27",
+    "mota": "",
+    "hoatdong": "True"
+  },
+  {
+    "ad_case_id": "906326b129744c049133e6bc06ecb56e",
+    "ad_module_id": "B759DB196C3C431DA47D912874F45A20",
+    "ma_menu": "MN_01_Xuatnoibo",
+    "ma_module": "MD_01_CDHDXuat",
+    "ma_case": "CA_01_PhanBoSoLuongTheoTo",
+    "ten_case": "Phân bổ số lượng theo tổ SX",
+    "logo": "glyphicon glyphicon-fullscreen",
+    "hamxuly": "CA_01_PhanBoSoLuongTheoTo(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
+    "tieude": "",
+    "isview": "False",
+    "canhgiua": "True",
+    "id_parent": "",
+    "dodaiForm": "300",
+    "docaoForm": "",
+    "thuake": "",
+    "hidden_modify": "True",
+    "sapxep": "0000000004",
+    "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
+    "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
+    "bophantao": "8B82E40773764BFB86F105041599C913",
+    "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
+    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
+    "value_nguoitao": "",
+    "value_vaitrotao": "",
+    "value_bophantao": "",
+    "value_nguoicapnhat": "",
+    "value_vaitrocapnhat": "",
+    "value_bophancapnhat": "",
+    "ngaytao": "26/05/2019 16:31:04",
+    "ngaycapnhat": "26/05/2019 16:31:04",
     "mota": "",
     "hoatdong": "True"
   },
@@ -24271,7 +24411,7 @@
     "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
-    "sapxep": "0000000004",
+    "sapxep": "0000000005",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -24775,9 +24915,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "28/12/2015 16:24:05",
-    "ngaycapnhat": "28/12/2015 16:24:05",
+    "ngaycapnhat": "26/05/2019 01:27:24",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "A38B77CE4C3A449A91E12DB9A56CFDCD",
@@ -26788,7 +26928,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000005",
@@ -26805,7 +26945,7 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:27:55",
-    "ngaycapnhat": "21/12/2015 09:27:55",
+    "ngaycapnhat": "23/05/2019 15:55:32",
     "mota": "",
     "hoatdong": "True"
   },
@@ -27701,7 +27841,7 @@
     "docaoForm": "140",
     "thuake": "",
     "hidden_modify": "False",
-    "sapxep": "0000000004",
+    "sapxep": "0000000005",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
@@ -27995,9 +28135,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:38:06",
-    "ngaycapnhat": "02/05/2019 17:54:41",
+    "ngaycapnhat": "25/05/2019 12:12:28",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "FDE8057277C0474B8456B71BEA795CD8",
@@ -28030,9 +28170,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "26/12/2015 15:35:37",
-    "ngaycapnhat": "02/05/2019 17:54:19",
+    "ngaycapnhat": "25/05/2019 12:11:59",
     "mota": "",
-    "hoatdong": "True"
+    "hoatdong": "False"
   },
   {
     "ad_case_id": "D016308D44354EFFAF9808D0165C8EA2",
@@ -30218,7 +30358,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000000",
@@ -30235,9 +30375,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:07:04",
-    "ngaycapnhat": "21/12/2015 09:41:22",
+    "ngaycapnhat": "23/05/2019 15:55:04",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "b6c99678ca9646e5a27948db817a9391",
@@ -30585,9 +30725,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "21/12/2015 09:07:06",
-    "ngaycapnhat": "21/12/2015 09:41:29",
+    "ngaycapnhat": "23/05/2019 15:54:47",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "70569F43520E475784C603EDAF046D98",
@@ -31236,7 +31376,7 @@
     "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
-    "sapxep": "0000000003",
+    "sapxep": "0000000004",
     "nguoitao": "AA0A67E297F94079831FA05B5BD87EA3",
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",

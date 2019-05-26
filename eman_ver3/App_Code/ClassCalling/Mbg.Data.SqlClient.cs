@@ -56,11 +56,8 @@ namespace Mbg.Data.SqlClient
         public static DataTable Fill(DataTable dt, String sql, bool procdure, params object[] nameValue)
         {
             SqlCommand cmd = SqlHelper.CreateCommand(sql, true, nameValue);
-			cmd.CommandTimeout = 60;
-            cmd.Connection.Open();
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             da.Fill(dt);
-            cmd.Connection.Close();
             return dt;
         }
 

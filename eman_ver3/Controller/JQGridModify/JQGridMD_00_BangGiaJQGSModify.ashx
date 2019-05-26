@@ -414,26 +414,12 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
     {
         EntityContext db = new EntityContext();
         bool firstnull = bool.Parse(context.Request.QueryString["firstnull"]);
-        string str = "", input = "";
+        string str = "";
         string id = context.Request.QueryString["id"];
         str += firstnull ? string.Format("<option value=\"\"></option>") : "";
-        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true).OrderBy(s=>s.ten_banggia))
+        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true).OrderBy(s=>s.ten_banggia).ToList())
         {
-            string str_dtkd = "";
-            foreach(string dtkd in db.md_doitackinhdoanh.Where( s=>s.md_banggia_id == object_.md_banggia_id ).Select(s=>s.ma_dtkd)) {
-                if(dtkd != null & dtkd != "") {
-                    str_dtkd += dtkd + ",";
-                }
-            }
-            if(str_dtkd == "")
-            {
-                str_dtkd = object_.lienket_bg + ",";
-            }
-
-            if(str_dtkd != "") {
-                str_dtkd = str_dtkd.Substring(0, str_dtkd.Length - 1);
-            }
-            str += string.Format(@"<option dtkd='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, str_dtkd);
+            str += string.Format(@"<option dtkd='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, object_.lienket_bg);
         }
         context.Response.Write("<select>" + str + "</select>");
     }

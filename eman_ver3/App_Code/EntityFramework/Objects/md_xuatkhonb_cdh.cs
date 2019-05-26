@@ -25,16 +25,34 @@
                         public bool? check_kho { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_dangno_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_dangno_wintaFN
+                        public Decimal? dangno { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_ghichu_donvi2_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_ghichu_donvi2_wintaFN
                         public string ghichu_donvi2 { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_ghino_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_ghino_wintaFN
+                        public Decimal? ghino { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_hoatdong_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_lsx_to_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_lsx_to_wintaFN
+                        public string lsx_to { get; set; }
                 
 						
                         #region md_xuatkhonb_cdh_md_donvitinhsanpham_id_wintaFN
@@ -113,6 +131,24 @@
                         
                         #endregion md_xuatkhonb_cdh_sl_daxuat_wintaFN
                         public Decimal? sl_daxuat { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_sl_thucxuat_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_sl_thucxuat_wintaFN
+                        public Decimal? sl_thucxuat { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_sl_toida_trongLSXTo_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_sl_toida_trongLSXTo_wintaFN
+                        public Decimal? sl_toida_trongLSXTo { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_sl_toida_trongLSXTo2_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_sl_toida_trongLSXTo2_wintaFN
+                        public Decimal? sl_toida_trongLSXTo2 { get; set; }
                 
 						
                         #region md_xuatkhonb_cdh_sl_xuat_wintaFN

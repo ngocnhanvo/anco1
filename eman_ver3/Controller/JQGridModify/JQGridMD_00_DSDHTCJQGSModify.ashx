@@ -63,11 +63,12 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     {
         string poId = context.Request.Form["id"];
         var donhang = db.c_danhsachdathang.Where(dh => dh.c_danhsachdathang_id == poId).FirstOrDefault();
-         DataTable dt = pub.TinhNangLuc(donhang, db);
+        DataTable dt = pub.TinhNangLuc(donhang, db);
         string result = "";
         string ngaylap = donhang.ngaylap.Value.ToString("dd/MM/yyyy");
         //DataTable dt = Mbg.Data.SqlClient.SqlHelper.GetData("select * from dbo.f_tinhNangLucCungUng('" + poId + "')");
         DateTime maxDate = DateTime.ParseExact("01/01/1900", "dd/MM/yyyy", null);
+        int max_tgnhan_dh = -1, max_tgantoan_dh = -1;
         int colCount = dt.Columns.Count;
         int rowCount = dt.Select("tong_cbmcandat >= 0").Count();
         int check = dt.Select("result_nhandh = 0 or result = 0").Count();
@@ -103,37 +104,64 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
                 if (row[10].ToString() == "1")
                 {
-                    DateTime ngaydukien = DateTime.Parse(row[4].ToString());
+                    var ngaydukien = DateTime.Parse(row[4].ToString());
+                    var tgnhan_dh = (int)row["tgnhan_dh"];
+                    var tgantoan_dh = (int)row["tgantoan_dh"];
                     if (maxDate < ngaydukien)
-                    {
                         maxDate = ngaydukien;
-                    }
+
+                    if (max_tgantoan_dh < tgantoan_dh)
+                        max_tgantoan_dh = tgantoan_dh;
+
+                    if (max_tgnhan_dh < tgnhan_dh)
+                        max_tgnhan_dh = tgnhan_dh;
                 }
             }
             result += "</table></div>";
 
             if (check > 0)
             {
-                //tinh thoi gian du kien 
-                string sql_dk = @"select case when (tgdk < tgyc and tgnhandh > tgantoan_dh) then tgyc
-									when (tgdk < tgyc and tgnhandh < tgantoan_dh) then ngay_dh + tgnhandh
-									when (tgdk > tgyc and tgnhandh > tgantoan_dh) then tgdk
-									else tgdk
-									end
-							from(
-									select MAX(thoigiandukien) tgdk, thoigianyeucau tgyc, max(tgnhan_dh) tgnhandh, max(tgantoan_dh) tgantoan_dh, convert(datetime,'" + ngaylap + "',103) as ngay_dh" +
-                                        " from f_tinhNangLucCungUng('" + poId + "')" +
-                                        " group by thoigianyeucau) as tmp";
-                DateTime ngaydk = (DateTime)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_dk);
-                result = "<div style=\"padding:15px; border:1px solid red; background:#ffadad;\"><h3>Năng lực nhà cung ứng không đáp ứng được đơn hàng này.!<br/>Ngày dự kiến: " + ngaydk.ToString("dd/MM/yyyy") + "</h3></div>" + result;
+                DateTime? ngaydk = null;
+                foreach (var row in dt.AsEnumerable().GroupBy(s=>s["thoigianyeucau"])
+                        .Select(s=> new {
+                            tgyc = (DateTime)s.Key,
+                            tgdk = s.Max(t=>(DateTime)t["thoigiandukien"]),
+                            tgnhandh = s.Max(t=>(int)t["tgnhan_dh"]),
+                            tgantoan_dh = s.Max(t=>(int)t["tgantoan_dh"])
+                        }))
+                {
+                    var ngay_dh = donhang.ngaylap;
+                    if (row.tgdk < row.tgyc & row.tgnhandh > row.tgantoan_dh)
+                        ngaydk = row.tgyc;
+                    else if (row.tgdk < row.tgyc & row.tgnhandh < row.tgantoan_dh)
+                        ngaydk = ngay_dh.Value.AddDays(row.tgnhandh);
+                    else if (row.tgdk > row.tgyc & row.tgnhandh > row.tgantoan_dh)
+                        ngaydk = row.tgdk;
+                    else
+                        ngaydk = row.tgdk;
+
+                }
+                //         //tinh thoi gian du kien 
+                //         string sql_dk = @"select case when (tgdk < tgyc and tgnhandh > tgantoan_dh) then tgyc
+                //		when (tgdk < tgyc and tgnhandh < tgantoan_dh) then ngay_dh + tgnhandh
+                //		when (tgdk > tgyc and tgnhandh > tgantoan_dh) then tgdk
+                //		else tgdk
+                //		end
+                //from(
+                //		select MAX(thoigiandukien) tgdk, thoigianyeucau tgyc, max(tgnhan_dh) tgnhandh, max(tgantoan_dh) tgantoan_dh, convert(datetime,'" + ngaylap + "',103) as ngay_dh" +
+                //                                 " from f_tinhNangLucCungUng('" + poId + "')" +
+                //                                 " group by thoigianyeucau) as tmp";
+                //         DateTime ngaydk = (DateTime)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_dk);
+                result = "<div style=\"padding:15px; border:1px solid red; background:#ffadad;\"><h3>Năng lực nhà cung ứng không đáp ứng được đơn hàng này.!<br/>Ngày dự kiến: " + ngaydk.Value.ToString("dd/MM/yyyy") + "</h3></div>" + result;
             }
             else
             {
-                string sql_tongcandat = string.Format(@"SELECT sum(ddh.v2 * ddh.sl_conlai) as tcbm from c_dongdsdh ddh where ddh.c_danhsachdathang_id ='{0}'", poId);
-                string sql_slCandat = @"select isnull(SUM(cbm_candat), 0) from f_tinhNangLucCungUng('" + poId + "')";
-                string tong = Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_tongcandat).ToString();
-                decimal slTongCanDat = decimal.Parse(tong);
-                decimal slCanDat = decimal.Parse(Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_slCandat).ToString());
+
+                //string sql_tongcandat = string.Format(@"SELECT sum(ddh.v2 * ddh.sl_conlai) as tcbm from c_dongdsdh ddh where ddh.c_danhsachdathang_id ='{0}'", poId);
+                //string sql_slCandat = @"select isnull(SUM(cbm_candat), 0) from f_tinhNangLucCungUng('" + poId + "')";
+                //string tong = Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_tongcandat).ToString();
+                decimal slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
+                decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
 
                 if (slCanDat < slTongCanDat)
                 {
@@ -147,8 +175,14 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     }
                     else
                     {
-                        string sql_chk_lai_tongcandat = @"select isnull(sum(tmp.tong_cbmcandat), 0) from (select distinct dauma, tong_cbmcandat from f_tinhNangLucCungUng('" + poId + "')) as tmp";
-                        decimal sl_chk_lai_TongCanDat = decimal.Parse(Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_chk_lai_tongcandat).ToString());
+                        //string sql_chk_lai_tongcandat = @"select isnull(sum(tmp.tong_cbmcandat), 0) from (select distinct dauma, tong_cbmcandat from f_tinhNangLucCungUng('" + poId + "')) as tmp";
+                        //decimal sl_chk_lai_TongCanDat = decimal.Parse(Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_chk_lai_tongcandat).ToString());
+
+                        decimal sl_chk_lai_TongCanDat = dt.AsEnumerable().Select(s => new
+                        {
+                            dauma = s["dauma"],
+                            tong_cbmcandat = (decimal)s["tong_cbmcandat"]
+                        }).Distinct().Sum(s => s.tong_cbmcandat);
 
                         if (slCanDat >= sl_chk_lai_TongCanDat)
                         {

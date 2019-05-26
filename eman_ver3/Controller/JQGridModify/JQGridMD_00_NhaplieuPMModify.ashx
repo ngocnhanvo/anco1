@@ -468,7 +468,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 msg += string.Format("\n<div style=\"" + color + " padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) đã được cập nhật.</div>", (i - count_row_null), ava_1);
             }
             else {
-                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, sql_update_row);
+                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, ex);
             }
         } else {
             string ex = SqlHelper.ExcuteNonQuery2(sql_insert_row);

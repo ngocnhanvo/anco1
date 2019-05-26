@@ -49,6 +49,18 @@
                         public string md_kho_id { get; set; }
                 
 						
+                        #region md_kho_md_phanxuong_id_wintaFN
+                        
+                        #endregion md_kho_md_phanxuong_id_wintaFN
+                        public string md_phanxuong_id { get; set; }
+                
+						
+                        #region md_kho_md_to_id_wintaFN
+                        
+                        #endregion md_kho_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_kho_mota_wintaFN
                         
                         #endregion md_kho_mota_wintaFN

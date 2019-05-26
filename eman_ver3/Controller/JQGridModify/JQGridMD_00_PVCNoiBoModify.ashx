@@ -93,7 +93,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     {
                         if (vcnb.md_trangthai_id != "DANHAN")
                         {
-                            msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Xác Nhận"".</div>", vcnb.sochungtu);
+                            msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", vcnb.sochungtu);
                             break;
                         }
 
@@ -281,7 +281,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         if (msg.Length <= 0)
                         {
                             db.SaveChanges();
-                            pub.capnhatGiuCho_VCNB(vcnb.sochungtu, vcnb.chungtuthamchieu, vcnb.md_vanchuyennoibo_id, vcnb.md_trangthai_id, db);
+                            pub.capnhatGiuCho_VCNB(vcnb.sochungtu, vcnb.chungtuthamchieu, vcnb.tukho, vcnb.md_vanchuyennoibo_id, vcnb.md_trangthai_id, db);
                             db.SaveChanges();
                         }
                     }
@@ -586,7 +586,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         if (dcht.phieuhangton == "")
                             dcht.phieuhangton = " ";
 
-                        pub.capnhatGiuCho_VCNB(object_.sochungtu, "", object_.md_vanchuyennoibo_id, object_.md_trangthai_id, db);
+                        pub.capnhatGiuCho_VCNB(object_.sochungtu, "", object_.tukho, object_.md_vanchuyennoibo_id, object_.md_trangthai_id, db);
                     }
                     db.md_vanchuyennoibo.Remove(object_);
                 }

@@ -5,15 +5,19 @@ using System.Data.SqlClient;
 using System.Data;
 using DataAcess;
 using System.Linq;
+public static class RPN
+{
+    public static string reportName = "Phiếu Nhập Kho";
+}
 
 public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI.Page
 {
-    public static string reportName = "Phiếu Nhập Kho";
+    
     protected void Page_Load(object sender, EventArgs e)
     {
         EntityContext db = new EntityContext();
-        rptPhieuNhapKhoNCC report = new rptPhieuNhapKhoNCC();
         String sql = this.CreateSql();
+        rptPhieuNhapKhoNCC report = new rptPhieuNhapKhoNCC();
         this.viewReport(report, sql);
     }
 
@@ -35,7 +39,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
 		string khoden = context.Request.QueryString["khoden"];
         string trangthai = db.md_nhapkho_ncc.Where(s =>
             s.md_nhapkho_ncc_id == md_nhapkho_ncc_id).Select(s => s.trangthai).FirstOrDefault();
-        reportName = trangthai == "SOANTHAO" ? "Phiếu Yêu Cầu Nhập Kho" : reportName;
+        RPN.reportName = trangthai == "SOANTHAO" ? "Phiếu Yêu Cầu Nhập Kho" : "Phiếu Nhập kho";
 		string sql = string.Format(@"
 		select sp.ma_sanpham as ma_vthh, sp.mota_tiengviet as ten_vthh, 
 		dvtsp.ten_dvt as dvt, round(nk_ncc_dh.sl_nhap , 2, 1) as soluong, nk_ncc_dh.quycach as quycach, 
@@ -288,7 +292,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             // soluong
             // 
             this.soluong.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "soluong", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "soluong", "{0:#,#0.####}")});
             this.soluong.Name = "soluong";
             this.soluong.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.soluong.StylePriority.UsePadding = false;
@@ -299,7 +303,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             // dongia
             // 
             this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.####}")});
             this.dongia.Name = "dongia";
             this.dongia.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.dongia.StylePriority.UsePadding = false;
@@ -310,7 +314,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             // thanhtien
             // 
             this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.####}")});
             this.thanhtien.Name = "thanhtien";
             this.thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.thanhtien.StylePriority.UsePadding = false;
@@ -493,7 +497,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             this.sum_soluong.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.sum_soluong.StylePriority.UsePadding = false;
             this.sum_soluong.StylePriority.UseTextAlignment = false;
-            xrSummary2.FormatString = "{0:#,#0.00}";
+            xrSummary2.FormatString = "{0:#,#0.####}";
             xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_soluong.Summary = xrSummary2;
             this.sum_soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -507,7 +511,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             this.sum_dongia.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.sum_dongia.StylePriority.UsePadding = false;
             this.sum_dongia.StylePriority.UseTextAlignment = false;
-            xrSummary3.FormatString = "{0:#,#0.00}";
+            xrSummary3.FormatString = "{0:#,#0.####}";
             xrSummary3.IgnoreNullValues = true;
             xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_dongia.Summary = xrSummary3;
@@ -522,7 +526,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             this.sum_thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.sum_thanhtien.StylePriority.UsePadding = false;
             this.sum_thanhtien.StylePriority.UseTextAlignment = false;
-            xrSummary4.FormatString = "{0:#,#0.00}";
+            xrSummary4.FormatString = "{0:#,#0.####}";
             xrSummary4.IgnoreNullValues = true;
             xrSummary4.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_thanhtien.Summary = xrSummary4;
@@ -616,7 +620,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Default : System.Web.UI
             this.xrLabel2.StylePriority.UseFont = false;
             this.xrLabel2.StylePriority.UseForeColor = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
-            this.xrLabel2.Text = PrintControllers_MD_00_NhapkhotuNCC_Default.reportName;
+            this.xrLabel2.Text = RPN.reportName;
             this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // xrLabel6

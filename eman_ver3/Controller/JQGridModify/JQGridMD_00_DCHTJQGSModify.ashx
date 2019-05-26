@@ -58,26 +58,26 @@ System.Web.SessionState.IRequiresSessionState
             try
             {
                 var khohangton = from a in db.md_kho
-                                     join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
-                                     join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
-                                     where a.hangton == true
-                                     select new
-                                     {
-                                         a.md_kho_id,
-                                         a.ten_kho,
-                                         c.ma_sanpham,
-                                         b.md_sanpham_id,
-                                         c.md_donvitinhsanpham_id,
-                                         c.mota_tiengviet,
-                                         c.mota_tienganh,
-                                         b.soluong,
-                                         c.mota,
-                                         c.sanpham
-                                     };
+                                 join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
+                                 join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
+                                 where a.hangton == true
+                                 select new
+                                 {
+                                     a.md_kho_id,
+                                     a.ten_kho,
+                                     c.ma_sanpham,
+                                     b.md_sanpham_id,
+                                     c.md_donvitinhsanpham_id,
+                                     c.mota_tiengviet,
+                                     c.mota_tienganh,
+                                     b.soluong,
+                                     c.mota,
+                                     c.sanpham
+                                 };
 
-                if (vnn.Count() < 1)
+                if (vnn.Count() > 1)
                 {
-                    msg = "<div style='color:red'>Lỗi:Phải chọn 1 phiếu đối chiếu hàng tồn.</div>";
+                    msg = "<div style='color:red'>Lỗi:Chỉ được chọn 1 phiếu đối chiếu hàng tồn.</div>";
                 }
                 else
                 {
@@ -98,6 +98,7 @@ System.Web.SessionState.IRequiresSessionState
                         }
                         else
                         {
+                            var phtArr = dcht.phieuhangton.Split(new[] { "<br>" }, StringSplitOptions.None);
                             foreach (var dcht_tk in db.c_doichieuhangton_tk.Where(s => s.c_doichieuhangton_id == dcht.c_doichieuhangton_id).ToList())
                             {
                                 var tht = khohangton.Where(s =>
@@ -116,7 +117,13 @@ System.Web.SessionState.IRequiresSessionState
 
                                 if (dcht_tk.sl_conlai != tht.GetValueOrDefault(0))
                                 {
-                                    msg += "<div style='color:red'>Lỗi: dòng " + dcht.ten_donhang + " đã có sự thay đổi số lượng tồn kho.</div>";
+                                    msg += string.Format(@"
+                                        <div style='color:red'>
+                                            Lỗi: dòng ""{0}"" đã có sự thay đổi số lượng tồn kho.
+                                            <br/>
+                                            <input type=""button"" value=""Đối chiếu lại hàng tồn"" 
+                                            onclick=""$('#dlg_gridSmall').remove();CA_01_DCHTJQGS(tengrid0, id_parent0, 'CA_01_DCHTJQGS', Form_infor0, Model_infor0, load_stt0);""/ >
+                                        </div>", dcht.ten_donhang);
                                     break;
                                 }
                             }
@@ -654,17 +661,15 @@ System.Web.SessionState.IRequiresSessionState
                                                 .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
                         }
 
-                        if (sl_ThanhPham > 0)
+
+                        foreach (var sanpham in khohangtonCp.ToList())
                         {
-                            foreach (var sanpham in khohangtonCp.ToList())
-                            {
-                                bool issanpham = convert_bool(sanpham.sanpham);
-                                //--Them moi dong ton kho
-                                add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
-                                sanpham.md_donvitinhsanpham_id, sanpham.mota_tiengviet, sanpham.mota_tienganh,
-                                sl_ThanhPham, sanpham.mota, issanpham, sanpham.md_sanpham_id, cddh.sl_dathang.Value,
-                                1, sanpham.md_kho_id, sanpham.ten_kho, us, cddh.sl_giamhanngach.GetValueOrDefault(0));
-                            }
+                            bool issanpham = convert_bool(sanpham.sanpham);
+                            //--Them moi dong ton kho
+                            add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
+                            sanpham.md_donvitinhsanpham_id, sanpham.mota_tiengviet, sanpham.mota_tienganh,
+                            sl_ThanhPham, sanpham.mota, issanpham, sanpham.md_sanpham_id, cddh.sl_dathang.Value,
+                            1, sanpham.md_kho_id, sanpham.ten_kho, us, cddh.sl_giamhanngach.GetValueOrDefault(0));
                         }
 
                         //Neu hang hoa ko co trog kho hoac it hon so luong dat hang thi tach BOM
@@ -804,9 +809,10 @@ System.Web.SessionState.IRequiresSessionState
     public string find_BOM(EntityContext db, c_doichieuhangton_cddh cddh, User_TK us, string md_sanpham_id, string spBomId)
     {
         //San pham trong bom 
-        var dong_bom = from b in db.md_sanpham_bom_vattu
+        var dong_bom = (from b in db.md_sanpham_bom_vattu
                        join d in db.md_sanpham on b.md_sanpham_id equals d.md_sanpham_id
-                       where b.md_sanpham_bom_id == spBomId & d.vattu != true
+                       where b.md_sanpham_bom_id == spBomId 
+                       & d.vattu != true
                        select new
                        {
                            id_sanpham = d.md_sanpham_id,
@@ -818,7 +824,7 @@ System.Web.SessionState.IRequiresSessionState
                            d.mota,
                            d.ma_sanpham,
                            d.sanpham
-                       };
+                       }).ToList();
 
         var khohangton = from a in db.md_kho
                          join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
@@ -837,7 +843,9 @@ System.Web.SessionState.IRequiresSessionState
                                  c.mota,
                                  c.sanpham
                              };
-        foreach (var dongbomcon in dong_bom.ToList())
+
+        
+        foreach (var dongbomcon in dong_bom)
         {
             //San pham trong kho ton
             var khohangtonBTP = khohangton.Where(s => s.md_sanpham_id == dongbomcon.md_sanpham_id);

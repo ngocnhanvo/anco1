@@ -25,9 +25,46 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             case "CA_01_XLNKNCC":
                 this.CA_01_XLNKNCC(context);
                 break;
+            case "CA_01_XacNhanNKNCC":
+                this.CA_01_XacNhanNKNCC(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_XacNhanNKNCC(HttpContext context)
+    {
+        var db = new EntityContext();
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        var pub = new Public();
+        string id = context.Request.Form["id"];
+        string[] vnn = id.Split(',');
+        string msg = "";
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            foreach (var nkncc in db.md_nhapkho_ncc.Where(s => vnn.Contains(s.md_nhapkho_ncc_id)).ToList())
+            {
+                if (nkncc.trangthai != "SOANTHAO")
+                    msg = string.Format(@"Lỗi: phiếu ""{0}"" đã được xác nhận.<br>", nkncc.sochungtu);
+                else
+                    nkncc.trangthai = "DANHAN";
+
+                db.SaveChanges();
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"<div class='nhan-thanhcong'>Xác nhận phiếu nhập kho thành công.</div>");
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"<div style='color:red'>Lỗi: {0}</div>", msg);
+                transaction.Rollback();
+            }
+        }
+        context.Response.Write(msg);
     }
 
     public void CA_01_XLNKNCC(HttpContext context)
@@ -72,13 +109,11 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                         {
                             msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho đến.</div>";
                         }
-                        else if(px.trangthai == "SOANTHAO")
+                        else if(px.trangthai != "DANHAN")
                         {
-                            msg_success += string.Format(@"
-                                <div style='color:blue'>Dòng ""{0}"" đã xác nhận thành công</div>
-                            ", px.sochungtu);
+                            msgDT += string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", px.sochungtu);
                         }
-                        else if(px.trangthai == "DANHAN")
+                        else
                         {
                             var check_kho = db.md_nhapkho_ncc_dh.Where(s => s.check_kho == true & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
                             var check_ma = db.md_nhapkho_ncc_dh.Where(s => s.md_sanpham_id != null & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
@@ -122,7 +157,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                             }
                         }
 
-                        if (count_slnhap <= 0 & px.trangthai == "DANHAN")
+                        if (count_slnhap <= 0)
                         {
                             msgDT += "<div style='color:red'>Dòng \"" + px.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
                         }
@@ -130,30 +165,27 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                         if (msgDT.Length <= 0)
                         {
                             msgDT = msg_success + msgDT;
-                            px.trangthai = px.trangthai == "DANHAN" ? "HIEULUC" : "DANHAN";
+                            px.trangthai = "HIEULUC";
                             db.SaveChanges();
 
-                            if (px.trangthai == "HIEULUC")
+                            foreach (var dmh_cdmh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).ToList())
                             {
-                                foreach (var dmh_cdmh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).ToList())
+                                if (dmh_cdmh.sl_dadat - dmh_cdmh.sl_hanngach > 0)
                                 {
-                                    if (dmh_cdmh.sl_dadat - dmh_cdmh.sl_hanngach > 0)
-                                    {
-                                        dem_count = 1;
-                                    }
+                                    dem_count = 1;
                                 }
-
-                                var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).FirstOrDefault();
-                                if (dem_count == 0)
-                                {
-                                    dmh.md_trangthai_id = "DAXONG";
-                                }
-                                else if (dem_count == 1)
-                                {
-                                    dmh.md_trangthai_id = "CHUAXONG";
-                                }
-                                db.SaveChanges();
                             }
+
+                            var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).FirstOrDefault();
+                            if (dem_count == 0)
+                            {
+                                dmh.md_trangthai_id = "DAXONG";
+                            }
+                            else if (dem_count == 1)
+                            {
+                                dmh.md_trangthai_id = "CHUAXONG";
+                            }
+                            db.SaveChanges();
                         }
                         else
                             commit = false;

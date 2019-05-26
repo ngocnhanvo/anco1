@@ -85,6 +85,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_kehoachmuavt_phieuhangton_wintaFN
+                        
+                        #endregion c_kehoachmuavt_phieuhangton_wintaFN
+                        public string phieuhangton { get; set; }
+                
+						
                         #region c_kehoachmuavt_sapxep_wintaFN
                         
                         #endregion c_kehoachmuavt_sapxep_wintaFN

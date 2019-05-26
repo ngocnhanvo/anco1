@@ -233,6 +233,7 @@ public class JQGridMD_01_ColumnImportModify : IHttpHandler, System.Web.SessionSt
             string object_ = db.ad_import_column.Where(p => p.ad_import_column_id == id_).Select(s => s.ad_import_column_id).Take(1).FirstOrDefault();
             string check_sql = check_SQL(ip.ten_table, select_sql, ma_import_column);
             string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
+            string checkSQL = context.Request.Form["checksql"];
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa.";
@@ -241,7 +242,7 @@ public class JQGridMD_01_ColumnImportModify : IHttpHandler, System.Web.SessionSt
             {
                 msg = "false#Lỗi: Mã column không được bỏ trống.";
             }
-            else if (check_sql != "")
+            else if (check_sql != "" & checkSQL != "0")
             {
                 msg = "false#Cú pháp sql sai: " + check_sql;
             }

@@ -91,6 +91,12 @@
                         public string sapxep { get; set; }
                 
 						
+                        #region c_nhucauvattu_ycmvt_sl_duyetmua_wintaFN
+                        
+                        #endregion c_nhucauvattu_ycmvt_sl_duyetmua_wintaFN
+                        public Decimal? sl_duyetmua { get; set; }
+                
+						
                         #region c_nhucauvattu_ycmvt_soluong_wintaFN
                         
                         #endregion c_nhucauvattu_ycmvt_soluong_wintaFN

@@ -54,6 +54,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
     public void add(HttpContext context)
     {
         var db = new EntityContext();
+        var pub = new Public();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["md_sanpham_id"];
@@ -101,13 +102,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             }
             else if(bom_sp == null)
             {
-                var bom = (from a in db.md_sanpham_bom
-                           where a.md_sanpham_id == sp.md_sanpham_id & a.trangthai == "HIEULUC"
-                           select new { a.md_sanpham_bom_id }).FirstOrDefault();
-                if (bom == null)
+                var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db);
+                if (string.IsNullOrEmpty(bom))
                     msg = string.Format(@"false#HHVT {0} không có BOM", sp.ma_sanpham);
                 else
-                    ten_phienban = bom.md_sanpham_bom_id;
+                    ten_phienban = bom;
             }
 
             if (msg.Length <= 0)
@@ -139,6 +138,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
     public void edit(HttpContext context)
     {
         EntityContext db = new EntityContext();
+        var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["md_sanpham_id"];
@@ -155,7 +155,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             var object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).FirstOrDefault();
             var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id_parent).FirstOrDefault();
             var dtkd = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
-            var bom_sp = db.md_sanpham_bom.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.ten_phienban == ten_phienban).FirstOrDefault();
+            var bom_sp = db.md_sanpham_bom.Where(s =>
+                s.md_sanpham_id == sp.md_sanpham_id &
+                s.ten_phienban == ten_phienban &
+                string.IsNullOrEmpty(s.md_phanxuong_id) &
+                string.IsNullOrEmpty(s.md_to_id)).FirstOrDefault();
 
             if (object_ == null)
             {

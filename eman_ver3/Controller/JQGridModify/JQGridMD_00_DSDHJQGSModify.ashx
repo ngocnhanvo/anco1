@@ -660,6 +660,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
     public void CA01DSAncotrading_MD00DSDHJQGS(HttpContext context)
     {
         EntityContext db = new EntityContext();
+        var pub = new Public();
         string msg = "", msgSucess = "";
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
@@ -693,7 +694,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     else
                     {
                         int tgsx = -1;
-                        foreach(var dh in db.c_dongdsdh.Where(s=>s.c_danhsachdathang_id == dsdh1.c_danhsachdathang_id).ToList())
+                        foreach (var dh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh1.c_danhsachdathang_id).ToList())
                         {
                             var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == dh.ma_sanpham_khach).FirstOrDefault();
 
@@ -704,13 +705,25 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 </div>", dh.ma_sanpham_khach);
                             else
                             {
-                                dh.md_sanpham_id = sp.md_sanpham_id;
-                                dh.han_giaohang = dsdh1.hangiaohang_po;
-                                var nnl = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).FirstOrDefault();
-                                if (nnl != null)
+                                var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db);
+                                if (string.IsNullOrEmpty(bom))
                                 {
-                                    if(tgsx < nnl.songaysx.GetValueOrDefault(-1))
-                                        tgsx = nnl.songaysx.GetValueOrDefault(0);
+                                    msgDetail += string.Format(@"
+                                    <div style='color:red'>
+                                        Lỗi: HHVT ""{0}"" không  BOM.
+                                    </div>", dh.ma_sanpham_khach);
+                                }
+                                else
+                                {
+                                    dh.md_sanpham_id = sp.md_sanpham_id;
+                                    dh.han_giaohang = dsdh1.hangiaohang_po;
+                                    dh.md_sanpham_bom_id = bom;
+                                    var nnl = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).FirstOrDefault();
+                                    if (nnl != null)
+                                    {
+                                        if (tgsx < nnl.songaysx.GetValueOrDefault(-1))
+                                            tgsx = nnl.songaysx.GetValueOrDefault(0);
+                                    }
                                 }
                             }
                         }

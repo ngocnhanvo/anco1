@@ -122,10 +122,12 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                             arr_ncc: arr_ncc,
                             arr_id: arr_id
                         }, function (result) {
-						$('#btn-ok').button('option', 'disabled', false);
-						$('.err_MD_00_KHMHHVT').html(result);
-						loadclick(tengrid, 'edit', load_stt);
-						Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+						    $('#btn-ok').button('option', 'disabled', false);
+                            $('.err_MD_00_KHMHHVT').html(result);
+                            if (result.lastIndexOf('Lỗi') <= -1) {
+                                loadclick(tengrid, 'edit', load_stt);
+                                Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+                            }
 					});
 				}
 				else {

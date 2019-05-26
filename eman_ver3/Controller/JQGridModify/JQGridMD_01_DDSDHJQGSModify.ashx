@@ -118,13 +118,29 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string ten_phienban = context.Request.Form["md_sanpham_bom_id"];
+        string masp = context.Request.Form["md_sanpham_id"];
         try
         {
+
+
             string id = context.Request.Form["id"];
-            string object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).Select(s => s.c_dongdsdh_id).Take(1).FirstOrDefault();
+            var object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+            }
+            else
+            {
+                var bom_sp = db.md_sanpham_bom.Where(s =>
+                s.md_sanpham_id == object_.md_sanpham_id &
+                s.ten_phienban == ten_phienban &
+                string.IsNullOrEmpty(s.md_phanxuong_id) &
+                string.IsNullOrEmpty(s.md_to_id)).FirstOrDefault();
+                if (bom_sp == null)
+                    msg = string.Format(@"false#HH ""{0}"" không có BOM", masp);
+                else
+                    ten_phienban = bom_sp.md_sanpham_bom_id;
             }
 
             if (msg.Length <= 0)
@@ -133,6 +149,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 string[] column_ex = { };
                 string ten_table = "c_dongdsdh";
                 VNN_Function.SetFormValue("v2", "VNN_notpost");
+                VNN_Function.SetFormValue("md_sanpham_bom_id", ten_phienban);
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);

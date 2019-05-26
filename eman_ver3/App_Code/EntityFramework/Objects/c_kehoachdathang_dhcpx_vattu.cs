@@ -85,6 +85,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_vattu_sl_duyetmua_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_vattu_sl_duyetmua_wintaFN
+                        public Decimal? sl_duyetmua { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_vattu_sl_giamhanngach_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_vattu_sl_giamhanngach_wintaFN

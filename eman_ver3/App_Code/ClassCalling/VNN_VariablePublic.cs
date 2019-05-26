@@ -170,6 +170,40 @@ public class VNN_VariablePublic
         string result = sr.ReadToEnd();
         return result;
     }
+
+    public static string GetModule(string link, string formData)
+    {
+        var context = System.Web.HttpContext.Current;
+        var url = context.Request.Url;
+        if (!link.Contains("http"))
+        {
+            link = url.GetLeftPart(UriPartial.Authority) + Security.UrlBase() + link;
+        }
+        var myUri = new Uri(link);
+        string jsonString = JsonConvert.SerializeObject(formData);
+        var request = (HttpWebRequest)WebRequest.Create(myUri);
+        request.ContentType = "application/x-www-form-urlencoded";
+        request.Method = "POST";
+        //var iso = Encoding.GetEncoding("iso-8859-9");
+        //var value = System.Web.HttpUtility.UrlEncode(context.User.Identity.Name, iso);
+        //var moCookie = new Cookie("ANCO2_LOGIN", value);
+        //moCookie.Domain = url.Host;
+        //var CommCookie = new CookieContainer();
+        //CommCookie.Add(moCookie);
+        //request.CookieContainer = CommCookie;
+
+        request.CookieContainer = new CookieContainer();
+        var authCookie = context.Request.Cookies[System.Web.Security.FormsAuthentication.FormsCookieName];
+        request.CookieContainer.Add(new System.Net.Cookie(authCookie.Name, authCookie.Value, authCookie.Path, url.Host));
+        string postData = formData;
+        Stream reqStream = request.GetRequestStream();
+        byte[] postArray = Encoding.UTF8.GetBytes(postData);
+        reqStream.Write(postArray, 0, postArray.Length);
+        reqStream.Close();
+        var sr = new StreamReader(request.GetResponse().GetResponseStream());
+        string result = sr.ReadToEnd();
+        return result;
+    }
 }
 
 public class Module_TK

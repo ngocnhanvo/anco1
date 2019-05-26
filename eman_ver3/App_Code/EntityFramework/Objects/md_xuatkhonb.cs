@@ -7,6 +7,12 @@
                     public partial class md_xuatkhonb
                     {
                         
+                        #region md_xuatkhonb_banggiaNC_wintaFN
+                        
+                        #endregion md_xuatkhonb_banggiaNC_wintaFN
+                        public string banggiaNC { get; set; }
+                
+						
                         #region md_xuatkhonb_baotri_vattu_wintaFN
                         
                         #endregion md_xuatkhonb_baotri_vattu_wintaFN
@@ -37,6 +43,12 @@
                         public string chungtu_lenhsx { get; set; }
                 
 						
+                        #region md_xuatkhonb_chungtuthamchieu_wintaFN
+                        
+                        #endregion md_xuatkhonb_chungtuthamchieu_wintaFN
+                        public string chungtuthamchieu { get; set; }
+                
+						
                         #region md_xuatkhonb_diachi_wintaFN
                         
                         #endregion md_xuatkhonb_diachi_wintaFN
@@ -53,6 +65,12 @@
                         
                         #endregion md_xuatkhonb_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
+                
+						
+                        #region md_xuatkhonb_kh_ddhpx_wintaFN
+                        
+                        #endregion md_xuatkhonb_kh_ddhpx_wintaFN
+                        public string kh_ddhpx { get; set; }
                 
 						
                         #region md_xuatkhonb_khuon_wintaFN
@@ -119,6 +137,12 @@
                         
                         #endregion md_xuatkhonb_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region md_xuatkhonb_phienbangiaNC_wintaFN
+                        
+                        #endregion md_xuatkhonb_phienbangiaNC_wintaFN
+                        public string phienbangiaNC { get; set; }
                 
 						
                         #region md_xuatkhonb_phieuXNNK_wintaFN
