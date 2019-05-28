@@ -25,6 +25,12 @@
                         public string c_doichieuhangton_id { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_chungtu_lenhsx_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_chungtu_lenhsx_wintaFN
+                        public string chungtu_lenhsx { get; set; }
+                
+						
                         #region md_vanchuyennoibo_chungtuthamchieu_wintaFN
                         
                         #endregion md_vanchuyennoibo_chungtuthamchieu_wintaFN
@@ -59,6 +65,12 @@
                         
                         #endregion md_vanchuyennoibo_loaichuyen_id_wintaFN
                         public string loaichuyen_id { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_md_lenhsanxuat_tosx_id_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_md_lenhsanxuat_tosx_id_wintaFN
+                        public string md_lenhsanxuat_tosx_id { get; set; }
                 
 						
                         #region md_vanchuyennoibo_md_trangthai_id_wintaFN

@@ -22,7 +22,7 @@ function timkiem_lenhsx(id_elem, type) {
         '<div id="pagergridMD_00_Lenhsanxuat_cp"></div>' +
         '</div>');
     var multi = false;
-    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo')
+    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo' | tengrid0 == 'gridMD_00_PVCNoiBo')
     {
         multi = true;
     }
@@ -50,14 +50,10 @@ function timkiem_lenhsx(id_elem, type) {
                 rowList: [10, 50, 100, 1000],
                 pager: '#pagergridMD_00_Lenhsanxuat_cp',
                 onSelectRow: function (ids) {
-                    checkbox_JQgrid('gridMD_00_Lenhsanxuat_cp', 0);
                     if (ids != '<a style=\'color:red\'>Not data (404)</a>') {
                         cell = $('#gridMD_00_Lenhsanxuat_cp').getRowData(ids);
                         if ($('#' + id_elem).prop('disabled') != true) {
-                            if (tengrid0 == 'gridMD_00_Xuatnoibo') {
-
-                            }
-                            else {
+                            if (multi != true) {
                                 $('#' + id_elem).val(cell['sochungtu']);
                                 $('#sctdathang').val(cell['sctdathang']);
                                 $('#donhang_thamchieu').val(cell['donhang_thamchieu']);
@@ -87,9 +83,12 @@ function timkiem_lenhsx(id_elem, type) {
                             let dkc = " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
                             if ($('#bosung').val() == '3')
                                 dkc = `${dkc} and lsx.md_dondathangphanxuong_id in (select md_dondathangphanxuong_id from md_dondathangphanxuong where N'${khdhpx}' like N'%' + c_kehoachdathang_dhcpx_id + '%')`;
+                            
                             return dkc;
                         }
                         else if (tengrid0 == 'gridMD_00_Nhapnoibo')
+                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                        else if (tengrid0 == 'gridMD_00_PVCNoiBo')
                             return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
                         else
                             return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO'";
@@ -108,10 +107,7 @@ function timkiem_lenhsx(id_elem, type) {
                     input_focus = $('input:focus').attr('class');
                 },
                 ondblClickRow: function () {
-                    if (tengrid0 == 'gridMD_00_Xuatnoibo') {
-
-                    }
-                    else {
+                    if (multi != true) {
                         $('#dlg_gridSmal_2').dialog('destroy').remove();
                     }
                 },
@@ -164,7 +160,10 @@ function timkiem_lenhsx(id_elem, type) {
                 id: 'btn-ok_',
                 text: 'OK',
                 click: function () {
-                    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo')
+                    if (
+                        tengrid0 == 'gridMD_00_Xuatnoibo'
+                        | tengrid0 == 'gridMD_00_Nhapnoibo'
+                        | tengrid0 == 'gridMD_00_PVCNoiBo')
                     {
                         var ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
                         for (var i = 0; i < ids_sel.length; i++) {

@@ -37,6 +37,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_lsx_to_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_lsx_to_wintaFN
+                        public string lsx_to { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_ma_tukho_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_ma_tukho_wintaFN

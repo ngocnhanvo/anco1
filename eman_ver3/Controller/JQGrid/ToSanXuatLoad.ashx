@@ -53,13 +53,13 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
 
             string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY " + orderby + ")";
             string sql = string.Format(@"sELeCt * fRoM (
-            sELeCt tosx.md_lenhsanxuat_tosx_id, lsx.sochungtu, pxto.ten_to, px.ten_phanxuong,  " + ROW_NUMBER + " as RowNum " +
+            sELeCt tosx.md_lenhsanxuat_tosx_id, lsx.sochungtu, pxto.ten_to, px.ten_phanxuong, tosx.stt,  " + ROW_NUMBER + " as RowNum " +
             @" fRoM md_lenhsanxuat_tosx tosx
                 left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
                 left join md_phanxuong_to pxto on pxto.md_to_id = tosx.md_phanxuong_to_id
                 left join md_phanxuong px on px.md_phanxuong_id = lsx.md_phanxuong_id
-            WHeRe 1=1 and N'{1}' like '%' + lsx.sochungtu + '%' {0} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
-            filter, id);
+            WHeRe 1=1 and N'{1}' like '%' + lsx.sochungtu + '%' {0} {2} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
+            filter, id, where_ex);
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
 

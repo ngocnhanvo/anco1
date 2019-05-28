@@ -6288,6 +6288,14 @@
                             .HasColumnName("md_dongtien_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_phanxuong_id)
+                            .HasColumnName("md_phanxuong_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
@@ -11187,6 +11195,10 @@
                             .HasColumnName("khoden")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkhonb_cdh>()
+                            .Property(p => p.lsx_to)
+                            .HasColumnName("lsx_to")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_nhapkhonb_cdh>()
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
@@ -11234,6 +11246,14 @@
                             modelBuilder.Entity<md_nhapkhonb_cdh>()
                             .Property(p => p.sl_nhap)
                             .HasColumnName("sl_nhap")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_nhapkhonb_cdh>()
+                            .Property(p => p.sl_toida_trongLSXTo)
+                            .HasColumnName("sl_toida_trongLSXTo")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_nhapkhonb_cdh>()
+                            .Property(p => p.sl_toida_trongLSXTo2)
+                            .HasColumnName("sl_toida_trongLSXTo2")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_nhapkhonb_cdh>()
                             .Property(p => p.tong_sl_dat)
@@ -13615,6 +13635,10 @@
                             .HasColumnName("c_doichieuhangton_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.chungtu_lenhsx)
+                            .HasColumnName("chungtu_lenhsx")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.chungtuthamchieu)
                             .HasColumnName("chungtuthamchieu")
                             .HasColumnType("nvarchar");
@@ -13638,6 +13662,10 @@
                             .Property(p => p.loaichuyen_id)
                             .HasColumnName("loaichuyen_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.md_lenhsanxuat_tosx_id)
+                            .HasColumnName("md_lenhsanxuat_tosx_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.md_trangthai_id)
                             .HasColumnName("md_trangthai_id")
@@ -13742,6 +13770,10 @@
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.lsx_to)
+                            .HasColumnName("lsx_to")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.ma_tukho)
                             .HasColumnName("ma_tukho")

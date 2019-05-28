@@ -43,6 +43,18 @@
                         public string md_dongtien_id { get; set; }
                 
 						
+                        #region md_banggia_md_phanxuong_id_wintaFN
+                        
+                        #endregion md_banggia_md_phanxuong_id_wintaFN
+                        public string md_phanxuong_id { get; set; }
+                
+						
+                        #region md_banggia_md_to_id_wintaFN
+                        
+                        #endregion md_banggia_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_banggia_mota_wintaFN
                         
                         #endregion md_banggia_mota_wintaFN

@@ -52,6 +52,9 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
             case "select_bangia":
                 this.select_bangia(context);
                 break;
+            case "select_bangiaNhanCong":
+                this.select_bangiaNhanCong(context);
+                break;
             default:
                 break;
         }
@@ -412,7 +415,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
 
     public void select_bangia(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         bool firstnull = bool.Parse(context.Request.QueryString["firstnull"]);
         string str = "";
         string id = context.Request.QueryString["id"];
@@ -420,6 +423,22 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true).OrderBy(s=>s.ten_banggia).ToList())
         {
             str += string.Format(@"<option dtkd='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, object_.lienket_bg);
+        }
+        context.Response.Write("<select>" + str + "</select>");
+    }
+
+    public void select_bangiaNhanCong(HttpContext context)
+    {
+        var db = new EntityContext();
+        bool firstnull = bool.Parse(context.Request.QueryString["firstnull"]);
+        string str = "";
+        string id = context.Request.QueryString["id"];
+        str += firstnull ? string.Format("<option value=\"\"></option>") : "";
+        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & s.tuychon == "NHANCONG").OrderBy(s=>s.ten_banggia).ToList())
+        {
+            var kho = db.md_kho.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.md_to_id == object_.md_to_id).FirstOrDefault();
+            if(kho != null)
+                str += string.Format(@"<option kho='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, kho.md_kho_id);
         }
         context.Response.Write("<select>" + str + "</select>");
     }

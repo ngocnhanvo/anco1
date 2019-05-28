@@ -170,4 +170,11 @@ public static class Extension
                             & s.md_phanxuong_to_id == toId).FirstOrDefault();
         return lsxTSX;
     }
+
+    public static md_lenhsanxuat_tosx getLSXToId_Prev(md_lenhsanxuat_tosx lsxTo, EntityContext db)
+    {
+        var prev = db.md_lenhsanxuat_tosx.Where(s => s.stt < lsxTo.stt & s.md_lenhsanxuat_id == lsxTo.md_lenhsanxuat_id)
+            .OrderByDescending(s=>s.stt).FirstOrDefault();
+        return prev;
+    }
 }

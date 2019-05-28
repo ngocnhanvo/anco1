@@ -2,7 +2,7 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -37,40 +37,97 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
-        foreach (md_vanchuyennoibo_cdvc cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)))
+        md_vanchuyennoibo vcnb = null;
+        using (var transaction = db.Database.BeginTransaction())
         {
-            md_vanchuyennoibo vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id).FirstOrDefault();
-            if (vcnb.md_trangthai_id == "HIEULUC")
+            foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
             {
-                msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
-                break;
-            }
-            else
-            {
-                decimal sltd = cdvc.soluong_toida.Value - cdvc.soluong_dachuyen.Value;
-                if (sel_val == "0")
+                vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id).FirstOrDefault();
+                if (vcnb.md_trangthai_id == "HIEULUC")
                 {
-                    cdvc.soluong_dichchuyen = sltd;
+                    msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
+                    break;
                 }
                 else
                 {
-                    if (slvc_case <= sltd)
+                    decimal sltd = cdvc.soluong_toida.Value - cdvc.soluong_dachuyen.Value;
+                    if (sel_val == "0")
                     {
-                        cdvc.soluong_dichchuyen = slvc_case;
+                        cdvc.soluong_dichchuyen = sltd;
                     }
                     else
                     {
-                        md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).Take(1).FirstOrDefault();
-                        msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + Math.Round(sltd, 0) + "</div>";
-                        break;
+                        if (slvc_case <= sltd)
+                        {
+                            cdvc.soluong_dichchuyen = slvc_case;
+                        }
+                        else
+                        {
+                            md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).Take(1).FirstOrDefault();
+                            msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + Math.Round(sltd, 0) + "</div>";
+                            break;
+                        }
+                    }
+                    db.SaveChanges();
+                }
+            }
+
+            if (vcnb.loaichuyen == "VANCNBCTKGH")
+            {
+                foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
+                {
+                    var slcl = new List<Dictionary<string, object>>();
+                    foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
+                        s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id
+                        & s.lsx_to == cdvc.lsx_to).ToList())
+                    {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
+                        var tsx = Extension.getLSXToId(b.lsx_to, db);
+                        var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                            & s.macuoi.Contains(sp.ma_sanpham));
+
+                        foreach (var cai in lsxSp.ToList())
+                        {
+                            var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
+                            if (caiJSon == null)
+                            {
+                                slcl.Add(new Dictionary<string, object>() {
+                                { "md_sanpham_id", cai.md_sanpham_id },
+                                { "soluong", b.soluong_dichchuyen },
+                                { "sltd", cai.sl_dahoanthanh }
+                            });
+                            }
+                            else
+                            {
+                                caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
+                            }
+                        }
+                    }
+
+                    foreach (var itemSLTH in slcl)
+                    {
+                        string spId = itemSLTH["md_sanpham_id"].ToString();
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == spId).FirstOrDefault();
+                        var sl = decimal.Parse(itemSLTH["soluong"].ToString());
+                        var sltd2 = decimal.Parse(itemSLTH["sltd"].ToString());
+                        if (sl > sltd2)
+                        {
+                            msg += string.Format(@"Mã cái ""{0}"" không đáp ứng đủ.<br>", sp.ma_sanpham);
+                        }
                     }
                 }
             }
-        }
-        if (msg == "")
-        {
-            msg = "<div style='color:blue'>Cập nhật số lượng cần chuyển thành công</div>";
-            db.SaveChanges();
+
+            if (msg.Length <= 0)
+            {
+                msg = "<div style='color:blue'>Cập nhật số lượng cần chuyển thành công</div>";
+                transaction.Commit();
+            }
+            else
+            {
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
@@ -134,44 +191,93 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         decimal soluong_dichchuyen = decimal.Parse(context.Request.Form["soluong_dichchuyen"]);
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            md_vanchuyennoibo_cdvc object_ = db.md_vanchuyennoibo_cdvc.Where(p => p.md_vanchuyennoibo_cdvc_id == id).Take(1).FirstOrDefault();
-            md_vanchuyennoibo vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id).Take(1).FirstOrDefault();
-            decimal soluong_td_dc = (object_.soluong_toida.Value - object_.soluong_dachuyen.Value);
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi: Không tìm thấy đối tượng cần sửa.";
+                string id = context.Request.Form["id"];
+                md_vanchuyennoibo_cdvc object_ = db.md_vanchuyennoibo_cdvc.Where(p => p.md_vanchuyennoibo_cdvc_id == id).Take(1).FirstOrDefault();
+                md_vanchuyennoibo vnnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id).Take(1).FirstOrDefault();
+                decimal soluong_td_dc = (object_.soluong_toida.Value - object_.soluong_dachuyen.Value);
+                if (object_ == null)
+                {
+                    msg = "Lỗi: Không tìm thấy đối tượng cần sửa.";
+                }
+                else if (soluong_td_dc < soluong_dichchuyen)
+                {
+                    msg = "Lỗi: Số lượng dịch chuyển tối đa là:" + Math.Round(soluong_td_dc, 0);
+                }
+                else if (soluong_dichchuyen < 0)
+                {
+                    msg = "Lỗi: Số lượng dịch chuyển không được âm.";
+                }
+                else if (vnnb.md_trangthai_id == "HIEULUC")
+                {
+                    msg = "Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    object_.soluong_dichchuyen = soluong_dichchuyen;
+                    db.SaveChanges();
+                    var slcl = new List<Dictionary<string, object>>();
+                    foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
+                        s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id
+                        & s.lsx_to == object_.lsx_to).ToList())
+                    {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
+                        var tsx = Extension.getLSXToId(b.lsx_to, db);
+                        var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                            & s.macuoi.Contains(sp.ma_sanpham));
+
+                        foreach (var cai in lsxSp.ToList())
+                        {
+                            var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
+                            if (caiJSon == null)
+                            {
+                                slcl.Add(new Dictionary<string, object>() {
+                                    { "md_sanpham_id", cai.md_sanpham_id },
+                                    { "soluong", b.soluong_dichchuyen },
+                                    { "sltd", cai.sl_dahoanthanh }
+                                });
+                            }
+                            else
+                            {
+                                caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
+                            }
+                        }
+                    }
+
+                    foreach (var itemSLTH in slcl)
+                    {
+                        string spId = itemSLTH["md_sanpham_id"].ToString();
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == spId).FirstOrDefault();
+                        var sl = decimal.Parse(itemSLTH["soluong"].ToString());
+                        var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
+                        if (sl > sltd)
+                        {
+                            msg += string.Format(@"Mã cái ""{0}"" không đáp ứng đủ.<br>", sp.ma_sanpham);
+                        }
+                    }
+                }
             }
-            else if (soluong_td_dc < soluong_dichchuyen)
+            catch (Exception ex)
             {
-                msg = "false#Lỗi: Số lượng dịch chuyển tối đa là:" + Math.Round(soluong_td_dc, 0);
-            }
-            else if (soluong_dichchuyen < 0)
-            {
-                msg = "false#Lỗi: Số lượng dịch chuyển không được âm.";
-            }
-            else if (vnnb.md_trangthai_id == "HIEULUC")
-            {
-                msg = "false#Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực";
+                msg = "Lỗi:" + ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_vanchuyennoibo_cdvc";
-                VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
+                transaction.Commit();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = "false#" + msg;
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
@@ -199,7 +305,7 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 else
                 {
                     var vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id).FirstOrDefault();
-                    if(vcnb.md_trangthai_id == "HIEULUC")
+                    if (vcnb.md_trangthai_id == "HIEULUC")
                     {
                         msg_del = string.Format(@"Lỗi:Phiếu ""{0}"" đã ""Hiệu Lực""", vcnb.sochungtu);
                         msg += msg_del + "\n";

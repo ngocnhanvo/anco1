@@ -168,6 +168,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 {
                     xb_cdh.sl_xuat = sltd;
                     xb_cdh.sl_xuat2 = sltd;
+                    xb_cdh.ghino = 0;
+                    xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
                 }
                 else
                 {
@@ -175,6 +177,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                     {
                         xb_cdh.sl_xuat = slvc_case;
                         xb_cdh.sl_xuat2 = slvc_case;
+                        xb_cdh.ghino = 0;
+                        xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
                     }
                     else
                     {
@@ -296,6 +300,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
         string ma_module = context.Request.QueryString["ma_module"];
         decimal tong_sl_xuat = decimal.Parse(context.Request.Form["tong_sl_xuat"]);
         decimal sl_xuat = decimal.Parse(context.Request.Form["sl_xuat"]);
+        decimal sl_thucxuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
+        decimal ghino = decimal.Parse(context.Request.Form["ghino"]);
         string md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
         decimal nhanvoi = 1, saiso = 0;
         try
@@ -324,6 +330,7 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
+
             else if (object_.md_donvitinhsanpham_id2 != md_donvitinhsanpham_id)
             {
                 var dvtsp_cddv = db.md_donvitinhsanpham_cddv.
@@ -370,14 +377,20 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                     msg = "false#Đơn hàng đã hiệu lực !";
                 }
             }
+
+            decimal sl_xuat2 = sl_xuat * nhanvoi;
+            if(sl_thucxuat != sl_xuat2 + ghino)
+            {
+                msg = string.Format(@"false#Số lượng thực xuất phải bằng SLDK xuất + Ghi nợ");
+            }
             if (msg.Length <= 0)
             {
                 object_.ghichu_donvi2 = ghichu_donvi2;
-                object_.ghino = decimal.Parse(context.Request.Form["ghino"]);
+                object_.ghino = ghino;
                 object_.sl_xuat = sl_xuat;
                 object_.md_donvitinhsanpham_id = md_donvitinhsanpham_id;
                 object_.saiso = saiso;
-                object_.sl_xuat2 = (sl_xuat * nhanvoi);
+                object_.sl_xuat2 = sl_xuat2;
                 object_.sl_thucxuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
                 db.SaveChanges();
                 VNN_Function.loaddulieu_Auto(db, ma_module);

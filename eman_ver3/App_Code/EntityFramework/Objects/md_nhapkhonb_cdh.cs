@@ -43,6 +43,12 @@
                         public string khoden { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_lsx_to_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_lsx_to_wintaFN
+                        public string lsx_to { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_md_donvitinhsanpham_id_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_md_donvitinhsanpham_id_wintaFN
@@ -113,6 +119,18 @@
                         
                         #endregion md_nhapkhonb_cdh_sl_nhap_wintaFN
                         public Decimal? sl_nhap { get; set; }
+                
+						
+                        #region md_nhapkhonb_cdh_sl_toida_trongLSXTo_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_sl_toida_trongLSXTo_wintaFN
+                        public Decimal? sl_toida_trongLSXTo { get; set; }
+                
+						
+                        #region md_nhapkhonb_cdh_sl_toida_trongLSXTo2_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_sl_toida_trongLSXTo2_wintaFN
+                        public Decimal? sl_toida_trongLSXTo2 { get; set; }
                 
 						
                         #region md_nhapkhonb_cdh_tong_sl_dat_wintaFN

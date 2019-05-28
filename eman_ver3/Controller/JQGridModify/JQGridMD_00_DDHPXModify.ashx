@@ -587,10 +587,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                     lsx_tosx_cdh.sl_dat = lsx_tosx_cdh.sl_dat.GetValueOrDefault(0) + sltd;
                                     lsx_tosx_cdh.sl_chiato = lsx_tosx_cdh.sl_chiato.GetValueOrDefault(0) + sltd;
                                     lsx_tosx_cdh.sl_tinhvattu = lsx_tosx_cdh.sl_tinhvattu.GetValueOrDefault(0) + sltd;
-                                    if (px_to.md_phanxuong_to_id == tdt)
-                                        lsx_tosx_cdh.sl_dahoanthanh = lsx_tosx_cdh.sl_dahoanthanh.GetValueOrDefault(0) + sltd;
-                                    else
-                                        lsx_tosx_cdh.sl_dahoanthanh = 0;
+                                    lsx_tosx_cdh.sl_dahoanthanh = 0;
                                     if (!lsx_tosx_cdh.macuoi.Contains(ma_bo))
                                         lsx_tosx_cdh.macuoi += "," + ma_bo;
                                     if (addLSX == null)
