@@ -16,6 +16,14 @@
     white-space: nowrap;
 }
 
+input[name="rdo_SLVC"] {
+    margin: 3px !important;
+}
+
+.labelFor {
+    cursor: pointer;
+}
+
 table.view-capacity tr td {
     padding: 5px;
     text-align: center;

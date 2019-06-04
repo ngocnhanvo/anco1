@@ -439,6 +439,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                 string[] column_ex = { };
                 string ten_table = "md_nhapkho_ncc";
                 VNN_Function.Set_DefaultvalueColumn(context, action);
+                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";

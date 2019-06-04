@@ -378,6 +378,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         if (!msgTNL.ToLower().Contains("năng lực nhà cung ứng đáp ứng được đơn hàng này"))
                         {
                             msg += "<div style='color:red'>Lỗi:không đủ năng lực để nhận Đơn hàng " + dsdh.sochungtu + " .</div>";
+                            msg += msgTNL;
                         }
                         else
                         {

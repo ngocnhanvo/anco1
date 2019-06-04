@@ -41,9 +41,9 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
         {
             var vcnb = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == nk_ncc_dh.md_nhapkho_ncc_id).FirstOrDefault();
             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == nk_ncc_dh.md_sanpham_id).Take(1).FirstOrDefault();
-            if (vcnb.trangthai == "HIEULUC")
+            if (vcnb.trangthai != "DANHAN")
             {
-                msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
+                msg = string.Format(@"<div style='color:red'>Lỗi:Dòng ""{0}"" không ở trạng thái ""Đã xác nhận"".</div>", vcnb.sochungtu);
                 break;
             }
             else
@@ -69,7 +69,7 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
                 if (sel_val == "0")
                 {
                     nk_ncc_dh.sl_nhap = sltd;
-                    nk_ncc_dh.sl_muonnhap = sltd;
+                    //nk_ncc_dh.sl_muonnhap = sltd;
                     nk_ncc_dh.sl_nhap2 = nk_ncc_dh.sl_nhap * tile;
                 }
                 else
@@ -77,12 +77,12 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
                     if (slvc_case <= sltd)
                     {
                         nk_ncc_dh.sl_nhap = slvc_case;
-                        nk_ncc_dh.sl_muonnhap = slvc_case;
+                        //nk_ncc_dh.sl_muonnhap = slvc_case;
                         nk_ncc_dh.sl_nhap2 = nk_ncc_dh.sl_nhap * tile;
                     }
                     else
                     {
-                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + VNN_VariablePublic.autoRound(sltd, 4) + "</div>";
+                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + sltd.DropTrailingZeros() + "</div>";
                         break;
                     }
                 }
@@ -138,10 +138,15 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
             string id = context.Request.Form["id"];
             var object_ = db.md_nhapkho_ncc_dh.Where(p => p.md_nhapkho_ncc_dh_id == id).Take(1).FirstOrDefault();
             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
+            var vcnb = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).FirstOrDefault();
             string ghichu_donvi2 = "";
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+            }
+            else if (vcnb.trangthai != "DANHAN")
+            {
+                msg = string.Format(@"false#Phiếu nhập kho không ở trạng thái ""Đã xác nhận""");
             }
             else if (sl_nhap < 0)
             {
@@ -199,7 +204,7 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
                 VNN_Function.SetFormValue("ghichu_donvi2", ghichu_donvi2);
                 VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
                 VNN_Function.SetFormValue("tenhang", "VNN_notpost");
-                VNN_Function.SetFormValue("sl_nhap", sl_nhap.ToString());
+                VNN_Function.SetFormValue("sl_muonnhap", "VNN_notpost");
                 VNN_Function.SetFormValue("sl_nhap2", sl_nhap2.ToString());
                 VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);

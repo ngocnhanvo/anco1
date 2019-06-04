@@ -253,6 +253,7 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
                 VNN_Function.SetFormValue("tenhang", "VNN_notpost");
                 VNN_Function.SetFormValue("sl_xuat", sl_xuat.ToString());
                 VNN_Function.SetFormValue("sl_xuat2", (sl_xuat*nhanvoi).ToString());
+                VNN_Function.SetFormValue("sl_muonxuat", "VNN_notpost");
                 VNN_Function.SetFormValue("saiso", saiso.ToString());
 
                 VNN_Function.Set_DefaultvalueColumn(context, action);

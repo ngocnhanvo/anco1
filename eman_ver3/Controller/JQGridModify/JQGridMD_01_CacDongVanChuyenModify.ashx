@@ -74,47 +74,48 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
 
             if (vcnb.loaichuyen == "VANCNBCTKGH")
             {
-                foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
+                var slcl = new List<Dictionary<string, object>>();
+                foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
+                    vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
                 {
-                    var slcl = new List<Dictionary<string, object>>();
-                    foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
-                        s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id
-                        & s.lsx_to == cdvc.lsx_to).ToList())
-                    {
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
-                        var tsx = Extension.getLSXToId(b.lsx_to, db);
-                        var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                            s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                            & s.macuoi.Contains(sp.ma_sanpham));
+                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
+                    var tsx = Extension.getLSXToId(b.lsx_to, db);
+                    var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                        & s.macuoi.Contains(sp.ma_sanpham));
 
-                        foreach (var cai in lsxSp.ToList())
+                    foreach (var cai in lsxSp.ToList())
+                    {
+                        var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
+                        if (caiJSon == null)
                         {
-                            var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
-                            if (caiJSon == null)
-                            {
-                                slcl.Add(new Dictionary<string, object>() {
-                                { "md_sanpham_id", cai.md_sanpham_id },
-                                { "soluong", b.soluong_dichchuyen },
-                                { "sltd", cai.sl_dahoanthanh }
-                            });
-                            }
-                            else
-                            {
-                                caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
-                            }
+                            var spCai = db.md_sanpham.Where(s => s.md_sanpham_id == cai.md_sanpham_id).FirstOrDefault();
+                            var khosp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == spCai.md_sanpham_id & s.md_kho_id == vcnb.tukho).FirstOrDefault();
+                            slcl.Add(new Dictionary<string, object>() {
+                                    { "md_sanpham_id", cai.md_sanpham_id },
+                                    { "ma_sanpham", spCai.ma_sanpham },
+                                    { "lsx_to", b.lsx_to },
+                                    { "soluong", b.soluong_dichchuyen },
+                                    { "sltd", khosp.soluong }
+                                });
+                        }
+                        else
+                        {
+                            caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
                         }
                     }
+                }
 
-                    foreach (var itemSLTH in slcl)
+                foreach (var itemSLTH in slcl.OrderBy(s=>s["ma_sanpham"].ToString()))
+                {
+                    string spId = itemSLTH["md_sanpham_id"].ToString();
+
+                    var sl = decimal.Parse(itemSLTH["soluong"].ToString());
+                    var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
+                    if (sl > sltd)
                     {
-                        string spId = itemSLTH["md_sanpham_id"].ToString();
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == spId).FirstOrDefault();
-                        var sl = decimal.Parse(itemSLTH["soluong"].ToString());
-                        var sltd2 = decimal.Parse(itemSLTH["sltd"].ToString());
-                        if (sl > sltd2)
-                        {
-                            msg += string.Format(@"Mã cái ""{0}"" không đáp ứng đủ.<br>", sp.ma_sanpham);
-                        }
+                        msg += string.Format(@"<b>{0}</b> SL tối đa <b>{1}</b>, SL muốn chuyển <b>{2}</b>.<br>",
+                            itemSLTH["ma_sanpham"], sltd.DropTrailingZeros(), sl.DropTrailingZeros());
                     }
                 }
             }
@@ -204,61 +205,71 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 {
                     msg = "Lỗi: Không tìm thấy đối tượng cần sửa.";
                 }
-                else if (soluong_td_dc < soluong_dichchuyen)
+                else if (vnnb.md_trangthai_id == "HIEULUC")
                 {
-                    msg = "Lỗi: Số lượng dịch chuyển tối đa là:" + Math.Round(soluong_td_dc, 0);
+                    msg = "Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực";
                 }
                 else if (soluong_dichchuyen < 0)
                 {
                     msg = "Lỗi: Số lượng dịch chuyển không được âm.";
                 }
-                else if (vnnb.md_trangthai_id == "HIEULUC")
+                else if (soluong_td_dc < soluong_dichchuyen)
                 {
-                    msg = "Lỗi:Dòng " + vnnb.sochungtu + " đã Hiệu lực";
+                    msg = "Lỗi: Số lượng dịch chuyển tối đa là:" + soluong_td_dc;
                 }
+                
 
                 if (msg.Length <= 0)
                 {
                     object_.soluong_dichchuyen = soluong_dichchuyen;
                     db.SaveChanges();
-                    var slcl = new List<Dictionary<string, object>>();
-                    foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
-                        s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id
-                        & s.lsx_to == object_.lsx_to).ToList())
-                    {
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
-                        var tsx = Extension.getLSXToId(b.lsx_to, db);
-                        var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                            s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                            & s.macuoi.Contains(sp.ma_sanpham));
 
-                        foreach (var cai in lsxSp.ToList())
+                    if (vnnb.loaichuyen == "VANCNBCTKGH")
+                    {
+                        var slcl = new List<Dictionary<string, object>>();
+                        foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
+                            s.md_vanchuyennoibo_id == object_.md_vanchuyennoibo_id).ToList())
                         {
-                            var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
-                            if (caiJSon == null)
+                            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
+                            var tsx = Extension.getLSXToId(b.lsx_to, db);
+                            var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                                & s.macuoi.Contains(sp.ma_sanpham));
+
+
+                            foreach (var cai in lsxSp.ToList())
                             {
-                                slcl.Add(new Dictionary<string, object>() {
+                                var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
+                                if (caiJSon == null)
+                                {
+                                    var spCai = db.md_sanpham.Where(s => s.md_sanpham_id == cai.md_sanpham_id).FirstOrDefault();
+                                    var khosp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == spCai.md_sanpham_id & s.md_kho_id == vnnb.tukho).FirstOrDefault();
+                                    slcl.Add(new Dictionary<string, object>() {
                                     { "md_sanpham_id", cai.md_sanpham_id },
+                                    { "ma_sanpham", spCai.ma_sanpham },
+                                    { "lsx_to", b.lsx_to },
                                     { "soluong", b.soluong_dichchuyen },
-                                    { "sltd", cai.sl_dahoanthanh }
+                                    { "sltd", khosp.soluong }
                                 });
-                            }
-                            else
-                            {
-                                caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
+                                }
+                                else
+                                {
+                                    caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
+                                }
                             }
                         }
-                    }
 
-                    foreach (var itemSLTH in slcl)
-                    {
-                        string spId = itemSLTH["md_sanpham_id"].ToString();
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == spId).FirstOrDefault();
-                        var sl = decimal.Parse(itemSLTH["soluong"].ToString());
-                        var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
-                        if (sl > sltd)
+                        foreach (var itemSLTH in slcl.OrderBy(s => s["ma_sanpham"].ToString()))
                         {
-                            msg += string.Format(@"Mã cái ""{0}"" không đáp ứng đủ.<br>", sp.ma_sanpham);
+                            string spId = itemSLTH["md_sanpham_id"].ToString();
+
+                            var sl = decimal.Parse(itemSLTH["soluong"].ToString());
+                            var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
+                            if (sl > sltd)
+                            {
+                                msg += string.Format(@"<b>{0}</b> SL tối đa <b>{1}</b>, SL muốn chuyển <b>{2}</b>.<br>",
+                                    itemSLTH["ma_sanpham"], sltd.DropTrailingZeros(), sl.DropTrailingZeros());
+                            }
                         }
                     }
                 }

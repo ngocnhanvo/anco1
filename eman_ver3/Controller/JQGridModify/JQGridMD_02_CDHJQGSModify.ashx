@@ -116,6 +116,11 @@ public class JQGridMD_02_CDHJQGSModify : IHttpHandler, System.Web.SessionState.I
                         msg = "<div style='color:red'>Số lượng phải lớn hơn 0.</div>";
                         break;
                     }
+                    else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id
+                         & db.c_nhucauvattu_dhpx.Where(t => t.md_dondathangphanxuong_id == s.c_kehoachdathang_dhcpx_id).Count() > 0).Count() > 0)
+                    {
+                        msg += string.Format(@"<div style='color:red'>Kế hoạch này đã tạo nhu cầu mua vật tư.</div>");
+                    }
                     else
                     {
                         c_kehoachdathang_id = dhcpx.c_kehoachdathang_id;

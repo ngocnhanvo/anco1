@@ -300,10 +300,10 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
                     if (saiso > dvtsp_cddv.saiso_toida.Value | saiso < 0)
                         saiso = dvtsp_cddv.saiso_toida.Value;
                     ghichu_donvi2 += "Nhập " + sl_nhap + " " + ten_dvt;
-                    ghichu_donvi2 += "\n => 1 " + ten_dvt + " = " + VNN_VariablePublic.autoRound(nhanvoi, 4) + " " + ten_dvt2;
-                    ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(dvtsp_cddv.chiacho.Value, 4) + " " + ten_dvt2 + ")";
-                    ghichu_donvi2 += "\n => " + sl_nhap + " " + ten_dvt + " = " + VNN_VariablePublic.autoRound(sl_nhap * nhanvoi, 4) + " " + ten_dvt2;
-                    ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(saiso, 4) + " " + ten_dvt2 + ")";
+                    ghichu_donvi2 += "\n => 1 " + ten_dvt + " = " + nhanvoi.DropTrailingZeros() + " " + ten_dvt2;
+                    ghichu_donvi2 += " (Sai số cho phép: " + dvtsp_cddv.chiacho.Value.DropTrailingZeros() + " " + ten_dvt2 + ")";
+                    ghichu_donvi2 += "\n => " + sl_nhap + " " + ten_dvt + " = " + (sl_nhap * nhanvoi).DropTrailingZeros() + " " + ten_dvt2;
+                    ghichu_donvi2 += " (Sai số cho phép: " + saiso.DropTrailingZeros() + " " + ten_dvt2 + ")";
                 }
                 else
                 {
@@ -314,9 +314,9 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
             sl_nhap = sl_nhap * nhanvoi;
             if ((sl_nhap - saiso) > object_.tong_sl_dat)
             {
-                msg = "false#Chỉ có thể xuất số lượng tối đa là: \"" + VNN_VariablePublic.autoRound(object_.tong_sl_dat.Value, 4) + "\"";
-                msg += "<br> + Số lượng đang muốn xuất: \"" + VNN_VariablePublic.autoRound(sl_nhap, 4) + "\"";
-                msg += "<br> + Độ sai lệch cho phép: \"" + VNN_VariablePublic.autoRound(saiso, 4) + "\"";
+                msg = "false#Chỉ có thể xuất số lượng tối đa là: \"" + object_.tong_sl_dat.Value.DropTrailingZeros() + "\"";
+                msg += "<br> + Số lượng đang muốn xuất: \"" + sl_nhap.DropTrailingZeros() + "\"";
+                msg += "<br> + Độ sai lệch cho phép: \"" + saiso.DropTrailingZeros() + "\"";
             }
 
             foreach (md_nhapkhonb ncc in db.md_nhapkhonb.Where(s => s.md_nhapkhonb_id == object_.md_nhapkhonb_id))
@@ -335,6 +335,7 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
                 VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
                 VNN_Function.SetFormValue("tenhang", "VNN_notpost");
                 VNN_Function.SetFormValue("sl_nhap", sl_nhap.ToString());
+                VNN_Function.SetFormValue("sl_muonnhap", "VNN_notpost");
                 VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);

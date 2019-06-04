@@ -32,9 +32,103 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             case "CA_01_PhanBoSoLuongTheoTo":
                 this.CA_01_PhanBoSoLuongTheoTo(context);
                 break;
+            case "CA_01_GhepVatTuXuat":
+                this.CA_01_GhepVatTuXuat(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_GhepVatTuXuat(HttpContext context)
+    {
+        var db = new EntityContext();
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        string id = context.Request.Form["id"];
+        string idpr = context.Request.Form["idpr"];
+        string[] vnn = id.Split(',');
+        string type = context.Request.Form["type"];
+        string msg = "";
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                var xknb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == idpr).FirstOrDefault();
+                if (xknb == null)
+                {
+                    msg = "Không tìm thấy phiếu xuất kho";
+                }
+                else if (xknb.trangthai == "HIEULUC")
+                {
+                    msg = @"Phiếu xuất kho đã ""Hiệu Lực""";
+                }
+                else
+                {
+                    var tbl = db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList();
+                    if (type == "1")
+                    {
+                        tbl = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == idpr).ToList();
+                    }
+
+                    var groupTBL = tbl.GroupBy(s => new { s.md_sanpham_id, s.md_donvitinhsanpham_id, s.md_donvitinhsanpham_id2 }).Select(s => new md_xuatkhonb_cdh
+                    {
+                        md_xuatkhonb_cdh_id = Helper.getNewId(),
+                        md_sanpham_id = s.Key.md_sanpham_id,
+                        md_donvitinhsanpham_id = s.Key.md_donvitinhsanpham_id2,
+                        md_donvitinhsanpham_id2 = s.Key.md_donvitinhsanpham_id2,
+                        lsx_to = string.Join(",", s.Select(t => t.lsx_to).OrderByDescending(t => t).ToList()),
+                        sl_daxuat = s.Select(t => t.sl_daxuat).Sum(),
+                        sl_xuat2 = 0,
+                        sl_xuat = 0,
+                        tong_sl_xuat = s.Select(t => t.tong_sl_xuat).Sum(),
+                        sl_muonxuat = s.Select(t => t.sl_muonxuat).Sum(),
+                        sl_thucxuat = 0,
+                        md_xuatkhonb_id = idpr,
+                        ghino = s.Select(t => t.ghino).Sum(),
+                        saiso = s.Select(t => t.saiso).Sum(),
+                        bophancapnhat = us.md_phongban_id,
+                        bophantao = us.md_phongban_id,
+                        nguoicapnhat = us.ad_user_id,
+                        nguoitao = us.ad_user_id,
+                        vaitrocapnhat = us.ad_role_id,
+                        vaitrotao = us.ad_role_id,
+                        value_bophancapnhat = us.ten_phongban,
+                        value_bophantao = us.ten_phongban,
+                        value_nguoicapnhat = us.ma_user,
+                        value_nguoitao = us.ma_user,
+                        value_vaitrocapnhat = us.ten_role,
+                        value_vaitrotao = us.ten_role,
+                        ngaycapnhat = DateTime.Now,
+                        ngaytao = DateTime.Now,
+                        hoatdong = true,
+                        mota = ""
+                    });
+
+                    db.md_xuatkhonb_cdh.RemoveRange(tbl);
+                    foreach (var item in groupTBL.ToList())
+                    {
+                        db.md_xuatkhonb_cdh.Add(item);
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"<div style=""color:blue"">Ghép vật tư thành công</div>");
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"<div style=""color:red"">Lỗi:{0}</div>", msg);
+                transaction.Rollback();
+            }
+        }
+        context.Response.Write(msg);
     }
 
     public void CA_01_PhanBoSoLuongTheoTo(HttpContext context)
@@ -51,7 +145,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 {
                     var b = a["items"].ToString();
                     var items = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(b);
-                    foreach (var item in items) {
+                    foreach (var item in items)
+                    {
                         string spid = item["md_sanpham_id"] + "", lsx_to = item["lsx_to"] + "", tong_sl_xuat = item["tong_sl_xuat"] + "";
                         var dongxk = db.md_xuatkhonb_cdh.Where(s =>
                             s.md_xuatkhonb_id == id
@@ -300,8 +395,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
         string ma_module = context.Request.QueryString["ma_module"];
         decimal tong_sl_xuat = decimal.Parse(context.Request.Form["tong_sl_xuat"]);
         decimal sl_xuat = decimal.Parse(context.Request.Form["sl_xuat"]);
-        decimal sl_thucxuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
         decimal ghino = decimal.Parse(context.Request.Form["ghino"]);
+        decimal truno = decimal.Parse(context.Request.Form["truno"]);
         string md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
         decimal nhanvoi = 1, saiso = 0;
         try
@@ -379,10 +474,6 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             }
 
             decimal sl_xuat2 = sl_xuat * nhanvoi;
-            if(sl_thucxuat != sl_xuat2 + ghino)
-            {
-                msg = string.Format(@"false#Số lượng thực xuất phải bằng SLDK xuất + Ghi nợ");
-            }
             if (msg.Length <= 0)
             {
                 object_.ghichu_donvi2 = ghichu_donvi2;
@@ -391,7 +482,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 object_.md_donvitinhsanpham_id = md_donvitinhsanpham_id;
                 object_.saiso = saiso;
                 object_.sl_xuat2 = sl_xuat2;
-                object_.sl_thucxuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
+                object_.truno = truno;
+                object_.sl_thucxuat = object_.sl_xuat2 + object_.ghino;
                 db.SaveChanges();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.(--)" + object_.sl_xuat2;

@@ -826,6 +826,7 @@ public static class VNN_Function
         string w_org = System.IO.File.ReadAllText(filepath_org);
         string w_cp = System.IO.File.ReadAllText(filepath_cp);
         w_cp = w_cp.Replace(w_cp, w_org);
+        w_cp = w_cp.Replace("JQGrid" + ma_module_org + "Modify", "JQGrid" + ma_module_cp + "Modify");
         for (int i = 0; i < arr_ma_case_org.Count() - 1; i++)
         {
             w_cp = w_cp.Replace("\"" + arr_ma_case_org[i] + "\":", "\"" + arr_ma_case_copy[i] + "\":");
@@ -843,8 +844,23 @@ public static class VNN_Function
         w_org = System.IO.File.ReadAllText(filepath_org);
         w_cp = System.IO.File.ReadAllText(filepath_cp);
         w_cp = w_cp.Replace(w_cp, w_org);
+        w_cp = w_cp.Replace("JQGrid" + ma_module_org + "Load", "JQGrid" + ma_module_cp + "Load");
         System.IO.File.WriteAllText(filepath_cp, w_cp, System.Text.Encoding.Unicode);
         System.Threading.Thread.Sleep(200);
+
+        //copy aspx file
+        filepath_org = Security.UrlBase() + "View/Menu/Content/Module/" + ma_module_org + ".aspx";
+        filepath_cp = Security.UrlBase() + "View/Menu/Content/Module/" + ma_module_cp + ".aspx";
+        filepath_org = context.Server.MapPath(filepath_org);
+        filepath_cp = context.Server.MapPath(filepath_cp);
+
+        w_org = System.IO.File.ReadAllText(filepath_org);
+        w_cp = System.IO.File.ReadAllText(filepath_cp);
+        w_cp = w_cp.Replace(w_cp, w_org);
+        w_cp = w_cp.Replace(ma_module_org, ma_module_cp);
+        System.IO.File.WriteAllText(filepath_cp, w_cp, System.Text.Encoding.Unicode);
+        System.Threading.Thread.Sleep(200);
+
         //copy script file
         filepath_org = Security.UrlBase() + "js/Module_script/" + ma_module_org + ".js";
         filepath_cp = Security.UrlBase() + "js/Module_script/" + ma_module_cp + ".js";

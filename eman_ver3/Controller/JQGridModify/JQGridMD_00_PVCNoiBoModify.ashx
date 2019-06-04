@@ -96,6 +96,14 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             break;
                         }
 
+                        var slChuyen = db.md_vanchuyennoibo_cdvc
+                                   .Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).Sum(s=>s.soluong_dichchuyen);
+                        if (slChuyen <= 0)
+                        {
+                            msg = string.Format(@"<div style='color:red'>Phiếu ""{0}"" phải có ít nhất 1 dòng hàng có SL thực chuyển lớn hơn 0.</div>", vcnb.sochungtu);
+                            break;
+                        }
+
                         var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id);
                         int tong_sl_dachuyenhet = vcnb_cdvcs.Where(s => s.dachuyenhet == true).Count();
                         foreach (var vcnb_cdvc in vcnb_cdvcs.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).OrderBy(s => s.denkho).ToList())
@@ -249,7 +257,6 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 //Start Cap nhat don van chuyen
                                 vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen;
-                                vcnb_cdvc.soluong_dichchuyen = 0;
                                 vcnb.md_trangthai_id = "HIEULUC";
                                 //End Cap nhat don van chuyen
                                 db.SaveChanges();
@@ -362,13 +369,14 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
     {
         var db = new EntityContext();
         var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", id_new = Helper.getNewId();
+        string msg = "", msg1 = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string loaichuyen = context.Request.Form["loaichuyen"];
         string tukho = context.Request.Form["tukho"];
         string denkho = context.Request.Form["denkho"];
         string sctdathang = context.Request.Form["sctdathang"];
-        string[] pvcnbs = context.Request["chungtuthamchieu"].Split(new[] { "\n" }, StringSplitOptions.None);
+        string chungtuthamchieu = context.Request["chungtuthamchieu"];
+        string[] pvcnbs = chungtuthamchieu.Split(new[] { "\n" }, StringSplitOptions.None);
         string chungtu_lenhsx = context.Request.Form["chungtu_lenhsx"];
         string md_lenhsanxuat_tosx_id = context.Request.Form["md_lenhsanxuat_tosx_id"];
 
@@ -376,58 +384,79 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         {
             try
             {
+                denkho = db.md_kho.Where(s => s.md_kho_id == denkho).Select(s => s.md_kho_id).FirstOrDefault();
+                tukho = db.md_kho.Where(s => s.md_kho_id == tukho).Select(s => s.md_kho_id).FirstOrDefault();
                 DateTime ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
                 if (ngaychuyen == DateTime.MinValue | ngaychuyen == DateTime.MinValue.AddDays(1))
                     msg = "Ngày chuyển có giá trị sai";
+                else if (tukho == denkho)
+                {
+                    msg1 = "Kho chuyển không được giống với kho đến";
+                }
+                else if (string.IsNullOrEmpty(tukho) | string.IsNullOrEmpty(denkho))
+                {
+                    msg1 = "Bạn phải chọn Kho chuyển và kho đến";
+                }
 
                 if (msg.Length <= 0)
                 {
                     if (loaichuyen == "VANCNB")
                     {
-                        foreach (var a in db.md_vanchuyennoibo.Where(s => pvcnbs.Contains(s.sochungtu)).ToList())
+                        if (string.IsNullOrEmpty(chungtuthamchieu))
                         {
-                            string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
-                            var vcnb = new md_vanchuyennoibo();
-                            vcnb.md_vanchuyennoibo_id = Helper.getNewId();
-                            vcnb.md_trangthai_id = "SOANTHAO";
-                            vcnb.sochungtu = sochungtu;
-                            vcnb.c_doichieuhangton_id = " ";
-                            vcnb.tukho = a.tukho;
-                            vcnb.denkho = a.denkho;
-                            vcnb.loaichuyen = loaichuyen;
-                            vcnb.chungtuthamchieu = a.sochungtu;
-                            vcnb.ngaychuyen = ngaychuyen;
-                            vcnb.nguoitao = us.ad_user_id;
-                            vcnb.nguoicapnhat = us.ad_user_id;
-                            vcnb.value_nguoitao = us.ma_user;
-                            vcnb.value_nguoicapnhat = us.ma_user;
-                            vcnb.ngaytao = DateTime.Now;
-                            vcnb.ngaycapnhat = DateTime.Now;
-                            db.md_vanchuyennoibo.Add(vcnb);
-
-                            foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == a.md_vanchuyennoibo_id).ToList())
-                            {
-                                var slgc = db.md_kho_giucho.Where(s => s.md_sanpham_id == b.md_sanpham_id
-                                    & s.md_kho_id == vcnb.tukho & s.sctlienquan == a.sochungtu).FirstOrDefault();
-
-                                var vcnb_cdh = new md_vanchuyennoibo_cdvc();
-                                vcnb_cdh.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
-                                vcnb_cdh.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
-                                vcnb_cdh.md_sanpham_id = b.md_sanpham_id;
-                                vcnb_cdh.md_donvitinhsanpham_id = b.md_donvitinhsanpham_id;
-                                vcnb_cdh.soluong_toida = slgc.soluong_giucho;
-                                vcnb_cdh.soluong_dachuyen = 0;
-                                vcnb_cdh.soluong_dichchuyen = vcnb_cdh.soluong_toida;
-                                vcnb_cdh.nguoitao = us.ad_user_id;
-                                vcnb_cdh.nguoicapnhat = us.ad_user_id;
-                                vcnb_cdh.value_nguoitao = us.ma_user;
-                                vcnb_cdh.value_nguoicapnhat = us.ma_user;
-                                vcnb_cdh.ngaytao = DateTime.Now;
-                                vcnb_cdh.ngaycapnhat = DateTime.Now;
-                                db.md_vanchuyennoibo_cdvc.Add(vcnb_cdh);
-                            }
-                            db.SaveChanges();
+                            msg = @"Bạn phải phiếu xuất kho trong trường ""Thừa kế từ""";
                         }
+                        else
+                        {
+                            foreach (var a in db.md_vanchuyennoibo.Where(s => pvcnbs.Contains(s.sochungtu)).ToList())
+                            {
+                                string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
+                                var vcnb = new md_vanchuyennoibo();
+                                vcnb.md_vanchuyennoibo_id = Helper.getNewId();
+                                vcnb.md_trangthai_id = "SOANTHAO";
+                                vcnb.sochungtu = sochungtu;
+                                vcnb.c_doichieuhangton_id = " ";
+                                vcnb.tukho = a.tukho;
+                                vcnb.denkho = a.denkho;
+                                vcnb.loaichuyen = loaichuyen;
+                                vcnb.chungtuthamchieu = a.sochungtu;
+                                vcnb.ngaychuyen = ngaychuyen;
+                                vcnb.nguoitao = us.ad_user_id;
+                                vcnb.nguoicapnhat = us.ad_user_id;
+                                vcnb.value_nguoitao = us.ma_user;
+                                vcnb.value_nguoicapnhat = us.ma_user;
+                                vcnb.ngaytao = DateTime.Now;
+                                vcnb.ngaycapnhat = DateTime.Now;
+                                db.md_vanchuyennoibo.Add(vcnb);
+
+                                foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == a.md_vanchuyennoibo_id).ToList())
+                                {
+                                    var slgc = db.md_kho_giucho.Where(s => s.md_sanpham_id == b.md_sanpham_id
+                                        & s.md_kho_id == vcnb.tukho & s.sctlienquan == a.sochungtu).FirstOrDefault();
+
+                                    var vcnb_cdh = new md_vanchuyennoibo_cdvc();
+                                    vcnb_cdh.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
+                                    vcnb_cdh.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
+                                    vcnb_cdh.md_sanpham_id = b.md_sanpham_id;
+                                    vcnb_cdh.md_donvitinhsanpham_id = b.md_donvitinhsanpham_id;
+                                    vcnb_cdh.soluong_toida = slgc.soluong_giucho;
+                                    vcnb_cdh.soluong_dachuyen = 0;
+                                    vcnb_cdh.soluong_dichchuyen = vcnb_cdh.soluong_toida;
+                                    vcnb_cdh.nguoitao = us.ad_user_id;
+                                    vcnb_cdh.nguoicapnhat = us.ad_user_id;
+                                    vcnb_cdh.value_nguoitao = us.ma_user;
+                                    vcnb_cdh.value_nguoicapnhat = us.ma_user;
+                                    vcnb_cdh.ngaytao = DateTime.Now;
+                                    vcnb_cdh.ngaycapnhat = DateTime.Now;
+                                    db.md_vanchuyennoibo_cdvc.Add(vcnb_cdh);
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    else if (msg1.Length > 0)
+                    {
+                        msg = msg1;
                     }
                     else if (loaichuyen == "VANCNBTC")
                     {
@@ -476,10 +505,12 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         vcnb.value_nguoicapnhat = us.ma_user;
                         vcnb.ngaytao = DateTime.Now;
                         vcnb.ngaycapnhat = DateTime.Now;
+                        vcnb.banggiaNC = context.Request.Form["banggiaNC"];
+                        vcnb.phienbangiaNC = context.Request.Form["phienbangiaNC"];
                         bool AddPhieuXK = false;
                         var arrTSX = md_lenhsanxuat_tosx_id.Split(new string[] { "\n" }, StringSplitOptions.None);
 
-                        foreach (var lsxTSXId in arrTSX)
+                        foreach (var lsxTSXId in arrTSX.OrderByDescending(s => s))
                         {
                             var tsx = Extension.getLSXToId(lsxTSXId, db);
                             var kho = db.md_kho.Where(s =>
@@ -584,37 +615,6 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         context.Response.Write(msg);
     }
 
-    public void add_dongvanchuyen(EntityContext db, string md_sanpham_id, decimal tong_sl_xuat, User_TK us, string md_vanchuyennoibo_id)
-    {
-        md_vanchuyennoibo_cdvc cdvc = new md_vanchuyennoibo_cdvc();
-        cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
-        cdvc.md_vanchuyennoibo_id = md_vanchuyennoibo_id;
-        cdvc.md_sanpham_id = md_sanpham_id;
-        cdvc.soluong_toida = tong_sl_xuat;
-        cdvc.soluong_dachuyen = 0;
-        cdvc.soluong_dichchuyen = 0;
-        cdvc.dachuyenhet = false;
-        cdvc.nguoitao = us.ad_user_id;
-        cdvc.vaitrotao = us.ad_role_id;
-        cdvc.bophantao = us.md_phongban_id;
-        cdvc.value_nguoitao = us.ma_user;
-        cdvc.value_vaitrotao = us.ten_role;
-        cdvc.value_bophantao = us.ten_phongban;
-
-        cdvc.nguoicapnhat = us.ad_user_id;
-        cdvc.vaitrocapnhat = us.ad_role_id;
-        cdvc.bophancapnhat = us.md_phongban_id;
-        cdvc.value_nguoicapnhat = us.ma_user;
-        cdvc.value_vaitrocapnhat = us.ten_role;
-        cdvc.value_bophancapnhat = us.ten_phongban;
-
-        cdvc.ngaytao = DateTime.Now;
-        cdvc.ngaycapnhat = DateTime.Now;
-        cdvc.mota = "";
-        cdvc.hoatdong = true;
-        db.md_vanchuyennoibo_cdvc.Add(cdvc);
-    }
-
     public void edit(HttpContext context)
     {
         EntityContext db = new EntityContext();
@@ -641,6 +641,10 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Lỗi: Kho chuyển không được giống với kho đến";
             }
+            else if (string.IsNullOrEmpty(tukho) | string.IsNullOrEmpty(denkho))
+            {
+                msg = "false#Lỗi:Bạn phải chọn Kho chuyển và kho đến";
+            }
 
             if (msg.Length <= 0)
             {
@@ -649,6 +653,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 string ten_table = "md_vanchuyennoibo";
                 VNN_Function.SetFormValue("tukho", tukho);
                 VNN_Function.SetFormValue("denkho", denkho);
+                VNN_Function.SetFormValue("md_trangthai_id", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);

@@ -701,7 +701,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                     if (col_ != null)
                     {
                         var col_db = db.ad_column.Where(s => s.ad_column_id == col_.ad_column_id).FirstOrDefault();
-                        if(col_db != null)
+                        if (col_db != null)
                             db.ad_column.Remove(col_db);
                     }
                     idsColumn.Add(col_.ad_column_id);
@@ -958,184 +958,211 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
     public void CA_01_CopyModule(HttpContext context)
     {
         string msg = "";
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string id = context.Request.Form["id"];
         string id_copy = context.Request.Form["id_copy"];
         string ma_case_org = "", ma_case_copy = "", hamxuly_org = "", hamxuly_copy = "";
         ad_module mod_sel = db.ad_module.Where(s => s.ad_module_id == id).Take(1).FirstOrDefault();
         ad_module mod_copy = db.ad_module.Where(s => s.ad_module_id == id_copy).Take(1).FirstOrDefault();
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        if (mod_copy == null)
+        var json = new ADmin_JSON();
+        var lstAdRoleMMC = json.ad_role_mmcJSON();
+        using (var transaction = db.Database.BeginTransaction())
         {
-            msg = "false#Không tồn tại module muốn copy";
-        }
-        else if (mod_sel == null)
-        {
-            msg = "false#Không tồn tại module đã chọn";
-        }
-        else if (mod_copy.thuake != null & mod_copy.thuake != "")
-        {
-            msg = "false#Module muốn copy không thể là module thừa kế.";
-        }
-        else if (mod_sel.thuake != null & mod_sel.thuake != "")
-        {
-            msg = "false#Module bạn chọn đang thừa kế 1 module khác.";
-        }
-
-        if (msg.Length <= 0)
-        {
-            mod_sel.ten_module = mod_copy.ten_module;
-            mod_sel.mutil_select = mod_copy.mutil_select;
-            mod_sel.double_click = mod_copy.double_click;
-            mod_sel.thuake = mod_copy.thuake;
-            mod_sel.header_grid = mod_copy.header_grid;
-            mod_sel.select_sql = mod_copy.select_sql;
-            mod_sel.from_sql = mod_copy.from_sql;
-            mod_sel.where_sql = mod_copy.where_sql;
-            mod_sel.orderby_sql = mod_copy.orderby_sql;
-            mod_sel.row_count = mod_copy.row_count;
-            mod_sel.procedure_sql = mod_copy.procedure_sql;
-
-            Module_TK mod_ = VNN_Config.get_ModuleKeThua(mod_sel, 0, mod_sel.ma_module, "", "", db);
-            Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, mod_sel.capmodule.Value);
-            db.ad_column.RemoveRange(db.ad_column.Where(s => s.ad_module_id == mod_sel.ad_module_id));
-            db.SaveChanges();
-
-            foreach (ad_column col in db.ad_column.Where(s => s.ad_module_id == mod_copy.ad_module_id).ToList())
+            try
             {
-                ad_column col_cp = new ad_column
+                if (mod_copy == null)
                 {
-                    ad_column_id = Helper.getNewId(),
-                    ma_menu = mod_sel.ma_menu,
-                    ma_module = mod_sel.ma_module,
-                    @fixed = col.@fixed,
-                    ma_column = col.ma_column,
-                    ten_column = col.ten_column,
-                    index_cot = col.index_cot,
-                    ad_module_id = mod_sel.ad_module_id,
-                    width = col.width,
-                    key_cot = col.key_cot,
-                    hidden = col.hidden,
-                    formatter = col.formatter,
-                    unformat = col.unformat,
-                    align = col.align,
-                    stype = col.stype,
-                    searchoptions = col.searchoptions,
-                    formoptions = col.formoptions,
-                    label = col.label,
-                    editable = col.editable,
-                    editrules = col.editrules,
-                    ma_edittype = col.ma_edittype,
-                    edittype = col.edittype,
-                    editoptions = col.editoptions,
-                    important = col.important,
-                    sapxep = col.sapxep,
-                    colspan = col.colspan,
-                    formatoptions = col.formatoptions,
-                    reset_modify = col.reset_modify,
-                    focus = col.focus,
-                    disable_modify = col.disable_modify,
-                    sopt = col.sopt,
-                    frozen = col.frozen,
-                    nguoitao = us.ad_user_id,
-                    vaitrotao = us.ad_role_id,
-                    bophantao = us.md_phongban_id,
-                    nguoicapnhat = us.ad_user_id,
-                    vaitrocapnhat = us.ad_role_id,
-                    bophancapnhat = us.md_phongban_id,
-                    ngaytao = DateTime.Now,
-                    ngaycapnhat = DateTime.Now,
-                    mota = col.mota,
-                    hoatdong = true
-                };
-                db.ad_column.Add(col_cp);
-            }
-
-            db.ad_case.RemoveRange(db.ad_case.Where(s => s.ad_module_id == mod_sel.ad_module_id));
-            db.ad_role_mmc.RemoveRange(db.ad_role_mmc.Where(s => s.ad_module_id == mod_sel.ad_module_id));
-            db.SaveChanges();
-            foreach (ad_case cn in db.ad_case.Where(s => s.ad_module_id == mod_copy.ad_module_id).ToList())
-            {
-                string hamxuly = cn.hamxuly, ma_case = cn.ma_case.Replace("_", "") + "_" + mod_sel.ma_module.Replace("_", "");
-                int last_ngoactrong = hamxuly.LastIndexOf("(");
-                if (hamxuly != "click_add(tengrid)" & hamxuly != "click_edit(tengrid)" &
-                    hamxuly != "click_del(tengrid)" & hamxuly != "click_view(tengrid)")
+                    msg = "Không tồn tại module muốn copy";
+                }
+                else if (mod_sel == null)
                 {
-                    hamxuly = hamxuly.Substring(0, last_ngoactrong).Replace("_", "") + "_" + mod_sel.ma_module.Replace("_", "") + hamxuly.Substring(last_ngoactrong);
-                    ma_case_org += cn.ma_case + "ξ";
-                    ma_case_copy += ma_case + "ξ";
-                    hamxuly_org += cn.hamxuly + "ξ";
-                    hamxuly_copy += hamxuly + "ξ";
+                    msg = "Không tồn tại module đã chọn";
+                }
+                else if (mod_copy.thuake != null & mod_copy.thuake != "")
+                {
+                    msg = "Module muốn copy không thể là module thừa kế.";
+                }
+                else if (mod_sel.thuake != null & mod_sel.thuake != "")
+                {
+                    msg = "Module bạn chọn đang thừa kế 1 module khác.";
                 }
 
-                ad_case cn_cp = new ad_case
+                if (msg.Length <= 0)
                 {
-                    ad_case_id = Helper.getNewId(),
-                    ad_module_id = mod_sel.ad_module_id,
-                    ma_case = ma_case,
-                    ma_menu = mod_sel.ma_menu,
-                    ma_module = mod_sel.ma_module,
-                    thuake = cn.thuake,
-                    sapxep = cn.sapxep,
-                    ten_case = cn.ten_case,
-                    hamxuly = hamxuly,
-                    logo = cn.logo,
-                    isview = cn.isview,
-                    id_parent = cn.id_parent,
-                    dodaiForm = cn.dodaiForm,
-                    docaoForm = cn.docaoForm,
-                    canhgiua = cn.canhgiua,
-                    tieude = cn.tieude,
-                    hidden_modify = cn.hidden_modify,
-                    nguoitao = us.ad_user_id,
-                    vaitrotao = us.ad_role_id,
-                    bophantao = us.md_phongban_id,
-                    nguoicapnhat = us.ad_user_id,
-                    vaitrocapnhat = us.ad_role_id,
-                    bophancapnhat = us.md_phongban_id,
-                    ngaytao = DateTime.Now,
-                    ngaycapnhat = DateTime.Now,
-                    mota = cn.mota,
-                    hoatdong = cn.hoatdong,
-                };
-                db.ad_case.Add(cn_cp);
-                db.SaveChanges();
-                foreach (ad_role_mmc pq in db.ad_role_mmc.Where(s => s.ad_module_id == mod_copy.ad_module_id & s.ad_menu_id == mod_copy.ad_menu_id & s.ad_case_id == cn.ad_case_id).ToList())
-                {
-                    ad_role_mmc pq_cp = new ad_role_mmc
+                    mod_sel.ten_module = mod_copy.ten_module;
+                    mod_sel.mutil_select = mod_copy.mutil_select;
+                    mod_sel.double_click = mod_copy.double_click;
+                    mod_sel.thuake = mod_copy.thuake;
+                    mod_sel.header_grid = mod_copy.header_grid;
+                    mod_sel.select_sql = mod_copy.select_sql;
+                    mod_sel.from_sql = mod_copy.from_sql;
+                    mod_sel.where_sql = mod_copy.where_sql;
+                    mod_sel.orderby_sql = mod_copy.orderby_sql;
+                    mod_sel.row_count = mod_copy.row_count;
+                    mod_sel.procedure_sql = mod_copy.procedure_sql;
+
+                    Module_TK mod_ = VNN_Config.get_ModuleKeThua(mod_sel, 0, mod_sel.ma_module, "", "", db);
+                    Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, mod_sel.capmodule.Value);
+                    db.ad_column.RemoveRange(db.ad_column.Where(s => s.ad_module_id == mod_sel.ad_module_id));
+                    db.SaveChanges();
+
+                    foreach (ad_column col in db.ad_column.Where(s => s.ad_module_id == mod_copy.ad_module_id).ToList())
                     {
-                        ad_role_mmc_id = Helper.getNewId(),
-                        ad_menu_id = mod_sel.ad_menu_id,
-                        ad_module_id = mod_sel.ad_module_id,
-                        ad_case_id = cn_cp.ad_case_id,
-                        ten_case = cn_cp.ten_case,
-                        ad_role_id = pq.ad_role_id,
-                        mota = null,
+                        ad_column col_cp = new ad_column
+                        {
+                            ad_column_id = Helper.getNewId(),
+                            ma_menu = mod_sel.ma_menu,
+                            ma_module = mod_sel.ma_module,
+                            @fixed = col.@fixed,
+                            ma_column = col.ma_column,
+                            ten_column = col.ten_column,
+                            index_cot = col.index_cot,
+                            ad_module_id = mod_sel.ad_module_id,
+                            width = col.width,
+                            key_cot = col.key_cot,
+                            hidden = col.hidden,
+                            formatter = col.formatter,
+                            unformat = col.unformat,
+                            align = col.align,
+                            stype = col.stype,
+                            searchoptions = col.searchoptions,
+                            formoptions = col.formoptions,
+                            label = col.label,
+                            editable = col.editable,
+                            editrules = col.editrules,
+                            ma_edittype = col.ma_edittype,
+                            edittype = col.edittype,
+                            editoptions = col.editoptions,
+                            important = col.important,
+                            sapxep = col.sapxep,
+                            colspan = col.colspan,
+                            formatoptions = col.formatoptions,
+                            reset_modify = col.reset_modify,
+                            focus = col.focus,
+                            disable_modify = col.disable_modify,
+                            sopt = col.sopt,
+                            frozen = col.frozen,
+                            nguoitao = us.ad_user_id,
+                            vaitrotao = us.ad_role_id,
+                            bophantao = us.md_phongban_id,
+                            nguoicapnhat = us.ad_user_id,
+                            vaitrocapnhat = us.ad_role_id,
+                            bophancapnhat = us.md_phongban_id,
+                            ngaytao = DateTime.Now,
+                            ngaycapnhat = DateTime.Now,
+                            mota = col.mota,
+                            hoatdong = true
+                        };
+                        db.ad_column.Add(col_cp);
+                    }
 
-                        nguoitao = us.ad_user_id,
-                        vaitrotao = us.ad_role_id,
-                        bophantao = us.md_phongban_id,
-                        value_nguoitao = us.ma_user,
-                        value_vaitrotao = us.ten_role,
-                        value_bophantao = us.ten_phongban,
+                    db.ad_case.RemoveRange(db.ad_case.Where(s => s.ad_module_id == mod_sel.ad_module_id));
+                    db.ad_role_mmc.RemoveRange(db.ad_role_mmc.Where(s => s.ad_module_id == mod_sel.ad_module_id));
+                    db.SaveChanges();
+                    foreach (ad_case cn in db.ad_case.Where(s => s.ad_module_id == mod_copy.ad_module_id).ToList())
+                    {
+                        string hamxuly = cn.hamxuly, ma_case = cn.ma_case.Replace("_", "") + "_" + mod_sel.ma_module.Replace("_", "");
+                        int last_ngoactrong = hamxuly.LastIndexOf("(");
+                        if (hamxuly != "click_add(tengrid)" & hamxuly != "click_edit(tengrid)" &
+                            hamxuly != "click_del(tengrid)" & hamxuly != "click_view(tengrid)")
+                        {
+                            hamxuly = hamxuly.Substring(0, last_ngoactrong).Replace("_", "") + "_" + mod_sel.ma_module.Replace("_", "") + hamxuly.Substring(last_ngoactrong);
+                            ma_case_org += cn.ma_case + "ξ";
+                            ma_case_copy += ma_case + "ξ";
+                            hamxuly_org += cn.hamxuly + "ξ";
+                            hamxuly_copy += hamxuly + "ξ";
+                        }
 
-                        nguoicapnhat = us.ad_user_id,
-                        vaitrocapnhat = us.ad_role_id,
-                        bophancapnhat = us.md_phongban_id,
-                        value_nguoicapnhat = us.ma_user,
-                        value_vaitrocapnhat = us.ten_role,
-                        value_bophancapnhat = us.ten_phongban,
+                        ad_case cn_cp = new ad_case
+                        {
+                            ad_case_id = Helper.getNewId(),
+                            ad_module_id = mod_sel.ad_module_id,
+                            ma_case = ma_case,
+                            ma_menu = mod_sel.ma_menu,
+                            ma_module = mod_sel.ma_module,
+                            thuake = cn.thuake,
+                            sapxep = cn.sapxep,
+                            ten_case = cn.ten_case,
+                            hamxuly = hamxuly,
+                            logo = cn.logo,
+                            isview = cn.isview,
+                            id_parent = cn.id_parent,
+                            dodaiForm = cn.dodaiForm,
+                            docaoForm = cn.docaoForm,
+                            canhgiua = cn.canhgiua,
+                            tieude = cn.tieude,
+                            hidden_modify = cn.hidden_modify,
+                            nguoitao = us.ad_user_id,
+                            vaitrotao = us.ad_role_id,
+                            bophantao = us.md_phongban_id,
+                            nguoicapnhat = us.ad_user_id,
+                            vaitrocapnhat = us.ad_role_id,
+                            bophancapnhat = us.md_phongban_id,
+                            ngaytao = DateTime.Now,
+                            ngaycapnhat = DateTime.Now,
+                            mota = cn.mota,
+                            hoatdong = cn.hoatdong,
+                        };
+                        db.ad_case.Add(cn_cp);
+                        db.SaveChanges();
 
-                        ngaytao = DateTime.Now,
-                        ngaycapnhat = DateTime.Now,
-                        hoatdong = true
-                    };
-                    db.ad_role_mmc.Add(pq_cp);
+                        foreach (ad_role_mmc pq in db.ad_role_mmc.Where(s => s.ad_module_id == mod_copy.ad_module_id & s.ad_menu_id == mod_copy.ad_menu_id & s.ad_case_id == cn.ad_case_id).ToList())
+                        {
+                            ad_role_mmc pq_cp = new ad_role_mmc
+                            {
+                                ad_role_mmc_id = Helper.getNewId(),
+                                ad_menu_id = mod_sel.ad_menu_id,
+                                ad_module_id = mod_sel.ad_module_id,
+                                ad_case_id = cn_cp.ad_case_id,
+                                ten_case = cn_cp.ten_case,
+                                ad_role_id = pq.ad_role_id,
+                                mota = null,
+
+                                nguoitao = us.ad_user_id,
+                                vaitrotao = us.ad_role_id,
+                                bophantao = us.md_phongban_id,
+                                value_nguoitao = us.ma_user,
+                                value_vaitrotao = us.ten_role,
+                                value_bophantao = us.ten_phongban,
+
+                                nguoicapnhat = us.ad_user_id,
+                                vaitrocapnhat = us.ad_role_id,
+                                bophancapnhat = us.md_phongban_id,
+                                value_nguoicapnhat = us.ma_user,
+                                value_vaitrocapnhat = us.ten_role,
+                                value_bophancapnhat = us.ten_phongban,
+
+                                ngaytao = DateTime.Now,
+                                ngaycapnhat = DateTime.Now,
+                                hoatdong = true
+                            };
+                            db.ad_role_mmc.Add(pq_cp);
+                            lstAdRoleMMC.Add(pq_cp);
+                        }
+                        db.SaveChanges();
+                    }
+                    db.SaveChanges();
+                    VNN_Function.Copyfile_module(context, mod_copy.ma_module, mod_sel.ma_module, ma_case_org, ma_case_copy, hamxuly_org, hamxuly_copy);
                 }
-                db.SaveChanges();
             }
-            db.SaveChanges();
-            VNN_Function.Copyfile_module(context, mod_copy.ma_module, mod_sel.ma_module, ma_case_org, ma_case_copy, hamxuly_org, hamxuly_copy);
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                transaction.Commit();
+                string jsonData = JsonConvert.SerializeObject(lstAdRoleMMC, Formatting.Indented);
+                json.urlData = typeof(ad_role_mmc).Name;
+                json.WriteJson(jsonData);
+            }
+            else
+            {
+                transaction.Rollback();
+                msg = string.Format(@"<div style=""color:red"">{0}</div>", msg);
+            }
         }
         context.Response.Write(msg);
     }

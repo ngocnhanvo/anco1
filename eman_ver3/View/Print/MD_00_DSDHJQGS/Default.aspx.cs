@@ -13,96 +13,98 @@ using DataAcess;
 public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Page
 {
 
-	protected void Page_Load(object sender, EventArgs e)
+    protected void Page_Load(object sender, EventArgs e)
     {
-		EntityContext db = new EntityContext();
+        EntityContext db = new EntityContext();
         String c_danhsachdathang_id = Request.QueryString["id"];
-		c_danhsachdathang dsdh = db.c_danhsachdathang.FirstOrDefault(s=>s.c_danhsachdathang_id == c_danhsachdathang_id);
-		
-        rptDanhSachDatHang report = new rptDanhSachDatHang();
-        if(dsdh != null) {
-			if(dsdh.anco_check == true){
-				string str = VNN_VariablePublic.connectString_Anco(db);
-				string str2 = VNN_VariablePublic.connectString_Anco1(db);
+        c_danhsachdathang dsdh = db.c_danhsachdathang.FirstOrDefault(s => s.c_danhsachdathang_id == c_danhsachdathang_id);
 
-				SqlConnection cnn  = new SqlConnection(str);
-				
-				String selTotal = String.Format(@"select SUM(ddsdh.sl_dathang * ddsdh.gianhap) as tongtien 
+        rptDanhSachDatHang report = new rptDanhSachDatHang();
+        if (dsdh != null)
+        {
+            if (dsdh.anco_check == true)
+            {
+                //string str = VNN_VariablePublic.connectString_Anco(db);
+                //string str2 = VNN_VariablePublic.connectString_Anco1(db);
+
+                SqlConnection cnn = Mbg.Data.SqlClient.SqlHelper.GetConnection;
+
+                String selTotal = String.Format(@"select SUM(ddsdh.sl_dathang * ddsdh.gianhap) as tongtien 
                                     FROM c_danhsachdathang dsdh, c_dongdsdh ddsdh 
                                     WHERE dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
                                     AND dsdh.c_danhsachdathang_id = '{0}'", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id);
-				SqlCommand cmd = new SqlCommand(selTotal, cnn);
-				cmd.Connection.Open();
-				object value = cmd.ExecuteScalar();
-				cmd.Connection.Close();
-				
-				try
-				{
-					decimal total = (decimal)value;
-				}
-				catch
-				{
-					cnn  = new SqlConnection(str2);
-				}
-				
-				viewReport(report, getSql(c_danhsachdathang_id, cnn, 0), cnn);
-			}
-			else{
-				SqlConnection cnn = Mbg.Data.SqlClient.SqlHelper.GetConnection;
-				viewReport(report, getSql(c_danhsachdathang_id, cnn, 1), cnn);
-			
-			}	
-		}
-		else {
-			Response.Write("<div style='color:red'>Không có danh sách đặt hàng</div>");
-		}
+                SqlCommand cmd = new SqlCommand(selTotal, cnn);
+                cmd.Connection.Open();
+                object value = cmd.ExecuteScalar();
+                cmd.Connection.Close();
+
+                try
+                {
+                    decimal total = (decimal)value;
+                }
+                catch
+                {
+                    //cnn  = new SqlConnection(str2);
+                }
+
+                viewReport(report, getSql(c_danhsachdathang_id, cnn, 0), cnn);
+            }
+            else
+            {
+                SqlConnection cnn = Mbg.Data.SqlClient.SqlHelper.GetConnection;
+                viewReport(report, getSql(c_danhsachdathang_id, cnn, 1), cnn);
+
+            }
+        }
+        else
+        {
+            Response.Write("<div style='color:red'>Không có danh sách đặt hàng</div>");
+        }
     }
-	
-	public void viewReport(XtraReport report, String SqlQuery, SqlConnection cnn)
-    {		
+
+    public void viewReport(XtraReport report, String SqlQuery, SqlConnection cnn)
+    {
         SqlDataAdapter da = new SqlDataAdapter(SqlQuery, cnn);
         DataSet ds = new DataSet();
         da.Fill(ds);
         report.DataSource = ds;
         report.DataAdapter = da;
         ReportViewer1.Report = report;
-		//Response.Write(SqlQuery);
+        //Response.Write(SqlQuery);
     }
 
     public string getSql(string c_danhsachdathang_id, SqlConnection cnn, int type)
     {
-		EntityContext db = new EntityContext();
-		
-		
         String selTotal = String.Format(@"select SUM(ddsdh.sl_dathang * ddsdh.gianhap) as tongtien 
                                     FROM c_danhsachdathang dsdh, c_dongdsdh ddsdh 
                                     WHERE dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
                                     AND dsdh.c_danhsachdathang_id = '{0}'", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id);
-		SqlCommand cmd = new SqlCommand(selTotal, cnn);
-		cmd.Connection.Open();
+        SqlCommand cmd = new SqlCommand(selTotal, cnn);
+        cmd.Connection.Open();
         object value = cmd.ExecuteScalar();
         cmd.Connection.Close();
-		decimal total = (decimal)value;
-        
-		Nullable<decimal> discount = db.c_danhsachdathang.FirstOrDefault(d => d.c_danhsachdathang_id.Equals(c_danhsachdathang_id)).discount;
-        Nullable<decimal> totalDiscount = total * (discount == null ? 0 : discount.Value) / 100;
-        Nullable<decimal> phitang = (from t in db.c_phidathang where t.isphicong.Equals(true) && t.c_danhsachdathang_id.Equals(c_danhsachdathang_id) select t.sotien).Sum();
-        Nullable<decimal> phigiam = (from t in db.c_phidathang where t.isphicong.Equals(false) && t.c_danhsachdathang_id.Equals(c_danhsachdathang_id) select t.sotien).Sum();
-        Nullable<decimal> totalUSD = total - totalDiscount + (phitang == null ? 0 : phitang.Value) - (phigiam == null ? 0 : phigiam.Value);
+        decimal total = (decimal)value;
 
-        var varTang = db.c_phidathang.FirstOrDefault(tg => tg.c_danhsachdathang_id.Equals(c_danhsachdathang_id) && tg.isphicong.Equals(true));
-        var varGiam = db.c_phidathang.FirstOrDefault(gi => gi.c_danhsachdathang_id.Equals(c_danhsachdathang_id) && gi.isphicong.Equals(false));
+        EntityContext db = new EntityContext();
+        decimal? discount = db.c_danhsachdathang.FirstOrDefault(d => d.c_danhsachdathang_id.Equals(c_danhsachdathang_id)).discount;
+        decimal? totalDiscount = total * (discount == null ? 0 : discount.Value) / 100;
+        decimal? phitang = db.c_phidathang.Where(t => t.isphicong == true & t.c_danhsachdathang_id == c_danhsachdathang_id).Sum(t => t.sotien);
+        decimal? phigiam = (from t in db.c_phidathang where t.isphicong == false && t.c_danhsachdathang_id == c_danhsachdathang_id select t.sotien).Sum();
+        decimal? totalUSD = total - totalDiscount + (phitang == null ? 0 : phitang.Value) - (phigiam == null ? 0 : phigiam.Value);
+
+        var varTang = db.c_phidathang.FirstOrDefault(tg => tg.c_danhsachdathang_id == c_danhsachdathang_id && tg.isphicong == true);
+        var varGiam = db.c_phidathang.FirstOrDefault(gi => gi.c_danhsachdathang_id == c_danhsachdathang_id && gi.isphicong == false);
 
         String dgTang, dgGiam;
         dgTang = varTang == null ? "" : varTang.mota;
         dgGiam = varGiam == null ? "" : varGiam.mota;
 
         string m = VNN_ConvertMoney.convert((double)totalUSD.Value, "VND").FirstOrDefault().Key;
-        int j =  m.LastIndexOf("and");
-		
+        int j = m.LastIndexOf("and");
+
         if (j > 0)
         {
-            m = m.Insert(j + 3, " cents");    
+            m = m.Insert(j + 3, " cents");
         }
 
         String select = String.Format(@"
@@ -125,17 +127,17 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
 							, sp.mota as ghichu, sp.trongluong
                         from 
 	                        c_danhsachdathang dsdh with (nolock)
-							left join md_doitackinhdoanh dtkd  with (nolock) on dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
+							left join md_doitackinhdoanh dtkd  with (nolock) on dtkd.ma_dtkd = 'VINHGIA'
 	                        Left join c_dongdsdh ddsdh  with (nolock) on dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
 							left join md_sanpham sp  with (nolock) on ddsdh.md_sanpham_id = sp.md_sanpham_id
 							left join md_donvitinhsanpham dvt  with (nolock) on sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
 							Left join c_donhang dh  with (nolock) on dsdh.c_donhang_id = dh.c_donhang_id
 							Left join md_donggoi dg  with (nolock) on ddsdh.md_donggoi_id = dg.md_donggoi_id
                         where
-	                        dsdh.c_danhsachdathang_id = N'{0}' order by sp.ma_sanpham asc", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id, m, totalDiscount == null ? 0 : totalDiscount.Value, dgTang.Replace(@"'",@"''"), dgGiam.Replace(@"'",@"''"), totalUSD == null ? 0 : totalUSD.Value, varTang == null ? 0 : varTang.sotien.Value, varGiam == null ? 0 : varGiam.sotien.Value);
-        
-		if(type==1) {
-			select = String.Format(@"
+	                        dsdh.c_danhsachdathang_id = N'{0}' order by sp.ma_sanpham asc", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id, m, totalDiscount == null ? 0 : totalDiscount.Value, dgTang.Replace(@"'", @"''"), dgGiam.Replace(@"'", @"''"), totalUSD == null ? 0 : totalUSD.Value, varTang == null ? 0 : varTang.sotien.Value, varGiam == null ? 0 : varGiam.sotien.Value);
+
+        //if(type==1) {
+        select = String.Format(@"
                         select 
 	                        dsdh.sochungtu, dsdh.so_po, dsdh.ngaylap, dsdh.hangiaohang_po, dtkd.ten_dtkd, dtkd.tel, dtkd.fax
 	                        , sp.ma_sanpham
@@ -144,22 +146,22 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
                             , ddsdh.sl_dathang, ddsdh.gianhap, (ddsdh.sl_dathang * ddsdh.gianhap) as thanhtien, dsdh.huongdanlamhang, ddsdh.huongdan_dathang
 	                        , dsdh.diachigiaohang, 0 as sl_cont, '' as loai_cont, dsdh.discount as discountdecimal, {2} as discount,  N'{1}' as money 
                             , N'{3}' as diengiaitang, N'{4}' as diengiaigiam, {6} as giatritang, {7} as giatrigiam, ddsdh.v2, {5} as tongtiendatru
-                            , (case ddsdh.sl_inner when 0 then ' ' else (cast(ddsdh.sl_inner as nvarchar) + ' ' + (select ten_dvt from md_donvitinh where md_donvitinh_id = ddsdh.dvt_inner)) end) as dginner
-                            , (cast(ddsdh.sl_outer as nvarchar) + ' ' + (select ten_dvt from md_donvitinh where md_donvitinh_id = ddsdh.dvt_outer)) as dgouter
+                            , (cast(ddsdh.sl_inner as nvarchar) + ' ' + ddsdh.dvt_inner) as dginner
+                            , (cast(ddsdh.sl_outer as nvarchar) + ' ' + ddsdh.dvt_outer) as dgouter
                             , (select hoten from ad_user where ad_user_id = dsdh.nguoitao) as nguoitao
 							, sp.mota as ghichu, sp.trongluong
                         from 
 	                        c_danhsachdathang dsdh, md_doitackinhdoanh dtkd, md_sanpham sp
 	                        , c_dongdsdh ddsdh, md_donvitinhsanpham dvt
-                        where
-	                        dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
+                        where 1=1
+	                        and dtkd.ma_dtkd = 'ANCO2'
 	                        AND dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
 	                        AND ddsdh.md_sanpham_id = sp.md_sanpham_id
 	                        AND sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
-                            AND dsdh.c_danhsachdathang_id = N'{0}' order by sp.ma_sanpham asc", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id, m, totalDiscount == null ? 0 : totalDiscount.Value, dgTang.Replace(@"'",@"''"), dgGiam.Replace(@"'",@"''"), totalUSD == null ? 0 : totalUSD.Value, varTang == null ? 0 : varTang.sotien.Value, varGiam == null ? 0 : varGiam.sotien.Value);
-			
-		}
-		return select;
+                            AND dsdh.c_danhsachdathang_id = N'{0}' order by sp.ma_sanpham asc", c_danhsachdathang_id == null ? "" : c_danhsachdathang_id, m, totalDiscount == null ? 0 : totalDiscount.Value, dgTang.Replace(@"'", @"''"), dgGiam.Replace(@"'", @"''"), totalUSD == null ? 0 : totalUSD.Value, varTang == null ? 0 : varTang.sotien.Value, varGiam == null ? 0 : varGiam.sotien.Value);
+
+        //}
+        return select;
     }
 }
 
@@ -679,7 +681,7 @@ public class rptDanhSachDatHang : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel1.SizeF = new System.Drawing.SizeF(928.9999F, 32.375F);
         this.xrLabel1.StylePriority.UseFont = false;
         this.xrLabel1.StylePriority.UseTextAlignment = false;
-        this.xrLabel1.Text = "ANCO COMPANY LIMITED";
+        this.xrLabel1.Text = "ANCO2 COMPANY LIMITED";
         this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel2
@@ -691,7 +693,7 @@ public class rptDanhSachDatHang : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel2.SizeF = new System.Drawing.SizeF(928.9999F, 23F);
         this.xrLabel2.StylePriority.UseFont = false;
         this.xrLabel2.StylePriority.UseTextAlignment = false;
-        this.xrLabel2.Text = "3B/2, 1B Hamlet, An Phu Ward, Thuan An Dist., Binh Duong Province, Vietnam";
+        this.xrLabel2.Text = "Northern Chu Lai Industrial Zone, Tam Hiep Community, Nui Thanh Ward, Quang Nam Province, Viet Nam";
         this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel3
@@ -703,7 +705,7 @@ public class rptDanhSachDatHang : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel3.SizeF = new System.Drawing.SizeF(928.9999F, 23F);
         this.xrLabel3.StylePriority.UseFont = false;
         this.xrLabel3.StylePriority.UseTextAlignment = false;
-        this.xrLabel3.Text = "Tel.: (84-650) 3740 973   Fax:  (84–650) 3740 621  Email: anco@ancopottery.com";
+        this.xrLabel3.Text = "Tel: (84-235) 3567393 Fax: (84-235) 3567494 Email:vinhgiachulai@yahoo.com.";
         this.xrLabel3.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
         // xrLabel4

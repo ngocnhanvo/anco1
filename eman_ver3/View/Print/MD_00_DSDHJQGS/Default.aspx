@@ -57,5 +57,11 @@
         <br />
     </div>
     </form>
+	
+	<script>
+		setTimeout(function(){ 
+			document.getElementsByTagName("body")[0].style.zoom = '101%';
+		}, 50);
+	</script>
 </body>
 </html>

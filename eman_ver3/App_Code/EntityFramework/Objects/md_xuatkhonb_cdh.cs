@@ -133,6 +133,12 @@
                         public Decimal? sl_daxuat { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_sl_muonxuat_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_sl_muonxuat_wintaFN
+                        public Decimal? sl_muonxuat { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_sl_thucxuat_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_sl_thucxuat_wintaFN
@@ -173,6 +179,12 @@
                         
                         #endregion md_xuatkhonb_cdh_tong_sl_xuat_wintaFN
                         public Decimal? tong_sl_xuat { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_truno_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_truno_wintaFN
+                        public Decimal? truno { get; set; }
                 
 						
                         #region md_xuatkhonb_cdh_vaitrocapnhat_wintaFN

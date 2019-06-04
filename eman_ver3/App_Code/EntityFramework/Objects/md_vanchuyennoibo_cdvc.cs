@@ -127,6 +127,12 @@
                         public Decimal? soluong_dichchuyen { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_soluong_muonchuyen_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_soluong_muonchuyen_wintaFN
+                        public Decimal? soluong_muonchuyen { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_soluong_toida_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_soluong_toida_wintaFN

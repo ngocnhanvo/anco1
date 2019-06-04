@@ -127,62 +127,87 @@ System.Web.SessionState.IRequiresSessionState
                                     break;
                                 }
                             }
-                            var khos = (from a in db.md_kho
-                                        join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
-                                        join c in c_doichieuhangton_dklht on b.md_sanpham_id equals c.md_sanpham_id
-                                        where a.hangton == true & c.sl_lay > 0
-                                        select new
-                                        {
-                                            a.md_kho_id,
-                                            b.md_sanpham_id,
-                                            b.soluong,
-                                            c.sl_lay,
-                                            c.sl_dalay,
-                                            c.sl_conlai,
-                                            c.makho,
-                                            c.md_donvitinhsanpham_id
-                                        });
-
 
                             string md_kho_id = "", sochungtu = "", id_new = "";
-                            foreach (var dklht in khos.OrderBy(s => s.md_kho_id).ThenByDescending(s => s.soluong).ToList())
+                            foreach (var dklht in c_doichieuhangton_dklht.ToList())
                             {
-                                if (dklht.sl_lay - dklht.sl_dalay > 0)
+                                var khoArr = dklht.md_kho_id.Split(',');
+                                decimal? slLay = dklht.sl_lay - dklht.sl_dalay;
+                                foreach (string khoId in khoArr)
                                 {
-                                    string[] kq = new string[2];
-                                    if (md_kho_id != dklht.md_kho_id)
+                                    var ksp = db.md_kho_sanpham.Where(s => s.md_kho_id == khoId & s.md_sanpham_id == dklht.md_sanpham_id).FirstOrDefault();
+                                    if (slLay > 0)
                                     {
-                                        md_kho_id = dklht.md_kho_id;
-                                        kq = tao_phieu(db, dcht, md_kho_id, dklht.md_sanpham_id, us);
-                                        id_new = kq[0];
-                                        sochungtu = kq[1];
-                                        msg_sucess += id_new + ",";
-                                    }
-                                    noidung(db, dcht, md_kho_id, dklht.md_sanpham_id, dklht.md_donvitinhsanpham_id, dklht.sl_lay.Value, dklht.sl_dalay.Value, dklht.soluong.Value, dklht.makho, us, id_new);
+                                        decimal? slLayCP = ksp.soluong > slLay ? slLay : ksp.soluong;
+                                        slLay = (slLay - slLayCP).GetValueOrDefault(0).Set0WhenlessThan0();
+                                        if (slLayCP > 0)
+                                        {
+                                            string[] kq = new string[2];
+                                            if (md_kho_id != dklht.md_kho_id)
+                                            {
+                                                md_kho_id = khoId;
+                                                kq = tao_phieu(db, dcht, md_kho_id, dklht.md_sanpham_id, us);
+                                                id_new = kq[0];
+                                                sochungtu = kq[1];
+                                                msg_sucess += id_new + ",";
+                                            }
 
-                                    var giucho = new md_kho_giucho();
-                                    giucho.md_kho_giucho_id = Helper.getNewId();
-                                    giucho.md_kho_id = dklht.md_kho_id;
-                                    giucho.md_sanpham_id = dklht.md_sanpham_id;
-                                    giucho.md_donvitinhsanpham_id = dklht.md_donvitinhsanpham_id;
-                                    giucho.soluong_giucho = dklht.sl_lay;
-                                    giucho.sctlienquan = kq[1];
-                                    giucho.ngaygiu = DateTime.Now;
-                                    giucho.nguoitao = us.ad_user_id;
-                                    giucho.nguoicapnhat = us.ad_user_id;
-                                    giucho.ngaytao = DateTime.Now;
-                                    giucho.ngaycapnhat = DateTime.Now;
-                                    giucho.bophantao = us.md_phongban_id;
-                                    giucho.bophancapnhat = us.md_phongban_id;
-                                    giucho.vaitrotao = us.ad_role_id;
-                                    giucho.vaitrocapnhat = us.ad_role_id;
-                                    giucho.hoatdong = true;
-                                    giucho.mota = "";
-                                    giucho.lydo = "";
-                                    db.md_kho_giucho.Add(giucho);
+                                            var cdvc = new md_vanchuyennoibo_cdvc
+                                            {
+                                                md_vanchuyennoibo_cdvc_id = Helper.getNewId(),
+                                                md_vanchuyennoibo_id = id_new,
+                                                md_sanpham_id = dklht.md_sanpham_id,
+                                                md_donvitinhsanpham_id = dklht.md_donvitinhsanpham_id,
+                                                soluong_toida = slLayCP,
+                                                soluong_dachuyen = 0,
+                                                soluong_muonchuyen = slLayCP,
+                                                soluong_dichchuyen = 0,
+                                                dachuyenhet = false,
+                                                sapxep = "",
+                                                nguoitao = us.ad_user_id,
+                                                vaitrotao = us.ad_role_id,
+                                                bophantao = us.md_phongban_id,
+                                                value_nguoitao = us.ma_user,
+                                                value_vaitrotao = us.ten_role,
+                                                value_bophantao = us.ten_phongban,
+                                                nguoicapnhat = us.ad_user_id,
+                                                vaitrocapnhat = us.ad_role_id,
+                                                bophancapnhat = us.md_phongban_id,
+                                                value_nguoicapnhat = us.ma_user,
+                                                value_vaitrocapnhat = us.ten_role,
+                                                value_bophancapnhat = us.ten_phongban,
+                                                ngaytao = DateTime.Now,
+                                                ngaycapnhat = DateTime.Now,
+                                                hoatdong = true
+                                            };
+                                            db.md_vanchuyennoibo_cdvc.Add(cdvc);
+
+                                            var giucho = new md_kho_giucho();
+                                            giucho.md_kho_giucho_id = Helper.getNewId();
+                                            giucho.md_kho_id = khoId;
+                                            giucho.md_sanpham_id = dklht.md_sanpham_id;
+                                            giucho.md_donvitinhsanpham_id = dklht.md_donvitinhsanpham_id;
+                                            giucho.soluong_giucho = slLayCP;
+                                            giucho.sctlienquan = kq[1];
+                                            giucho.ngaygiu = DateTime.Now;
+                                            giucho.nguoitao = us.ad_user_id;
+                                            giucho.nguoicapnhat = us.ad_user_id;
+                                            giucho.ngaytao = DateTime.Now;
+                                            giucho.ngaycapnhat = DateTime.Now;
+                                            giucho.bophantao = us.md_phongban_id;
+                                            giucho.bophancapnhat = us.md_phongban_id;
+                                            giucho.vaitrotao = us.ad_role_id;
+                                            giucho.vaitrocapnhat = us.ad_role_id;
+                                            giucho.hoatdong = true;
+                                            giucho.mota = "";
+                                            giucho.lydo = "";
+                                            db.md_kho_giucho.Add(giucho);
+                                        }
+                                        db.SaveChanges();
+                                    }
                                 }
+
                             }
-                            db.SaveChanges();
                         }
                     }
                     HttpUtility.HtmlEncode(msg);
@@ -810,21 +835,21 @@ System.Web.SessionState.IRequiresSessionState
     {
         //San pham trong bom 
         var dong_bom = (from b in db.md_sanpham_bom_vattu
-                       join d in db.md_sanpham on b.md_sanpham_id equals d.md_sanpham_id
-                       where b.md_sanpham_bom_id == spBomId 
-                       & d.vattu != true
-                       select new
-                       {
-                           id_sanpham = d.md_sanpham_id,
-                           b.md_sanpham_id,
-                           b.soluong,
-                           d.md_donvitinhsanpham_id,
-                           d.mota_tiengviet,
-                           d.mota_tienganh,
-                           d.mota,
-                           d.ma_sanpham,
-                           d.sanpham
-                       }).ToList();
+                        join d in db.md_sanpham on b.md_sanpham_id equals d.md_sanpham_id
+                        where b.md_sanpham_bom_id == spBomId
+                        & d.vattu != true
+                        select new
+                        {
+                            id_sanpham = d.md_sanpham_id,
+                            b.md_sanpham_id,
+                            b.soluong,
+                            d.md_donvitinhsanpham_id,
+                            d.mota_tiengviet,
+                            d.mota_tienganh,
+                            d.mota,
+                            d.ma_sanpham,
+                            d.sanpham
+                        }).ToList();
 
         var khohangton = from a in db.md_kho
                          join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
@@ -844,7 +869,7 @@ System.Web.SessionState.IRequiresSessionState
                                  c.sanpham
                              };
 
-        
+
         foreach (var dongbomcon in dong_bom)
         {
             //San pham trong kho ton

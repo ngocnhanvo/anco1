@@ -448,8 +448,8 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                                     if (tong_sl_dat > 0)
                                     {
                                         var cdh = new md_nhapkhonb_cdh();
-                                        cdh.md_nhapkhonb_cdh_id = vcnb.md_nhapkhonb_id;
-                                        cdh.md_nhapkhonb_id = id_new;
+                                        cdh.md_nhapkhonb_cdh_id = Helper.getNewId();
+                                        cdh.md_nhapkhonb_id = vcnb.md_nhapkhonb_id;
                                         cdh.md_sanpham_id = dhpx_cdh.md_sanpham_id;
                                         cdh.tong_sl_dat = tong_sl_dat;
                                         cdh.sl_danhap = 0;
@@ -566,7 +566,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.trangthai != "SOANTHAO")
+            else if (object_.trangthai == "HIEULUC")
             {
                 msg = "false#Lỗi:Đối tượng đã nhập kho";
             }
@@ -590,6 +590,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 VNN_Function.SetFormValue("md_lenhsanxuat_id", md_lenhsanxuat_id);
                 VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
                 VNN_Function.SetFormValue("nhaptu", "VNN_notpost");
+                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);

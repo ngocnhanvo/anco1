@@ -115,6 +115,12 @@
                         public Decimal? sl_danhap { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_sl_muonnhap_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_sl_muonnhap_wintaFN
+                        public Decimal? sl_muonnhap { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_sl_nhap_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_sl_nhap_wintaFN

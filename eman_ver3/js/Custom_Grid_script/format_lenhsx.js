@@ -22,7 +22,7 @@ function timkiem_lenhsx(id_elem, type) {
         '<div id="pagergridMD_00_Lenhsanxuat_cp"></div>' +
         '</div>');
     var multi = false;
-    if (tengrid0 == 'gridMD_00_Xuatnoibo' | tengrid0 == 'gridMD_00_Nhapnoibo' | tengrid0 == 'gridMD_00_PVCNoiBo')
+    if (tengrid0 == 'gridMD_00_Xuatnoibo_PDN' | tengrid0 == 'gridMD_00_Nhapnoibo_PDN' | tengrid0 == 'gridMD_00_PVCNoiBo_PDN')
     {
         multi = true;
     }
@@ -50,6 +50,8 @@ function timkiem_lenhsx(id_elem, type) {
                 rowList: [10, 50, 100, 1000],
                 pager: '#pagergridMD_00_Lenhsanxuat_cp',
                 onSelectRow: function (ids) {
+                    if (multi)
+                        checkbox_JQgrid(namegrid, 0);
                     if (ids != '<a style=\'color:red\'>Not data (404)</a>') {
                         cell = $('#gridMD_00_Lenhsanxuat_cp').getRowData(ids);
                         if ($('#' + id_elem).prop('disabled') != true) {
@@ -160,10 +162,7 @@ function timkiem_lenhsx(id_elem, type) {
                 id: 'btn-ok_',
                 text: 'OK',
                 click: function () {
-                    if (
-                        tengrid0 == 'gridMD_00_Xuatnoibo'
-                        | tengrid0 == 'gridMD_00_Nhapnoibo'
-                        | tengrid0 == 'gridMD_00_PVCNoiBo')
+                    if (multi == true)
                     {
                         var ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
                         for (var i = 0; i < ids_sel.length; i++) {

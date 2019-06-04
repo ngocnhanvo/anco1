@@ -7,6 +7,12 @@
                     public partial class md_vanchuyennoibo
                     {
                         
+                        #region md_vanchuyennoibo_banggiaNC_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_banggiaNC_wintaFN
+                        public string banggiaNC { get; set; }
+                
+						
                         #region md_vanchuyennoibo_bophancapnhat_wintaFN
                         
                         #endregion md_vanchuyennoibo_bophancapnhat_wintaFN
@@ -119,6 +125,12 @@
                         
                         #endregion md_vanchuyennoibo_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_phienbangiaNC_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_phienbangiaNC_wintaFN
+                        public string phienbangiaNC { get; set; }
                 
 						
                         #region md_vanchuyennoibo_sapxep_wintaFN

@@ -97,6 +97,12 @@
                         public Decimal? sl_daxuat { get; set; }
                 
 						
+                        #region md_xuatban_cdh_sl_muonxuat_wintaFN
+                        
+                        #endregion md_xuatban_cdh_sl_muonxuat_wintaFN
+                        public Decimal? sl_muonxuat { get; set; }
+                
+						
                         #region md_xuatban_cdh_sl_xuat_wintaFN
                         
                         #endregion md_xuatban_cdh_sl_xuat_wintaFN

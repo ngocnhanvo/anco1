@@ -394,7 +394,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.trangthai != "SOANTHAO")
+            else if (object_.trangthai == "HIEULUC")
             {
                 msg = "false#Lỗi:Đối tượng đã xuất kho.";
             }
@@ -411,6 +411,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk.md_doitackinhdoanh_id);
                 VNN_Function.SetFormValue("diachi", dtk.diachi);
                 VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
+                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
