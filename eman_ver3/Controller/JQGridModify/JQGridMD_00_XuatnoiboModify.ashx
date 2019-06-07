@@ -201,10 +201,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                         msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" không có trong kho.</div>";
                                     }
                                 }
-                                else if (dh.sl_thucxuat > 0 & dh.sl_xuat2 <= 0)
-                                {
-                                    msg += "<div style='color:red'>Lỗi: Số lượng dự kiến xuất của \"" + sp.ma_sanpham + "\" phải lớn hơn 0 .</div>";
-                                }
                                 else if (dh.sl_thucxuat - dh.ghino.GetValueOrDefault(0) > (dh.tong_sl_xuat - dh.sl_daxuat))
                                 {
                                     msg += string.Format(@"<div style='color:red'>
@@ -221,10 +217,13 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                 }
                             }
 
-                            if (msg.Length <= 0 & dh.sl_thucxuat > 0 & dh.sl_xuat2 > 0)
+                            if (msg.Length <= 0 & dh.sl_thucxuat > 0)
                             {
                                 count_slxuat++;
-                                decimal sl_xuat = dh.sl_xuat2.Value, sl_xuat2 = dh.sl_thucxuat.GetValueOrDefault(0);
+                                decimal sl_xuat = dh.sl_thucxuat.GetValueOrDefault(0) > dh.tong_sl_xuat.GetValueOrDefault(0) 
+                                        ? dh.tong_sl_xuat.GetValueOrDefault(0) : dh.sl_thucxuat.GetValueOrDefault(0)
+                                        , sl_xuat2 = dh.sl_thucxuat.GetValueOrDefault(0);
+
                                 soluong_xuat = "" + dh.sl_xuat2.Value.DropTrailingZeros();
                                 //--cap nhat so luong xuat
                                 string xk_id = edit_xuat(db, dh, us);
@@ -241,7 +240,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
                                 decimal sl_xuat_cuoi = sl_xuat * nhanvoi;
                                 decimal sl_xuat_cuoi2 = sl_xuat_cuoi;
-                                if (sl_xuat > 0)
+                                if (sl_xuat2 > 0)
                                 {
                                     var arrLSX = dh.lsx_to.Split(',');
                                     bool ghino = true;
@@ -287,37 +286,37 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     ghino = false;
                                                 }
 
-                                                if (truno > 0)
-                                                {
-                                                    decimal trunoTo = truno.GetValueOrDefault(0), noTo = 0;
-                                                    decimal tslhn2 = ddhpx_cdh.soluong.Value - ddhpx_cdh.sl_hanngach.Value - ddhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
-                                                    trunoTo = trunoTo >= tslhn2 ? tslhn2 : trunoTo;
+                                                //if (truno > 0)
+                                                //{
+                                                //    decimal trunoTo = truno.GetValueOrDefault(0), noTo = 0;
+                                                //    decimal tslhn2 = ddhpx_cdh.soluong.Value - ddhpx_cdh.sl_hanngach.Value - ddhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
+                                                //    trunoTo = trunoTo >= tslhn2 ? tslhn2 : trunoTo;
 
-                                                    foreach (var theno in db.md_kho_ghino.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id
-                                                         & s.tosx == tentoLSX).ToList())
-                                                    {
-                                                        if (theno.soluong_no >= trunoTo)
-                                                        {
-                                                            noTo += trunoTo;
-                                                            ddhpx_cdh.sl_hanngach += trunoTo;
-                                                            theno.soluong_no -= trunoTo;
-                                                            trunoTo = 0;
-                                                                if(theno.soluong_no <= 0)
-                                                                    db.md_kho_ghino.Remove(theno);
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            noTo += theno.soluong_no.GetValueOrDefault(0);
-                                                            ddhpx_cdh.sl_hanngach += theno.soluong_no;
-                                                            theno.soluong_no = 0;
-                                                            trunoTo = trunoTo - theno.soluong_no.GetValueOrDefault(0);
-                                                            db.md_kho_ghino.Remove(theno);
-                                                        }
-                                                    }
-                                                    truno = (truno.GetValueOrDefault(0) - noTo).Set0WhenlessThan0();
-                                                    db.SaveChanges();
-                                                }
+                                                //    foreach (var theno in db.md_kho_ghino.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id
+                                                //         & s.tosx == tentoLSX).ToList())
+                                                //    {
+                                                //        if (theno.soluong_no >= trunoTo)
+                                                //        {
+                                                //            noTo += trunoTo;
+                                                //            ddhpx_cdh.sl_hanngach += trunoTo;
+                                                //            theno.soluong_no -= trunoTo;
+                                                //            trunoTo = 0;
+                                                //                if(theno.soluong_no <= 0)
+                                                //                    db.md_kho_ghino.Remove(theno);
+                                                //            break;
+                                                //        }
+                                                //        else
+                                                //        {
+                                                //            noTo += theno.soluong_no.GetValueOrDefault(0);
+                                                //            ddhpx_cdh.sl_hanngach += theno.soluong_no;
+                                                //            theno.soluong_no = 0;
+                                                //            trunoTo = trunoTo - theno.soluong_no.GetValueOrDefault(0);
+                                                //            db.md_kho_ghino.Remove(theno);
+                                                //        }
+                                                //    }
+                                                //    truno = (truno.GetValueOrDefault(0) - noTo).Set0WhenlessThan0();
+                                                //    db.SaveChanges();
+                                                //}
 
                                                 var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
                                                    s.md_xuatkhonb_id != xk.md_xuatkhonb_id
@@ -459,7 +458,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
     {
         string id_new = dh.md_xuatkhonb_id;
         md_xuatkhonb xk = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == dh.md_xuatkhonb_id).FirstOrDefault();
-        decimal sl_daxuat = dh.sl_daxuat.Value + dh.sl_xuat2.Value;
+        decimal? slXuatHN = dh.sl_thucxuat > dh.tong_sl_xuat ? dh.tong_sl_xuat : dh.sl_thucxuat;
+        decimal sl_daxuat = dh.sl_daxuat.Value + slXuatHN.Value;
         if (dh.tong_sl_xuat.Value <= sl_daxuat)
         {
             sl_daxuat = dh.tong_sl_xuat.Value;
