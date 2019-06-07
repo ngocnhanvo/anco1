@@ -1,15 +1,15 @@
-﻿<%@ WebHandler Language="C#" Class="JQGridMD_01_CKPModify" %>
+﻿<%@ WebHandler Language="C#" Class="JQGridMD_01_CKPNTJQGSModify" %>
 using System;
 using System.Web;
 using System.Linq;
 using System.Data.Linq;
 using DataAcess;
-public class JQGridMD_01_CKPModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
+public class JQGridMD_01_CKPNTJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public void ProcessRequest (HttpContext context) {
         string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
         {
             case "add":
@@ -34,11 +34,18 @@ public class JQGridMD_01_CKPModify : IHttpHandler, System.Web.SessionState.IRequ
         try
         {
             string id = context.Request.Form["id"];
+            string idpr = context.Request.Form["id_parent"];
+
+            if(db.c_danhsachdathang.Where(s=>s.c_danhsachdathang_id == idpr).Count() <= 0)
+            {
+                msg = "false#Không tìm thấy đơn hàng.";
+            }
+
             if (msg.Length <= 0)
             {
                 string action = "add";
                 string[] column_ex = {"c_danhsachdathang_id" };
-                VNN_Function.SetFormValue("c_danhsachdathang_id", id);
+                VNN_Function.SetFormValue("c_danhsachdathang_id", idpr);
                 string ten_table = "c_phidathang";
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
@@ -66,7 +73,7 @@ public class JQGridMD_01_CKPModify : IHttpHandler, System.Web.SessionState.IRequ
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            
+
             if (msg.Length <= 0)
             {
                 string action = "edit";
@@ -88,53 +95,46 @@ public class JQGridMD_01_CKPModify : IHttpHandler, System.Web.SessionState.IRequ
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "c_phidathang";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.c_phidathang.Where(p => p.c_phidathang_id == id_del_).Select(s => s.c_phidathang_id).Take(1).FirstOrDefault();
-                if (object_ == null)
+                string[] id_del = context.Request.Form["id"].Split(',');
+                for (int i = 0; i < id_del.Length; i++)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table , action, column_ex, db);
+                    var id_del_ = id_del[i];
+                    var object_ = db.c_phidathang.Where(p => p.c_phidathang_id == id_del_).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format("Lỗi dòng {1}:Không tìm thấy đối tượng cần xóa.<br>", "", i + 1);
+                    }
+
+                    if (msg.Length <= 0)
+                    {
+                        db.c_phidathang.Remove(object_);
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = "Lỗi: " + ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = "true#Xóa thành công";
+                transaction.Commit();
             }
             else
             {
                 msg = "false#" + msg;
+                transaction.Rollback();
             }
         }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+        VNN_Function.loaddulieu_Auto(db, ma_module);
         context.Response.Write(msg);
     }
 

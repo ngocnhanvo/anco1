@@ -259,6 +259,12 @@
                         public string noigiaohang { get; set; }
                 
 						
+                        #region md_sanpham_quycachdonggoi_wintaFN
+                        
+                        #endregion md_sanpham_quycachdonggoi_wintaFN
+                        public string quycachdonggoi { get; set; }
+                
+						
                         #region md_sanpham_sanpham_wintaFN
                         
                         #endregion md_sanpham_sanpham_wintaFN

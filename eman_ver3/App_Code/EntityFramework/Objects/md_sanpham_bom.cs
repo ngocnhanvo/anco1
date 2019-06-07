@@ -7,6 +7,12 @@
                     public partial class md_sanpham_bom
                     {
                         
+                        #region md_sanpham_bom_bom_donggoi_wintaFN
+                        
+                        #endregion md_sanpham_bom_bom_donggoi_wintaFN
+                        public bool? bom_donggoi { get; set; }
+                
+						
                         #region md_sanpham_bom_bom_tam_wintaFN
                         
                         #endregion md_sanpham_bom_bom_tam_wintaFN

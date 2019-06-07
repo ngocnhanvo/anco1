@@ -104,52 +104,62 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "c_doichieuhangton_dkdh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id_del_).Select(s => s.c_doichieuhangton_dkdh_id).Take(1).FirstOrDefault();
-                if (object_ == null)
+                string[] id_del = context.Request.Form["id"].Split(',');
+                for (int i = 0; i < id_del.Length; i++)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    var id_del_ = id_del[i];
+                    var object_ = db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format("Lỗi dòng {1}: Không tìm thấy đối tượng cần xóa", "", i + 1);
+                    }
+                    else
+                    {
+                        var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
+                        if (dcht == null)
+                        {
+                            msg +=  string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn", "", i + 1);
+                        }
+                        else if (!string.IsNullOrEmpty(dcht.phieuhangton) & dcht.phieuhangton != " ")
+                        {
+                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập phiếu lấy hàng tồn", dcht.ten_donhang, i + 1);
+                        }
+                        else if (!string.IsNullOrEmpty(dcht.kehoach) & dcht.kehoach != " ")
+                        {
+                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập kế hoạch đặt hàng", dcht.ten_donhang, i + 1);
+                        }
+                        else
+                        {
+                            db.c_doichieuhangton_dkdh.Remove(object_);
+                            db.SaveChanges();
+                        }
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
+            catch (Exception ex)
+            {
+                msg = string.Format("Lỗi: {0}", ex.Message);
+            }
+
             if (msg.Length <= 0)
             {
+                transaction.Commit();
                 msg = "true#Xóa thành công.";
             }
             else
             {
+                transaction.Rollback();
                 msg = "false#" + msg;
             }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+
+            VNN_Function.loaddulieu_Auto(db, ma_module);
         }
         context.Response.Write(msg);
     }

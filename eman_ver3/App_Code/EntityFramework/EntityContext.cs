@@ -12400,6 +12400,10 @@
                             .HasColumnName("noigiaohang")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_sanpham>()
+                            .Property(p => p.quycachdonggoi)
+                            .HasColumnName("quycachdonggoi")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_sanpham>()
                             .Property(p => p.sanpham)
                             .HasColumnName("sanpham")
                             .HasColumnType("bit");
@@ -12438,6 +12442,10 @@
                     
                         modelBuilder.Entity<md_sanpham_bom>().ToTable("md_sanpham_bom");
                         
+                            modelBuilder.Entity<md_sanpham_bom>()
+                            .Property(p => p.bom_donggoi)
+                            .HasColumnName("bom_donggoi")
+                            .HasColumnType("bit");
                             modelBuilder.Entity<md_sanpham_bom>()
                             .Property(p => p.bom_tam)
                             .HasColumnName("bom_tam")

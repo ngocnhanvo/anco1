@@ -9568,7 +9568,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "440",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000003",
@@ -9585,7 +9585,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "20/11/2015 10:28:31",
-    "ngaycapnhat": "20/11/2015 10:28:31",
+    "ngaycapnhat": "07/06/2019 12:16:22",
     "mota": "",
     "hoatdong": "True"
   },
@@ -19105,9 +19105,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "20/11/2015 10:28:31",
-    "ngaycapnhat": "20/11/2015 10:28:31",
+    "ngaycapnhat": "07/06/2019 12:16:16",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "FEEA45B9A2A1490DA2D3AC4C35DABC41",
@@ -21853,7 +21853,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "270",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000000",
@@ -21870,9 +21870,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "20/11/2015 10:28:30",
-    "ngaycapnhat": "20/11/2015 10:28:30",
+    "ngaycapnhat": "07/06/2019 12:16:02",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "0DC7E296E3754D4BA90FEFAE00D0FD59",
@@ -31898,7 +31898,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "270",
-    "docaoForm": "500",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "True",
     "sapxep": "0000000001",
@@ -31915,9 +31915,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "20/11/2015 10:28:30",
-    "ngaycapnhat": "20/11/2015 10:28:30",
+    "ngaycapnhat": "07/06/2019 12:16:09",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "78EB70CD173644F7AAB726E752A9956F",
