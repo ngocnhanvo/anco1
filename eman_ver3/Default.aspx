@@ -59,8 +59,8 @@
         <table class="nhan_header">
             <tr>
                 <td style="width: 10%; min-width: 222px" align="center">
-                    <div class="cl_div_chiadiv">
-                        <img height="30px" width="80px" id="nhan_image" alt="" src="images/logo/logo-eman.png" />
+                    <div style="height:30px">
+                        <img height="25px" width="70px" id="nhan_image" alt="" src="images/logo/emanAnco.png?ver1" />
                     </div>
                 </td>
                 <td style="width: 12px; min-width: 12px"></td>
@@ -72,7 +72,7 @@
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" alt="" title="giúp đỡ" src="images/Menu/header_ask2.png" />
                 </td>
                 <td align="right" class="cl_td_urlmenu" style="font-size: 10px !important"><span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span></td>
-                <td style="min-width: 110px; width: 110px" align="right">
+                <td style="display:none; min-width: 110px; width: 110px" align="right">
                     <div id="logo_right" class="cl_div_chiadiv2" onclick="fix_loi_screen()">
                         <img height="30" width="60" style='margin: 0 0 0 20px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
                     </div>
@@ -110,7 +110,7 @@
         <!-- footer -->
         <div class="footer">
             <div id="grid_small" style="display: none"></div>
-            <p style="text-align: right; color: #033786">eMan Version 1.0</p>
+            <p style="text-align: right; color: #033786">Version 1.0</p>
             <!-- chieu cao grid-->
             <input id="input_docaogrid" type="hidden" value="0" />
             <!-- ghi nhớ id menu đã nhấn-->

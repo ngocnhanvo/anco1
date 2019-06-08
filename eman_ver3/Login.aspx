@@ -25,7 +25,7 @@
 	    <div id="wapper-layout" class="ui-layout-center">
 		    <div id="main0" class="ui-layout-north toolbar">
 			    <div align="center" style="background: url('images/bg-logo.png') no-repeat center center; position: absolute; top: -8px; left: 10px; height: 105px; width: 200px;"> 
-                        <img class="img_updatelinq" style="margin-top: 40px;" src="<%=ttc==null ? Security.UrlBase() + " images/logo/imagenotfound.jpg" : Security.UrlBase() + ttc.logo %>"/> </div><span class="close"></span>
+                        <img class="img_updatelinq" style="margin-top: 20px;" src="<%=ttc==null ? Security.UrlBase() + " images/logo/imagenotfound.jpg" : Security.UrlBase() + ttc.logo + "?ver1" %>"/> </div><span class="close"></span>
 			    <table style="margin: 24px 0px 0px 200px">
 				    <tr>
 					    <td> </td>
@@ -51,12 +51,10 @@
 								    </td>
 							    </tr>
 							    <tr>
-								    <td></td>
-								    <td style="text-align:left"> <img src="images/logo/logo-eman.png" /> </td>
-								    <td style="width:10px"></td>
+								    <td colspan="3"></td>
 							    </tr>
 							    <tr>
-								    <td></td>
+								    <td colspan="3"></td>
 							    </tr>
 							    <tr>
 								    <td></td>
@@ -131,29 +129,29 @@
 				    <div id="footer" style="background-color:#003467; margin:0px auto"> <br />
 					    <table id="tb_footer" style="width: 880px;margin: 0px auto">
 						    <tr>
-							    <td style=" padding: 5px 0px 0px 0px"><a style="color:White; font-size:13px;;">Phần mềm được phát triển bởi onlinE Solution Company - ESC</a></td>
-							    <td> <a style="color:White; font-size:13px">Support <b style="font-size:17px; ">24/7</b></a></td>
-						    </tr>
-						    <tr>
-							    <td> <br /></td>
-						    </tr>
-						    <tr>
-							    <td><a>HCM: A16 đường số 18, P. Hiệp Bình Chánh, Quận Thủ Đức</a></td>
-							    <td><a>Email: support@edoc.com.vn</a></td>
-						    </tr>
-						    <tr>
-							    <td><a>Tel: (08) 6234 3035 - (08) 629 44 808 | Fax: (08) 6258 14 59</a></td>
-							    <td><a>Điện thoại: (08) 6284 3060</a></td>
-						    </tr>
-						    <tr>
-							    <td> <br /></td>
-						    </tr>
-						    <tr>
-							    <td><a>Hà Nội: 71 Trần Quốc Toản, Quận Hoàn Kiếm</a></td>
+							    <td style=" padding: 5px 0px 0px 0px"><a style="color:White; font-size:13px;;"></a></td>
 							    <td></td>
 						    </tr>
 						    <tr>
-							    <td><a>Tel: (04) 39 42 68 96 | Fax: (04) 39 42 68 97</a></td>
+							    <td> <br /></td>
+						    </tr>
+						    <tr>
+							    <td></td>
+							    <td></td>
+						    </tr>
+						    <tr>
+							    <td></td>
+							    <td></td>
+						    </tr>
+						    <tr>
+							    <td> <br /></td>
+						    </tr>
+						    <tr>
+							    <td></td>
+							    <td></td>
+						    </tr>
+						    <tr>
+							    <td></td>
 							    <td></td>
 						    </tr>
 					    </table>
@@ -161,16 +159,4 @@
 			    </div>
 		    </div>
     </body>
-</html> 
-
-
-<script type="text/javascript">
-
-    function updateLinq() {
-        $('.img_updatelinq').css('background-color','rgba(211, 252, 233, 0.43);');
-        $.get('Controller/PublicFunction/LinqtoSQL.ashx?oper=updatelinq',function(result) {
-             $('.img_updatelinq').css('background-color','none');
-            alert(result);
-        });
-    }
-</script>
+</html>

@@ -12,7 +12,7 @@
 </table>
 
 <script type="text/javascript"> 
-    var img = '<img style="margin-top:10%" src="' + logo_trangchu + '" alt=""' +
+    var img = '<img style="margin-top:10%" src="' + logo_trangchu + '?ver1" alt=""' +
     //' height="' + (window.innerHeight - 117) + 'px"' +
     ' />';
 
