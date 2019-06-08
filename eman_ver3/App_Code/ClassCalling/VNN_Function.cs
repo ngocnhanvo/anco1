@@ -187,15 +187,14 @@ public static class VNN_Function
             " INSTEAD OF DELETE " +
             "\n AS" +
             "\n BEGIN" +
-            "\n DECLARE @id varchar(32), @where nvarchar(MAX)" +
-            "\n SELECT @id = " + rm.ten_key + " from Deleted" +
-            "\n SET @where = 'and " + rm.ten_key + " = ''' + @id + ''''";
+            "\n SET NOCOUNT ON;";
             foreach (ad_removeline rml in db.ad_removeline.Where(s => s.ad_remove_id == rm.ad_remove_id).OrderBy(s => s.sapxep).ToList())
             {
-                //sql_trigger += "\n delete "+ rml.ten_table +" where "+ rm.ten_key +" = @id"; 
-                sql_trigger += "\n EXEC dbo.admin_delete '" + rml.ten_table + "',@where ";
+                sql_trigger += "\n delete from "+ rml.ten_table +" where " + rm.ten_key + " in (SELECT " + rm.ten_key + " from Deleted)"; 
+                //sql_trigger += "\n EXEC dbo.admin_delete '" + rml.ten_table + "',@where ";
             }
-            sql_trigger += "\n DELETE " + rm.ten_table + " WHERE " + rm.ten_key + " = @id";
+            sql_trigger += "\n DELETE from " + rm.ten_table + " WHERE " + rm.ten_key + " in (SELECT " + rm.ten_key + " from Deleted)";
+            sql_trigger += "\n SET NOCOUNT OFF;";
             sql_trigger += "\n END";
             Mbg.Data.SqlClient.SqlHelper.ExcuteNonQuery(sql_trigger);
         }
