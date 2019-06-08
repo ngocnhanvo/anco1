@@ -74,7 +74,7 @@ namespace Mbg.Data.SqlClient
         public static int ExcuteNonQuery(String sql, params object[] nameValue)
         {
             SqlCommand cmd = SqlHelper.CreateCommand(sql, nameValue);
-			cmd.CommandTimeout = 60;
+			cmd.CommandTimeout = 120;
             cmd.Connection.Open();
 			int rows = cmd.ExecuteNonQuery();
 			cmd.Connection.Close();
@@ -85,7 +85,7 @@ namespace Mbg.Data.SqlClient
         {
 			string a = "";
             SqlCommand cmd = SqlHelper.CreateCommand(sql, nameValue);
-			cmd.CommandTimeout = 60;
+			cmd.CommandTimeout = 120;
             cmd.Connection.Open();
 			try {
 				cmd.ExecuteNonQuery();

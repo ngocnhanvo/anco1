@@ -124,10 +124,9 @@ public static class VNN_Function
                     }
                     string sql = string.Format(@"sELeCt * fRoM ( 
                     sELeCt " + sel.select_sql +
-                    @", (case '{4}' when '{5}' then -1 else
-                    ROW_NUMBER() OVER ( ORDER BY {0}) end) as RowNum " +
+                    @", ROW_NUMBER() OVER ( ORDER BY {0}) as RowNum " +
                     @"fRoM {1}
-                    WHeRe 1=1 {2} {3} ) P WHeRe RowNum > 0 AND RowNum < 999999999 or (RowNum = -1) order by RowNum asc",
+                    WHeRe 1=1 {2} {3} ) P WHeRe 1=1 order by RowNum asc",
                     orderby, sel.from_sql, sel.where_sql, "", id_count, "");
                     sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, null, null, db).Replace("'", "''");
                     sql = string.Format("exec [dbo].[{3}] '{0}','{1}',{2}", sql, "", 1, "admin_excutesql");

@@ -68,14 +68,14 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public void del_file(HttpContext context, string path)
     {
-        if (System.IO.File.Exists(context.Server.MapPath(path))) {
-            try {
-                System.IO.File.Delete(context.Server.MapPath(path));
-            }
-            catch (System.IO.IOException e) {
-                context.Response.Write(e.Message);
-            }
-        }
+		try {
+			if (System.IO.File.Exists(context.Server.MapPath(path))) {
+				System.IO.File.Delete(context.Server.MapPath(path));
+			}
+		}
+		catch(Exception ex) {
+
+		}
     }
 
     public void importDB(HttpContext context)
@@ -252,169 +252,191 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public void import_data(HttpContext context) {
         string msg = "";
-        try
-        {
-            int value_header = int.Parse(context.Request.Form["value_header"]);
-            int value_row = int.Parse(context.Request.Form["value_row"]);
-            int start = int.Parse(context.Request.Form["start"]);
-            int end = int.Parse(context.Request.Form["end"]);
-            int total = int.Parse(context.Request.Form["total"]);
-            int count_column = int.Parse(context.Request.Form["count_column"]);
-            int count_column_all = int.Parse(context.Request.Form["count_column_all"]);
-            int count_row_null = 0;
-            int count_check_arr = 0;
-            int count_ex_sql = 0;
-            string sql_insert = context.Request.Form["sql_insert"];
-            string sql_update = context.Request.Form["sql_update"];
-            string sql_del = context.Request.Form["sql_del"];
-            string ten_table = context.Request.Form["ten_table"];
-            string ten_tablecp = context.Request.Form["ten_tablecp"];
-            string check_sql_primary = context.Request.Form["check_sql_primary"];
-            string[] ex_sql = context.Session["ex_sql"] as string[];
-            string[] ex_ava = context.Session["ex_ava"] as string[];
-            string[] str_check_arr = context.Session["str_check_arr"] as string[];
-            CellCollection cellCollection = context.Session["worksheets"] as CellCollection;
-            User_TK us = context.Session["us_import"] as User_TK;
+		try {
+			int end = int.Parse(context.Request.Form["end"]);
+			int total = int.Parse(context.Request.Form["total"]);
+			int value_header = int.Parse(context.Request.Form["value_header"]);
+			int value_row = int.Parse(context.Request.Form["value_row"]);
+			int start = int.Parse(context.Request.Form["start"]);
+			
+			int count_column = int.Parse(context.Request.Form["count_column"]);
+			int count_column_all = int.Parse(context.Request.Form["count_column_all"]);
+			int count_row_null = 0;
+			int count_check_arr = 0;
+			int count_ex_sql = 0;
+			string sql_insert = context.Request.Form["sql_insert"];
+			string sql_update = context.Request.Form["sql_update"];
+			string sql_del = context.Request.Form["sql_del"];
+			string ten_table = context.Request.Form["ten_table"];
+			string ten_tablecp = context.Request.Form["ten_tablecp"];
+			string check_sql_primary = context.Request.Form["check_sql_primary"];
+			string[] ex_sql = context.Session["ex_sql"] as string[];
+			string[] ex_ava = context.Session["ex_ava"] as string[];
+			string[] str_check_arr = context.Session["str_check_arr"] as string[];
+			CellCollection cellCollection = context.Session["worksheets"] as CellCollection;
+			User_TK us = context.Session["us_import"] as User_TK;
+			try
+			{
+				
 
-            if (ex_sql != null) { count_ex_sql = ex_sql.Count(); }
-            if (str_check_arr != null) { count_check_arr = str_check_arr.Count(); }
+				if (ex_sql != null) { count_ex_sql = ex_sql.Count(); }
+				if (str_check_arr != null) { count_check_arr = str_check_arr.Count(); }
 
-            if (end >= total) { end = total; }
-            for (int i = start; i < end; i++)
-            {
-                string sql_insert_row = sql_insert, check_sql_row = check_sql_primary, sql_update_row = sql_update, sql_del_row = sql_del;
-                string sql_insert_row2 = sql_insert, check_sql_row2 = check_sql_primary, sql_update_row2 = sql_update, sql_del_row2 = sql_del;
-                string[] ex_sql_row = null, ex_sql_row2 = null;
-                if (count_ex_sql > 0) { ex_sql_row = (string[])ex_sql.Clone(); ex_sql_row2 = (string[])ex_sql.Clone(); }
-                try
-                {
-                    Row row = cellCollection.Rows[i];
-                    if (row.GetCell(0).ToString() == null | row.GetCell(0).ToString() == "")
-                    {
-                        count_row_null++;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            for (int j = 0; j < count_column; j++)
-                            {
-                                string row_sel = row.GetCell(j).ToString();
-                                if (row_sel == null | row_sel == "")
-                                {
-                                    sql_insert_row = sql_insert_row.Replace("'{" + j + "}'", "NULL");
-                                    check_sql_row = check_sql_row.Replace("'= {" + j + "}'", "is null");
-                                    sql_update_row = sql_update_row.Replace("'{" + j + "}'", "NULL");
-                                    sql_del_row = sql_del_row.Replace("'{" + j + "}'", "NULL");
-                                    for (int k = 0; k < count_ex_sql; k++)
-                                    {
-                                        ex_sql_row[k] = ex_sql_row[k].Replace("'{" + j + "}'", "NULL");
-                                    }
-                                }
-                                else
-                                {
-                                    row_sel = "N'" + row_sel.Replace("'", "''") + "'";
-                                    sql_insert_row = sql_insert_row.Replace("'{" + j + "}'", row_sel);
-                                    check_sql_row = check_sql_row.Replace("'{" + j + "}'", row_sel);
-                                    sql_update_row = sql_update_row.Replace("'{" + j + "}'", row_sel);
-                                    sql_del_row = sql_del_row.Replace("'{" + j + "}'", row_sel);
-                                    for (int k = 0; k < count_ex_sql; k++)
-                                    {
-                                        ex_sql_row[k] = ex_sql_row[k].Replace("'{" + j + "}'", row_sel);
-                                    }
-                                }
-                                //--
-                                if (j != value_header & j != value_row & (value_header != 999 | value_row != 999))
-                                {
-                                    if (row_sel == null | row_sel == "")
-                                    {
-                                        sql_insert_row2 = sql_insert_row2.Replace("'{" + j + "}'", "NULL");
-                                        check_sql_row2 = check_sql_row2.Replace("'= {" + j + "}'", "is null");
-                                        sql_update_row2 = sql_update_row2.Replace("'{" + j + "}'", "NULL");
-                                        sql_del_row2 = sql_del_row2.Replace("'{" + j + "}'", "NULL");
-                                        for (int k = 0; k < count_ex_sql; k++)
-                                        {
-                                            ex_sql_row2[k] = ex_sql_row2[k].Replace("'{" + j + "}'", "NULL");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        sql_insert_row2 = sql_insert_row2.Replace("'{" + j + "}'", row_sel);
-                                        check_sql_row2 = check_sql_row2.Replace("'{" + j + "}'", row_sel);
-                                        sql_update_row2 = sql_update_row2.Replace("'{" + j + "}'", row_sel);
-                                        sql_del_row2 = sql_del_row2.Replace("'{" + j + "}'", row_sel);
-                                        for (int k = 0; k < count_ex_sql; k++)
-                                        {
-                                            ex_sql_row2[k] = ex_sql_row2[k].Replace("'{" + j + "}'", row_sel);
-                                        }
-                                    }
-                                }
-                                //--
-                            }
+				if (end >= total) { end = total; }
+				for (int i = start; i < end; i++)
+				{
+					string sql_insert_row = sql_insert, check_sql_row = check_sql_primary, sql_update_row = sql_update, sql_del_row = sql_del;
+					string sql_insert_row2 = sql_insert, check_sql_row2 = check_sql_primary, sql_update_row2 = sql_update, sql_del_row2 = sql_del;
+					string[] ex_sql_row = null, ex_sql_row2 = null;
+					if (count_ex_sql > 0) { ex_sql_row = (string[])ex_sql.Clone(); ex_sql_row2 = (string[])ex_sql.Clone(); }
+					try
+					{
+						Row row = cellCollection.Rows[i];
+						if (row.GetCell(0).ToString() == null | row.GetCell(0).ToString() == "")
+						{
+							count_row_null++;
+						}
+						else
+						{
+							try
+							{
+								for (int j = 0; j < count_column; j++)
+								{
+									string row_sel = row.GetCell(j).ToString();
+									if (row_sel == null | row_sel == "")
+									{
+										sql_insert_row = sql_insert_row.Replace("'{" + j + "}'", "NULL");
+										check_sql_row = check_sql_row.Replace("'= {" + j + "}'", "is null");
+										sql_update_row = sql_update_row.Replace("'{" + j + "}'", "NULL");
+										sql_del_row = sql_del_row.Replace("'{" + j + "}'", "NULL");
+										for (int k = 0; k < count_ex_sql; k++)
+										{
+											ex_sql_row[k] = ex_sql_row[k].Replace("'{" + j + "}'", "NULL");
+										}
+									}
+									else
+									{
+										row_sel = "N'" + row_sel.Replace("'", "''") + "'";
+										sql_insert_row = sql_insert_row.Replace("'{" + j + "}'", row_sel);
+										check_sql_row = check_sql_row.Replace("'{" + j + "}'", row_sel);
+										sql_update_row = sql_update_row.Replace("'{" + j + "}'", row_sel);
+										sql_del_row = sql_del_row.Replace("'{" + j + "}'", row_sel);
+										for (int k = 0; k < count_ex_sql; k++)
+										{
+											ex_sql_row[k] = ex_sql_row[k].Replace("'{" + j + "}'", row_sel);
+										}
+									}
+								 
+									//--
+									if (j != value_header & j != value_row & (value_header != 999 | value_row != 999))
+									{
+										if (row_sel == null | row_sel == "")
+										{
+											sql_insert_row2 = sql_insert_row2.Replace("'{" + j + "}'", "NULL");
+											check_sql_row2 = check_sql_row2.Replace("'= {" + j + "}'", "is null");
+											sql_update_row2 = sql_update_row2.Replace("'{" + j + "}'", "NULL");
+											sql_del_row2 = sql_del_row2.Replace("'{" + j + "}'", "NULL");
+											for (int k = 0; k < count_ex_sql; k++)
+											{
+												ex_sql_row2[k] = ex_sql_row2[k].Replace("'{" + j + "}'", "NULL");
+											}
+										}
+										else
+										{
+											sql_insert_row2 = sql_insert_row2.Replace("'{" + j + "}'", row_sel);
+											check_sql_row2 = check_sql_row2.Replace("'{" + j + "}'", row_sel);
+											sql_update_row2 = sql_update_row2.Replace("'{" + j + "}'", row_sel);
+											sql_del_row2 = sql_del_row2.Replace("'{" + j + "}'", row_sel);
+											for (int k = 0; k < count_ex_sql; k++)
+											{
+												ex_sql_row2[k] = ex_sql_row2[k].Replace("'{" + j + "}'", row_sel);
+											}
+										}
+									}
+									//--
+								}
+									
+							 
 
-                            string ava_1 = "";
-                            for (int ii = 0; ii < count_check_arr - 1; ii++)
-                            {
-                                int ava = int.Parse(str_check_arr[ii].Replace("'{", "").Replace("}'", ""));
-                                ava_1 += row.GetCell(ava) + " → ";
-                            }
+								string ava_1 = "";
+								for (int ii = 0; ii < count_check_arr - 1; ii++)
+								{
+									int ava = int.Parse(str_check_arr[ii].Replace("'{", "").Replace("}'", ""));
+									ava_1 += row.GetCell(ava) + " → ";
+								}
 
 
-                            msg += excute_import(context, check_sql_row, sql_update_row, sql_insert_row, sql_del_row,
-                            ava_1, i, count_row_null, 0, ex_sql_row, ex_ava, count_ex_sql, us);
-                            if (value_header != 999 & value_row != 999)
-                            {
-                                msg += check_column_ex(context, count_column_all, count_column, sql_insert_row2,
-                                check_sql_row2, sql_update_row2, sql_del_row2, str_check_arr, row, i, value_header,
-                                value_row, count_row_null, ex_sql_row2, ex_ava, count_ex_sql, cellCollection, us);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            msg += string.Format("\n<div style=\"color:red; padding: 0px 0 5px 0px;\">Dòng {0} xảy ra lỗi: {1}</div>", (i - count_row_null), ex.Message);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">{0}</div>", ex.Message);
-                }
-            }
+								msg += excute_import(context, check_sql_row, sql_update_row, sql_insert_row, sql_del_row,
+								ava_1, i, count_row_null, 0, ex_sql_row, ex_ava, count_ex_sql, us);
+								if (value_header != 999 & value_row != 999)
+								{
+									msg += check_column_ex(context, count_column_all, count_column, sql_insert_row2,
+									check_sql_row2, sql_update_row2, sql_del_row2, str_check_arr, row, i, value_header,
+									value_row, count_row_null, ex_sql_row2, ex_ava, count_ex_sql, cellCollection, us);
+								}
+							}
+							catch (Exception ex)
+							{
+								msg += string.Format("\n<div style=\"color:red; padding: 0px 0 5px 0px;\">Dòng {0} xảy ra lỗi: {1}</div>", (i - count_row_null), ex.Message);
+																												   
+																												  
+							}
+						}
+											  
+																																											  
+						 
+					}
+				 
+					catch (Exception ex)
+					{
+						msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">{0}</div>", ex.Message);
+					}
+				}
+			 
+			}
+			catch(Exception ex) {
+				msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">{0}</div>", ex.Message);
+			}
+			
+			try {
+				if (end >= total)
+				{							
+					string file = context.Request.Form["file"];
+					del_file(context, file);
 
-            if (end >= total)
-            {
-                string file = context.Request.Form["file"];
-                del_file(context, file);
-
-                if (ten_table != ten_tablecp)
-                {
-                    msg = copy_data_checked(context, ten_table, ten_tablecp, msg);
-                }
-                del_soluong();
-                context.Session.Remove("us_import");
-                context.Session.Remove("str_check_arr");
-                context.Session.Remove("ex_sql");
-                context.Session.Remove("ex_ava");
-                context.Session.Remove("worksheets");
-                context.Session.Remove("arr_exrow");
-                context.Session.Remove("arr_value");
-                context.Session.Remove("sql_del");
-            }
-            else
-            {
-                context.Session["us_import"] = context.Session["us_import"];
-                context.Session["str_check_arr"] = context.Session["str_check_arr"];
-                context.Session["ex_sql"] = context.Session["ex_sql"];
-                context.Session["ex_ava"] = context.Session["ex_ava"];
-                context.Session["worksheets"] = context.Session["worksheets"];
-                context.Session["arr_exrow"] = context.Session["arr_exrow"];
-                context.Session["arr_value"] = context.Session["arr_value"];
-                context.Session["sql_del"] = context.Session["sql_del"];
-            }
+					if (ten_table != ten_tablecp)
+					{
+						msg = copy_data_checked(context, ten_table, ten_tablecp, msg);
+					}
+					del_soluong();
+					context.Session.Remove("us_import");
+					context.Session.Remove("str_check_arr");
+					context.Session.Remove("ex_sql");
+					context.Session.Remove("ex_ava");
+					context.Session.Remove("worksheets");
+					context.Session.Remove("arr_exrow");
+					context.Session.Remove("arr_value");
+					context.Session.Remove("sql_del");
+				}
+				else
+				{
+					context.Session["us_import"] = context.Session["us_import"];
+					context.Session["str_check_arr"] = context.Session["str_check_arr"];
+					context.Session["ex_sql"] = context.Session["ex_sql"];
+					context.Session["ex_ava"] = context.Session["ex_ava"];
+					context.Session["worksheets"] = context.Session["worksheets"];
+					context.Session["arr_exrow"] = context.Session["arr_exrow"];
+					context.Session["arr_value"] = context.Session["arr_value"];
+					context.Session["sql_del"] = context.Session["sql_del"];
+				}
+			}
+			catch(Exception ex) {
+				msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">Lỗi kết thúc Import: {0}</div>", ex.Message);
+			}
         }
-        catch(Exception ex) {
-            msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">{0}</div>", ex.Message);
-        }
+		catch(Exception ex) {
+			msg += string.Format(@"<div style=""color:red; padding: 0px 0 5px 0px;"">Lỗi: {0}</div>", ex.Message);
+		}
         context.Response.Write(msg);
     }
 
@@ -450,6 +472,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         if(sql_del_row != "" & sql_del_row != null) {
             sql_del_row = sql_del_row.Replace("'","''").Replace("(@@)","'");
             context.Session["sql_del"] = context.Session["sql_del"].ToString() + "\n" + sql_del_row;
+													
         }
 
         DataTable dt = SqlHelper.GetData(check_sql_row);
@@ -468,7 +491,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 msg += string.Format("\n<div style=\"" + color + " padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) đã được cập nhật.</div>", (i - count_row_null), ava_1);
             }
             else {
-                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, ex);
+                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, sql_update_row);
             }
         } else {
             string ex = SqlHelper.ExcuteNonQuery2(sql_insert_row);
@@ -588,15 +611,30 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         string sql_copyval = "INSERT INTO "+ ten_table +" SELECT * FROM "+ ten_tablecp;
         string sql_delcopy = "DROP TABLE [dbo]." + ten_tablecp;
         if(!msg.Contains("err_import")) {
-            SqlHelper.ExcuteNonQuery(sql_del);
-            SqlHelper.ExcuteNonQuery(sql_copyval);
+			try {
+				SqlHelper.ExcuteNonQuery(sql_del);
+			}
+			catch(Exception ex) {
+				msg += string.Format(@"<div style='font-size:14px !important; color:red'>Có lỗi khi xóa dữ liệu cũ, {0}.</div>", ex.Message);
+			}
+			
+			try {
+				SqlHelper.ExcuteNonQuery(sql_copyval);
+			}
+			catch(Exception ex) {
+				msg += string.Format(@"<div style='font-size:14px !important; color:red'>Có lỗi khi thêm dữ liệu mới, {0}.</div>", ex.Message);
+			}
+			
             msg += "<div style='font-size:14px !important; color:blue'>Đã import tất cả dữ liệu trên.</div>";
         }
         else {
             msg += "<div style='font-size:14px !important; color:red'>Có lỗi, không thể import dữ liệu.</div>";
         }
         if(ten_tablecp.Contains("cpip_")) {
-            SqlHelper.ExcuteNonQuery(sql_delcopy);
+			try {
+				SqlHelper.ExcuteNonQuery(sql_delcopy);
+			}
+			catch { }
         }
         return msg;
     }
