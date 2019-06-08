@@ -518,10 +518,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 var item = new Dictionary<string, object>();
                 item["result"] = id;
                 item["trangthai"] = "DAHIEULUC";
-                msg = VNN_VariablePublic.GetModule(
-                    VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
-                    item
-                );
+                //msg = VNN_VariablePublic.GetModule(
+                //    VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
+                //    item
+                //);
             }
 
             if (msg.Length <= 0)

@@ -627,7 +627,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         string[] vnn = context.Request.Form["id"].Split(',');
         string thoigiansx = context.Request.Form["thoigiansx"];
         string thoigianht = context.Request.Form["thoigianht"];
-        foreach (c_danhsachdathang dsdh in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)))
+        foreach (c_danhsachdathang dsdh in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).ToList())
         {
             if (dsdh.trangthai == "HIEULUC")
             {
@@ -913,10 +913,10 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     var item = new Dictionary<string, object>();
                     item["result"] = id;
                     item["trangthai"] = "CHUAGUI";
-                    msg = VNN_VariablePublic.GetModule(
-                        VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
-                        item
-                    );
+                    //msg = VNN_VariablePublic.GetModule(
+                    //    VNN_VariablePublic.API_AncoTrading + "?oper=CapNhatTrangThaiDonHang",
+                    //    item
+                    //);
                 }
             }
             catch (Exception ex)
