@@ -41,7 +41,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                 {
                     var item = new Dictionary<string, object>();
                     item["c_danhsachdathang_id"] = dsdh.c_danhsachdathang_id;
-                    item["trangthai"] = dsdh.trangthai;
+                    item["trangthai"] = dsdh.trangthai == "HIEULUC" ? "DAHIEULUC" : dsdh.trangthai;
                     lst.Add(item);
                 }
             }
