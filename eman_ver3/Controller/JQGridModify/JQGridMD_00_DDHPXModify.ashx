@@ -461,7 +461,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).ToList())
                         {
                             var lsx = new md_lenhsanxuat();
-                            lsx.md_lenhsanxuat_id = lsxId;
+                            //lsx.md_lenhsanxuat_id = lsxId;
                             lsx.md_dondathangphanxuong_id = ddh.md_dondathangphanxuong_id;
                             lsx.md_phanxuong_id = ddh.md_phanxuong_id;
                             lsx.md_trangthai_id = "CHUAHOANTHANH";

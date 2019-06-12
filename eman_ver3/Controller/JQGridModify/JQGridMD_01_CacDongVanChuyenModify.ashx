@@ -64,59 +64,11 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                         else
                         {
                             md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).Take(1).FirstOrDefault();
-                            msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + Math.Round(sltd, 0) + "</div>";
+                            msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " +sltd.DropTrailingZeros() + "</div>";
                             break;
                         }
                     }
                     db.SaveChanges();
-                }
-            }
-
-            if (vcnb.loaichuyen == "VANCNBCTKGH")
-            {
-                var slcl = new List<Dictionary<string, object>>();
-                foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
-                    vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
-                {
-                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
-                    var tsx = Extension.getLSXToId(b.lsx_to, db);
-                    var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                        & s.macuoi.Contains(sp.ma_sanpham));
-
-                    foreach (var cai in lsxSp.ToList())
-                    {
-                        var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
-                        if (caiJSon == null)
-                        {
-                            var spCai = db.md_sanpham.Where(s => s.md_sanpham_id == cai.md_sanpham_id).FirstOrDefault();
-                            var khosp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == spCai.md_sanpham_id & s.md_kho_id == vcnb.tukho).FirstOrDefault();
-                            slcl.Add(new Dictionary<string, object>() {
-                                    { "md_sanpham_id", cai.md_sanpham_id },
-                                    { "ma_sanpham", spCai.ma_sanpham },
-                                    { "lsx_to", b.lsx_to },
-                                    { "soluong", b.soluong_dichchuyen },
-                                    { "sltd", khosp.soluong }
-                                });
-                        }
-                        else
-                        {
-                            caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
-                        }
-                    }
-                }
-
-                foreach (var itemSLTH in slcl.OrderBy(s=>s["ma_sanpham"].ToString()))
-                {
-                    string spId = itemSLTH["md_sanpham_id"].ToString();
-
-                    var sl = decimal.Parse(itemSLTH["soluong"].ToString());
-                    var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
-                    if (sl > sltd)
-                    {
-                        msg += string.Format(@"<b>{0}</b> SL tối đa <b>{1}</b>, SL muốn chuyển <b>{2}</b>.<br>",
-                            itemSLTH["ma_sanpham"], sltd.DropTrailingZeros(), sl.DropTrailingZeros());
-                    }
                 }
             }
 

@@ -106,6 +106,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                         var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id);
                         int tong_sl_dachuyenhet = vcnb_cdvcs.Where(s => s.dachuyenhet == true).Count();
+
+                         var khoSPDic = new Dictionary<string, decimal>();
                         foreach (var vcnb_cdvc in vcnb_cdvcs.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).OrderBy(s => s.denkho).ToList())
                         {
                             //start Xuat kho
@@ -132,16 +134,26 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             {
                                 lstSPId.Add(vcnb_cdvc.md_sanpham_id);
                             }
+
                             foreach (var kho_sp in db.md_kho_sanpham.Where(s => s.md_kho_id == vcnb.tukho & lstSPId.Contains(s.md_sanpham_id)).ToList())
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == kho_sp.md_sanpham_id).FirstOrDefault();
                                 decimal sl_kho_sp = kho_sp.soluong.GetValueOrDefault(0);
                                 decimal sl_xuatkho = sl_dichchuyen_thucte;
+
+                                var itemSP = khoSPDic.Where(s => s.Key == sp.md_sanpham_id).FirstOrDefault();
+                                if(itemSP.Key == null)
+                                {
+                                    khoSPDic.Add(sp.md_sanpham_id, sl_kho_sp);
+                                }
+                                itemSP = khoSPDic.Where(s => s.Key == sp.md_sanpham_id).FirstOrDefault();
+
                                 if (sl_kho_sp < sl_dichchuyen_thucte)
                                 {
-                                    msg += "<div style='color:red'>Lỗi: dòng \"" + sp.ma_sanpham + "\" số lượng trong kho chỉ còn : " + sl_kho_sp.DropTrailingZeros() + ".</div>";
+                                    msg += "<div style='color:red'>Lỗi: dòng \"" + sp.ma_sanpham + "\" số lượng trong kho chỉ còn : " + itemSP.Value.DropTrailingZeros() + ".</div>";
                                     break;
                                 }
+
 
                                 if (sl_xuatkho > 0)
                                 {
@@ -257,7 +269,6 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 //Start Cap nhat don van chuyen
                                 vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen;
-                                vcnb.md_trangthai_id = "HIEULUC";
                                 //End Cap nhat don van chuyen
                                 db.SaveChanges();
                             }
@@ -297,6 +308,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                         if (msg.Length <= 0)
                         {
+                            vcnb.md_trangthai_id = "HIEULUC";
                             db.SaveChanges();
                             pub.capnhatGiuCho_VCNB(vcnb.sochungtu, vcnb.chungtuthamchieu, vcnb.tukho, vcnb.md_vanchuyennoibo_id, vcnb.md_trangthai_id, db);
                             db.SaveChanges();
@@ -387,7 +399,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 denkho = db.md_kho.Where(s => s.md_kho_id == denkho).Select(s => s.md_kho_id).FirstOrDefault();
                 tukho = db.md_kho.Where(s => s.md_kho_id == tukho).Select(s => s.md_kho_id).FirstOrDefault();
                 DateTime ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
-                if (ngaychuyen == DateTime.MinValue | ngaychuyen == DateTime.MinValue.AddDays(1))
+                if (ngaychuyen.IsDate() == false)
                     msg = "Ngày chuyển có giá trị sai";
                 else if (tukho == denkho)
                 {
@@ -671,58 +683,34 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
     {
         var db = new EntityContext();
         var pub = new Public();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            string[] id_del = context.Request.Form["id"].Split(',');
+            for (int i = 0; i < id_del.Length; i++)
             {
-                msg_del = ""; var id_del_ = id_del[i];
+                var id_del_ = id_del[i];
                 var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id_del_).Take(1).FirstOrDefault();
                 var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi: Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy đối tượng cần xóa.", i + 1);
                 }
-                else if (object_.md_trangthai_id != "SOANTHAO")
+                else if (object_.md_trangthai_id == "HIEULUC")
                 {
-                    msg_del = "Lỗi: Dòng \"" + object_.sochungtu + "\" đang xử lý hoặc đã hiệu lực, không thể xóa.";
-                    msg += msg_del + "\n";
+                    msg += string.Format(@"Lỗi dòng {0}: Dòng {1} đã hiệu lực, không thể xóa.", i + 1, object_.sochungtu);
                 }
-                else if (!string.IsNullOrEmpty(object_.c_doichieuhangton_id))
+                else
                 {
-                    var khdh = db.c_kehoachdathang.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
-                    if (khdh != null)
-                    {
-                        msg_del = string.Format(@"Lỗi: Dòng ""{0}"" cần xóa kế hoạch đặt hàng ""{1}"".", object_.sochungtu, khdh.ten_kh);
-                        msg += msg_del + "\n";
-                    }
-                }
-
-                if (msg_del.Length <= 0)
-                {
-                    if (dcht != null)
-                    {
-                        dcht.phieuhangton = dcht.phieuhangton.Replace(object_.sochungtu + "<br>", "");
-                        dcht.phieuhangton = dcht.phieuhangton.Replace("<br>" + object_.sochungtu, "");
-                        dcht.phieuhangton = dcht.phieuhangton.Replace(object_.sochungtu, "");
-                        if (dcht.phieuhangton == "")
-                            dcht.phieuhangton = " ";
-
-                        pub.capnhatGiuCho_VCNB(object_.sochungtu, "", object_.tukho, object_.md_vanchuyennoibo_id, object_.md_trangthai_id, db);
-                    }
-                    db.md_vanchuyennoibo.Remove(object_);
+                    object_.md_trangthai_id = "SOANTHAO";
                 }
             }
 
             if (msg.Length <= 0)
             {
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
+                msg = @"true#Trả trạng thái về ""Soạn Thảo"" thành công.";
             }
             else
             {
@@ -731,14 +719,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

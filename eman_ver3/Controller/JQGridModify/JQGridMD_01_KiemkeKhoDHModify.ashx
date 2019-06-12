@@ -118,10 +118,22 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
         try
         {
             string id = context.Request.Form["id"];
-            md_kiemke_cdh object_ = db.md_kiemke_cdh.Where(p => p.md_kiemke_cdh_id == id).Take(1).FirstOrDefault();
+            var object_ = db.md_kiemke_cdh.Where(p => p.md_kiemke_cdh_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+            }
+            else
+            {
+                var kk = db.md_kiemke.Where(s => s.md_kiemke_id == object_.md_kiemke_id).FirstOrDefault();
+                if (kk == null)
+                {
+                    msg = "Không tìm thấy biên bản kiểm kê";
+                }
+                else if (kk.ma_kiemke == "HIEULUC")
+                {
+                    msg = "Biên bản \"" + kk.ten_kiemke + "\" đã kiểm kê kho.";
+                }
             }
 
             if (msg.Length <= 0)
@@ -136,6 +148,10 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }
+            else
+            {
+                msg = "false#" + msg;
+            }
         }
         catch (Exception ex)
         {
@@ -147,34 +163,37 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_kiemke_cdh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            string[] id_del = context.Request.Form["id"].Split(',');
+            for (int i = 0; i < id_del.Length; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-                md_kiemke_cdh object_ = db.md_kiemke_cdh.Where(p => p.md_kiemke_cdh_id == id_del_).Take(1).FirstOrDefault();
-                md_kiemke kk = db.md_kiemke.Where(s => s.md_kiemke_id == object_.md_kiemke_id).FirstOrDefault();
+                var id_del_ = id_del[i];
+                var object_ = db.md_kiemke_cdh.Where(p => p.md_kiemke_cdh_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy đối tượng cần xóa<br>", i + 1);
                 }
-                else if (kk.ma_kiemke == "O")
+                else
                 {
-                    msg_del = "Lỗi:Biên bản \"" + kk.ten_kiemke + "\" đã kiểm kê." + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    db.md_kiemke_cdh.Remove(object_);
+                    var kk = db.md_kiemke.Where(s => s.md_kiemke_id == object_.md_kiemke_id).FirstOrDefault();
+                    if (kk == null)
+                    {
+                        msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy biên bản kiểm kê<br>", i + 1);
+                    }
+                    else if (kk.ma_kiemke == "HIEULUC")
+                    {
+                        msg += string.Format(@"Lỗi dòng {0}:""{1}"" đã xác nhận hoặc hiệu lực<br>", i + 1, kk.ten_kiemke);
+                    }
+                    else
+                    {
+                        db.md_kiemke_cdh.Remove(object_);
+                    }
                 }
             }
+
             if (msg.Length <= 0)
             {
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -187,14 +206,7 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

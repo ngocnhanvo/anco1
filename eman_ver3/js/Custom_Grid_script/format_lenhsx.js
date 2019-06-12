@@ -82,18 +82,18 @@ function timkiem_lenhsx(id_elem, type) {
                     where_ex: function () {
                         if (tengrid0 == 'gridMD_00_Xuatnoibo') {
                             let khdhpx = $('#kh_ddhpx').val();
-                            let dkc = " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                            let dkc = " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id = 'DAXL'";
                             if ($('#bosung').val() == '3')
                                 dkc = `${dkc} and lsx.md_dondathangphanxuong_id in (select md_dondathangphanxuong_id from md_dondathangphanxuong where N'${khdhpx}' like N'%' + c_kehoachdathang_dhcpx_id + '%')`;
                             
                             return dkc;
                         }
                         else if (tengrid0 == 'gridMD_00_Nhapnoibo')
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
                         else if (tengrid0 == 'gridMD_00_PVCNoiBo')
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id != 'HOANTHANH' and lsx.md_trangthai_id != 'KETTHUC' and lsx.check_dtvt = 1";
+                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
                         else
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO'";
+                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
                     }
                 },
                 beforeRequest: function () {

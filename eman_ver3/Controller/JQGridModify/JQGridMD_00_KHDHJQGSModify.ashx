@@ -650,10 +650,8 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
     //Xoa cac du lieu lien quan den lap ke hoach de doi chieu lai 
     public void del_kehoachdathang(EntityContext db, string kehoachdathang_id)
     {
-        db.c_kehoachdathang_dhcpx.RemoveRange(db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-        db.c_kehoachdathang_dhcpx_cdh.RemoveRange(db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-        db.c_kehoachdathang_dhncc.RemoveRange(db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
-        db.c_kehoachdathang_dhncc_cdh.RemoveRange(db.c_kehoachdathang_dhncc_cdh.Where(s => s.c_kehoachdathang_id == kehoachdathang_id).ToList());
+        db.c_kehoachdathang_dhcpx.RemoveRange(db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kehoachdathang_id));
+        db.c_kehoachdathang_dhncc.RemoveRange(db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == kehoachdathang_id));
         db.SaveChanges();
     }
 

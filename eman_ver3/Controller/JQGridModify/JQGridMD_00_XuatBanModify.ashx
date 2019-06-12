@@ -335,8 +335,6 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         giao.ngaytao = DateTime.Now;
         giao.ngaycapnhat = DateTime.Now;
         db.md_kho_giaodich.Add(giao);
-
-        dh.sl_xuat = 0;
         return id_new;
     }
 

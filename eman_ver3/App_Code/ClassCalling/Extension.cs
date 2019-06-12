@@ -177,4 +177,12 @@ public static class Extension
             .OrderByDescending(s=>s.stt).FirstOrDefault();
         return prev;
     }
+
+    public static bool IsDate(this DateTime date)
+    {
+        bool ok = true;
+        if (date == DateTime.MinValue | date == DateTime.MinValue.AddDays(1))
+            ok = false;
+        return ok;
+    }
 }

@@ -90,6 +90,7 @@ function click_refresh(tengrid) {
     loadclick_(tengrid, 'noSel');
 }
 function click_refresh_clearsearch(tengrid) {
+    
 	/*$('#gview_'+ tengrid+' .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input input').val('');
 	$('#gview_'+ tengrid+' .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input select').val('');*/
     var a_ = $('.tbl_vnn_'+ tengrid +' > thead > .ui-search-toolbar > th > div > .ui-search-table tr > .ui-search-input input');
@@ -100,7 +101,10 @@ function click_refresh_clearsearch(tengrid) {
     $(b_).each(function (index, val) {
         $(this).val('');
     });
-    $('#'+tengrid).jqGrid('getGridParam', 'postData').filters = null;
+    try {
+        $('#' + tengrid).jqGrid('getGridParam', 'postData').filters = null;
+    }
+    catch (r) { console.warn(r); }
     loadclick_(tengrid, 'noSel');
 }
 function click_view(tengrid) {

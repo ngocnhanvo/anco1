@@ -118,22 +118,22 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     var object_ = db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id_del_).Take(1).FirstOrDefault();
                     if (object_ == null)
                     {
-                        msg += string.Format("Lỗi dòng {1}: Không tìm thấy đối tượng cần xóa", "", i + 1);
+                        msg += string.Format("Lỗi dòng {1}: Không tìm thấy đối tượng cần xóa<br>", "", i + 1);
                     }
                     else
                     {
                         var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
                         if (dcht == null)
                         {
-                            msg +=  string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn", "", i + 1);
+                            msg +=  string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn<br>", "", i + 1);
                         }
                         else if (!string.IsNullOrEmpty(dcht.phieuhangton) & dcht.phieuhangton != " ")
                         {
-                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập phiếu lấy hàng tồn", dcht.ten_donhang, i + 1);
+                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập phiếu lấy hàng tồn<br>", dcht.ten_donhang, i + 1);
                         }
                         else if (!string.IsNullOrEmpty(dcht.kehoach) & dcht.kehoach != " ")
                         {
-                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập kế hoạch đặt hàng", dcht.ten_donhang, i + 1);
+                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập kế hoạch đặt hàng<br>", dcht.ten_donhang, i + 1);
                         }
                         else
                         {

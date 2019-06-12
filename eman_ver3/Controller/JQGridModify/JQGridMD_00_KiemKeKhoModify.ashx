@@ -68,7 +68,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                     {
                         msg += "<div style='color:red'>Lỗi:Chưa chọn thời gian dịch chuyển.</div>";
                     }
-                    else if (kk.ma_kiemke == "O")
+                    else if (kk.ma_kiemke == "HIEULUC")
                     {
                         msg += "<div style='color:red'>Lỗi:" + kk.ten_kiemke + " đã kiểm kê rồi.</div>";
                     }
@@ -94,7 +94,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                             <div style='color:blue'>
                                 Cập nhật ""{0}"" tại kho : ""{1}"" thành công.
                             </div>", kk.ten_kiemke, kho1.ma_kho);
-                        kk.ma_kiemke = "O";
+                        kk.ma_kiemke = "HIEULUC";
                         db.SaveChanges();
                     }
                 }
@@ -174,12 +174,12 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         {
             sp = new md_kho_sanpham();
             sp.md_kho_sanpham_id = id_new;
-            sp.soluong = cdh.sl_demduoc;
+            sp.soluong = cdh.sl_demduoc.GetValueOrDefault(0);
         }
         else
         {
             id_new = sp.md_kho_sanpham_id;
-            sp.soluong = cdh.sl_demduoc;
+            sp.soluong = cdh.sl_demduoc.GetValueOrDefault(0);
         }
         sp.md_kho_id = kk.md_kho_id;
         sp.md_sanpham_id = cdh.md_sanpham_id;
@@ -222,15 +222,15 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         giao.md_sanpham_id = cdh.md_sanpham_id;
         giao.ngaychuyen = nkk;
 
-        if (cdh.sl_demduoc > cdh.sl_sosach)
+        if (cdh.sl_demduoc > cdh.sl_sosach.GetValueOrDefault(0))
         {
             giao.kieuchuyen = "Nhập kho kiểm kê";
-            giao.soluong_dichchuyen = cdh.sl_demduoc - cdh.sl_sosach;
+            giao.soluong_dichchuyen = cdh.sl_demduoc - cdh.sl_sosach.GetValueOrDefault(0);
         }
         else if (cdh.sl_demduoc < cdh.sl_sosach)
         {
             giao.kieuchuyen = "Xuất kho kiểm kê";
-            giao.soluong_dichchuyen = cdh.sl_sosach - cdh.sl_demduoc;
+            giao.soluong_dichchuyen = cdh.sl_sosach - cdh.sl_demduoc.GetValueOrDefault(0);
         }
         // giao.dongnhapxuat = px.sochungtu;
         giao.dongkiemkho = kk.ten_kiemke;
@@ -252,7 +252,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         giao.hoatdong = true;
         giao.ngaytao = DateTime.Now;
         giao.ngaycapnhat = DateTime.Now;
-        if (cdh.sl_demduoc != cdh.sl_sosach)
+        if (cdh.sl_demduoc.GetValueOrDefault(0) != cdh.sl_sosach.GetValueOrDefault(0))
         {
             db.md_kho_giaodich.Add(giao);
         }
@@ -343,6 +343,8 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string kho = context.Request.Form["md_kho_id"];
+        string ngay_kiemke = context.Request.Form["ngay_kiemke"];
+        var nkk = VNN_Config.setDateTime(ngay_kiemke);
         try
         {
             string id = context.Request.Form["id"];
@@ -351,56 +353,63 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.ma_kiemke == "O")
+            else if (object_.ma_kiemke == "HIEULUC")
             {
                 msg = "false#Lỗi:Biên bản \"" + object_.ten_kiemke + "\" đã kiểm kê.";
+            }
+            else if(db.md_kho.Where(s=>s.md_kho_id == kho).Count() <= 0)
+            {
+                msg = string.Format("false#Lỗi: Kho đang chọn không tồn tại.");
             }
 
             if (msg.Length <= 0)
             {
-                db.md_kiemke_cdh.RemoveRange(db.md_kiemke_cdh.Where(s => s.md_kiemke_id == object_.md_kiemke_id));
-                db.SaveChanges();
-
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_kiemke";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
-
-                foreach (md_kho_sanpham kho_sp in db.md_kho_sanpham.Where(s => s.md_kho_id == kho).ToList())
+                if (kho != object_.md_kho_id)
                 {
-                    md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == kho_sp.md_sanpham_id).FirstOrDefault();
-
-                    md_kiemke_cdh kk_cdh = new md_kiemke_cdh();
-                    kk_cdh.md_kiemke_cdh_id = Helper.getNewId();
-                    kk_cdh.md_kiemke_id = object_.md_kiemke_id;
-                    kk_cdh.md_sanpham_id = kho_sp.md_sanpham_id;
-                    kk_cdh.ma_sanpham = sp.ma_sanpham;
-                    kk_cdh.sl_demduoc = 0;
-                    kk_cdh.sl_sosach = kho_sp.soluong;
-                    kk_cdh.mota_tiengviet = sp.mota_tiengviet;
-                    kk_cdh.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id;
-                    kk_cdh.md_kho_id = kho;
-                    kk_cdh.nguoitao = us.ad_user_id;
-                    kk_cdh.vaitrotao = us.ad_role_id;
-                    kk_cdh.bophantao = us.md_phongban_id;
-                    kk_cdh.value_nguoitao = us.ma_user;
-                    kk_cdh.value_vaitrotao = us.ten_role;
-                    kk_cdh.value_bophantao = us.ten_phongban;
-                    kk_cdh.nguoicapnhat = us.ad_user_id;
-                    kk_cdh.vaitrocapnhat = us.ad_role_id;
-                    kk_cdh.bophancapnhat = us.md_phongban_id;
-                    kk_cdh.value_nguoicapnhat = us.ma_user;
-                    kk_cdh.value_vaitrocapnhat = us.ten_role;
-                    kk_cdh.value_bophancapnhat = us.ten_phongban;
-                    kk_cdh.hoatdong = true;
-                    kk_cdh.ngaytao = DateTime.Now;
-                    kk_cdh.ngaycapnhat = DateTime.Now;
-                    db.md_kiemke_cdh.Add(kk_cdh);
+                    db.md_kiemke_cdh.RemoveRange(db.md_kiemke_cdh.Where(s => s.md_kiemke_id == object_.md_kiemke_id));
                     db.SaveChanges();
                 }
+
+                if (kho != object_.md_kho_id)
+                {
+                    foreach (md_kho_sanpham kho_sp in db.md_kho_sanpham.Where(s => s.md_kho_id == kho).ToList())
+                    {
+                        md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == kho_sp.md_sanpham_id).FirstOrDefault();
+
+                        md_kiemke_cdh kk_cdh = new md_kiemke_cdh();
+                        kk_cdh.md_kiemke_cdh_id = Helper.getNewId();
+                        kk_cdh.md_kiemke_id = object_.md_kiemke_id;
+                        kk_cdh.md_sanpham_id = kho_sp.md_sanpham_id;
+                        kk_cdh.ma_sanpham = sp.ma_sanpham;
+                        kk_cdh.sl_demduoc = 0;
+                        kk_cdh.sl_sosach = kho_sp.soluong;
+                        kk_cdh.mota_tiengviet = sp.mota_tiengviet;
+                        kk_cdh.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id;
+                        kk_cdh.md_kho_id = kho;
+                        kk_cdh.nguoitao = us.ad_user_id;
+                        kk_cdh.vaitrotao = us.ad_role_id;
+                        kk_cdh.bophantao = us.md_phongban_id;
+                        kk_cdh.value_nguoitao = us.ma_user;
+                        kk_cdh.value_vaitrotao = us.ten_role;
+                        kk_cdh.value_bophantao = us.ten_phongban;
+                        kk_cdh.nguoicapnhat = us.ad_user_id;
+                        kk_cdh.vaitrocapnhat = us.ad_role_id;
+                        kk_cdh.bophancapnhat = us.md_phongban_id;
+                        kk_cdh.value_nguoicapnhat = us.ma_user;
+                        kk_cdh.value_vaitrocapnhat = us.ten_role;
+                        kk_cdh.value_bophancapnhat = us.ten_phongban;
+                        kk_cdh.hoatdong = true;
+                        kk_cdh.ngaytao = DateTime.Now;
+                        kk_cdh.ngaycapnhat = DateTime.Now;
+                        db.md_kiemke_cdh.Add(kk_cdh);
+                        db.SaveChanges();
+                    }
+                }
+
+                object_.ten_kiemke = context.Request.Form["ten_kiemke"];
+                object_.ngay_kiemke = nkk;
+                object_.md_kho_id = kho;
+                db.SaveChanges();
                 msg = "true#Cập nhật thành công.";
             }
         }
@@ -414,37 +423,33 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_kiemke";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            string[] id_del = context.Request.Form["id"].Split(',');
+            for (int i = 0; i < id_del.Length; i++)
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                md_kiemke object_ = db.md_kiemke.Where(p => p.md_kiemke_id == id_del_).Take(1).FirstOrDefault();
+                var id_del_ = id_del[i];
+                var object_ = db.md_kiemke.Where(p => p.md_kiemke_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy đối tượng cần xóa<br>", i + 1);
                 }
-                else if (object_.ma_kiemke == "O")
+                else if (object_.ma_kiemke == "HIEULUC")
                 {
-                    msg_del = "Lỗi:Biên bản \"" + object_.ten_kiemke + "\" đã kiểm kê kho " + i;
-                    msg += msg_del + "\n";
+                    msg += string.Format(@"Lỗi dòng {0}:""{1}"" đã hiệu lực<br>", i, object_.ten_kiemke);
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
-                    db.md_kiemke.Remove(object_);
+                    object_.ma_kiemke = "SOANTHAO";
                 }
             }
+
             if (msg.Length <= 0)
             {
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
+                msg = @"true#Đưa về trạng thái ""Soạn Thảo"" thành công.";
             }
             else
             {
@@ -453,14 +458,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

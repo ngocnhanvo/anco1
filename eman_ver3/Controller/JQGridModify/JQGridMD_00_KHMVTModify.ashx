@@ -125,7 +125,11 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
         string str = "<option value=''></option>";
         foreach (c_kehoachmuavt khmvt in db.c_kehoachmuavt.Where(s => s.hoatdong == true & s.md_trangthai_id == "HIEULUC" & s.sochungtu.Contains("DTMVT")).ToList())
         {
-            str += "<option value='" + khmvt.c_kehoachmuavt_id + "'>" + khmvt.ten_kehoach + "</option>";
+            var dongMuaHang = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).Sum(s => s.sl_duyet - s.sl_conlai);
+            if (dongMuaHang > 0)
+            {
+                str += "<option value='" + khmvt.c_kehoachmuavt_id + "'>" + khmvt.ten_kehoach + "</option>";
+            }
         }
 
         string value = db.ad_selectoption.Where(s => s.ma_selectoption == "<%=SL_eAncop_donvitinhsanpham%>").Select(s => s.value_selectoption).FirstOrDefault();

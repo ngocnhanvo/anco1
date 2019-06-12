@@ -410,7 +410,10 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
-
+            else if((xnb.bosung == 4 | xnb.bosung == 1) & sl_xuat > object_.tong_sl_xuat)
+            {
+                msg = "false#Số lượng xuất tối đa là " + object_.tong_sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
+            }
 
             foreach (var ncc in db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id).ToList())
             {

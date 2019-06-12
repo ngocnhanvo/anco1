@@ -128,7 +128,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             khmvt_cdh.md_sanpham_id = ycmvt_cdh.md_sanpham_id;
                             khmvt_cdh.md_donvitinhsanpham_id = ycmvt_cdh.md_donvitinhsanpham_id;
                             string nhacungung = db.md_sanpham.Where(s => s.md_sanpham_id == ycmvt_cdh.md_sanpham_id).Select(s => s.nhacungung).FirstOrDefault();
-                            if (nhacungung == null)
+                            if (string.IsNullOrEmpty(nhacungung))
                             {
                                 nhacungung = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "MUA NGOAI").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
                             }
