@@ -2,7 +2,8 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -26,14 +27,14 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
             case "selectoption":
                 this.SelectOption(context);
                 break;
-			case "CA_01_CopyVaiTro":
+            case "CA_01_CopyVaiTro":
                 this.CA_01_CopyVaiTro(context);
                 break;
             default:
                 break;
         }
     }
-	public static T Clone<T>(T source)
+    public static T Clone<T>(T source)
     {
         var dcs = new System.Runtime.Serialization.DataContractSerializer(typeof(T));
         using (var ms = new System.IO.MemoryStream())
@@ -43,50 +44,68 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
             return (T)dcs.ReadObject(ms);
         }
     }
-	
-	public void CA_01_CopyVaiTro(HttpContext context)
-	{
-		EntityContext db = new EntityContext();
-		User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+
+    public void CA_01_CopyVaiTro(HttpContext context)
+    {
+        EntityContext db = new EntityContext();
+        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        var json = new ADmin_JSON();
+        List<ad_role_mmc> lst = json.ad_role_mmcJSON();
         string msg = "", id_new = Helper.getNewId();
-		string sel_vaitro_copy = context.Request.Form["sel_vaitro_copy"];
-		string id = context.Request.Form["id"];
-		string[] arr_id = id.Split(',');
-		ad_role role_cp = db.ad_role.FirstOrDefault(s=>s.ad_role_id == sel_vaitro_copy);
-		if(role_cp != null) {
-			foreach(string id_ in arr_id){
-				ad_role role = db.ad_role.FirstOrDefault(s=>s.ad_role_id == id_);
-				if(role != null) {
-					foreach(ad_role_mmc r_m in db.ad_role_mmc.Where(s=>s.ad_role_id == role.ad_role_id)){
-						db.ad_role_mmc.Remove(r_m);
-					}
-					
-					foreach(ad_role_where r_m in db.ad_role_where.Where(s=>s.ad_role_id == role.ad_role_id)){
-						db.ad_role_where.Remove(r_m);
-					}
-					db.SaveChanges();
-					
-					foreach(ad_role_mmc r_m in db.ad_role_mmc.Where(s=>s.ad_role_id == sel_vaitro_copy)){
-						ad_role_mmc r_m_new = Clone(r_m);
-						r_m_new.ad_role_mmc_id = Helper.getNewId();
-						r_m_new.ad_role_id = role.ad_role_id;
-						db.ad_role_mmc.Add(r_m_new);
-					}
-					
-					foreach(ad_role_where r_w in db.ad_role_where.Where(s=>s.ad_role_id == sel_vaitro_copy)){
-						ad_role_where r_w_new = Clone(r_w);
-						r_w_new.ad_role_where_id = Helper.getNewId();
-						r_w_new.ad_role_id = role.ad_role_id;
-						db.ad_role_where.Add(r_w_new);
-					}
-					db.SaveChanges();
-					msg += "<div class='nhan-thanhcong' style='color:blue'>\""+ role.ten_role +"\" đã copy lại vai trò \""+ role_cp.ten_role +"\"";
-				}
-			}
-		}
-		context.Response.Write(msg);
-	}
-	
+        string sel_vaitro_copy = context.Request.Form["sel_vaitro_copy"];
+        string id = context.Request.Form["id"];
+        ad_role role_cp = db.ad_role.FirstOrDefault(s => s.ad_role_id == sel_vaitro_copy);
+        if (role_cp != null)
+        {
+            ad_role role = db.ad_role.FirstOrDefault(s => s.ad_role_id == id);
+            if (role != null)
+            {
+                List<string> idDels = new List<string>();
+                foreach (var r_m in db.ad_role_mmc.Where(s => s.ad_role_id == role.ad_role_id).ToList())
+                {
+                    db.ad_role_mmc.Remove(r_m);
+                    idDels.Add(r_m.ad_role_mmc_id);
+                }
+
+                foreach (var r_m in db.ad_role_where.Where(s => s.ad_role_id == role.ad_role_id).ToList())
+                {
+                    db.ad_role_where.Remove(r_m);
+                }
+
+                db.SaveChanges();
+                lst = lst.Where(s => !idDels.Contains(s.ad_role_mmc_id)).ToList();
+                
+                List<ad_role_mmc> idAdds = new List<ad_role_mmc>();
+                foreach (var r_m in db.ad_role_mmc.Where(s => s.ad_role_id == sel_vaitro_copy).ToList())
+                {
+                    ad_role_mmc r_m_new = Clone(r_m);
+                    r_m_new.ad_role_mmc_id = Helper.getNewId();
+                    r_m_new.ad_role_id = role.ad_role_id;
+                    db.ad_role_mmc.Add(r_m_new);
+                    idAdds.Add(r_m_new);
+                }
+
+                foreach (var r_w in db.ad_role_where.Where(s => s.ad_role_id == sel_vaitro_copy).ToList())
+                {
+                    ad_role_where r_w_new = Clone(r_w);
+                    r_w_new.ad_role_where_id = Helper.getNewId();
+                    r_w_new.ad_role_id = role.ad_role_id;
+                    db.ad_role_where.Add(r_w_new);
+                }
+                db.SaveChanges();
+                if(idAdds.Count > 0)
+                    lst.AddRange(idAdds);
+
+                string jsonData = JsonConvert.SerializeObject(lst, Formatting.Indented);
+                json.urlData = typeof(ad_role_mmc).Name;
+                json.WriteJson(jsonData);
+
+                msg += "<div class='nhan-thanhcong' style='color:blue'>\"" + role.ten_role + "\" đã copy lại vai trò \"" + role_cp.ten_role + "\"";
+            }
+        }
+        context.Response.Write(msg);
+    }
+
     public void add(HttpContext context)
     {
         EntityContext db = new EntityContext();
@@ -104,8 +123,8 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Mã vai trò này đã tồn tại!";
             }
-            
-            if(msg.Length <= 0)
+
+            if (msg.Length <= 0)
             {
                 ad_role vtr = new ad_role
                 {
@@ -113,7 +132,7 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
                     ma_role = ma_role,
                     ten_role = context.Request.Form["ten_role"],
                     role_thuake = (loai_thuake == "update_0") ? context.Request.Form["role_thuake"] : "",
-                    
+
                     ngaytao = DateTime.Now,
                     nguoitao = Security.id_taikhoan(context),
                     ngaycapnhat = DateTime.Now,
@@ -123,7 +142,7 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
                 };
                 db.ad_role.Add(vtr);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công!"+ "#" + id_new;
+                msg = "true#Thêm thành công!" + "#" + id_new;
             }
         }
         catch (Exception ex)
@@ -173,7 +192,7 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
@@ -182,8 +201,8 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.ad_role.Where(p => p.ad_role_id == id_del_).Select(s => s.ad_role_id).Take(1).FirstOrDefault();
+                msg_del = ""; var id_del_ = id_del[i];
+                string object_ = db.ad_role.Where(p => p.ad_role_id == id_del_).Select(s => s.ad_role_id).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
