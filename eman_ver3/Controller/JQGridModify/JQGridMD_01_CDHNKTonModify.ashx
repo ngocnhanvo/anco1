@@ -162,13 +162,12 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
         decimal tong_sl_dat = decimal.Parse(context.Request.Form["tong_sl_dat"]);
         decimal sl_nhap = decimal.Parse(context.Request.Form["sl_nhap"]);
         string md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
-        decimal nhanvoi = 1, saiso = 0;
-       // try
+        decimal nhanvoi = 1;
+        try
         {
             string id = context.Request.Form["id"];
             md_nhapkhoton_cdh object_ = db.md_nhapkhoton_cdh.Where(p => p.md_nhapkhoton_cdh_id == id).Take(1).FirstOrDefault();
             md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
-			string ghichu_donvi2 = "";
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -177,35 +176,12 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
-			else if (sp.md_donvitinhsanpham_id != md_donvitinhsanpham_id)
+            else if (sl_nhap > object_.tong_sl_dat)
             {
-                md_donvitinhsanpham_cddv dvtsp_cddv = db.md_donvitinhsanpham_cddv.Where(s => s.md_donvitinhsanpham_id == md_donvitinhsanpham_id
-                & s.md_dvtsp_id == sp.md_donvitinhsanpham_id & s.md_sanpham_id == sp.ma_sanpham).Take(1).FirstOrDefault();
-                if (dvtsp_cddv != null){
-					string ten_dvt = db.md_donvitinhsanpham.Where(s=>s.md_donvitinhsanpham_id == md_donvitinhsanpham_id).Select(s=>s.ten_dvt).FirstOrDefault();
-					string ten_dvt2 = db.md_donvitinhsanpham.Where(s=>s.md_donvitinhsanpham_id == sp.md_donvitinhsanpham_id).Select(s=>s.ten_dvt).FirstOrDefault();					
-					nhanvoi = dvtsp_cddv.nhanvoi.Value;
-					saiso = dvtsp_cddv.chiacho.Value * sl_nhap;
-					if(saiso > dvtsp_cddv.saiso_toida.Value | saiso < 0)
-						saiso = dvtsp_cddv.saiso_toida.Value;
-					ghichu_donvi2 += "Nhập " + sl_nhap + " " + ten_dvt;
-                    ghichu_donvi2 += "\n => 1 " + ten_dvt + " = " + VNN_VariablePublic.autoRound(nhanvoi, 4) + " " + ten_dvt2;
-					ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(dvtsp_cddv.chiacho.Value, 4) + " " + ten_dvt2 + ")";
-					ghichu_donvi2 += "\n => "+ sl_nhap +" " + ten_dvt + " = " + VNN_VariablePublic.autoRound(sl_nhap * nhanvoi, 4) + " " + ten_dvt2;
-					ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(saiso, 4) + " " + ten_dvt2 + ")";
-				}
-                else {
-                    msg = "false#Đơn vị tính đã chọn không thể quy đổi.";
-                }
+                msg = "false#Chỉ có thể nhập tối đa là " + object_.tong_sl_dat.GetValueOrDefault(0).DropTrailingZeros();
             }
 			
 			sl_nhap = sl_nhap * nhanvoi;
-			/*if ((sl_nhap - saiso) > object_.tong_sl_dat)
-            {
-                msg = "false#Chỉ có thể xuất số lượng tối đa là: \"" + VNN_VariablePublic.autoRound(object_.tong_sl_dat.Value, 4) + "\"";
-				msg += "<br> + Số lượng đang muốn xuất: \""+ VNN_VariablePublic.autoRound(sl_nhap, 4) +"\"";
-				msg += "<br> + Độ sai lệch cho phép: \""+ VNN_VariablePublic.autoRound(saiso, 4) +"\"";
-            }*/
 			
             foreach (md_nhapkhoton ncc in db.md_nhapkhoton.Where(s => s.md_nhapkhoton_id == object_.md_nhapkhoton_id))
             {
@@ -219,10 +195,9 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
 				string action = "edit";
 				string[] column_ex = { };
 				string ten_table = "md_nhapkhoton_cdh";
-				VNN_Function.SetFormValue("ghichu_donvi2", ghichu_donvi2);
 				VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
 				VNN_Function.SetFormValue("tenhang", "VNN_notpost");
-				VNN_Function.SetFormValue("tong_sl_dat", sl_nhap.ToString());
+				VNN_Function.SetFormValue("tong_sl_dat", "VNN_notpost");
 				VNN_Function.SetFormValue("sl_nhap", sl_nhap.ToString());
 				VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
 				VNN_Function.Set_DefaultvalueColumn(context, action);
@@ -231,9 +206,9 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
 				msg = "true#Cập nhật thành công.";
 			}
         }
-       // catch (Exception ex)
+        catch (Exception ex)
         {
-            //msg = "false#" + ex.Message;
+            msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }
