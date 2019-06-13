@@ -173,49 +173,22 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (sl_xuat < 0)
+            else if (sl_xuat <= 0)
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
-			else if (sp.md_donvitinhsanpham_id != md_donvitinhsanpham_id)
+            else if (sl_xuat > object_.tong_sl_xuat)
             {
-                md_donvitinhsanpham_cddv dvtsp_cddv = db.md_donvitinhsanpham_cddv.Where(s => s.md_donvitinhsanpham_id == md_donvitinhsanpham_id
-                & s.md_dvtsp_id == sp.md_donvitinhsanpham_id & s.md_sanpham_id == sp.ma_sanpham).Take(1).FirstOrDefault();
-                if (dvtsp_cddv != null){
-					string ten_dvt = db.md_donvitinhsanpham.Where(s=>s.md_donvitinhsanpham_id == md_donvitinhsanpham_id).Select(s=>s.ten_dvt).FirstOrDefault();
-					string ten_dvt2 = db.md_donvitinhsanpham.Where(s=>s.md_donvitinhsanpham_id == sp.md_donvitinhsanpham_id).Select(s=>s.ten_dvt).FirstOrDefault();					
-					nhanvoi = dvtsp_cddv.nhanvoi.Value;
-					saiso = dvtsp_cddv.chiacho.Value * sl_xuat;
-					if(saiso > dvtsp_cddv.saiso_toida.Value | saiso < 0)
-						saiso = dvtsp_cddv.saiso_toida.Value;
-					ghichu_donvi2 += "Xuất " + sl_xuat + " " + ten_dvt;
-                    ghichu_donvi2 += "\n => 1 " + ten_dvt + " = " + VNN_VariablePublic.autoRound(nhanvoi, 4) + " " + ten_dvt2;
-					ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(dvtsp_cddv.chiacho.Value, 4) + " " + ten_dvt2 + ")";
-					ghichu_donvi2 += "\n => "+ sl_xuat +" " + ten_dvt + " = " + VNN_VariablePublic.autoRound(sl_xuat * nhanvoi, 4) + " " + ten_dvt2;
-					ghichu_donvi2 += " (Sai số cho phép: " + VNN_VariablePublic.autoRound(saiso, 4) + " " + ten_dvt2 + ")";
-                    VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
-				}
-                else {
-                    msg = "false#Đơn vị tính đã chọn không thể quy đổi.";
-                }
-            }
-            else {
-                VNN_Function.SetFormValue("md_donvitinhsanpham_id", md_donvitinhsanpham_id);
+                msg = "false#Chỉ có thể xuất tối đa là " + object_.tong_sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
             }
 			
 			sl_xuat = sl_xuat * nhanvoi;
-			/*if ((sl_xuat - saiso) > object_.tong_sl_xuat)
-            {
-                msg = "false#Chỉ có thể xuất số lượng tối đa là: \"" + VNN_VariablePublic.autoRound(object_.tong_sl_xuat.Value, 4) + "\"";
-				msg += "<br> + Số lượng đang muốn xuất: \""+ VNN_VariablePublic.autoRound(sl_xuat, 4) +"\"";
-				msg += "<br> + Độ sai lệch cho phép: \""+ VNN_VariablePublic.autoRound(saiso, 4) +"\"";
-            }*/
 			
             foreach (md_xuatban ncc in db.md_xuatban.Where(s => s.md_xuatban_id == object_.md_xuatban_id))
             {
                 if (ncc.trangthai == "HIEULUC")
                 {
-                    msg = "false#Đơn hàng đã hiệu lực !";
+                    msg = "false#Phiếu xuất kho đã hiệu lực !";
                 }
 			}
 			
@@ -224,10 +197,10 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
 				string action = "edit";
 				string[] column_ex = { };
 				string ten_table = "md_xuatban_cdh";
-				VNN_Function.SetFormValue("ghichu_donvi2", ghichu_donvi2);
+				VNN_Function.SetFormValue("ghichu_donvi2", "VNN_notpost");
 				VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
 				VNN_Function.SetFormValue("tenhang", "VNN_notpost");
-				VNN_Function.SetFormValue("tong_sl_xuat", sl_xuat.ToString());
+				VNN_Function.SetFormValue("tong_sl_xuat", "VNN_notpost");
 				VNN_Function.SetFormValue("sl_xuat", sl_xuat.ToString());
 				VNN_Function.Set_DefaultvalueColumn(context, action);
 				VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);

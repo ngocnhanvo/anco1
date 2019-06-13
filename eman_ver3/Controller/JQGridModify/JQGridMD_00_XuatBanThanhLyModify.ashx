@@ -28,31 +28,31 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
             case "CA01CopytuDonHang_MD00XuatBanThanhLy":
                 this.CA01CopytuDonHang_MD00XuatBanThanhLy(context);
                 break;
-			case "CA_01_XacNhanXuatKho":
-				this.CA_01_XacNhanXuatKho(context);
+            case "CA_01_XacNhanXuatKho":
+                this.CA_01_XacNhanXuatKho(context);
                 break;
-			default:
+            default:
                 break;
         }
     }
-	public void CA_01_XacNhanXuatKho(HttpContext context)
+    public void CA_01_XacNhanXuatKho(HttpContext context)
     {
-		EntityContext db = new EntityContext();
-		string md_xuatban_id = context.Request.QueryString["id"];
-		string msg = "";
-		md_xuatban xb = db.md_xuatban.Where(s=>s.md_xuatban_id == md_xuatban_id).Take(1).FirstOrDefault();
-		if(xb != null) {
-			if (xb.phieuXNNK == null | xb.phieuXNNK == "")
+        EntityContext db = new EntityContext();
+        string md_xuatban_id = context.Request.QueryString["id"];
+        string msg = "";
+        md_xuatban xb = db.md_xuatban.Where(s=>s.md_xuatban_id == md_xuatban_id).Take(1).FirstOrDefault();
+        if(xb != null) {
+            if (xb.phieuXNNK == null | xb.phieuXNNK == "")
             {
-				xb.phieuXNNK = xb.sochungtu.Replace("PXKT","XNXK");
-				db.SaveChanges();
-				msg = "true";
-			}
-		}
-		context.Response.Write(msg); 
-	}
-	
-	public void CA01CopytuDonHang_MD00XuatBanThanhLy(HttpContext context)
+                xb.phieuXNNK = xb.sochungtu.Replace("PXKT","XNXK");
+                db.SaveChanges();
+                msg = "true";
+            }
+        }
+        context.Response.Write(msg);
+    }
+
+    public void CA01CopytuDonHang_MD00XuatBanThanhLy(HttpContext context)
     {
         EntityContext db = new EntityContext();
         string sct_dsdh = context.Request.Form["value_donhang"];
@@ -75,7 +75,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                 c_dongdsdh don = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
                 md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == don.md_sanpham_id).Take(1).FirstOrDefault();
                 md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "ANCO TRADING").Take(1).FirstOrDefault();
-				
+
 
                 md_xuatban xb = new md_xuatban();
                 xb.md_xuatban_id = id;
@@ -181,7 +181,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                     msg = "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
                     break;
                 }
-				/*else if(px.phieuXNNK == null | px.phieuXNNK == "")
+                /*else if(px.phieuXNNK == null | px.phieuXNNK == "")
 				{
                     msg = "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa in phiếu xác nhận nhập hàng.</div>";
                     break;
@@ -206,14 +206,14 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                         else if (kho == null)
                         {
                             if(dh.sl_xuat > 0){
-								msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" không có trong kho.</div>";
-								count_slxuat++;
-							}
+                                msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" không có trong kho.</div>";
+                                count_slxuat++;
+                            }
                         }
-						else if (kho.soluong < dh.sl_xuat)
-						{
-							msg += "<div style='color:red'>Lỗi: Số lượng \"" + sp.ma_sanpham + "\" trong kho chỉ còn: \"" + VNN_VariablePublic.autoRound(kho.soluong.Value, 4) + "\" .</div>";
-						}
+                        else if (kho.soluong < dh.sl_xuat)
+                        {
+                            msg += "<div style='color:red'>Lỗi: Số lượng \"" + sp.ma_sanpham + "\" trong kho chỉ còn: \"" + kho.soluong.Value.DropTrailingZeros() + "\" .</div>";
+                        }
                         else if (dh.sl_xuat < 0)
                         {
                             msg += "<div style='color:red'>Lỗi: Số lượng xuất của \"" + sp.ma_sanpham + "\" phải lớn hơn 0 .</div>";
@@ -222,28 +222,28 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
                     if (msg.Length <= 0 & dh.sl_xuat > 0)
                     {
-						count_slxuat++;
-						soluong_xuat = "" + dh.sl_xuat;
-						//--cap nhat so luong xuat
-						edit_xuat(db, dh, us);
-						//--cap nhat vao kho
-						xuat_kho(db, dh, px, us);
-						//--tao lich su nhap kho
-						add_kho_ls(db, dh, px, us);  
-						msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + soluong_xuat + "\"</div>";
+                        count_slxuat++;
+                        soluong_xuat = "" + dh.sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
+                        //--cap nhat so luong xuat
+                        edit_xuat(db, dh, us);
+                        //--cap nhat vao kho
+                        xuat_kho(db, dh, px, us);
+                        //--tao lich su nhap kho
+                        add_kho_ls(db, dh, px, us);
+                        msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + soluong_xuat + "\"</div>";
                     }
                 }
-				
-				if (msg.Length <= 0 & count_slxuat <= 0)
+
+                if (msg.Length <= 0 & count_slxuat <= 0)
                 {
                     msg = "<div style='color:red'>Lỗi: Dòng \"" + px.sochungtu + "\" phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
                 }
-                
-				if (msg.Length <= 0)
+
+                if (msg.Length <= 0)
                 {
                     px.trangthai = "HIEULUC";
                     db.SaveChanges();
-					msg = msg_success + msg;
+                    msg = msg_success + msg;
                 }
             }
         }
@@ -258,25 +258,25 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
     {
         string id_new = dh.md_xuatban_id;
         md_xuatban xk = db.md_xuatban.Where(s => s.md_xuatban_id == dh.md_xuatban_id).FirstOrDefault();
-		c_dongdsdh ddsdh = db.c_dongdsdh.Where(s=>s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-		if(ddsdh != null)
-			ddsdh.sl_hanngach += (decimal)dh.sl_xuat;
-			
-		decimal sl_daxuat = dh.sl_daxuat.Value + dh.sl_xuat.Value;
+        c_dongdsdh ddsdh = db.c_dongdsdh.Where(s=>s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+        if(ddsdh != null)
+            ddsdh.sl_hanngach += (decimal)dh.sl_xuat;
+
+        decimal sl_daxuat = dh.sl_daxuat.Value + dh.sl_xuat.Value;
         if (dh.tong_sl_xuat.Value <= sl_daxuat)
         {
-			sl_daxuat = dh.tong_sl_xuat.Value;
+            sl_daxuat = dh.tong_sl_xuat.Value;
             dh.check_kho = true;
         }
-			
+
         dh.sl_daxuat = dh.sl_xuat + dh.sl_daxuat;
         xk.ngaycapnhat = DateTime.Now;
-		foreach(md_xuatban xb in db.md_xuatban.Where(s => s.md_xuatban_id != xk.md_xuatban_id & s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.trangthai == "SOANTHAO").ToList())
+        foreach(md_xuatban xb in db.md_xuatban.Where(s => s.md_xuatban_id != xk.md_xuatban_id & s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.trangthai == "SOANTHAO").ToList())
         {
             foreach(md_xuatban_cdh xb_dh in db.md_xuatban_cdh.Where(s => s.md_xuatban_id ==xb.md_xuatban_id & s.md_sanpham_id == dh.md_sanpham_id).ToList())
             {
                 xb_dh.tong_sl_xuat = xb_dh.tong_sl_xuat - sl_daxuat;
-				xb_dh.sl_xuat = 0;
+                xb_dh.sl_xuat = 0;
             }
         }
         return id_new;
@@ -292,45 +292,44 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
         id_new = sp.md_kho_sanpham_id;
         sp.soluong = sp.soluong - dh.sl_xuat;
         sp.ngaycapnhat = DateTime.Now;
-		c_dongdsdh dsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-		if(dsdh != null) {
-			dsdh.sl_dagiao += dh.sl_xuat;
-			dsdh.sl_conlai -= dh.sl_xuat;	
-		}
+        c_dongdsdh dsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+        if(dsdh != null) {
+            dsdh.sl_dagiao += dh.sl_xuat;
+            dsdh.sl_conlai -= dh.sl_xuat;
+        }
         return id_new;
     }
     //--tao lich su nhap kho
     public string add_kho_ls(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us)
     {
         string id_new = Helper.getNewId();
-		md_kho_giaodich giao = new md_kho_giaodich();
-		giao.md_kho_giaodich_id = id_new;
-		giao.md_kho_id = px.tukho;
-		giao.md_sanpham_id = dh.md_sanpham_id;
-		giao.soluong_dichchuyen = dh.sl_xuat;
-		giao.ngaychuyen = px.ngaychuyen;
-		giao.kieuchuyen = "Xuất kho";
-		giao.dongnhapxuat = px.sochungtu;
-		giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
-		
-		giao.nguoitao = us.ad_user_id;
-		giao.vaitrotao = us.ad_role_id;
-		giao.bophantao = us.md_phongban_id;
-		giao.value_nguoitao = us.ma_user;
-		giao.value_vaitrotao = us.ten_role;
-		giao.value_bophantao = us.ten_phongban;
-		giao.nguoicapnhat = us.ad_user_id;
-		giao.vaitrocapnhat = us.ad_role_id;
-		giao.bophancapnhat = us.md_phongban_id;
-		giao.value_nguoicapnhat = us.ma_user;
-		giao.value_vaitrocapnhat = us.ten_role;
-		giao.value_bophancapnhat = us.ten_phongban;
-		giao.hoatdong = true;
-		giao.ngaytao = DateTime.Now;
-		giao.ngaycapnhat = DateTime.Now;
-		db.md_kho_giaodich.Add(giao);
+        md_kho_giaodich giao = new md_kho_giaodich();
+        giao.md_kho_giaodich_id = id_new;
+        giao.md_kho_id = px.tukho;
+        giao.md_sanpham_id = dh.md_sanpham_id;
+        giao.soluong_dichchuyen = dh.sl_xuat;
+        giao.ngaychuyen = px.ngaychuyen;
+        giao.kieuchuyen = "Xuất kho";
+        giao.dongnhapxuat = px.sochungtu;
+        giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
 
-		dh.sl_xuat = 0;
+        giao.nguoitao = us.ad_user_id;
+        giao.vaitrotao = us.ad_role_id;
+        giao.bophantao = us.md_phongban_id;
+        giao.value_nguoitao = us.ma_user;
+        giao.value_vaitrotao = us.ten_role;
+        giao.value_bophantao = us.ten_phongban;
+        giao.nguoicapnhat = us.ad_user_id;
+        giao.vaitrocapnhat = us.ad_role_id;
+        giao.bophancapnhat = us.md_phongban_id;
+        giao.value_nguoicapnhat = us.ma_user;
+        giao.value_vaitrocapnhat = us.ten_role;
+        giao.value_bophancapnhat = us.ten_phongban;
+        giao.hoatdong = true;
+        giao.ngaytao = DateTime.Now;
+        giao.ngaycapnhat = DateTime.Now;
+        db.md_kho_giaodich.Add(giao);
+
         return id_new;
     }
 
@@ -340,31 +339,31 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
-		string sctdathang = context.Request.Form["sctdathang"];
+        string sctdathang = context.Request.Form["sctdathang"];
         string sochungtu = VNN_VariablePublic.sochungtu(db, "PXKT", 1);
         try
         {
             md_doitackinhdoanh dtk = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).FirstOrDefault();
-			c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s=>s.sochungtu == sctdathang).FirstOrDefault();
+            c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s=>s.sochungtu == sctdathang).FirstOrDefault();
             string id = context.Request.Form["id"];
-          /*  if (md_dtk_id == null)
-            {
-                msg = "false#Lỗi: Đối tác  \"" + md_dtk_id + "\" không tồn tại.";
-            }*/
+            /*  if (md_dtk_id == null)
+              {
+                  msg = "false#Lỗi: Đối tác  \"" + md_dtk_id + "\" không tồn tại.";
+              }*/
             if (msg.Length <= 0)
             {
                 string action = "add";
                 string[] column_ex = { "xuat_thanhly" };
                 string ten_table = "md_xuatban";
-				if(dtk != null) {
-					VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk.md_doitackinhdoanh_id);
-					VNN_Function.SetFormValue("diachi", dtk.diachi);
-				}
-				if(dsdh != null) {
-					VNN_Function.SetFormValue("c_danhsachdathang_id", dsdh.c_danhsachdathang_id);
-				}
-				VNN_Function.SetFormValue("sochungtu", sochungtu);
-				VNN_Function.SetFormValue("xuat_thanhly", "1");
+                if(dtk != null) {
+                    VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk.md_doitackinhdoanh_id);
+                    VNN_Function.SetFormValue("diachi", dtk.diachi);
+                }
+                if(dsdh != null) {
+                    VNN_Function.SetFormValue("c_danhsachdathang_id", dsdh.c_danhsachdathang_id);
+                }
+                VNN_Function.SetFormValue("sochungtu", sochungtu);
+                VNN_Function.SetFormValue("xuat_thanhly", "1");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -393,23 +392,18 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.trangthai != "SOANTHAO")
+            else if (object_.trangthai == "HIEULUC")
             {
-                msg = "false#Lỗi:Đối tượng đã xuất kho.";
+                msg = "false#Lỗi:phiếu xuất kho đã Hiệu lực.";
             }
-            /*else if (dtk == null)
-            {
-                msg = "false#Lỗi:Mã đối tác \"" + md_dtk_id + "\" không tồn tại.";
-            }*/
 
             if (msg.Length <= 0)
             {
                 string action = "edit";
                 string[] column_ex = { };
                 string ten_table = "md_xuatban";
-                //VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk.md_doitackinhdoanh_id);
-                //VNN_Function.SetFormValue("diachi", dtk.diachi);
                 VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
+                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -428,7 +422,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
         EntityContext db = new EntityContext();
         string msg = "",  msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
-		string sct_daxoa = "";
+        string sct_daxoa = "";
         try
         {
             string ten_table = "md_xuatban";
@@ -437,7 +431,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
+                msg_del = ""; var id_del_ = id_del[i];
                 md_xuatban object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
@@ -446,25 +440,19 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                 }
                 else if (object_.trangthai == "HIEULUC")
                 {
-                    msg_del = "Lỗi:Đối tượng đã hiệu lực " + i;
+                    msg_del = "Lỗi:Phiếu xuất kho đã hiệu lực " + i;
                     msg += msg_del + "<br>";
                 }
-				else if(db.md_vanchuyennoibo.Where(s=>s.chungtuthamchieu == object_.sochungtu).Count() > 0) {
-					msg_del = "Lỗi:\""+ object_.sochungtu +"\" có phiếu vận chuyển nội bộ đang sử dụng, không thể xóa dòng này.";
-                    msg += msg_del + "<br>";
-				}
-				
+
                 if (msg_del.Length <= 0)
                 {
-					sct_daxoa = object_.sochungtu;
-                    db.md_xuatban.Remove(object_);
+                    object_.trangthai = "SOANTHAO";
                 }
             }
-            
+
             if (msg.Length <= 0)
             {
-				VNN_Function.Write_log(context, ma_module, null, "del", "Đã xóa PXK kế toán \"" + sct_daxoa + "\"", db);
-				VNN_Function.loaddulieu_Auto(db, ma_module);
+                VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Xóa thành công.";
             }
             else
