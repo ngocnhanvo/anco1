@@ -17,6 +17,9 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
             case "selKho":
                 this.selKho(context);
                 break;
+             case "selBoPhanToPX":
+                this.selBoPhanToPX(context);
+                break;
         }
     }
 
@@ -28,11 +31,36 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> Regex.Replace(s.ma_kho, "[^0-9]", "")))
         {
             str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>", cn.md_kho_id, cn.ten_kho,
-                cn.vattu == true ? "KVT" : 
-                    (!string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) ? "KSX" : 
+                cn.vattu == true ? "KVT" :
+                    (!string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) ? "KSX" :
                         (cn.hangton == true ? "KTTP" : "KTP")
                     )
                 );
+        }
+        str += "</select>";
+        context.Response.Write(str);
+    }
+
+    public void selBoPhanToPX(HttpContext context)
+    {
+        string sql = string.Format(@"
+            select * from (
+	            select md_to_id as id, ten_to as value, 1 as orderby, ROW_NUMBER() over (ORDER BY md_phanxuong_id, sapxep) as Num
+	            from md_phanxuong_to
+	            union
+	            select md_phongban_id as id, ten_phongban as value, 2 as orderby, ROW_NUMBER() over (ORDER BY ten_phongban) + 999 as Num
+	            from ad_department
+            )A
+            order by A.orderby, A.Num 
+        ");
+
+        var dt = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
+
+        string str = "<select>";
+        str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
+        foreach (System.Data.DataRow row in dt.Rows)
+        {
+            str += string.Format(@"<option value=""{0}"">{1}</option>", row["id"] + "", row["value"] + "");
         }
         str += "</select>";
         context.Response.Write(str);

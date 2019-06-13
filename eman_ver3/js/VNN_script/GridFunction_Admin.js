@@ -616,8 +616,21 @@ function dem_Records() {
 } function loadclick(t, n, i) {
     if (null == id_action[i]) { try { $(".ui-state-error").css("display", "none") } catch (a) { } var e = $("#" + t).jqGrid("getGridParam", "postData").filters, o = $("#" + t).jqGrid("getGridParam", "postData").page, r = $("#" + t).jqGrid("getGridParam", "postData").sord, d = $("#" + t).jqGrid("getGridParam", "postData").sidx; id_oper[i] = n, id_action[i] = i, $("#" + t).jqGrid("setGridParam", { postData: { filters: e, sord: r, sidx: d }, search: !0 }), $("#" + t).trigger("reloadGrid", [{ page: o }]) }
 } function loadclick_(t, n) {
-    var i = $("#" + t).jqGrid("getGridParam", "postData").filters, a = $("#" + t).jqGrid("getGridParam", "postData").page, e = $("#" + t).jqGrid("getGridParam", "postData").sord, o = $("#" + t).jqGrid("getGridParam", "postData").sidx; $("#" + t).jqGrid("setGridParam", { postData: { filters: i, sord: e, sidx: o, oper_action: n }, search: !0 }), $("#" + t).trigger("reloadGrid", [{ page: a }]), $("#" + t).jqGrid("getGridParam", "postData").oper_action = null, $("#" + t).jqGrid("getGridParam", "postData").id_sel = null
-} function loadmes(t) {
+    let postDT = $("#" + t).jqGrid("getGridParam", "postData");
+    let i = postDT ? postDT.filters : null,
+        a = postDT ? postDT.page : null,
+        e = postDT ? postDT.sord : null,
+        o = postDT ? postDT.sidx : null;
+
+    $("#" + t).jqGrid("setGridParam", { postData: { filters: i, sord: e, sidx: o, oper_action: n }, search: !0 }),
+        $("#" + t).trigger("reloadGrid", [{ page: a }]);
+
+    if (postDT) {
+        postDT.oper_action = null;
+        postDT.id_sel = null;
+    }
+}
+function loadmes(t) {
     try { $(".noidunggui_chatbox").removeAttr("disabled"), $(".noidunggui_chatbox").val(""), $(".duyvu_tr3_td").append('<a onclick="nhan_trotoitextarea()" style="color:#999;font-size:14;position: absolute;margin: 7 0 0 -521;z-index: 10;cursor: text;">Nhập nội dung muốn gửi...</a>'), $(".noidunggui_chatbox").focus(), $(".nhan_noidung").empty(), $(".nhan_noidung").append(t), $(".nhan_noidung").scrollTop(99999999 * $(".nhan_noidung").height()) } catch (n) { }
 } function thongbaokhimodify(t, n) {
     var i, a, e = ""; i = $("#TblGrid_" + $.jgrid.jqID(n) + ">tbody>tr.tinfo"), a = i.children("td.topinfo"), a.html(e), i.show(), $(".nhan_loading").remove(); var o = t.split("#")[0]; return "false" == o ? ($(".ui-state-error").removeAttr("style"), !1) : (i.hide(), $(".ui-state-error").empty(), e = '<div class="ui-state-highlight ui-corner-all"><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span><span>' + t.split("#")[1] + "</span></div>", i = $("#TblGrid_" + $.jgrid.jqID(n) + ">tbody>tr.tinfo"), a = i.children("td.topinfo"), a.html(e), i.show(), setTimeout(function () { a.children("div").fadeOut("slow", function () { i.hide() }) }, 5e3), !0)
