@@ -120,7 +120,9 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
                             c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
                             c_dongdsdh.sl_outer = Convert.ToDecimal(b["sl_outer"]);
+                            c_dongdsdh.dvt_outer = b["dvt_outer"] + "";
                             c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
+                            c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
                             c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"]);
                             c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
                             c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
