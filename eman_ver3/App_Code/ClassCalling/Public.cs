@@ -152,7 +152,7 @@ public class Public
         {
             int thoigianlamhang = 0;
             var ngaydonhang = DateTime.Now.AddDays(thoigianlamhang);
-            var ngayyeucau = dsdh.hangiaohang_po == null ? DateTime.Now : dsdh.hangiaohang_po;
+            var ngayyeucau = dsdh.ngayhoanthanh == null ? DateTime.Now : dsdh.ngayhoanthanh;
             var tuandonhang = Helper.Week_(ngaydonhang);
             tuandonhang = tuandonhang > 52 ? 52 : tuandonhang;
             nam = ngaydonhang.Year;
