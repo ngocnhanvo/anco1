@@ -74,7 +74,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         DateTime maxDate = DateTime.ParseExact("01/01/1900", "dd/MM/yyyy", null);
         int max_tgnhan_dh = -1, max_tgantoan_dh = -1;
         int colCount = dt.Columns.Count;
-        int rowCount = dt.Select("tong_cbmcandat >= 0").Count();
+        int rowCount = dt.Select("tong_cbmcandat > 0").Count();
         int check = dt.Select("result_nhandh = 0 or result = 0").Count();
         string folder = Security.UrlBase() + "images/icon/";
         if (rowCount > 0)
