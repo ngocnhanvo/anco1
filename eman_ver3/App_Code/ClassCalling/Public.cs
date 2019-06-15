@@ -155,7 +155,7 @@ public class Public
 
         foreach (var item in nnl_group.ToList())
         {
-            tongCBM = item.cbmdat;
+            tongCBM = item.cbmdat.GetValueOrDefault(0);
             int thoigianlamhang = 0;
 
             var tuandonhang = Helper.Week_(ngaydonhang);
