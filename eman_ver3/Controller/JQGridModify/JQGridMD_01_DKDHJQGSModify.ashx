@@ -62,43 +62,99 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
         decimal sl_dat = decimal.Parse(context.Request.Form["sl_dat"]);
         decimal sl_conlai = decimal.Parse(context.Request.Form["sl_conlai"]);
         decimal sl_conlai2 = decimal.Parse(context.Request.Form["sl_conlai2"]);
-        try
-        {
-            //string id = context.Request.Form["id_parent"];
-            c_doichieuhangton_dkdh object_ =
-                db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id)
-                    .Take(1)
-                    .FirstOrDefault();
-            c_doichieuhangton dc = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-            else if (dc.kehoach != " " & dc.kehoach != null)
-            {
-                msg = "false#Lỗi: \"" + dc.ten_donhang + "\" đã lập kế hoạch";
-            }
-            else if (sl_conlai > sl_conlai2)
-            {
-                msg = "false#Lỗi: Không thể vượt quá số lượng tồn kho hiện có : \"" + sl_conlai2 + "\"";
-            }
-            if (msg.Length <= 0)
-            {
-                c_doichieuhangton_dklht dklht = db.c_doichieuhangton_dklht.FirstOrDefault(
-                s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == object_.md_sanpham_id);
-                if (dklht != null)
-                    dklht.sl_lay = sl_conlai;
 
-                object_.sl_conlai = sl_conlai;
-                object_.sl_dat = sl_dat;
-                db.SaveChanges();
-            }
-        }
-        catch (Exception ex)
+        using (var transaction = db.Database.BeginTransaction())
         {
-            msg = "false#" + ex.Message;
+            try
+            {
+                //string id = context.Request.Form["id_parent"];
+                c_doichieuhangton_dkdh object_ =
+                    db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id)
+                        .Take(1)
+                        .FirstOrDefault();
+                c_doichieuhangton dc = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (dc.kehoach != " " & dc.kehoach != null)
+                {
+                    msg = "Lỗi: \"" + dc.ten_donhang + "\" đã lập kế hoạch";
+                }
+                else if (sl_conlai > sl_conlai2)
+                {
+                    msg = "Lỗi: Không thể vượt quá số lượng tồn kho hiện có : \"" + sl_conlai2 + "\"";
+                }
+                if (msg.Length <= 0)
+                {
+                    var dklht = db.c_doichieuhangton_dklht.FirstOrDefault(
+                    s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == object_.md_sanpham_id);
+
+                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
+
+                    if (sp.ma_sanpham == object_.macuoi)
+                    {
+                        dklht.sl_lay = sl_conlai;
+                        object_.sl_conlai = sl_conlai;
+                        object_.sl_dat = object_.sl_dathang_cp - object_.sl_giamhanngach.GetValueOrDefault(0) - sl_conlai;
+                        db.SaveChanges();
+                        dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+                    }
+                    else
+                    {
+                        var spmId = db.md_sanpham.Where(s => s.ma_sanpham == object_.macuoi).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        var dklhtMain = db.c_doichieuhangton_dkdh.FirstOrDefault(
+                        s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == spmId);
+                        if (dklhtMain != null)
+                        {
+                            if (dklht != null)
+                                dklht.sl_lay = object_.sl_conlai;
+
+                            object_.sl_conlai = sl_conlai;
+                            object_.sl_dat = dklhtMain.sl_dat - sl_conlai;
+                            db.SaveChanges();
+                            dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = string.Format("true#Cập nhật số lượng lấy tồn thành công.");
+            }
+            else
+            {
+                transaction.Rollback();
+                msg = string.Format("false#Lỗi:{0}.", msg);
+            }
         }
         context.Response.Write(msg);
+    }
+
+    public void dequyDCTHT_CDH(EntityContext db, string masp, string spId, c_doichieuhangton_dkdh object_)
+    {
+        foreach (var object2_ in db.c_doichieuhangton_dkdh.Where(s => s.macuoi == masp & s.md_sanpham_id != spId
+        & s.c_doichieuhangton_id == object_.c_doichieuhangton_id).ToList())
+        {
+            var dklht = db.c_doichieuhangton_dklht.FirstOrDefault(
+                    s => s.c_doichieuhangton_id == object2_.c_doichieuhangton_id & s.md_sanpham_id == object2_.md_sanpham_id);
+
+            object2_.sl_conlai = object_.sl_dat < object2_.sl_conlai ? object_.sl_dat : object2_.sl_conlai;
+            object2_.sl_dat = object_.sl_dat - object2_.sl_conlai;
+
+            if (dklht != null)
+                dklht.sl_lay = object2_.sl_conlai;
+            db.SaveChanges();
+
+            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object2_.md_sanpham_id).FirstOrDefault();
+            dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object2_);
+        }
     }
 
     public void del(HttpContext context)
@@ -125,7 +181,7 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
                         if (dcht == null)
                         {
-                            msg +=  string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn<br>", "", i + 1);
+                            msg += string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn<br>", "", i + 1);
                         }
                         else if (!string.IsNullOrEmpty(dcht.phieuhangton) & dcht.phieuhangton != " ")
                         {

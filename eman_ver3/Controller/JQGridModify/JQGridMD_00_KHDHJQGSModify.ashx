@@ -293,7 +293,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                          b.sodonhang,
                                          b.mota,
                                          c.md_donvitinhsanpham_id,
-                                         e.ngayhoanthanh
+                                         ngayhoanthanh = (e.ngayhoanthanh == null ? e.hangiaohang_po : e.ngayhoanthanh)
                                      };
                         //start
                         foreach (var item in candat.Where(s =>

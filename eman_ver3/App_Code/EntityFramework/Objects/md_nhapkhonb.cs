@@ -91,6 +91,18 @@
                         public string md_nhapkhonb_id { get; set; }
                 
 						
+                        #region md_nhapkhonb_md_phanxuong_id_wintaFN
+                        
+                        #endregion md_nhapkhonb_md_phanxuong_id_wintaFN
+                        public string md_phanxuong_id { get; set; }
+                
+						
+                        #region md_nhapkhonb_md_to_id_wintaFN
+                        
+                        #endregion md_nhapkhonb_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_nhapkhonb_md_xuatkhonb_id_wintaFN
                         
                         #endregion md_nhapkhonb_md_xuatkhonb_id_wintaFN
