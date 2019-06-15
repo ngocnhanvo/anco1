@@ -160,7 +160,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 //string sql_tongcandat = string.Format(@"SELECT sum(ddh.v2 * ddh.sl_conlai) as tcbm from c_dongdsdh ddh where ddh.c_danhsachdathang_id ='{0}'", poId);
                 //string sql_slCandat = @"select isnull(SUM(cbm_candat), 0) from f_tinhNangLucCungUng('" + poId + "')";
                 //string tong = Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_tongcandat).ToString();
-                decimal slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
+                decimal slTongCanDat = 0;
+                if (donhang.anco_check.GetValueOrDefault(false) == false)
+                {
+                    slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
+                }
+                else
+                {
+                    slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.sl_dathang).GetValueOrDefault(0);
+                }
                 decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
 
                 if (slCanDat < slTongCanDat)

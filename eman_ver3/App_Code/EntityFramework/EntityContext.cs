@@ -11088,6 +11088,14 @@
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkhonb>().HasKey<string>(p => p.md_nhapkhonb_id);
                             modelBuilder.Entity<md_nhapkhonb>()
+                            .Property(p => p.md_phanxuong_id)
+                            .HasColumnName("md_phanxuong_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_nhapkhonb>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_nhapkhonb>()
                             .Property(p => p.md_xuatkhonb_id)
                             .HasColumnName("md_xuatkhonb_id")
                             .HasColumnType("nvarchar");
@@ -13683,6 +13691,14 @@
                             .HasColumnName("md_lenhsanxuat_tosx_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.md_phanxuong_id)
+                            .HasColumnName("md_phanxuong_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.md_trangthai_id)
                             .HasColumnName("md_trangthai_id")
                             .HasColumnType("varchar");
@@ -14277,6 +14293,14 @@
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatkhonb>()
+                            .Property(p => p.md_phanxuong_id)
+                            .HasColumnName("md_phanxuong_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatkhonb>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.md_xuatkhonb_id)
