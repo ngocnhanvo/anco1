@@ -161,21 +161,20 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
 
 
                             khmvt_cdh.sl_tonkho = sl_tonkho;
-                            //khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
+                            khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
                             khmvt_cdh.sl_tonkho_toithieu = sp.sl_tonkho_toithieu.GetValueOrDefault(0);
-                            //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
-                            khmvt_cdh.sl_layton = 0;
-                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
+                            khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
+
+                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton 
                                     + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
                             khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
                         else
                         {
                             khmvt_cdh.sl_can += ycmvt_cdh.soluong_yeucau;
-                            khmvt_cdh.sl_layton = 0;
-                            //khmvt_cdh.sl_layton = khmvt_cdh.sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : khmvt_cdh.sl_tonkho;
-                            //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
-                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
+                            khmvt_cdh.sl_layton = khmvt_cdh.sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : khmvt_cdh.sl_tonkho;
+                            khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
+                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton 
                                     + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
                             khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
@@ -359,10 +358,10 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 transaction.Commit();
 
-                //string postData = "";
-                //postData += "oper=CA_01_LamMoiHangTonKho";
-                //postData += string.Format(@"&id={0}", id_new);
-                //msg = VNN_VariablePublic.GetModule("Controller/JQGridModify/JQGridMD_01_CDKHVattuModify.ashx", postData);
+                string postData = "";
+                postData += "oper=CA_01_LamMoiHangTonKho";
+                postData += string.Format(@"&id={0}", id_new);
+                msg = VNN_VariablePublic.GetModule("Controller/JQGridModify/JQGridMD_01_CDKHVattuModify.ashx", postData);
 
                 if (msg.Length <= 0)
                 {
