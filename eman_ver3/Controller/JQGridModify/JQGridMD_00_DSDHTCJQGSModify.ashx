@@ -61,11 +61,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
     public string CA_01_TinhNangLuc(HttpContext context, int type, EntityContext db)
     {
+											   
         string poId = context.Request.Form["id"];
         var donhang = db.c_danhsachdathang.Where(dh => dh.c_danhsachdathang_id == poId).FirstOrDefault();
         DataTable dt = pub.TinhNangLuc(donhang, db);
         string result = "";
         string ngaylap = donhang.ngaylap.Value.ToString("dd/MM/yyyy");
+																																		
+																				 
+								
         //DataTable dt = Mbg.Data.SqlClient.SqlHelper.GetData("select * from dbo.f_tinhNangLucCungUng('" + poId + "')");
         DateTime maxDate = DateTime.ParseExact("01/01/1900", "dd/MM/yyyy", null);
         int max_tgnhan_dh = -1, max_tgantoan_dh = -1;
@@ -108,6 +112,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     var tgnhan_dh = (int)row["tgnhan_dh"];
                     var tgantoan_dh = (int)row["tgantoan_dh"];
                     if (maxDate < ngaydukien)
+					 
                         maxDate = ngaydukien;
 
                     if (max_tgantoan_dh < tgantoan_dh)
@@ -118,10 +123,21 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 }
             }
             result += "</table></div>";
-
+			
+			decimal slTongCanDat = 0;
+			if (donhang.anco_check.GetValueOrDefault(false) == false)
+			{
+				slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
+			}
+			else
+			{
+				slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2).GetValueOrDefault(0);
+			}
+			decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
+				
             if (check > 0)
             {
-                DateTime? ngaydk = null;
+                DateTime? ngaydk = null, ngayyc = null;
                 foreach (var row in dt.AsEnumerable().GroupBy(s=>s["thoigianyeucau"])
                         .Select(s=> new {
                             tgyc = (DateTime)s.Key,
@@ -139,38 +155,33 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         ngaydk = row.tgdk;
                     else
                         ngaydk = row.tgdk;
-
+					ngayyc = row.tgyc;
                 }
-                //         //tinh thoi gian du kien 
-                //         string sql_dk = @"select case when (tgdk < tgyc and tgnhandh > tgantoan_dh) then tgyc
-                //		when (tgdk < tgyc and tgnhandh < tgantoan_dh) then ngay_dh + tgnhandh
-                //		when (tgdk > tgyc and tgnhandh > tgantoan_dh) then tgdk
-                //		else tgdk
-                //		end
-                //from(
-                //		select MAX(thoigiandukien) tgdk, thoigianyeucau tgyc, max(tgnhan_dh) tgnhandh, max(tgantoan_dh) tgantoan_dh, convert(datetime,'" + ngaylap + "',103) as ngay_dh" +
-                //                                 " from f_tinhNangLucCungUng('" + poId + "')" +
-                //                                 " group by thoigianyeucau) as tmp";
-                //         DateTime ngaydk = (DateTime)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_dk);
-                result = "<div style=\"padding:15px; border:1px solid red; background:#ffadad;\"><h3>Năng lực nhà cung ứng không đáp ứng được đơn hàng này.!<br/>Ngày dự kiến: " + ngaydk.Value.ToString("dd/MM/yyyy") + "</h3></div>" + result;
+				
+				string spanNDKYC = "color:green", spanSLCDTCD = "color:green";
+				if(ngaydk > ngayyc)
+					spanNDKYC = "color:red";
+				if(slTongCanDat > slCanDat)
+					spanSLCDTCD = "color:red";
+                result = string.Format(@"
+				<div style=""padding:15px; border:1px solid red; background:#ffadad;"">
+					<h3 style=""margin:0px;"">
+						Năng lực nhà cung ứng không đáp ứng được đơn hàng này.!
+						<div style=""padding: 10px 0px 5px 0px;font-size: 90% !important;"">Ngày dự kiến: <span style=""{5}"">{0}</span>, Ngày yêu cầu: <span style=""{5}"">{1}</span></div>
+						<div style=""padding: 5px 0px 5px 0px;font-size: 90% !important;"">Năng lực Cung Ứng: <span style=""{6}"">{2}</span>, CBM Đơn Hàng: <span style=""{6}"">{3}</span></div>
+					</h3>
+				</div>{4}", 
+				ngaydk.Value.ToString("dd/MM/yyyy"), 
+				ngayyc.Value.ToString("dd/MM/yyyy"),
+				slCanDat.DropTrailingZeros(), 
+				slTongCanDat.DropTrailingZeros(), 
+				result,
+				spanNDKYC,
+				spanSLCDTCD
+				);
             }
             else
             {
-
-                //string sql_tongcandat = string.Format(@"SELECT sum(ddh.v2 * ddh.sl_conlai) as tcbm from c_dongdsdh ddh where ddh.c_danhsachdathang_id ='{0}'", poId);
-                //string sql_slCandat = @"select isnull(SUM(cbm_candat), 0) from f_tinhNangLucCungUng('" + poId + "')";
-                //string tong = Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_tongcandat).ToString();
-                decimal slTongCanDat = 0;
-                if (donhang.anco_check.GetValueOrDefault(false) == false)
-                {
-                    slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
-                }
-                else
-                {
-                    slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.sl_dathang).GetValueOrDefault(0);
-                }
-                decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
-
                 if (slCanDat < slTongCanDat)
                 {
                     result = "<div style=\"padding:15px; border:1px solid red; background:#ffadad;\"><h3>Năng lực nhà cung ứng không đáp ứng được đơn hàng này.!</h3>Năng lực Cung Ứng: " + slCanDat.DropTrailingZeros() + ", CBM Đơn Hàng: " + slTongCanDat.DropTrailingZeros() + "</div>" + result;
@@ -180,12 +191,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     if (check == 0 && slCanDat >= slTongCanDat)
                     {
                         result = "<div style=\"padding:15px; border:1px sold green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>Năng lực Cung Ứng: " + slCanDat.DropTrailingZeros() + ", CBM Đơn Hàng: " + slTongCanDat.DropTrailingZeros() + "</div>" + result;
+										  
                     }
                     else
                     {
-                        //string sql_chk_lai_tongcandat = @"select isnull(sum(tmp.tong_cbmcandat), 0) from (select distinct dauma, tong_cbmcandat from f_tinhNangLucCungUng('" + poId + "')) as tmp";
-                        //decimal sl_chk_lai_TongCanDat = decimal.Parse(Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(sql_chk_lai_tongcandat).ToString());
-
                         decimal sl_chk_lai_TongCanDat = dt.AsEnumerable().Select(s => new
                         {
                             dauma = s["dauma"],
@@ -195,6 +204,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         if (slCanDat >= sl_chk_lai_TongCanDat)
                         {
                             result = "<div style=\"padding:15px; border:1px solid green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>" + (slCanDat >= slTongCanDat) + "</div>" + result;
+											  
                         }
                         else
                         {
@@ -218,6 +228,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 </div>", dt.Rows[0]["tuanthu"], dt.Rows[0]["nam"]);
         }
 
+					 
         if (type == 0)
         {
             db.Dispose();
@@ -366,6 +377,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     if (dsdh.trangthai == "HIEULUC")
                     {
                         msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " đã hiệu lực.</div>";
+                    }
+                    else if (dsdh.trangthai == "DAGUI")
+                    {
+                        msg += string.Format(@"<div style='color:red'>Lỗi:Đơn hàng ""{0}"" chưa nhận hàng.</div>", dsdh.sochungtu);
                     }
                     else if (dsdh.trangthai == "HUYBO")
                     {
