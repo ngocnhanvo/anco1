@@ -90,30 +90,31 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     var dklht = db.c_doichieuhangton_dklht.FirstOrDefault(
                     s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == object_.md_sanpham_id);
 
-                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
+                    if (dklht != null)
+                    {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
 
-                    if (sp.ma_sanpham == object_.macuoi)
-                    {
-                        dklht.sl_lay = sl_conlai;
-                        object_.sl_conlai = sl_conlai;
-                        object_.sl_dat = object_.sl_dathang_cp - object_.sl_giamhanngach.GetValueOrDefault(0) - sl_conlai;
-                        db.SaveChanges();
-                        dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
-                    }
-                    else
-                    {
-                        var spmId = db.md_sanpham.Where(s => s.ma_sanpham == object_.macuoi).Select(s => s.md_sanpham_id).FirstOrDefault();
-                        var dklhtMain = db.c_doichieuhangton_dkdh.FirstOrDefault(
-                        s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == spmId);
-                        if (dklhtMain != null)
+                        if (sp.ma_sanpham == object_.macuoi)
                         {
-                            if (dklht != null)
-                                dklht.sl_lay = object_.sl_conlai;
-
+                            dklht.sl_lay = sl_conlai;
                             object_.sl_conlai = sl_conlai;
-                            object_.sl_dat = dklhtMain.sl_dat - sl_conlai;
+                            object_.sl_dat = object_.sl_dathang_cp - object_.sl_giamhanngach.GetValueOrDefault(0) - sl_conlai;
                             db.SaveChanges();
                             dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+                        }
+                        else
+                        {
+                            var spmId = db.md_sanpham.Where(s => s.ma_sanpham == object_.macuoi).Select(s => s.md_sanpham_id).FirstOrDefault();
+                            var dklhtMain = db.c_doichieuhangton_dkdh.FirstOrDefault(
+                            s => s.c_doichieuhangton_id == dc.c_doichieuhangton_id & s.md_sanpham_id == spmId);
+                            if (dklhtMain != null)
+                            {
+                                dklht.sl_lay = sl_conlai;
+                                object_.sl_conlai = sl_conlai;
+                                object_.sl_dat = dklhtMain.sl_dat - sl_conlai;
+                                db.SaveChanges();
+                                dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+                            }
                         }
                     }
                 }
@@ -139,19 +140,26 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
     public void dequyDCTHT_CDH(EntityContext db, string masp, string spId, c_doichieuhangton_dkdh object_)
     {
-        foreach (var object2_ in db.c_doichieuhangton_dkdh.Where(s => s.macuoi == masp & s.md_sanpham_id != spId
+        foreach (var object2_ in db.c_doichieuhangton_dkdh.Where(s => s.macuoi.Contains(masp) & s.md_sanpham_id != spId
         & s.c_doichieuhangton_id == object_.c_doichieuhangton_id).ToList())
         {
-            var dklht = db.c_doichieuhangton_dklht.FirstOrDefault(
-                    s => s.c_doichieuhangton_id == object2_.c_doichieuhangton_id & s.md_sanpham_id == object2_.md_sanpham_id);
+            string[] mspCuoi = object2_.macuoi_id.Split(',');
+            if (mspCuoi.Length <= 1)
+            {
+                object2_.sl_conlai = object_.sl_dat < object2_.sl_conlai ? object_.sl_dat : object2_.sl_conlai;
+                object2_.sl_dat = object_.sl_dat - object2_.sl_conlai;
+                db.SaveChanges();
+            }
+            else
+            {
+                var sldat = db.c_doichieuhangton_dkdh.Where(s =>
+                    mspCuoi.Contains(s.md_sanpham_id)
+                    & s.c_doichieuhangton_id == object2_.c_doichieuhangton_id).Sum(s => s.sl_dat);
 
-            object2_.sl_conlai = object_.sl_dat < object2_.sl_conlai ? object_.sl_dat : object2_.sl_conlai;
-            object2_.sl_dat = object_.sl_dat - object2_.sl_conlai;
-
-            if (dklht != null)
-                dklht.sl_lay = object2_.sl_conlai;
-            db.SaveChanges();
-
+                object2_.sl_conlai =sldat < object2_.sl_conlai ? sldat : object2_.sl_conlai;
+                object2_.sl_dat = sldat - object2_.sl_conlai;
+                db.SaveChanges();
+            }
             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object2_.md_sanpham_id).FirstOrDefault();
             dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object2_);
         }

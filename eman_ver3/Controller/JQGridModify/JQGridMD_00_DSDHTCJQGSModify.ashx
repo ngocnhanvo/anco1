@@ -398,7 +398,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     {
                         VNN_Function.SetFormValue("id", dsdh.c_danhsachdathang_id);
                         string msgTNL = CA_01_TinhNangLuc(context, 1, db);
-                        if (!msgTNL.ToLower().Contains("năng lực nhà cung ứng đáp ứng được đơn hàng này"))
+                        if (msgTNL.ToLower().Contains("Hủy bắt lỗi khi năng lực không đủ."))
                         {
                             msg += "<div style='color:red'>Lỗi:không đủ năng lực để nhận Đơn hàng " + dsdh.sochungtu + " .</div>";
                             msg += msgTNL;

@@ -174,7 +174,7 @@ public class Public
                     var row = tbl.NewRow();
                     row["dauma"] = dauma;
                     row["hehang"] = tenhehang;
-                    row["tong_cbmcandat"] = item.cbmdat;
+                    row["tong_cbmcandat"] = tongCBM;
                     row["cbm_candat"] = 0;
                     row["thoigiandukien"] = ngaydonhang;
                     row["tuanthu"] = Math.Round((double)(tuandonhang + thoigianlamhang) / 7, 0);
@@ -201,8 +201,8 @@ public class Public
                 var row = tbl.NewRow();
                 row["dauma"] = dauma;
                 row["hehang"] = tenhehang;
-                row["tong_cbmcandat"] = item.cbmdat;
-                row["cbm_candat"] = item.cbmdat;
+                row["tong_cbmcandat"] = tongCBM;
+                row["cbm_candat"] = item.cbmdat.GetValueOrDefault(0);
                 row["thoigiandukien"] = ngaydukien;
                 row["tuanthu"] = tuanthu;
                 row["thoigianyeucau"] = ngayyeucau;
@@ -231,7 +231,7 @@ public class Public
                             var row = tbl.NewRow();
                             row["dauma"] = dauma;
                             row["hehang"] = tenhehang;
-                            row["tong_cbmcandat"] = item.cbmdat;
+                            row["tong_cbmcandat"] = tongCBM;
                             row["cbm_candat"] = slconlai_tuan;
                             row["thoigiandukien"] = ngaydukien;
                             row["tuanthu"] = tuanthu;
@@ -252,7 +252,7 @@ public class Public
                         var row = tbl.NewRow();
                         row["dauma"] = dauma;
                         row["hehang"] = tenhehang;
-                        row["tong_cbmcandat"] = item.cbmdat;
+                        row["tong_cbmcandat"] = tongCBM;
                         row["cbm_candat"] = sl_dcdat;
                         row["thoigiandukien"] = ngaydukien;
                         row["tuanthu"] = tuanthu;

@@ -718,6 +718,9 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                     dh.md_sanpham_id = sp.md_sanpham_id;
                                     dh.han_giaohang = dsdh1.hangiaohang_po;
                                     dh.md_sanpham_bom_id = bom;
+                                    dh.sl_giamhanngach = 0;
+                                    dh.sl_hanngach = 0;
+                                    dh.sl_dagiao = 0;
                                     var nnl = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).FirstOrDefault();
                                     if (nnl != null)
                                     {
