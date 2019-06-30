@@ -169,10 +169,10 @@ public class Public
             tenhehang = item.nhomnangluc_id;
             if (count_nnl == 0)
             {
-                if (!string.IsNullOrEmpty(dauma))
+                if (!string.IsNullOrEmpty(tenhehang))
                 {
                     var row = tbl.NewRow();
-                    row["dauma"] = dauma;
+                    row["dauma"] = tenhehang;
                     row["hehang"] = tenhehang;
                     row["tong_cbmcandat"] = tongCBM;
                     row["cbm_candat"] = 0;
@@ -224,7 +224,7 @@ public class Public
                                .Where(s => s.hehang == dauma &
                                s.tuan == tuanthu & s.nam == nam).Select(s => s.soluongconlai).FirstOrDefault();
 
-                    if (slconlai_tuan <= sl_dcdat)
+                    if (slconlai_tuan.GetValueOrDefault(0) <= sl_dcdat)
                     {
                         if (slconlai_tuan > 0 & sl_dcdat > 0)
                         {
