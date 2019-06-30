@@ -126,18 +126,18 @@ function timkiem_sanpham(id_elem, type) {
                     $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());
                 },
                 loadComplete: function (data) {
-                    var top_rowid = $('#gridMD_00_DSHangHoaVG_cp tr:nth-child(2)').attr('id');
-                    var countrow = $("#gridMD_00_DSHangHoaVG_cp").jqGrid('getGridParam', 'records');
+                    var top_rowid = $('#gridMD_00_DSHangHoaVG_cp tr:nth-child(2)').attr('id') + '';
+                    var countrow = jQuery("#gridMD_00_DSHangHoaVG_cp").jqGrid('getGridParam', 'records');
                     if (load_sp == 0) {
-                        $('.gs_ma_sanpham').val(id_elem.val());
-                        load_sp = 1;
+                        $('.gs_ma_sanpham.gs_gridMD_00_DSHangHoaVG_cp').val(id_elem.val());
                         $('#gridMD_00_DSHangHoaVG_cp').jqGrid('setSelection', top_rowid);
-                        if (top_rowid.indexOf('<a style=\'color:red\'>') <= -1 & type == 1 & countrow == 1) {
+                        load_sp = 1;
+                        if (top_rowid != '0' & type == 1 & countrow == 1) {
                             $('#dlg_gridSmal_2').dialog('destroy').remove();
                         }
                     }
                     Focus_Selection('gridMD_00_DSHangHoaVG_cp');
-                    //giữ focus end
+                    //giữ focus end 
                     $('.' + input_focus).focus();
                 },
                 caption: ' '

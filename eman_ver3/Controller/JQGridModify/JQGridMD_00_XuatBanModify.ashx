@@ -226,7 +226,8 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                             //--cap nhat so luong xuat
                             edit_xuat(db, dh, us);
                             //--cap nhat vao kho
-                            xuat_kho(db, dh, px, us);
+                            string khospId = xuat_kho(db, dh, px, us);
+                            add_kho_hsd(db, dh, px, us, khospId);
                             //--tao lich su nhap kho
                             add_kho_ls(db, dh, px, us);
                             msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + soluong_xuat + "\"</div>";
@@ -289,7 +290,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         }
         return id_new;
     }
-
+	
     //xuat kho
     public string xuat_kho(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us)
     {
@@ -337,7 +338,30 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         db.md_kho_giaodich.Add(giao);
         return id_new;
     }
+	public string add_kho_hsd(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us, string khospId)
+    {
+        string msg = "";
+        var spid = db.md_kho_sanpham.
+                Where(s => s.md_sanpham_id == dh.md_sanpham_id &
+                s.md_kho_id == px.tukho).Select(s => s.md_kho_sanpham_id).FirstOrDefault();
+        decimal tsl = dh.sl_xuat.GetValueOrDefault(0);
+        foreach (var item in db.md_kho_sanpham_hansudung.
+            Where(s => s.md_kho_sanpham_id == spid & s.soluong > 0).OrderBy(s => s.ngay_hethan).ToList())
+        {
+            decimal soTru = item.soluong.GetValueOrDefault(0) - tsl;
+            if (soTru >= 0)
+            {
+                item.soluong = soTru;
+                break;
+            }
+            else
+                item.soluong = 0;
+            tsl = Math.Abs(soTru);
+        }
 
+        return msg;
+    }
+	
     public void add(HttpContext context)
     {
         EntityContext db = new EntityContext();

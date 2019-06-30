@@ -112,12 +112,13 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             if (msg.Length <= 0)
             {
                 string action = "add";
-                string[] column_ex = { "c_danhsachdathang_id", "sl_conlai", "sl_dagiao", "md_doitackinhdoanh_id", "sl_hanngach" };
+                string[] column_ex = { "c_danhsachdathang_id", "sl_conlai", "sl_dagiao", "md_doitackinhdoanh_id", "sl_hanngach", "sl_giamhanngach" };
                 VNN_Function.SetFormValue("c_danhsachdathang_id", id);
                 VNN_Function.SetFormValue("sl_conlai", sl_dathang.ToString());
                 VNN_Function.SetFormValue("gianhap", gianhap.ToString());
                 VNN_Function.SetFormValue("sl_dagiao", "0");
                 VNN_Function.SetFormValue("sl_hanngach", "0");
+                VNN_Function.SetFormValue("sl_giamhanngach", "0");
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk_id);
                 VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
                 VNN_Function.SetFormValue("md_sanpham_bom_id", bom_sp == null ? ten_phienban : bom_sp.md_sanpham_bom_id);

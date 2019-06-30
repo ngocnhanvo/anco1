@@ -88,7 +88,7 @@ public class JQGridMD_01_CDCDHJQGSModify : IHttpHandler, System.Web.SessionState
 			}
 			else {
 				kh = db.c_kehoachdathang.FirstOrDefault(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id);
-				if(kh.trangthai == "HIEULUC")
+				if(kh.trangthai != "SOANTHAO")
 					msg = "false#Lỗi: Dòng kế hoạch đặt hàng \"" + kh.ten_kh + "\" đã hiệu lực.";
 			}
 			
