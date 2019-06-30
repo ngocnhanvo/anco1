@@ -559,24 +559,22 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 }
             }
 
-            if (ngayhoanthanh != null & ngayhoanthanh != "" & ngayhoanthanh != " ")
+            if (!string.IsNullOrEmpty(ngayhoanthanh) & ngayhoanthanh != " ")
             {
                 check_hoanthanh = true;
+                object_.ngayhoanthanh = VNN_Config.setDateTime(context.Request.Form["ngayhoanthanh"]);
             }
             else
             {
-                VNN_Function.SetFormValue("ngayhoanthanh", "null");
+                object_.ngayhoanthanh = null;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { "check_hoanthanh" };
-                string ten_table = "md_lenhsanxuat_tosx";
-                VNN_Function.SetFormValue("md_phanxuong_to_id", "VNN_notpost");
-                VNN_Function.SetFormValue("check_hoanthanh", check_hoanthanh.ToString());
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                object_.ngaydkht = VNN_Config.setDateTime(context.Request.Form["ngaydkht"]);
+                
+                object_.check_hoanthanh = check_hoanthanh;
+                object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }
