@@ -159,6 +159,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         };
                         db.md_nhapkho_ncc.Add(nk_ncc);
                     }
+
+                    var tslDat = dmh_cdmh.sl_dadat.Value - dmh_cdmh.sl_hanngach.GetValueOrDefault(0);
                     var nk_ncc_dh = new md_nhapkho_ncc_dh
                     {
                         md_nhapkho_ncc_dh_id = Helper.getNewId(),
@@ -168,14 +170,14 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         mota_tiengviet = sp.mota_tiengviet,
                         mota_tienganh = sp.mota_tienganh,
                         khoden = sp.khoton,
-                        tong_sl_dat = dmh_cdmh.sl_dadat.Value - dmh_cdmh.sl_hanngach.GetValueOrDefault(0),
+                        tong_sl_dat = tslDat,
                         tong_sl_dat2 = slthaythe,
                         sl_danhap = 0,
                         sl_danhap2 = 0,
                         sl_nhap = 0,
                         sl_nhap2 = 0,
-                        sl_muonnhap = 0,
-                        sl_muonnhap2 = 0,
+                        sl_muonnhap = tslDat,
+                        sl_muonnhap2 = slthaythe,
                         giatriVND = dmh_cdmh.dongiamua.GetValueOrDefault(0).NgoaiTeToiVND(dmh.md_dongtien_id, dmh.ngaydonhang, db),
                         ngay_hethan = null,
                         nguoitao = us.ad_user_id,

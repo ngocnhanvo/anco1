@@ -201,7 +201,7 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                                     { "ma_sanpham", spCai.ma_sanpham },
                                     { "lsx_to", b.lsx_to },
                                     { "soluong", b.soluong_dichchuyen },
-                                    { "sltd", khosp.soluong }
+                                    { "sltd", khosp == null ? 0 : khosp.soluong }
                                 });
                                 }
                                 else
