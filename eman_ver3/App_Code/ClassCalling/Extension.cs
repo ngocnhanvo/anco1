@@ -171,6 +171,22 @@ public static class Extension
         return lsxTSX;
     }
 
+    public static LSX_TSX getLSXToId2(string md_lenhsanxuat_tosx_id, EntityContext db)
+    {
+        string[] arr = md_lenhsanxuat_tosx_id.Split(new[] { " --- " }, StringSplitOptions.None);
+        string sctLSX = arr[0];
+        string tentoLSX = arr[1];
+        var lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == sctLSX).FirstOrDefault();
+        string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
+        s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
+        var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                            & s.md_phanxuong_to_id == toId).FirstOrDefault();
+        return new LSX_TSX {
+            lsx = lsx,
+            tsx = lsxTSX
+        };
+    }
+
     public static md_lenhsanxuat_tosx getLSXToId_Prev(md_lenhsanxuat_tosx lsxTo, EntityContext db)
     {
         var prev = db.md_lenhsanxuat_tosx.Where(s => s.stt < lsxTo.stt & s.md_lenhsanxuat_id == lsxTo.md_lenhsanxuat_id)
@@ -185,4 +201,10 @@ public static class Extension
             ok = false;
         return ok;
     }
+}
+
+public class LSX_TSX
+{
+    public md_lenhsanxuat lsx { get; set; }
+    public md_lenhsanxuat_tosx tsx { get; set; }
 }
