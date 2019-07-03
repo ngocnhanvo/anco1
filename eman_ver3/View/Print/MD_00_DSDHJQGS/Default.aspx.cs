@@ -127,7 +127,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
 							, sp.mota as ghichu, sp.trongluong
                         from 
 	                        c_danhsachdathang dsdh with (nolock)
-							left join md_doitackinhdoanh dtkd  with (nolock) on dtkd.ma_dtkd = 'VINHGIA'
+							left join md_doitackinhdoanh dtkd  with (nolock) on dtkd.ma_dtkd = 'ANCOTRADING'
 	                        Left join c_dongdsdh ddsdh  with (nolock) on dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
 							left join md_sanpham sp  with (nolock) on ddsdh.md_sanpham_id = sp.md_sanpham_id
 							left join md_donvitinhsanpham dvt  with (nolock) on sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
@@ -154,7 +154,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
 	                        c_danhsachdathang dsdh, md_doitackinhdoanh dtkd, md_sanpham sp
 	                        , c_dongdsdh ddsdh, md_donvitinhsanpham dvt
                         where 1=1
-	                        and dtkd.ma_dtkd = 'VINHGIA'
+	                        and dtkd.ma_dtkd = 'ANCO2'
 	                        AND dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
 	                        AND ddsdh.md_sanpham_id = sp.md_sanpham_id
 	                        AND sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
