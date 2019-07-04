@@ -261,8 +261,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
                 if (sel_val == "0")
                 {
-                    xb_cdh.sl_xuat = sltd;
-                    xb_cdh.sl_xuat2 = sltd;
+                    xb_cdh.sl_xuat = xb_cdh.sl_muonxuat;
+                    xb_cdh.sl_xuat2 = xb_cdh.sl_muonxuat;
                     xb_cdh.ghino = 0;
                     xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
                 }
