@@ -82,7 +82,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                                 dklht.md_donvitinhsanpham_id = khmvt_cdh.md_donvitinhsanpham_id;
                                 dklht.sl_tonkho = sl_tonkho_;
                                 sl_tonkho_ = (sl_tonkho_ - sl_tonkhotoithieu).Set0WhenlessThan0().GetValueOrDefault(0);
-                                dklht.sl_layton = sl_tonkho_ > sl_khmvtCan ? sl_khmvtCan : sl_tonkho_;
+                                //dklht.sl_layton = sl_tonkho_ > sl_khmvtCan ? sl_khmvtCan : sl_tonkho_;
+                                dklht.sl_layton = 0;
                                 var lt_tt = dklht.sl_layton;
                                 //dklht.sl_layton = lt_tt > sl_tonkhotoithieu ? lt_tt - sl_tonkhotoithieu : 0;
                                 sl_tonkhotoithieu = (sl_tonkhotoithieu - lt_tt.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
@@ -93,7 +94,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
                         khmvt_cdh.sl_tonkho = sl_tonkho;
                         sl_tonkho = (sl_tonkho - khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
-                        khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
+                        khmvt_cdh.sl_layton = 0;
+                        //khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
                         //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
 
                         var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
