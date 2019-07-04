@@ -25,6 +25,7 @@ public class ADmin_JSON
         modules.Add("ad_module");
         modules.Add("ad_column");
         modules.Add("ad_case");
+        modules.Add("ad_role_mmc");
         modules.Add("ad_systemconfig");
         foreach (var module in modules)
         {

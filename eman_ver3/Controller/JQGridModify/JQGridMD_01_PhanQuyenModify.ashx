@@ -76,8 +76,8 @@ public class JQGridMD_01_PhanQuyenModify : IHttpHandler, System.Web.SessionState
                     msg += "<div class='nhan-thanhcong' style='color:red'>Đóng chức năng \"" + pq_2.ten_case +
                                     "\" của module:\"" + mod.ten_module + "\" trong menu:\"" + mn.ten_menu + "\" thành công!!!</div>";
                 }
+				idDels.Add(pq_2.ad_role_mmc_id);
                 db.ad_role_mmc.Remove(pq_2);
-                idDels.Add(pq_2.ad_role_mmc_id);
             }
             db.SaveChanges();
             lst = lst.Where(s => !idDels.Contains(s.ad_role_mmc_id)).ToList();
