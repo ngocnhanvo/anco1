@@ -11268,6 +11268,10 @@
                             .HasColumnName("sl_toida_trongLSXTo2")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_nhapkhonb_cdh>()
+                            .Property(p => p.tenhang)
+                            .HasColumnName("tenhang")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_nhapkhonb_cdh>()
                             .Property(p => p.tong_sl_dat)
                             .HasColumnName("tong_sl_dat")
                             .HasColumnType("decimal").HasPrecision(18, 4);

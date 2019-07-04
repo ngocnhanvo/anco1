@@ -139,6 +139,12 @@
                         public Decimal? sl_toida_trongLSXTo2 { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_tenhang_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_tenhang_wintaFN
+                        public string tenhang { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_tong_sl_dat_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_tong_sl_dat_wintaFN
