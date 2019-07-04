@@ -13880,6 +13880,10 @@
                             .HasColumnName("soluong_toida")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.tenhang)
+                            .HasColumnName("tenhang")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.tukho)
                             .HasColumnName("tukho")
                             .HasColumnType("varchar");

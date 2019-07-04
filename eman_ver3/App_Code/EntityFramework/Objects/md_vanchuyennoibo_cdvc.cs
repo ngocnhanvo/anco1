@@ -139,6 +139,12 @@
                         public Decimal? soluong_toida { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_tenhang_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_tenhang_wintaFN
+                        public string tenhang { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_tukho_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_tukho_wintaFN
