@@ -263,8 +263,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 {
                     xb_cdh.sl_xuat = xb_cdh.sl_muonxuat;
                     xb_cdh.sl_xuat2 = xb_cdh.sl_muonxuat;
-                    xb_cdh.ghino = 0;
                     xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                    xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd).Set0WhenlessThan0();
                 }
                 else
                 {
