@@ -683,7 +683,7 @@ System.Web.SessionState.IRequiresSessionState
                                      };
 
                     //Doi chieu hang ton
-                    foreach (var cddh in db.c_doichieuhangton_cddh.Where(s => vnn.Contains(s.c_doichieuhangton_id)).ToList())
+                    foreach (var cddh in db.c_doichieuhangton_cddh.Where(s => s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id).ToList())
                     {
                         string spBomId = db.c_dongdsdh.Where(s =>
                             s.md_sanpham_id == cddh.md_sanpham_id &
@@ -691,28 +691,31 @@ System.Web.SessionState.IRequiresSessionState
                             .Select(s => s.md_sanpham_bom_id).FirstOrDefault();
 
                         //start tinh ton kho
-                        var khohangtonCp = khohangton.Where(s => s.md_sanpham_id == cddh.md_sanpham_id);
-                        decimal sl_ThanhPham = 0;
-                        foreach (var dong_khohangtonCp in khohangtonCp.ToList())
+                        var khohangtonCp = khohangton.Where(s => s.md_sanpham_id == cddh.md_sanpham_id).ToList();
+                        decimal sl_ThanhPham = 0, sl_ThanhPham2 = 0;
+                        foreach (var dong_khohangtonCp in khohangtonCp)
                         {
-                            sl_ThanhPham += dong_khohangtonCp.soluong.GetValueOrDefault(0) -
-                                            db.md_kho_giucho.Where(s =>
-                                                s.md_sanpham_id == cddh.md_sanpham_id &
-                                                s.md_kho_id == dong_khohangtonCp.md_kho_id &
-                                                s.md_donvitinhsanpham_id == dong_khohangtonCp.md_donvitinhsanpham_id
-                                                ).Select(s => s.soluong_giucho).Sum()
-                                                .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            var slgc = db.md_kho_giucho.Where(s =>
+                                            s.md_sanpham_id == dong_khohangtonCp.md_sanpham_id &
+                                            s.md_kho_id == dong_khohangtonCp.md_kho_id &
+                                            s.md_donvitinhsanpham_id == dong_khohangtonCp.md_donvitinhsanpham_id
+                                            ).Select(s => s.soluong_giucho).Sum()
+                                            .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            sl_ThanhPham += dong_khohangtonCp.soluong.GetValueOrDefault(0) - slgc;
+                            sl_ThanhPham2 += dong_khohangtonCp.soluong.GetValueOrDefault(0);
+
                         }
 
 
-                        foreach (var sanpham in khohangtonCp.ToList())
+                        foreach (var sanpham in khohangtonCp)
                         {
                             bool issanpham = convert_bool(sanpham.sanpham);
                             //--Them moi dong ton kho
                             add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
                             sanpham.md_donvitinhsanpham_id, sanpham.mota_tiengviet, sanpham.mota_tienganh,
                             sl_ThanhPham, sanpham.mota, issanpham, sanpham.md_sanpham_id, cddh.sl_dathang.Value,
-                            1, sanpham.md_kho_id, sanpham.ten_kho, us, cddh.sl_giamhanngach.GetValueOrDefault(0));
+                            1, sanpham.md_kho_id, sanpham.ten_kho, us,
+                            cddh.sl_giamhanngach.GetValueOrDefault(0), sl_ThanhPham2);
                         }
 
                         //Neu hang hoa ko co trog kho hoac it hon so luong dat hang thi tach BOM
@@ -927,7 +930,7 @@ System.Web.SessionState.IRequiresSessionState
                 dongbomcon.md_donvitinhsanpham_id, dongbomcon.mota_tiengviet,
                 dongbomcon.mota_tienganh, sl_BanThanhPham, dongbomcon.mota,
                 issanpham, dongbomcon.id_sanpham, cddh.sl_dathang.Value, dongbomcon.soluong.Value,
-                md_kho_id, ma_kho, us, cddh.sl_giamhanngach.GetValueOrDefault(0));
+                md_kho_id, ma_kho, us, cddh.sl_giamhanngach.GetValueOrDefault(0), sl_BanThanhPham);
             }
             //--Them moi dong Du kien dat hang
             add_dongdukiendathang(db, cddh.c_doichieuhangton_id, dongbomcon.md_sanpham_id, dongbomcon.id_sanpham, 0,
@@ -1069,7 +1072,8 @@ System.Web.SessionState.IRequiresSessionState
     //Them dong trong ton kho
     public string add_dongtonkho(EntityContext db, string c_doichieuhangton_id, string md_sanpham_id,
         string md_donvitinhsanpham_id, string mota_tiengviet, string mota_tienganh, decimal soluong, string mota,
-        bool sanpham, string macuoi, decimal sl_dathang, double soluong_bom, string md_kho_id, string makho, User_TK us, decimal sl_giamhanngach)
+        bool sanpham, string macuoi, decimal sl_dathang, double soluong_bom, string md_kho_id, string makho, User_TK us,
+        decimal sl_giamhanngach, decimal sl_trongkho)
     {
 
         string ma_sanpham = db.md_sanpham.Where(s => s.md_sanpham_id == macuoi).Select(s => s.ma_sanpham).Take(1).FirstOrDefault();
@@ -1108,6 +1112,8 @@ System.Web.SessionState.IRequiresSessionState
         tkho.mota_tiengviet = mota_tiengviet;
         tkho.mota_tienganh = mota_tienganh;
         tkho.sl_conlai = soluong;
+        tkho.sl_trongkho = sl_trongkho;
+        tkho.sl_giucho = tkho.sl_trongkho - tkho.sl_conlai;
         tkho.sanpham = sanpham;
         tkho.mota = mota;
         tkho.nguoitao = us.ad_user_id;

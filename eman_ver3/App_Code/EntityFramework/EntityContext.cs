@@ -3858,15 +3858,23 @@
                             modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.sl_conlai)
                             .HasColumnName("sl_conlai")
-                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.sl_dathang)
                             .HasColumnName("sl_dathang")
-                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.sl_giamhanngach)
                             .HasColumnName("sl_giamhanngach")
-                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_doichieuhangton_tk>()
+                            .Property(p => p.sl_giucho)
+                            .HasColumnName("sl_giucho")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_doichieuhangton_tk>()
+                            .Property(p => p.sl_trongkho)
+                            .HasColumnName("sl_trongkho")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.tachbom)
                             .HasColumnName("tachbom")

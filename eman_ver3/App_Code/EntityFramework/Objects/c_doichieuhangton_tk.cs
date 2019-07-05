@@ -145,6 +145,18 @@
                         public Decimal? sl_giamhanngach { get; set; }
                 
 						
+                        #region c_doichieuhangton_tk_sl_giucho_wintaFN
+                        
+                        #endregion c_doichieuhangton_tk_sl_giucho_wintaFN
+                        public Decimal? sl_giucho { get; set; }
+                
+						
+                        #region c_doichieuhangton_tk_sl_trongkho_wintaFN
+                        
+                        #endregion c_doichieuhangton_tk_sl_trongkho_wintaFN
+                        public Decimal? sl_trongkho { get; set; }
+                
+						
                         #region c_doichieuhangton_tk_tachbom_wintaFN
                         
                         #endregion c_doichieuhangton_tk_tachbom_wintaFN
