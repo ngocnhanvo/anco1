@@ -736,8 +736,11 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     }
                     else if (object_.trangthai != "SOANTHAO")
                     {
-                        msg_del = "Lỗi:\"" + object_.ten_kh + "\" đã hiệu lực, không thể xóa.";
-                        msg += msg_del + "<br>";
+                        if (db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).Count() > 0)
+                        {
+                            msg_del = "Lỗi:\"" + object_.ten_kh + "\" đã hiệu lực, không thể xóa.";
+                            msg += msg_del + "<br>";
+                        }
                     }
                     else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id
                             & db.c_nhucauvattu_dhpx.Where(t => t.md_dondathangphanxuong_id == s.c_kehoachdathang_dhcpx_id).Count() > 0).Count() > 0)

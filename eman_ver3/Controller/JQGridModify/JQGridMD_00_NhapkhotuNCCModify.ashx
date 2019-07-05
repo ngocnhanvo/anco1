@@ -459,7 +459,6 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_nhapkho_ncc";
             int count = context.Request.Form["id"].Split(',').Count();
             string[] id_del = new string[count];
             id_del = context.Request.Form["id"].Split(',');
@@ -492,19 +491,13 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                         if (dmh_cdmh != null)
                             dmh_cdmh.sl_hanngach += nk_ncc_dh.tong_sl_dat;
                     }*/
-                    db.md_nhapkho_ncc.Remove(object_);
+                    object_.trangthai = "SOANTHAO";
                 }
             }
 
             if (msg.Length <= 0)
             {
                 db.SaveChanges();
-                string[] vnn_donhang_id = c_donmuahang_id.Split(',');
-                foreach (c_donmuahang dmh in db.c_donmuahang.Where(s => vnn_donhang_id.Contains(s.c_donmuahang_id)))
-                {
-                    if (db.md_nhapkho_ncc.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Count() <= 0)
-                        dmh.phieunhapkho = " ";
-                }
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Xóa thành công.";
             }

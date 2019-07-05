@@ -155,7 +155,7 @@ System.Web.SessionState.IRequiresSessionState
                             }
 
                             string md_kho_id = "", sochungtu = "", id_new = "";
-                            foreach (var dklht in lstKho.OrderBy(s=>s["kho"].ToString()))
+                            foreach (var dklht in lstKho.OrderBy(s => s["kho"].ToString()))
                             {
                                 decimal? slLayCP = decimal.Parse(dklht["sl_lay"].ToString());
                                 string khoId = dklht["kho"].ToString();
@@ -709,6 +709,7 @@ System.Web.SessionState.IRequiresSessionState
 
                         foreach (var sanpham in khohangtonCp)
                         {
+                            string bo = sanpham.ma_sanpham.Substring(9, 2);
                             bool issanpham = convert_bool(sanpham.sanpham);
                             //--Them moi dong ton kho
                             add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
@@ -716,6 +717,38 @@ System.Web.SessionState.IRequiresSessionState
                             sl_ThanhPham, sanpham.mota, issanpham, sanpham.md_sanpham_id, cddh.sl_dathang.Value,
                             1, sanpham.md_kho_id, sanpham.ten_kho, us,
                             cddh.sl_giamhanngach.GetValueOrDefault(0), sl_ThanhPham2);
+
+
+                            string bc = sanpham.ma_sanpham.Substring(9, 2);
+                            string start = sanpham.ma_sanpham.Substring(0, 9) + "S";
+                            string end = sanpham.ma_sanpham.Substring(11, 3);
+                            string boS = db.md_sanpham.Where(s =>
+                                s.ma_sanpham.StartsWith(start)
+                                & s.ma_sanpham.EndsWith(end))
+                                .Select(s => s.ma_sanpham).FirstOrDefault();
+                            boS = !string.IsNullOrEmpty(boS) ? boS.Substring(9, 2) : "";
+                            var boSele = db.md_bo.Where(s => s.ma_bo == bc & s.ma_bo_cha == boS).FirstOrDefault();
+
+                            foreach (var bodt in db.md_bo_chitiet.Where(s => s.md_bo_id == boSele.md_bo_id).ToList())
+                            {
+                                string ma_spdetail = sanpham.ma_sanpham.Replace(bc, bodt.md_bo_detail);
+                                var sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_spdetail);
+                                if (sp != null)
+                                {
+                                    var sl = khohangton.Where(s => s.md_sanpham_id == sp.md_sanpham_id).Select(s => s.soluong).Sum();
+                                    add_dongtonkho(db, cddh.c_doichieuhangton_id, sp.md_sanpham_id,
+                                    sp.md_donvitinhsanpham_id, sp.mota_tiengviet, sp.mota_tienganh,
+                                    sl.GetValueOrDefault(0), sanpham.mota, sp.sanpham.GetValueOrDefault(false), 
+                                    sp.md_sanpham_id, 
+                                    0,
+                                    1, 
+                                    sanpham.md_kho_id, 
+                                    sanpham.ten_kho, 
+                                    us,
+                                    cddh.sl_giamhanngach.GetValueOrDefault(0), 
+                                    sl.GetValueOrDefault(0));
+                                }
+                            }
                         }
 
                         //Neu hang hoa ko co trog kho hoac it hon so luong dat hang thi tach BOM
@@ -742,7 +775,9 @@ System.Web.SessionState.IRequiresSessionState
                     }
 
                     //start tinh du kien lay hang ton
-                    foreach (var dcht_tk in db.c_doichieuhangton_tk.Where(s => vnn.Contains(s.c_doichieuhangton_id)).ToList())
+                    foreach (var dcht_tk in db.c_doichieuhangton_tk.Where(s => 
+                        s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id
+                        & s.sl_dathang > 0).ToList())
                     {
                         decimal sllay = dcht_tk.sl_conlai.Value - dcht_tk.sl_dathang.Value;
 
@@ -801,7 +836,8 @@ System.Web.SessionState.IRequiresSessionState
                     //end tinh du kien lay hang ton	
 
                     //--Cap nhat du kien dat hang
-                    var c_doichieuhangton_dkdh = db.c_doichieuhangton_dkdh.Where(s => vnn.Contains(s.c_doichieuhangton_id));
+                    var c_doichieuhangton_dkdh = db.c_doichieuhangton_dkdh.
+                            Where(s => s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id);
                     foreach (var dkdh in c_doichieuhangton_dkdh.ToList())
                     {
                         if (dkdh.sl_dathang.Value > 0)
@@ -821,12 +857,11 @@ System.Web.SessionState.IRequiresSessionState
                         dkdh.sl_dat = sl_dat;
                     }
 
-                    foreach (var dcht in db.c_doichieuhangton.Where(s => vnn.Contains(s.c_doichieuhangton_id)).ToList())
+                    foreach (var dcht in db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id).ToList())
                     {
                         dcht.doichieuht = true;
                     }
                     db.SaveChanges();
-
                 }
             }
         }
