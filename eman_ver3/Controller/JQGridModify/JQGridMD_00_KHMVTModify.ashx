@@ -129,6 +129,11 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
             if (dongMuaHang > 0)
             {
                 str += "<option value='" + khmvt.c_kehoachmuavt_id + "'>" + khmvt.ten_kehoach + "</option>";
+                //var dtkd = from a in db.md_banggia
+                //           join b in db.md_phienbangia on a.md_banggia_id equals b.md_banggia_id
+                //           join c in db.md_giasanpham on b.md_phienbangia_id equals c.md_phienbangia_id
+                //           where c.md_sanpham_id = 
+                //           select a.lienket_bg;
             }
         }
 

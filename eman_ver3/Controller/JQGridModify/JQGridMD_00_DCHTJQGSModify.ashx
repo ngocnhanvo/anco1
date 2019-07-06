@@ -709,7 +709,6 @@ System.Web.SessionState.IRequiresSessionState
 
                         foreach (var sanpham in khohangtonCp)
                         {
-                            string bo = sanpham.ma_sanpham.Substring(9, 2);
                             bool issanpham = convert_bool(sanpham.sanpham);
                             //--Them moi dong ton kho
                             add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
@@ -719,36 +718,36 @@ System.Web.SessionState.IRequiresSessionState
                             cddh.sl_giamhanngach.GetValueOrDefault(0), sl_ThanhPham2);
 
 
-                            string bc = sanpham.ma_sanpham.Substring(9, 2);
-                            string start = sanpham.ma_sanpham.Substring(0, 9) + "S";
-                            string end = sanpham.ma_sanpham.Substring(11, 3);
-                            string boS = db.md_sanpham.Where(s =>
-                                s.ma_sanpham.StartsWith(start)
-                                & s.ma_sanpham.EndsWith(end))
-                                .Select(s => s.ma_sanpham).FirstOrDefault();
-                            boS = !string.IsNullOrEmpty(boS) ? boS.Substring(9, 2) : "";
-                            var boSele = db.md_bo.Where(s => s.ma_bo == bc & s.ma_bo_cha == boS).FirstOrDefault();
+                            //string bc = sanpham.ma_sanpham.Substring(9, 2);
+                            //string start = sanpham.ma_sanpham.Substring(0, 9) + "S";
+                            //string end = sanpham.ma_sanpham.Substring(11, 3);
+                            //string boS = db.md_sanpham.Where(s =>
+                            //    s.ma_sanpham.StartsWith(start)
+                            //    & s.ma_sanpham.EndsWith(end))
+                            //    .Select(s => s.ma_sanpham).FirstOrDefault();
+                            //boS = !string.IsNullOrEmpty(boS) ? boS.Substring(9, 2) : "";
+                            //var boSele = db.md_bo.Where(s => s.ma_bo == bc & s.ma_bo_cha == boS).FirstOrDefault();
 
-                            foreach (var bodt in db.md_bo_chitiet.Where(s => s.md_bo_id == boSele.md_bo_id).ToList())
-                            {
-                                string ma_spdetail = sanpham.ma_sanpham.Replace(bc, bodt.md_bo_detail);
-                                var sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_spdetail);
-                                if (sp != null)
-                                {
-                                    var sl = khohangton.Where(s => s.md_sanpham_id == sp.md_sanpham_id).Select(s => s.soluong).Sum();
-                                    add_dongtonkho(db, cddh.c_doichieuhangton_id, sp.md_sanpham_id,
-                                    sp.md_donvitinhsanpham_id, sp.mota_tiengviet, sp.mota_tienganh,
-                                    sl.GetValueOrDefault(0), sanpham.mota, sp.sanpham.GetValueOrDefault(false), 
-                                    sp.md_sanpham_id, 
-                                    0,
-                                    1, 
-                                    sanpham.md_kho_id, 
-                                    sanpham.ten_kho, 
-                                    us,
-                                    cddh.sl_giamhanngach.GetValueOrDefault(0), 
-                                    sl.GetValueOrDefault(0));
-                                }
-                            }
+                            //foreach (var bodt in db.md_bo_chitiet.Where(s => s.md_bo_id == boSele.md_bo_id).ToList())
+                            //{
+                            //    string ma_spdetail = sanpham.ma_sanpham.Replace(bc, bodt.md_bo_detail);
+                            //    var sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_spdetail);
+                            //    if (sp != null)
+                            //    {
+                            //        var sl = khohangton.Where(s => s.md_sanpham_id == sp.md_sanpham_id).Select(s => s.soluong).Sum();
+                            //        add_dongtonkho(db, cddh.c_doichieuhangton_id, sp.md_sanpham_id,
+                            //        sp.md_donvitinhsanpham_id, sp.mota_tiengviet, sp.mota_tienganh,
+                            //        sl.GetValueOrDefault(0), sanpham.mota, sp.sanpham.GetValueOrDefault(false),
+                            //        sp.md_sanpham_id,
+                            //        0,
+                            //        1,
+                            //        sanpham.md_kho_id,
+                            //        sanpham.ten_kho,
+                            //        us,
+                            //        cddh.sl_giamhanngach.GetValueOrDefault(0),
+                            //        sl.GetValueOrDefault(0));
+                            //    }
+                            //}
                         }
 
                         //Neu hang hoa ko co trog kho hoac it hon so luong dat hang thi tach BOM
@@ -775,9 +774,8 @@ System.Web.SessionState.IRequiresSessionState
                     }
 
                     //start tinh du kien lay hang ton
-                    foreach (var dcht_tk in db.c_doichieuhangton_tk.Where(s => 
-                        s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id
-                        & s.sl_dathang > 0).ToList())
+                    foreach (var dcht_tk in db.c_doichieuhangton_tk.Where(s =>
+                        s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id).ToList())
                     {
                         decimal sllay = dcht_tk.sl_conlai.Value - dcht_tk.sl_dathang.Value;
 
@@ -862,6 +860,45 @@ System.Web.SessionState.IRequiresSessionState
                         dcht.doichieuht = true;
                     }
                     db.SaveChanges();
+
+                    foreach (var tkCai in db.c_doichieuhangton_tk.Where(s =>
+                     s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id).ToList())
+                    {
+                        var sanpham = db.md_sanpham.Where(s => s.md_sanpham_id == tkCai.md_sanpham_id).FirstOrDefault();
+                        if (sanpham != null)
+                        {
+                            string bc = sanpham.ma_sanpham.Substring(9, 2);
+                            string start = sanpham.ma_sanpham.Substring(0, 9) + "S";
+                            string end = sanpham.ma_sanpham.Substring(11, 3);
+                            string boS = db.md_sanpham.Where(s =>
+                                s.ma_sanpham.StartsWith(start)
+                                & s.ma_sanpham.EndsWith(end))
+                                .Select(s => s.ma_sanpham).FirstOrDefault();
+                            boS = !string.IsNullOrEmpty(boS) ? boS.Substring(9, 2) : "";
+                            string boSeleId = db.md_bo.Where(s => s.ma_bo == bc & s.ma_bo_cha == boS).Select(s=>s.md_bo_id).FirstOrDefault();
+
+                            foreach (var bodt in db.md_bo_chitiet.Where(s => s.md_bo_id == boSeleId).ToList())
+                            {
+                                string ma_spdetail = sanpham.ma_sanpham.Replace(bc, bodt.md_bo_detail);
+                                var sp = db.md_sanpham.FirstOrDefault(s => s.ma_sanpham == ma_spdetail);
+                                if (sp != null)
+                                {
+                                    var sl = khohangton.Where(s => s.md_sanpham_id == sp.md_sanpham_id).Select(s => s.soluong).Sum();
+                                    add_dongtonkho(db, dcht1.c_doichieuhangton_id, sp.md_sanpham_id,
+                                    sp.md_donvitinhsanpham_id, sp.mota_tiengviet, sp.mota_tienganh,
+                                    sl.GetValueOrDefault(0), sanpham.mota, sp.sanpham.GetValueOrDefault(false),
+                                    sanpham.md_sanpham_id,
+                                    0,
+                                    1,
+                                    "",
+                                    "",
+                                    us,
+                                    0,
+                                    sl.GetValueOrDefault(0));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1128,6 +1165,7 @@ System.Web.SessionState.IRequiresSessionState
         }
         else
         {
+            tkho.sl_dathang += sl_dathang;
             id_new = tkho.c_doichieuhangton_tk_id;
             if (!tkho.macuoi_id.Contains(macuoi))
             {
