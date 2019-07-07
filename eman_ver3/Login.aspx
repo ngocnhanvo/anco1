@@ -4,8 +4,12 @@
 
 <% 
     EntityContext db = new EntityContext();
-    ad_systemconfig ttc = db.ad_systemconfig.FirstOrDefault();  
-	string url_server = Request.Url.Host;
+    db.Configuration.AutoDetectChangesEnabled = false;
+    db.Configuration.LazyLoadingEnabled = false;
+    var ttc = db.ad_systemconfig.Take(1).FirstOrDefault();
+    string url_server = Request.Url.Host;
+    string urlBalse = Security.UrlBase();
+    string logo = ttc == null ? urlBalse + " images/logo/imagenotfound.jpg" : urlBalse + ttc.logo + "?ver1";
 %>
 <!DOCTYPE html>
 
@@ -25,7 +29,7 @@
 	    <div id="wapper-layout" class="ui-layout-center">
 		    <div id="main0" class="ui-layout-north toolbar">
 			    <div align="center" style="background: url('images/bg-logo.png') no-repeat center center; position: absolute; top: -8px; left: 10px; height: 105px; width: 200px;"> 
-                        <img class="img_updatelinq" style="margin-top: 20px;" src="<%=ttc==null ? Security.UrlBase() + " images/logo/imagenotfound.jpg" : Security.UrlBase() + ttc.logo + "?ver1" %>"/> </div><span class="close"></span>
+                        <img class="img_updatelinq" style="margin-top: 20px;" src="<%=logo %>"/> </div><span class="close"></span>
 			    <table style="margin: 24px 0px 0px 200px">
 				    <tr>
 					    <td> </td>

@@ -10,7 +10,9 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
         string userId = Security.id_taikhoan(Context);
         if (userId != "")
         {
-            EntityContext db = new EntityContext();
+            var db = new EntityContext();
+            db.Configuration.AutoDetectChangesEnabled = false;
+            db.Configuration.LazyLoadingEnabled = false;
             int tk = db.ad_user.Where(p => p.ad_user_id == userId).Take(1).Count();
             if (tk > 0)
             {
@@ -27,8 +29,9 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
         {
             if (!txtTaiKhoan.Text.Equals("") & !txtMatKhau.Text.Equals(""))
             {
-                EntityContext db = new EntityContext();
-                //LinqDataContext db = new LinqDataContext();
+                var db = new EntityContext();
+                db.Configuration.AutoDetectChangesEnabled = false;
+                db.Configuration.LazyLoadingEnabled = false;
                 string pass = Security.EncodeMd5Hash(txtMatKhau.Text);
                 var us = db.ad_user.Where(s => s.ma_user == txtTaiKhoan.Text & s.matkhau == pass).Select(s => new { s.ad_user_id }).FirstOrDefault();
                 if (userId == "")
