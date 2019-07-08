@@ -1,10 +1,10 @@
-﻿<%@ WebHandler Language="C#" Class="JQGridMD_01_DongmuahangModify" %>
+﻿<%@ WebHandler Language="C#" Class="JQGridMD_01_DongMuaHangBSModify" %>
 using System;
 using System.Web;
 using System.Linq;
 using System.Data.Linq;
 using DataAcess;
-public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
+public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
     {
@@ -59,31 +59,25 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
             }
             else
             {
-                var pbg = db.md_phienbangia.Where(s => s.md_banggia_id == dmh.md_banggia_id & s.md_trangthai_id == "HIEULUC").FirstOrDefault();
-                if (pbg != null)
-                {
-                    var gsp = db.md_giasanpham.
-                            Where(s =>
-                                s.md_sanpham_id == sp.md_sanpham_id &
-                                s.md_phienbangia_id == pbg.md_phienbangia_id &
-                                s.md_donvitinhsanpham_id == donvitinhId).FirstOrDefault();
-                    if (gsp != null)
-                    {
-                        if (dongiamua <= 0)
-                            dongiamua = (decimal)gsp.gia.Value;
+                
+				var gsp = db.md_giasanpham.
+						Where(s =>
+							s.md_sanpham_id == sp.md_sanpham_id &
+							s.md_phienbangia_id == dmh.md_phienbangia_id &
+							s.md_donvitinhsanpham_id == donvitinhId).FirstOrDefault();
+				if (gsp != null)
+				{
+					if (dongiamua <= 0)
+						dongiamua = gsp.gia.GetValueOrDefault(0);
 
-                        giachuan = (decimal)gsp.gia.Value;
-                        thanhtien = dongiamua * sl_dadat;
-                    }
-                }
-                if (dongiamua <= 0 & 
-                        db.md_doitackinhdoanh.Where(s=>
-                            s.md_doitackinhdoanh_id == dmh.md_doitackinhdoanh_id & 
-                            s.ma_dtkd == "MUA NGOAI").FirstOrDefault() == null
-                )
-                    msg = string.Format(@"false#Bảng giá của đơn mua hàng ""{0}"" không có giá cho sản phẩm ""{1}"".", dmh.sochungtu, sp.ma_sanpham);
+					giachuan = gsp.gia.GetValueOrDefault(0);
+					thanhtien = dongiamua * sl_dadat;
+				}
+
+                if (dongiamua <= 0)
+                    msg = "false#Bảng giá của đơn mua hàng \"" + dmh.sochungtu + "\" không có giá cho sản phẩm \"" + sp.ma_sanpham + "\".";
                 else if (dongiamua > giachuan)
-                    msg = @"false#Giá mua không thể lớn hơn giá chuẩn.";
+                    msg = string.Format(@"false#Giá mua không thể lớn hơn giá chuẩn. ({0} > {1})", dongiamua, giachuan);
                 var check = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id & s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
                 if (check != null)
                     msg = "false#Lỗi: Mã sản phẩm đã tồn tại";

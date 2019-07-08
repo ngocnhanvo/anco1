@@ -7,20 +7,47 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
 
 	var CLform_infor = new get_Forminfor(ma_case, Form_infor);
 	var ma_module = tengrid.replace('grid','');
-	$('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-		'<div class="dlg_content">'+
-			'<div class="err_MD_00_KHMHHVT"></div>'+
-			'<div style="padding: 1px 0 8px 0;"><table><tr><td>Chọn KHMVT: </td><td><select style="width:350px" data-placeholder="Chọn 1 KHMVT.." class="sel_loadkhmvt"><option value="1">Đang tải...</option></select></td></tr></table></div>'+
-			'<table id="gridMD_00_KHMHHVT_cp"></table>' +
-			'<div id="pagergridMD_00_KHMHHVT_cp"></div>' +
-		'</div>' +
-	'</div>');
+    $('body').append(`
+    <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+		<div class="dlg_content">
+			<div class="err_MD_00_KHMHHVT"></div>
+			<div style="padding: 1px 0 8px 0;">
+                <table>
+                    <tr>
+                        <td style="text-align: right;">Chọn KHMVT: </td>
+                        <td>
+                            <select style="width:350px" data-placeholder="Chọn 1 KHMVT.." class="sel_loadkhmvt"><option value="1">Đang tải...</option></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  style="text-align: right;">
+                            <input type="button" value="Chọn" id="btnSLMbangSLCM" />
+                        </td>
+                        <td>
+                            <label for="btnSLMbangSLCM">Số lượng mua = Số lượng cần mua</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+			<table id="gridMD_00_KHMHHVT_cp"></table>
+			<div id="pagergridMD_00_KHMHHVT_cp"></div>
+		</div>
+	</div>`);
 	var input_focus = '';
 	$('#dlg_gridSmall').dialog({
 		modal: true,
 		width: CLform_infor.dodai,
 		height: CLform_infor.docao,
         open: function (event, ui) {
+            $('#btnSLMbangSLCM').off('click');
+            $('#btnSLMbangSLCM').click(function () {
+                var ids = $("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
+                for (let i = 0; i < ids.length; i++) {
+                    let rowId = ids[i];
+                    let rowData = $('#gridMD_00_KHMHHVT_cp').jqGrid('getRowData', rowId);
+                    $(`#${rowId}_sl_semua`).val(rowData["sl_canmua"]);
+                }
+            });
             $.get('Controller/JqGridModify/JQGridMD_00_KHMVTModify.ashx?oper=load_khmvt', function (result) {
                 let json = JSON.parse(result);
                 let donvitinh = json['donvitinh'].replace('value:', '');
@@ -28,7 +55,7 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                 donvitinh = JSON.parse(donvitinh);
                 $('.sel_loadkhmvt').html(json['khmvt']);
                 
-				$('.sel_loadkhmvt').change(function(){
+				$('.sel_loadkhmvt').change(function() {
 					$('#gridMD_00_KHMHHVT_cp').trigger("reloadGrid");
 				});
                 var config = {
@@ -370,17 +397,17 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                     var CLform_infor = new get_Forminfor(ma_case, Form_infor);
                     var ma_module = tengrid.replace('grid', '');
                     if (sel_val == 1) {
-                        var url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
+                        let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
 						ma_module + "&id=" + masterId;
-                        var strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                        var left = (window.innerWidth - 1024) / 2 - 10;
+                        let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                        let left = (window.innerWidth - 1024) / 2 - 10;
                         window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
                     }
                     else {
-                        var url = url_org_sys + 'View/Print/MD_00_DonMuaHang/donMuaHangHoa.aspx?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
+                        let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/donMuaHangHoa.aspx?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
 						ma_module + "&id=" + masterId;
-                        var strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                        var left = (window.innerWidth - 1024) / 2 - 10;
+                        let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                        let left = (window.innerWidth - 1024) / 2 - 10;
                         window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
                     }
                 }

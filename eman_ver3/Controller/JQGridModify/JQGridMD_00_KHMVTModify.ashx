@@ -253,30 +253,30 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == arr_ncc_).FirstOrDefault();
                     if (dtkd != null)
                     {
-                        if (dtkd.md_banggia_id != null & dtkd.md_banggia_id != "" | dtkd.ma_dtkd == "MUA NGOAI")
+                        //if (dtkd.md_banggia_id != null & dtkd.md_banggia_id != "" | dtkd.ma_dtkd == "MUA NGOAI")
+                        //{
+                        khmvt_hh khm = new khmvt_hh
                         {
-                            khmvt_hh khm = new khmvt_hh
-                            {
-                                md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id,
-                                md_donvitinhsanpham_id = arr_dvt_,
-                                md_sanpham_id = sp.md_sanpham_id,
-                                sl_duyet = khmvt_cdh.sl_duyet.Value,
-                                sl_conlai = khmvt_cdh.sl_conlai.Value,
-                                sl_semua = sl_semua,
-                                sl_semua2 = sl_thaythe,
-                                saiso = saiso,
-                                md_thue_sanpham_id = sp.md_thue_sanpham_id,
-                                daidien = dtkd.daidien,
-                                ma_sanpham = sp.ma_sanpham,
-                                ma_dtkd = dtkd.ma_dtkd,
-                                md_banggia_id = dtkd.md_banggia_id
-                            };
-                            lst.Add(khm);
-                        }
-                        else if (sl_semua > 0)
-                        {
-                            msg += "<div style='color:red'>Lỗi:NCC \"" + arr_ncc[i] + "\" không có bảng giá</div>";
-                        }
+                            md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id,
+                            md_donvitinhsanpham_id = arr_dvt_,
+                            md_sanpham_id = sp.md_sanpham_id,
+                            sl_duyet = khmvt_cdh.sl_duyet.Value,
+                            sl_conlai = khmvt_cdh.sl_conlai.Value,
+                            sl_semua = sl_semua,
+                            sl_semua2 = sl_thaythe,
+                            saiso = saiso,
+                            md_thue_sanpham_id = sp.md_thue_sanpham_id,
+                            daidien = dtkd.daidien,
+                            ma_sanpham = sp.ma_sanpham,
+                            ma_dtkd = dtkd.ma_dtkd,
+                            md_banggia_id = db.md_banggia.Where(s=>s.lienket_bg == dtkd.ma_dtkd).Select(s=>s.md_banggia_id).ToList()
+                        };
+                        lst.Add(khm);
+                        //}
+                        //else if (sl_semua > 0)
+                        //{
+                        //    msg += "<div style='color:red'>Lỗi:NCC \"" + arr_ncc[i] + "\" không có bảng giá</div>";
+                        //}
                     }
                     else if (sl_semua > 0)
                     {
@@ -311,13 +311,13 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                 string nhacungung = "123";
                 int dem_khmvt_cdh = 0;
                 /*if(khmvt.c_donmuavattu_id != " ") {
-					msg += "<div style='color:red'>Lỗi:Kế hoạch \""+ khmvt.sochungtu +"\" đã tạo đơn mua vật tư</div>";
-				}*/
+                    msg += "<div style='color:red'>Lỗi:Kế hoạch \""+ khmvt.sochungtu +"\" đã tạo đơn mua vật tư</div>";
+                }*/
                 /*if(countx > 0)
-				{
-					msg = "<div style='color:red'>Đơn mua hàng trước chưa Hiệu Lực, không thể tạo phiếu mới.</div>";
-					break;
-				}*/
+                {
+                    msg = "<div style='color:red'>Đơn mua hàng trước chưa Hiệu Lực, không thể tạo phiếu mới.</div>";
+                    break;
+                }*/
                 if (1 == 1)
                 {
                     var c_kehoachmuavt_cdhs = lst.Where(s => s.sl_semua > 0).OrderBy(s => s.md_doitackinhdoanh_id).ToList();
@@ -332,7 +332,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                          where
                                          c.md_sanpham_id == khmvt_cdh.md_sanpham_id
                                          & c.md_donvitinhsanpham_id == khmvt_cdh.md_donvitinhsanpham_id
-                                         & a.md_banggia_id == khmvt_cdh.md_banggia_id
+                                         & khmvt_cdh.md_banggia_id.Contains(a.md_banggia_id) 
                                          & b.hoatdong == true
                                          select new
                                          {
@@ -381,7 +381,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                 dmh.diadiem_giaohang = "";
                                 dmh.md_doitackinhdoanh_id = khmvt_cdh.md_doitackinhdoanh_id;
                                 dmh.nguoilienhe = khmvt_cdh.daidien;
-                                dmh.md_banggia_id = khmvt_cdh.md_banggia_id;
+                                dmh.md_banggia_id = check_gia == null ? "" : check_gia.md_banggia_id;
                                 //
                                 dmh.md_phienbangia_id = md_phienbangia_id;
                                 dmh.md_dongtien_id = md_dongtien_id;
@@ -926,6 +926,6 @@ public class khmvt_hh
     public string daidien;
     public string ma_sanpham;
     public string ma_dtkd;
-    public string md_banggia_id;
+    public List<string> md_banggia_id;
     public string md_donvitinhsanpham_id;
 }
