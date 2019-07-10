@@ -397,7 +397,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
             // dhso
             // 
             this.dhso.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dhso")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "donhang")});
             this.dhso.Font = new System.Drawing.Font("Arial", 9F);
             this.dhso.LocationFloat = new DevExpress.Utils.PointFloat(376.3543F, 75.64587F);
             this.dhso.Name = "dhso";
@@ -450,7 +450,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
             // xuong
             // 
             this.xuong.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "xuong")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "phanxuong")});
             this.xuong.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
             this.xuong.LocationFloat = new DevExpress.Utils.PointFloat(82.66669F, 75.64589F);
             this.xuong.Name = "xuong";
