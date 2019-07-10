@@ -46,7 +46,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         string[] vnn = id.Split(',');
         try
         {
-            foreach (c_kehoachdathang dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)))
+            foreach (var dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
             {
                 if (dsdh.trangthai != "DAHET")
                 {
@@ -61,9 +61,14 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     }
                     msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
                 }
+                else if(dsdh.trangthai != "KETTHUC")
+                {
+                    dsdh.trangthai = "SOANTHAO";
+                    msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
+                }
                 else
                 {
-                    msg = "<div style='color:red'>Kế hoạch đặt hết.</div>";
+                    msg = "<div style='color:red'> Chuyển đổi thất bại, kế hoạch này đã kết thúc</div>";
                 }
             }
             if (msg.Length <= 0)
@@ -74,7 +79,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
         }
         context.Response.Write(msg);
     }
