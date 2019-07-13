@@ -411,7 +411,7 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
             if (ngaydksxes.Count() > 0)
             {
                 var dsnsx = ngaydksxes.OrderByDescending(s => s.songaysx).FirstOrDefault();
-                if(dsnsx != null)
+                if (dsnsx != null)
                 {
                     ddh.ngay_hieuluc = dhcpx.ngayHTcham.Value.AddDays(0 - dsnsx.songaysx.Value);
                     so_ngay = dsnsx.songaysx.Value;
@@ -429,7 +429,8 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         ddh.sochungtu = sochungtu;
         ddh.yeucaumuavattu = " ";
         ddh.sctdathang = dhcpx.sctdathang;
-
+        ddh.hdlh = dhcpx.hdlh;
+        ddh.hdlhchung = dhcpx.hdlhchung;
         ddh.nguoitao = us.ad_user_id;
         ddh.vaitrotao = us.ad_role_id;
         ddh.bophantao = us.md_phongban_id;
@@ -520,30 +521,22 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_kehoachdathang_dhcpx";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-
-                md_dondathangphanxuong dmh = null;
-                dmh = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).FirstOrDefault();
+                var dmh = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).FirstOrDefault();
                 if (dmh != null)
                 {
-                    if (dmh.md_trangthai_id == "HIEULUC")
-                    {
-                        if (ghichu.Trim().Length > 0)
-                            object_.mota = DateTime.Now + "\n\n" + ghichu + "\n" + "__________________" + "\n\n" + object_.mota;
-                    }
+                    if (ghichu.Trim().Length > 0)
+                        object_.mota = DateTime.Now + "\n\n" + ghichu + "\n" + "__________________" + "\n\n" + object_.mota;
                     else
-                    {
                         object_.mota = DateTime.Now + "\n\n" + ghichu;
-                    }
+
+                    object_.hdlh = context.Request.Form["hdlh"];
+                    object_.hdlhchung = context.Request.Form["hdlhchung"];
                 }
                 else
                 {
                     object_.mota = DateTime.Now + "\n\n" + ghichu;
                 }
+                object_.ngayHTcham = VNN_Config.setDateTime(context.Request.Form["ngayHTcham"]);
 
                 /*c_kehoachdathang_dhcpx object_1 = db.c_kehoachdathang_dhcpx.FirstOrDefault(s => s.c_kehoachdathang_id == id & s.md_phanxuong_id == md_phanxuong_id);
                 if(object_1 != null)

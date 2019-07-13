@@ -43,6 +43,18 @@
                         public string donhang { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_hdlh_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_hdlh_wintaFN
+                        public string hdlh { get; set; }
+                
+						
+                        #region c_kehoachdathang_dhcpx_hdlhchung_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_hdlhchung_wintaFN
+                        public string hdlhchung { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_hoatdong_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_hoatdong_wintaFN

@@ -619,6 +619,9 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         dhcpx.donhang = donhang_thamchieu;
         dhcpx.ngayHTcham = ngayhoanthanh - TimeSpan.Parse(thoigianht);
         dhcpx.sctdathang = sodonhang;
+        var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == dhcpx.sctdathang).FirstOrDefault();
+        dhcpx.hdlh = dsdh.huongdanlamhang;
+        dhcpx.hdlhchung = dsdh.huongdanlamhangchung;
         dhcpx.tinh_ncvt = false;
 
         dhcpx.nguoitao = us.ad_user_id;

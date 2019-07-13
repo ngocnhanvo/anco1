@@ -448,6 +448,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.md_trangthai_id = md_trangthai_id;
                     object_.ngay_hieuluc = VNN_Config.setDateTime(ngay_hieuluc);
                     object_.mota = context.Request.Form["mota"];
+                    object_.hdlh = context.Request.Form["hdlh"];
+                    object_.hdlhchung = context.Request.Form["hdlhchung"];
                     db.SaveChanges();
 
                     if (md_trangthai_id == "HIEULUC" & old_trangthai_id == "SOANTHAO")

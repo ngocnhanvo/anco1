@@ -31,6 +31,18 @@
                         public string donhang_thamchieu { get; set; }
                 
 						
+                        #region md_dondathangphanxuong_hdlh_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_hdlh_wintaFN
+                        public string hdlh { get; set; }
+                
+						
+                        #region md_dondathangphanxuong_hdlhchung_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_hdlhchung_wintaFN
+                        public string hdlhchung { get; set; }
+                
+						
                         #region md_dondathangphanxuong_hoatdong_wintaFN
                         
                         #endregion md_dondathangphanxuong_hoatdong_wintaFN
