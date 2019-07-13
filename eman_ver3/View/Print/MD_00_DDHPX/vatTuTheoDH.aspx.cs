@@ -798,7 +798,7 @@ public class vatTuTheoDH : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel1.StylePriority.UseFont = false;
             this.xrLabel1.StylePriority.UseForeColor = false;
             this.xrLabel1.StylePriority.UseTextAlignment = false;
-            this.xrLabel1.Text = "ĐƠN ĐẶT HÀNG PHÂN XƯỞNG";
+            this.xrLabel1.Text = "VẬT TƯ THEO ĐƠN ĐẶT HÀNG PHÂN XƯỞNG";
             this.xrLabel1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // dhtc
