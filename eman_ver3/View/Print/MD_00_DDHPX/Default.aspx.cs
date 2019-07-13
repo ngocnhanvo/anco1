@@ -65,6 +65,7 @@ public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
     }
 }
 
+
 /// <summary>
 /// Summary description for datHangPX
 /// </summary>
@@ -87,15 +88,6 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
     private XRLabel xrLabel4;
     private XRLabel dhso;
     private GroupFooterBand GroupFooter1;
-    private PageHeaderBand PageHeader;
-    private XRLabel xrLabel23;
-    private XRLabel xrLabel24;
-    private XRLabel xrLabel25;
-    private XRLabel xrLabel26;
-    private XRLabel xrLabel28;
-    private XRLabel xrLabel7;
-    private XRLabel xrLabel11;
-    private XRLabel xrLabel13;
     private XRTable xrTable1;
     private XRTableRow xrTableRow1;
     private XRTableCell xrTableCell1;
@@ -132,6 +124,14 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
     private XRTableRow xrTableRow7;
     private XRTableCell xrTableCell12;
     private XRTableCell hdlhChung;
+    private XRLabel xrLabel24;
+    private XRLabel xrLabel25;
+    private XRLabel xrLabel28;
+    private XRLabel xrLabel7;
+    private XRLabel xrLabel13;
+    private XRLabel xrLabel11;
+    private XRLabel xrLabel23;
+    private XRLabel xrLabel26;
 
     /// <summary>
     /// Required designer variable.
@@ -222,15 +222,14 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrTableRow7 = new DevExpress.XtraReports.UI.XRTableRow();
         this.xrTableCell12 = new DevExpress.XtraReports.UI.XRTableCell();
         this.hdlhChung = new DevExpress.XtraReports.UI.XRTableCell();
-        this.PageHeader = new DevExpress.XtraReports.UI.PageHeaderBand();
-        this.xrLabel23 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel24 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel25 = new DevExpress.XtraReports.UI.XRLabel();
-        this.xrLabel26 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel28 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel7 = new DevExpress.XtraReports.UI.XRLabel();
-        this.xrLabel11 = new DevExpress.XtraReports.UI.XRLabel();
         this.xrLabel13 = new DevExpress.XtraReports.UI.XRLabel();
+        this.xrLabel11 = new DevExpress.XtraReports.UI.XRLabel();
+        this.xrLabel23 = new DevExpress.XtraReports.UI.XRLabel();
+        this.xrLabel26 = new DevExpress.XtraReports.UI.XRLabel();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.xrTable5)).BeginInit();
@@ -372,6 +371,14 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         // ReportHeader
         // 
         this.ReportHeader.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+            this.xrLabel24,
+            this.xrLabel25,
+            this.xrLabel28,
+            this.xrLabel7,
+            this.xrLabel13,
+            this.xrLabel11,
+            this.xrLabel23,
+            this.xrLabel26,
             this.xrLabel6,
             this.xrLabel4,
             this.dhso,
@@ -385,7 +392,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
             this.xrLabel3,
             this.xrLabel2,
             this.xrLabel8});
-        this.ReportHeader.HeightF = 100.6459F;
+        this.ReportHeader.HeightF = 131.2709F;
         this.ReportHeader.Name = "ReportHeader";
         // 
         // xrLabel6
@@ -713,8 +720,8 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.tong_sl.Name = "tong_sl";
         this.tong_sl.StylePriority.UseBorderDashStyle = false;
         this.tong_sl.StylePriority.UseTextAlignment = false;
-        xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         xrSummary2.FormatString = "{0:#,#0.####}";
+        xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_sl.Summary = xrSummary2;
         this.tong_sl.Text = "tong_sl";
         this.tong_sl.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -858,46 +865,6 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.hdlhChung.Text = "hdlhChung";
         this.hdlhChung.Weight = 1.7099674035577681D;
         // 
-        // PageHeader
-        // 
-        this.PageHeader.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
-            this.xrLabel23,
-            this.xrLabel24,
-            this.xrLabel25,
-            this.xrLabel26,
-            this.xrLabel28,
-            this.xrLabel7,
-            this.xrLabel11,
-            this.xrLabel13});
-        this.PageHeader.HeightF = 30.625F;
-        this.PageHeader.Name = "PageHeader";
-        // 
-        // xrLabel23
-        // 
-        this.xrLabel23.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
-        this.xrLabel23.BorderColor = System.Drawing.Color.Black;
-        this.xrLabel23.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
-        this.xrLabel23.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrLabel23.CanGrow = false;
-        this.xrLabel23.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-        this.xrLabel23.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel23.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
-        this.xrLabel23.Name = "xrLabel23";
-        this.xrLabel23.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel23.SizeF = new System.Drawing.SizeF(44.58333F, 30.625F);
-        this.xrLabel23.StylePriority.UseBackColor = false;
-        this.xrLabel23.StylePriority.UseBorderColor = false;
-        this.xrLabel23.StylePriority.UseBorderDashStyle = false;
-        this.xrLabel23.StylePriority.UseBorders = false;
-        this.xrLabel23.StylePriority.UseBorderWidth = false;
-        this.xrLabel23.StylePriority.UseFont = false;
-        this.xrLabel23.StylePriority.UseForeColor = false;
-        this.xrLabel23.StylePriority.UsePadding = false;
-        this.xrLabel23.StylePriority.UseTextAlignment = false;
-        this.xrLabel23.Text = "STT";
-        this.xrLabel23.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        // 
         // xrLabel24
         // 
         this.xrLabel24.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
@@ -908,10 +875,10 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel24.CanGrow = false;
         this.xrLabel24.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
         this.xrLabel24.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(44.66672F, 0F);
+        this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(44.58333F, 100.6459F);
         this.xrLabel24.Name = "xrLabel24";
         this.xrLabel24.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel24.SizeF = new System.Drawing.SizeF(105.7785F, 30.625F);
+        this.xrLabel24.SizeF = new System.Drawing.SizeF(105.8619F, 30.62499F);
         this.xrLabel24.StylePriority.UseBackColor = false;
         this.xrLabel24.StylePriority.UseBorderColor = false;
         this.xrLabel24.StylePriority.UseBorderDashStyle = false;
@@ -934,11 +901,11 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel25.CanGrow = false;
         this.xrLabel25.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
         this.xrLabel25.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel25.LocationFloat = new DevExpress.Utils.PointFloat(241.2869F, 0F);
+        this.xrLabel25.LocationFloat = new DevExpress.Utils.PointFloat(241.287F, 100.6459F);
         this.xrLabel25.Multiline = true;
         this.xrLabel25.Name = "xrLabel25";
         this.xrLabel25.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel25.SizeF = new System.Drawing.SizeF(208.375F, 30.625F);
+        this.xrLabel25.SizeF = new System.Drawing.SizeF(208.375F, 30.62499F);
         this.xrLabel25.StylePriority.UseBackColor = false;
         this.xrLabel25.StylePriority.UseBorderColor = false;
         this.xrLabel25.StylePriority.UseBorderDashStyle = false;
@@ -951,33 +918,6 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel25.Text = "Tên Hàng";
         this.xrLabel25.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
-        // xrLabel26
-        // 
-        this.xrLabel26.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
-        this.xrLabel26.BorderColor = System.Drawing.Color.Black;
-        this.xrLabel26.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
-        this.xrLabel26.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrLabel26.CanGrow = false;
-        this.xrLabel26.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-        this.xrLabel26.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel26.LocationFloat = new DevExpress.Utils.PointFloat(449.662F, 0F);
-        this.xrLabel26.Multiline = true;
-        this.xrLabel26.Name = "xrLabel26";
-        this.xrLabel26.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel26.SizeF = new System.Drawing.SizeF(47.00015F, 30.625F);
-        this.xrLabel26.StylePriority.UseBackColor = false;
-        this.xrLabel26.StylePriority.UseBorderColor = false;
-        this.xrLabel26.StylePriority.UseBorderDashStyle = false;
-        this.xrLabel26.StylePriority.UseBorders = false;
-        this.xrLabel26.StylePriority.UseBorderWidth = false;
-        this.xrLabel26.StylePriority.UseFont = false;
-        this.xrLabel26.StylePriority.UseForeColor = false;
-        this.xrLabel26.StylePriority.UsePadding = false;
-        this.xrLabel26.StylePriority.UseTextAlignment = false;
-        this.xrLabel26.Text = "ĐVT";
-        this.xrLabel26.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        // 
         // xrLabel28
         // 
         this.xrLabel28.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
@@ -988,11 +928,11 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel28.CanGrow = false;
         this.xrLabel28.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
         this.xrLabel28.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel28.LocationFloat = new DevExpress.Utils.PointFloat(496.662F, 0F);
+        this.xrLabel28.LocationFloat = new DevExpress.Utils.PointFloat(496.6622F, 100.6459F);
         this.xrLabel28.Multiline = true;
         this.xrLabel28.Name = "xrLabel28";
         this.xrLabel28.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel28.SizeF = new System.Drawing.SizeF(65.20816F, 30.625F);
+        this.xrLabel28.SizeF = new System.Drawing.SizeF(65.20792F, 30.62499F);
         this.xrLabel28.StylePriority.UseBackColor = false;
         this.xrLabel28.StylePriority.UseBorderColor = false;
         this.xrLabel28.StylePriority.UseBorderDashStyle = false;
@@ -1015,11 +955,11 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel7.CanGrow = false;
         this.xrLabel7.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
         this.xrLabel7.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(561.8701F, 0F);
+        this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(561.8701F, 100.6459F);
         this.xrLabel7.Multiline = true;
         this.xrLabel7.Name = "xrLabel7";
         this.xrLabel7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel7.SizeF = new System.Drawing.SizeF(108.9583F, 30.625F);
+        this.xrLabel7.SizeF = new System.Drawing.SizeF(108.9583F, 30.62499F);
         this.xrLabel7.StylePriority.UseBackColor = false;
         this.xrLabel7.StylePriority.UseBorderColor = false;
         this.xrLabel7.StylePriority.UseBorderDashStyle = false;
@@ -1032,33 +972,6 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel7.Text = "Nơi giao hàng";
         this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
-        // xrLabel11
-        // 
-        this.xrLabel11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
-        this.xrLabel11.BorderColor = System.Drawing.Color.Black;
-        this.xrLabel11.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
-        this.xrLabel11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-        | DevExpress.XtraPrinting.BorderSide.Bottom)));
-        this.xrLabel11.CanGrow = false;
-        this.xrLabel11.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
-        this.xrLabel11.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(150.4452F, 0F);
-        this.xrLabel11.Multiline = true;
-        this.xrLabel11.Name = "xrLabel11";
-        this.xrLabel11.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel11.SizeF = new System.Drawing.SizeF(90.84171F, 30.625F);
-        this.xrLabel11.StylePriority.UseBackColor = false;
-        this.xrLabel11.StylePriority.UseBorderColor = false;
-        this.xrLabel11.StylePriority.UseBorderDashStyle = false;
-        this.xrLabel11.StylePriority.UseBorders = false;
-        this.xrLabel11.StylePriority.UseBorderWidth = false;
-        this.xrLabel11.StylePriority.UseFont = false;
-        this.xrLabel11.StylePriority.UseForeColor = false;
-        this.xrLabel11.StylePriority.UsePadding = false;
-        this.xrLabel11.StylePriority.UseTextAlignment = false;
-        this.xrLabel11.Text = "Hình ảnh";
-        this.xrLabel11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-        // 
         // xrLabel13
         // 
         this.xrLabel13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
@@ -1070,11 +983,11 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel13.CanGrow = false;
         this.xrLabel13.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
         this.xrLabel13.ForeColor = System.Drawing.Color.Black;
-        this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(670.8284F, 0F);
+        this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(670.8284F, 100.6459F);
         this.xrLabel13.Multiline = true;
         this.xrLabel13.Name = "xrLabel13";
         this.xrLabel13.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-        this.xrLabel13.SizeF = new System.Drawing.SizeF(127.1716F, 30.625F);
+        this.xrLabel13.SizeF = new System.Drawing.SizeF(127.1716F, 30.62499F);
         this.xrLabel13.StylePriority.UseBackColor = false;
         this.xrLabel13.StylePriority.UseBorderColor = false;
         this.xrLabel13.StylePriority.UseBorderDashStyle = false;
@@ -1087,6 +1000,86 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel13.Text = "Ghi chú";
         this.xrLabel13.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         // 
+        // xrLabel11
+        // 
+        this.xrLabel11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
+        this.xrLabel11.BorderColor = System.Drawing.Color.Black;
+        this.xrLabel11.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
+        this.xrLabel11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrLabel11.CanGrow = false;
+        this.xrLabel11.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+        this.xrLabel11.ForeColor = System.Drawing.Color.Black;
+        this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(150.4452F, 100.6459F);
+        this.xrLabel11.Multiline = true;
+        this.xrLabel11.Name = "xrLabel11";
+        this.xrLabel11.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+        this.xrLabel11.SizeF = new System.Drawing.SizeF(90.84183F, 30.62499F);
+        this.xrLabel11.StylePriority.UseBackColor = false;
+        this.xrLabel11.StylePriority.UseBorderColor = false;
+        this.xrLabel11.StylePriority.UseBorderDashStyle = false;
+        this.xrLabel11.StylePriority.UseBorders = false;
+        this.xrLabel11.StylePriority.UseBorderWidth = false;
+        this.xrLabel11.StylePriority.UseFont = false;
+        this.xrLabel11.StylePriority.UseForeColor = false;
+        this.xrLabel11.StylePriority.UsePadding = false;
+        this.xrLabel11.StylePriority.UseTextAlignment = false;
+        this.xrLabel11.Text = "Hình ảnh";
+        this.xrLabel11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+        // 
+        // xrLabel23
+        // 
+        this.xrLabel23.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
+        this.xrLabel23.BorderColor = System.Drawing.Color.Black;
+        this.xrLabel23.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
+        this.xrLabel23.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrLabel23.CanGrow = false;
+        this.xrLabel23.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+        this.xrLabel23.ForeColor = System.Drawing.Color.Black;
+        this.xrLabel23.LocationFloat = new DevExpress.Utils.PointFloat(0F, 100.6459F);
+        this.xrLabel23.Name = "xrLabel23";
+        this.xrLabel23.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+        this.xrLabel23.SizeF = new System.Drawing.SizeF(44.58F, 30.625F);
+        this.xrLabel23.StylePriority.UseBackColor = false;
+        this.xrLabel23.StylePriority.UseBorderColor = false;
+        this.xrLabel23.StylePriority.UseBorderDashStyle = false;
+        this.xrLabel23.StylePriority.UseBorders = false;
+        this.xrLabel23.StylePriority.UseBorderWidth = false;
+        this.xrLabel23.StylePriority.UseFont = false;
+        this.xrLabel23.StylePriority.UseForeColor = false;
+        this.xrLabel23.StylePriority.UsePadding = false;
+        this.xrLabel23.StylePriority.UseTextAlignment = false;
+        this.xrLabel23.Text = "STT";
+        this.xrLabel23.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+        // 
+        // xrLabel26
+        // 
+        this.xrLabel26.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(187)))), ((int)(((byte)(187)))));
+        this.xrLabel26.BorderColor = System.Drawing.Color.Black;
+        this.xrLabel26.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
+        this.xrLabel26.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+        | DevExpress.XtraPrinting.BorderSide.Bottom)));
+        this.xrLabel26.CanGrow = false;
+        this.xrLabel26.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+        this.xrLabel26.ForeColor = System.Drawing.Color.Black;
+        this.xrLabel26.LocationFloat = new DevExpress.Utils.PointFloat(449.662F, 100.6459F);
+        this.xrLabel26.Multiline = true;
+        this.xrLabel26.Name = "xrLabel26";
+        this.xrLabel26.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+        this.xrLabel26.SizeF = new System.Drawing.SizeF(47.00018F, 30.62499F);
+        this.xrLabel26.StylePriority.UseBackColor = false;
+        this.xrLabel26.StylePriority.UseBorderColor = false;
+        this.xrLabel26.StylePriority.UseBorderDashStyle = false;
+        this.xrLabel26.StylePriority.UseBorders = false;
+        this.xrLabel26.StylePriority.UseBorderWidth = false;
+        this.xrLabel26.StylePriority.UseFont = false;
+        this.xrLabel26.StylePriority.UseForeColor = false;
+        this.xrLabel26.StylePriority.UsePadding = false;
+        this.xrLabel26.StylePriority.UseTextAlignment = false;
+        this.xrLabel26.Text = "ĐVT";
+        this.xrLabel26.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+        // 
         // datHangTheoDon
         // 
         this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
@@ -1094,8 +1087,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
             this.TopMargin,
             this.BottomMargin,
             this.ReportHeader,
-            this.GroupFooter1,
-            this.PageHeader});
+            this.GroupFooter1});
         this.Margins = new System.Drawing.Printing.Margins(25, 27, 0, 1);
         this.Version = "17.1";
         ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
