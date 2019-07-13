@@ -324,7 +324,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         // 
         this.SL.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Solid;
         this.SL.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "SL", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "SL", "{0:#,#0.####}")});
         this.SL.Name = "SL";
         this.SL.StylePriority.UseBorderDashStyle = false;
         this.SL.StylePriority.UseTextAlignment = false;
@@ -841,7 +841,7 @@ public class datHangTheoDon : DevExpress.XtraReports.UI.XtraReport
         this.tong_sl.Name = "tong_sl";
         this.tong_sl.StylePriority.UseBorderDashStyle = false;
         this.tong_sl.StylePriority.UseTextAlignment = false;
-        xrSummary2.FormatString = "{0:#,#0.00}";
+        xrSummary2.FormatString = "{0:#,#0.####}";
         xrSummary2.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.tong_sl.Summary = xrSummary2;
         this.tong_sl.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
