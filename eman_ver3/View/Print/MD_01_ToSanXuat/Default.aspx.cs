@@ -33,7 +33,7 @@ public partial class PrintControllers_MD_01_ToSanXuat_Default : System.Web.UI.Pa
     {
 		HttpContext context = HttpContext.Current;
 		EntityContext db = new EntityContext();
-		string md_lenhsanxuat_id = context.Request.QueryString["id"];	
+		string id = context.Request.QueryString["id"];	
 		string dec = context.Request.QueryString["dec"];	
 		string thous = context.Request.QueryString["thous"];	
 		string sql = string.Format(@"
@@ -51,8 +51,8 @@ public partial class PrintControllers_MD_01_ToSanXuat_Default : System.Web.UI.Pa
 		 left join md_phanxuong px on px.md_phanxuong_id = lsx.md_phanxuong_id
 		 left join md_phanxuong_to px_to on px_to.md_to_id = tosx.md_phanxuong_to_id
 		 left join md_dondathangphanxuong dcht on dcht.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
-		 where tosx.md_lenhsanxuat_id = '{0}' order by sp.ma_sanpham asc
-		",md_lenhsanxuat_id, dec, thous);
+		 where tosx.md_lenhsanxuat_tosx_id = '{0}' order by sp.ma_sanpham asc
+		", id, dec, thous);
 		return sql;
     }
 }
