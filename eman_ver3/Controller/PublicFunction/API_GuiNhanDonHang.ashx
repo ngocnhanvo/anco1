@@ -162,6 +162,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_phidathang.ngaytao = DateTime.Now;
                         c_phidathang.ngaycapnhat = DateTime.Now;
                         c_phidathang.sotien = Convert.ToDecimal(b["sotien"] + "");
+                        c_phidathang.anco_check = true;
                         db.c_phidathang.Add(c_phidathang);
                         db.SaveChanges();
                     }
