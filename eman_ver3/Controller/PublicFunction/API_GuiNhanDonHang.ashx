@@ -70,6 +70,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                 {
                     var item = JsonConvert.DeserializeObject<Dictionary<string, object>>(a["c_danhsachdathang"] + "");
                     var lstItem = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_dongdsdh"] + "");
+                    var lstItem2 = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_phidathang"] + "");
                     string c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
                     var exist = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == c_danhsachdathang_id).FirstOrDefault();
                     if (exist == null)
@@ -148,6 +149,21 @@ public class API_GuiNhanDonHang : IHttpHandler
                             db.c_dongdsdh.Add(c_dongdsdh);
                             db.SaveChanges();
                         }
+                    }
+
+                    foreach (var b in lstItem2)
+                    {
+                        var c_phidathang = new c_phidathang();
+                        c_phidathang.c_phidathang_id = b["c_phidathang_id"] + "";
+                        c_phidathang.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
+                        c_phidathang.hoatdong = true;
+                        c_phidathang.isphicong = Convert.ToBoolean(b["isphicong"] + "");
+                        c_phidathang.mota = b["mota"] + "";
+                        c_phidathang.ngaytao = DateTime.Now;
+                        c_phidathang.ngaycapnhat = DateTime.Now;
+                        c_phidathang.sotien = Convert.ToDecimal(b["sotien"] + "");
+                        db.c_phidathang.Add(c_phidathang);
+                        db.SaveChanges();
                     }
                 }
             }
