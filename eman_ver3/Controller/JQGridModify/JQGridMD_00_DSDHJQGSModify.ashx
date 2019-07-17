@@ -889,7 +889,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hiệu lực.</div>";
                         msg += msg_del + "\n";
                     }
-                    else if (object_.md_trangthai_id != "HIEULUC")
+                    else if (object_.md_trangthai_id != "HIEULUC" & object_.md_trangthai_id != "")
                     {
                         msg_del = "Lỗi dòng: " + i + ":Đã hiệu lực không thể xóa.";
                         msg += msg_del + "\n";
