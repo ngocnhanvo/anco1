@@ -157,8 +157,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             }
             else if (sel_val == "0")
             {
-                khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.Value;
-                var sllt = khmvt_cdh.sl_can +  khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
+                khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.Value + khmvt_cdh.sl_canthem.GetValueOrDefault(0);
+                var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
                 khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_tonkho ? khmvt_cdh.sl_tonkho : sllt;
             }
             else if (sel_val == "2")
@@ -169,7 +169,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             else
             {
                 khmvt_cdh.sl_duyet = slvc_case;
-                var sllt = khmvt_cdh.sl_can +  khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
+                var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
                 khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_layton ? khmvt_cdh.sl_layton : sllt;
             }
 
@@ -231,6 +231,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
         {
             var sl_duyet = decimal.Parse(context.Request.Form["sl_duyet"]);
             var sl_layton = decimal.Parse(context.Request.Form["sl_layton"]);
+            var sl_canthem = decimal.Parse(context.Request.Form["sl_canthem"]);
             var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"]);
             string id = context.Request.Form["id"];
             var object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id).Take(1).FirstOrDefault();
@@ -250,13 +251,14 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                     msg = "false#Lỗi: Kế hoạch \"" + khmvt.sochungtu + "\" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>";
                 else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
-                else if (sl_duyet + sl_layton > object_.sl_can)
-                    msg = string.Format(@"false#""Số lượng duyệt + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng cần""");
+                else if (sl_duyet + sl_layton > object_.sl_can + sl_canthem)
+                    msg = string.Format(@"false#""Số lượng duyệt + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần + SL cần thêm""");
             }
             if (msg.Length <= 0)
             {
                 object_.sl_duyet = sl_duyet;
                 object_.sl_layton = sl_layton;
+                object_.sl_canthem = sl_canthem;
                 var sldn = object_.sl_can - object_.sl_layton
                                     + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
 

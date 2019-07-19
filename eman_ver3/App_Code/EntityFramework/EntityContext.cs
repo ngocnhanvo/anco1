@@ -5480,6 +5480,10 @@
                             .HasColumnName("sl_can")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_kehoachmuavt_cdh>()
+                            .Property(p => p.sl_canthem)
+                            .HasColumnName("sl_canthem")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_kehoachmuavt_cdh>()
                             .Property(p => p.sl_conlai)
                             .HasColumnName("sl_conlai")
                             .HasColumnType("decimal").HasPrecision(18, 4);

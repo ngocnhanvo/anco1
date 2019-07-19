@@ -103,6 +103,12 @@
                         public Decimal? sl_can { get; set; }
                 
 						
+                        #region c_kehoachmuavt_cdh_sl_canthem_wintaFN
+                        
+                        #endregion c_kehoachmuavt_cdh_sl_canthem_wintaFN
+                        public Decimal? sl_canthem { get; set; }
+                
+						
                         #region c_kehoachmuavt_cdh_sl_conlai_wintaFN
                         
                         #endregion c_kehoachmuavt_cdh_sl_conlai_wintaFN
