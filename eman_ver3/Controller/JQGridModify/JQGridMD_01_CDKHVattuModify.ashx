@@ -147,7 +147,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
-        foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => vnn.Contains(s.c_kehoachmuavt_cdh_id)))
+        foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => vnn.Contains(s.c_kehoachmuavt_cdh_id)).ToList())
         {
             var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id).Take(1).FirstOrDefault();
             if (khmvt.c_donmuavattu_id != " ")
@@ -158,31 +158,27 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             else if (sel_val == "0")
             {
                 khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.Value + khmvt_cdh.sl_canthem.GetValueOrDefault(0);
-                var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
-                khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_tonkho ? khmvt_cdh.sl_tonkho : sllt;
-            }
-            else if (sel_val == "2")
-            {
-                khmvt_cdh.sl_duyet = khmvt_cdh.sl_can.Value;
-                khmvt_cdh.sl_layton = 0;
+                //var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
+                //khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_tonkho ? khmvt_cdh.sl_tonkho : sllt;
             }
             else
             {
                 khmvt_cdh.sl_duyet = slvc_case;
-                var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
-                khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_layton ? khmvt_cdh.sl_layton : sllt;
+                khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet - khmvt_cdh.sl_denghi).GetValueOrDefault(0).Set0WhenlessThan0();
+                //var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
+                //khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_layton ? khmvt_cdh.sl_layton : sllt;
             }
 
-            var dklhts = db.c_kehoachmuavt_dklht.Where(s =>
-                s.md_sanpham_id == khmvt_cdh.md_sanpham_id &
-                s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id);
+            //var dklhts = db.c_kehoachmuavt_dklht.Where(s =>
+            //    s.md_sanpham_id == khmvt_cdh.md_sanpham_id &
+            //    s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id);
 
-            var slltTong = khmvt_cdh.sl_layton.GetValueOrDefault(0);
-            foreach (var dklht in dklhts.ToList())
-            {
-                dklht.sl_layton = slltTong > dklht.sl_tonkho ? dklht.sl_tonkho : slltTong;
-                slltTong = slltTong - dklht.sl_layton.GetValueOrDefault(0);
-            }
+            //var slltTong = khmvt_cdh.sl_layton.GetValueOrDefault(0);
+            //foreach (var dklht in dklhts.ToList())
+            //{
+            //    dklht.sl_layton = slltTong > dklht.sl_tonkho ? dklht.sl_tonkho : slltTong;
+            //    slltTong = slltTong - dklht.sl_layton.GetValueOrDefault(0);
+            //}
         }
         if (msg == "")
         {
