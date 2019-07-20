@@ -115,6 +115,21 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 db.SaveChanges();
                                 dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
                             }
+							else {
+								string[] mspCuoi = object_.macuoi_id.Split(',');
+								if(mspCuoi.Length > 0) 
+								{
+									var sldat = db.c_doichieuhangton_dkdh.Where(s =>
+										mspCuoi.Contains(s.md_sanpham_id)
+										& s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Sum(s => s.sl_dat);
+					
+									dklht.sl_lay = sl_conlai;
+									object_.sl_conlai = sl_conlai;
+									object_.sl_dat = sldat - sl_conlai;
+									db.SaveChanges();
+									dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+								}
+							}
                         }
                     }
                 }
