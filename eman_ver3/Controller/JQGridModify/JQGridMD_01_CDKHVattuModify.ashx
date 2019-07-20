@@ -244,7 +244,9 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             {
                 var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).Take(1).FirstOrDefault();
                 if (khmvt.c_donmuavattu_id != " ")
-                    msg = "false#Lỗi: Kế hoạch \"" + khmvt.sochungtu + "\" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>";
+                    msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>", khmvt.sochungtu);
+				else if(khmvt.md_trangthai_id == "HIEULUC")
+					msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
                 else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
                 else if (sl_duyet + sl_layton > object_.sl_can + sl_canthem)
