@@ -250,8 +250,10 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 					msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
                 else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
-                else if (sl_duyet + sl_layton > sldn + sl_canthem)
-                    msg = string.Format(@"false#""Số lượng duyệt + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL đề nghị + SL cần thêm""");
+                else if (sl_duyet != sldn + sl_canthem)
+                    msg = string.Format(@"false#""Số lượng duyệt"" phải bằng ""SL đề nghị + SL cần thêm""");
+				else if (sldn + sl_layton > object_.sl_can)
+                    msg = string.Format(@"false#""Số lượng đề nghị + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần""");
             }
 			
             if (msg.Length <= 0)
