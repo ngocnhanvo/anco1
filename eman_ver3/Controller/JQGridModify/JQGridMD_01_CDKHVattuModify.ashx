@@ -252,8 +252,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
                 else if (sl_duyet != sldn + sl_canthem)
                     msg = string.Format(@"false#""Số lượng duyệt"" phải bằng ""SL đề nghị + SL cần thêm""");
-				else if (sldn + sl_layton > object_.sl_can)
-                    msg = string.Format(@"false#""Số lượng đề nghị + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần""");
+				else if (sldn + sl_layton > object_.sl_can + object_.sl_tonkho_toithieu)
+                    msg = string.Format(@"false#""Số lượng đề nghị + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần + SL tồn kho tối thiểu""");
             }
 			
             if (msg.Length <= 0)
