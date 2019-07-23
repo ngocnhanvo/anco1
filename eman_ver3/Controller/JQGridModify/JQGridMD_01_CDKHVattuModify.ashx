@@ -231,7 +231,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"]);
             string id = context.Request.Form["id"];
             var object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id).Take(1).FirstOrDefault();
-
+			decimal? sldn = 0;
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -242,6 +242,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             }
             else
             {
+				sldn = object_.sl_can - sl_layton  + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
                 var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).Take(1).FirstOrDefault();
                 if (khmvt.c_donmuavattu_id != " ")
                     msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>", khmvt.sochungtu);
@@ -249,17 +250,16 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 					msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
                 else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
-                else if (sl_duyet + sl_layton > object_.sl_can + sl_canthem)
-                    msg = string.Format(@"false#""Số lượng duyệt + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần + SL cần thêm""");
+                else if (sl_duyet + sl_layton > sldn + sl_canthem)
+                    msg = string.Format(@"false#""Số lượng duyệt + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL đề nghị + SL cần thêm""");
             }
+			
             if (msg.Length <= 0)
             {
                 object_.sl_duyet = sl_duyet;
                 object_.sl_layton = sl_layton;
                 object_.sl_canthem = sl_canthem;
-                var sldn = object_.sl_can - object_.sl_layton
-                                    + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
-
+                
                 object_.sl_denghi = sldn;
                 object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
                 object_.ngayphaico = ngayPhaiCo;
