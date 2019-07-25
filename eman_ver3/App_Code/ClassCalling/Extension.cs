@@ -201,6 +201,19 @@ public static class Extension
             ok = false;
         return ok;
     }
+
+    public static decimal DangNoCuaTo(md_xuatkhonb_cdh xnb_cdh, EntityContext db)
+    {
+        var xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xnb_cdh.md_xuatkhonb_id).FirstOrDefault();
+        string tento = db.md_phanxuong_to.Where(s => s.md_to_id == xnb.md_to_id).Select(s => s.ten_to).FirstOrDefault();
+        var notos = db.md_kho_ghino.Where(s =>
+            s.md_phanxuong_id == xnb.md_phanxuong_id
+            & s.tosx == tento
+            & s.md_sanpham_id == xnb_cdh.md_sanpham_id
+            ).ToList();
+
+        return notos.Sum(s => s.soluong_no.GetValueOrDefault(0));
+    }
 }
 
 public class LSX_TSX

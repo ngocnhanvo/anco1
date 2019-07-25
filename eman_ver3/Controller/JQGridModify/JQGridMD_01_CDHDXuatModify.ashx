@@ -264,16 +264,24 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                     xb_cdh.sl_xuat = xb_cdh.sl_muonxuat;
                     xb_cdh.sl_xuat2 = xb_cdh.sl_muonxuat;
                     xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                    xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd).Set0WhenlessThan0();
+                    //xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd).Set0WhenlessThan0();
+                    xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
                 }
                 else
                 {
-                    if (slvc_case <= sltd)
+                    if (vcnb.bosung == 0 | vcnb.bosung == 3)
                     {
                         xb_cdh.sl_xuat = slvc_case;
                         xb_cdh.sl_xuat2 = slvc_case;
-                        xb_cdh.ghino = 0;
                         xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                        xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                    }
+                    else if(slvc_case <= sltd)
+                    {
+                        xb_cdh.sl_xuat = slvc_case;
+                        xb_cdh.sl_xuat2 = slvc_case;
+                        xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                        xb_cdh.ghino = 0;
                     }
                     else
                     {
@@ -410,9 +418,9 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
-            else if((xnb.bosung == 4 | xnb.bosung == 1) & sl_xuat > object_.tong_sl_xuat)
+            else if(sl_xuat > object_.sl_muonxuat)
             {
-                msg = "false#Số lượng xuất tối đa là " + object_.tong_sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
+                msg = "false#Số lượng xuất tối đa là " + object_.sl_muonxuat.GetValueOrDefault(0).DropTrailingZeros();
             }
 
             foreach (var ncc in db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id).ToList())
@@ -425,7 +433,7 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
             if (msg.Length <= 0)
             {
-                object_.ghino = ghino;
+                object_.ghino = (sl_xuat - object_.tong_sl_xuat + object_.truno).GetValueOrDefault(0).Set0WhenlessThan0();
                 object_.sl_thucxuat = sl_xuat;
                 db.SaveChanges();
                 VNN_Function.loaddulieu_Auto(db, ma_module);

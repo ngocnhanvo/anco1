@@ -17,8 +17,35 @@ public class PrintAnco2
             logo = urlBase + "/" + ttc.logo,
         };
     }
-}
 
+    public static string GetDecimal(string sothapphan, int type)
+    {
+        switch (sothapphan)
+        {
+            case "1":
+                sothapphan = "#,#0.0";
+                break;
+            case "2":
+                sothapphan = "#,#0.00";
+                break;
+            case "3":
+                sothapphan = "#,#0.000";
+                break;
+            case "4":
+                sothapphan = "#,#0.0000";
+                break;
+            case "5":
+                sothapphan = "#,#0.####";
+                break;
+        }
+
+        if (type == 1)
+        {
+            sothapphan = string.Format("{{0:{0}}}", sothapphan);
+        }
+        return sothapphan;
+    }
+}
 public class InfoPrint
 {
     public string logo { get; set; }

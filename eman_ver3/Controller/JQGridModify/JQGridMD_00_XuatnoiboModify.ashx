@@ -321,12 +321,22 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                        s.md_xuatkhonb_id != xk.md_xuatkhonb_id
                                                        & s.md_sanpham_id == dh.md_sanpham_id
                                                        & s.lsx_to.Contains(lsxTo)
-                                                       & db.md_xuatkhonb.Where(t => t.md_xuatkhonb_id == s.md_xuatkhonb_id & t.trangthai == "SOANTHAO").Count() > 0).FirstOrDefault();
+                                                       & db.md_xuatkhonb.Where(t => t.md_xuatkhonb_id == s.md_xuatkhonb_id & t.trangthai != "HIEULUC").Count() > 0).FirstOrDefault();
                                                     if (ck_dh != null)
                                                     {
                                                         ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                         ck_dh.sl_xuat = 0;
                                                         ck_dh.sl_xuat2 = 0;
+                                                        if(ck_dh.truno > 0)
+                                                        {
+                                                            if (ck_dh.truno > ck_dh.tong_sl_xuat)
+                                                                ck_dh.truno = ck_dh.tong_sl_xuat;
+                                                        }
+
+                                                        if(ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
+                                                            ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                                                        else
+                                                            ck_dh.ghino = (ck_dh.sl_muonxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
                                                     }
                                                     db.SaveChanges();
                                                 }
@@ -375,14 +385,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                         }
 
                                         db.SaveChanges();
-
-                                        if(truno.GetValueOrDefault(0) > 0)
-                                        {
-                                            msg += string.Format(@"<div style='color:red'>Lỗi: Tổng hạn ngạch không đủ để trừ nợ. <br> MSP: {0}<br> LSX Tổ: {1}</div>", sp.ma_sanpham, dh.lsx_to);
-                                        }
-                                        else {
-                                            msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";
-                                        }
+                                        msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";
                                     }
                                     else {
                                         msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";

@@ -31,6 +31,12 @@
                         public Decimal? dangno { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_datruno_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_datruno_wintaFN
+                        public bool? datruno { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_ghichu_donvi2_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_ghichu_donvi2_wintaFN

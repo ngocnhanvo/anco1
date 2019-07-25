@@ -14447,6 +14447,10 @@
                             .HasColumnName("dangno")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_xuatkhonb_cdh>()
+                            .Property(p => p.datruno)
+                            .HasColumnName("datruno")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_xuatkhonb_cdh>()
                             .Property(p => p.ghichu_donvi2)
                             .HasColumnName("ghichu_donvi2")
                             .HasColumnType("nvarchar");

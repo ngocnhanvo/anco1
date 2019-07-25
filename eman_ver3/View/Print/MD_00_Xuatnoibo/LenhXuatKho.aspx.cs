@@ -7,12 +7,14 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.UI.Page
 {
+    public string logo = "", sothapphan = "";
     protected void Page_Load(object sender, EventArgs e)
     {
-        EntityContext db = new EntityContext();
-        rptPhieuXuatKhoNB report = new rptPhieuXuatKhoNB();
-        String sql = this.CreateSql();
-        this.viewReport(report, sql);
+        HttpContext context = HttpContext.Current;
+        sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["sothapphan"], 1);
+        rptPhieuXuatKhoNB report = new rptPhieuXuatKhoNB(sothapphan);
+        string sql = CreateSql(context);
+        viewReport(report, sql);
         //Response.Write(sql);
     }
 
@@ -26,25 +28,31 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
         ReportViewer1.Report = report;
     }
 
-    public String CreateSql()
+    public String CreateSql(HttpContext context)
     {
         var infoPrint = PrintAnco2.GetInfoPrint();
-        HttpContext context = HttpContext.Current;
-		EntityContext db = new EntityContext();
-		string md_xuatkhonb_id = context.Request.QueryString["md_xuatkhonb_id"];
+        string md_xuatkhonb_id = context.Request.QueryString["md_xuatkhonb_id"];
+        string oper = context.Request.QueryString["oper"];
+        string thucxuat = "null", sum_thucxuat = "null";
+        if(oper == "CA_01_InPhieuXKNB")
+        {
+            thucxuat = "nknb_cdh.sl_thucxuat";
+            sum_thucxuat = string.Format("SUM({0})", thucxuat);
+        }
         string sql = string.Format(@"
-		select 
-		A.*,
-        (A.soluong + A.ghino - A.truno) as tongcong
-		from (
+		    declare @sum_thucxuat decimal(18,4) = (
+                select {5} from md_xuatkhonb xb
+		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
+                where 
+                    nknb_cdh.md_xuatkhonb_id = '{0}'
+                    and nknb_cdh.sl_muonxuat > 0
+            )
+
 		    select 
             sp.ma_sanpham as ma_vthh, 
             sp.mota_tiengviet as ten_vthh,
             sp.quycachdonggoi as quycach,
 		    dvtsp.ten_dvt as dvt, 
-		    '{1}' as dd,
-            '{2}' as MM, 
-            '{3}' as yyyy, 
             xb.sochungtu as sct_lsx, 
             xb.ngaychuyen as ngaychuyen,
             tosx.ten_to as xuatcho,
@@ -53,21 +61,30 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             nknb_cdh.tong_sl_xuat as soluong,
             isnull(nknb_cdh.ghino, 0) as ghino,
             isnull(nknb_cdh.truno, 0) as truno,
-            N'{4}' as logo
+            N'{1}' as dd,
+            N'{2}' as MM, 
+            N'{3}' as yyyy, 
+            {4} as thucxuat,
+            nknb_cdh.tong_sl_xuat + isnull(nknb_cdh.ghino, 0) - isnull(nknb_cdh.truno, 0) as tongcong,
+            @sum_thucxuat as sum_thucxuat,
+            N'{6}' as logo
 		    from md_xuatkhonb xb
 		    left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
 		    left join md_phanxuong_to tosx on xb.md_to_id = tosx.md_to_id
             left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
             left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
             left join md_kho kho on xb.tukho = kho.md_kho_id
-		    where nknb_cdh.md_xuatkhonb_id = '{0}'
-        )A 
-        order by A.ma_vthh asc
+		    where 
+            nknb_cdh.md_xuatkhonb_id = '{0}'
+            and nknb_cdh.sl_muonxuat > 0
+            order by sp.ma_sanpham asc
 		",
         md_xuatkhonb_id,
         DateTime.Now.ToString("dd"), 
         DateTime.Now.ToString("MM"), 
         DateTime.Now.ToString("yyyy"),
+        thucxuat,
+        sum_thucxuat,
         infoPrint.logo
         );
 		//
@@ -76,6 +93,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
 
     public class rptPhieuXuatKhoNB : DevExpress.XtraReports.UI.XtraReport
     {
+        public string sothapphan { get; set; }
         private DevExpress.XtraReports.UI.DetailBand Detail;
         private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
         private DevExpress.XtraReports.UI.BottomMarginBand BottomMargin;
@@ -171,8 +189,9 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        public rptPhieuXuatKhoNB()
+        public rptPhieuXuatKhoNB(string stp)
         {
+            this.sothapphan = stp;
             InitializeComponent();
             //
             // TODO: Add constructor logic here
@@ -206,6 +225,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             DevExpress.XtraReports.UI.XRSummary xrSummary4 = new DevExpress.XtraReports.UI.XRSummary();
             DevExpress.XtraReports.UI.XRSummary xrSummary5 = new DevExpress.XtraReports.UI.XRSummary();
             DevExpress.XtraReports.UI.XRSummary xrSummary6 = new DevExpress.XtraReports.UI.XRSummary();
+            DevExpress.XtraReports.UI.XRSummary xrSummary7 = new DevExpress.XtraReports.UI.XRSummary();
             this.Detail = new DevExpress.XtraReports.UI.DetailBand();
             this.xrTable2 = new DevExpress.XtraReports.UI.XRTable();
             this.xrTableRow2 = new DevExpress.XtraReports.UI.XRTableRow();
@@ -222,6 +242,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
             this.BottomMargin = new DevExpress.XtraReports.UI.BottomMarginBand();
             this.ReportFooter = new DevExpress.XtraReports.UI.ReportFooterBand();
+            this.xrLabel11 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel37 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel36 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel35 = new DevExpress.XtraReports.UI.XRLabel();
@@ -294,7 +315,6 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.xrLabel32 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel33 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel34 = new DevExpress.XtraReports.UI.XRLabel();
-            this.xrLabel11 = new DevExpress.XtraReports.UI.XRLabel();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).BeginInit();
@@ -417,7 +437,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // 
             this.soluong.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.soluong.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "soluong", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "soluong", this.sothapphan)});
             this.soluong.Font = new System.Drawing.Font("Tahoma", 9F);
             this.soluong.Multiline = true;
             this.soluong.Name = "soluong";
@@ -426,7 +446,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.soluong.StylePriority.UseFont = false;
             this.soluong.StylePriority.UsePadding = false;
             this.soluong.StylePriority.UseTextAlignment = false;
-            xrSummary2.FormatString = "{0:#,#0.00}";
+            xrSummary2.FormatString = this.sothapphan;
             this.soluong.Summary = xrSummary2;
             this.soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
             this.soluong.Weight = 0.3518838757764462D;
@@ -435,7 +455,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // 
             this.ghino.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ghino.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ghino", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ghino", this.sothapphan)});
             this.ghino.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ghino.Multiline = true;
             this.ghino.Name = "ghino";
@@ -451,7 +471,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // 
             this.truno.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.truno.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "truno", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "truno", this.sothapphan)});
             this.truno.Font = new System.Drawing.Font("Tahoma", 9F);
             this.truno.Multiline = true;
             this.truno.Name = "truno";
@@ -467,7 +487,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // 
             this.tongcong.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.tongcong.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tongcong", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tongcong", this.sothapphan)});
             this.tongcong.Font = new System.Drawing.Font("Tahoma", 9F);
             this.tongcong.Multiline = true;
             this.tongcong.Name = "tongcong";
@@ -484,7 +504,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.thucxuat.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.thucxuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thucxuat", "{0:#,#0.00}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thucxuat", this.sothapphan)});
             this.thucxuat.Font = new System.Drawing.Font("Tahoma", 9F);
             this.thucxuat.Multiline = true;
             this.thucxuat.Name = "thucxuat";
@@ -534,6 +554,17 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.ReportFooter.HeightF = 209.5834F;
             this.ReportFooter.Name = "ReportFooter";
             // 
+            // xrLabel11
+            // 
+            this.xrLabel11.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(493.5352F, 142.8333F);
+            this.xrLabel11.Name = "xrLabel11";
+            this.xrLabel11.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel11.SizeF = new System.Drawing.SizeF(165F, 23F);
+            this.xrLabel11.StylePriority.UseFont = false;
+            this.xrLabel11.StylePriority.UseTextAlignment = false;
+            this.xrLabel11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+            // 
             // xrLabel37
             // 
             this.xrLabel37.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -567,7 +598,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.xrLabel35.SizeF = new System.Drawing.SizeF(179.1666F, 23F);
             this.xrLabel35.StylePriority.UseFont = false;
             this.xrLabel35.StylePriority.UseTextAlignment = false;
-            this.xrLabel35.Text = "Nguyễn Tiên Ngọc";
+            this.xrLabel35.Text = "Nguyễn Tiến Ngọc";
             this.xrLabel35.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // xrLabel30
@@ -585,7 +616,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // xrLabel24
             // 
             this.xrLabel24.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(520.5275F, 47.89581F);
+            this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(515.5275F, 47.89581F);
             this.xrLabel24.Name = "xrLabel24";
             this.xrLabel24.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabel24.SizeF = new System.Drawing.SizeF(114.5833F, 23F);
@@ -597,7 +628,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // xrLabel28
             // 
             this.xrLabel28.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Italic);
-            this.xrLabel28.LocationFloat = new DevExpress.Utils.PointFloat(520.5275F, 70.89584F);
+            this.xrLabel28.LocationFloat = new DevExpress.Utils.PointFloat(515.5275F, 70.89584F);
             this.xrLabel28.Name = "xrLabel28";
             this.xrLabel28.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabel28.SizeF = new System.Drawing.SizeF(114.5833F, 23F);
@@ -688,7 +719,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.sum_soluong.StylePriority.UseFont = false;
             this.sum_soluong.StylePriority.UsePadding = false;
             this.sum_soluong.StylePriority.UseTextAlignment = false;
-            xrSummary3.FormatString = "{0:#,#0.00}";
+            xrSummary3.FormatString = this.sothapphan;
             xrSummary3.IgnoreNullValues = true;
             xrSummary3.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_soluong.Summary = xrSummary3;
@@ -705,7 +736,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.sum_ghino.StylePriority.UseFont = false;
             this.sum_ghino.StylePriority.UsePadding = false;
             this.sum_ghino.StylePriority.UseTextAlignment = false;
-            xrSummary4.FormatString = "{0:#,#0.00}";
+            xrSummary4.FormatString = this.sothapphan;
             xrSummary4.IgnoreNullValues = true;
             this.sum_ghino.Summary = xrSummary4;
             this.sum_ghino.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -721,7 +752,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.sum_truno.StylePriority.UseFont = false;
             this.sum_truno.StylePriority.UsePadding = false;
             this.sum_truno.StylePriority.UseTextAlignment = false;
-            xrSummary5.FormatString = "{0:#,#0.00}";
+            xrSummary5.FormatString = this.sothapphan;
             xrSummary5.IgnoreNullValues = true;
             this.sum_truno.Summary = xrSummary5;
             this.sum_truno.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -740,7 +771,8 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.sum_tongcong.StylePriority.UseFont = false;
             this.sum_tongcong.StylePriority.UsePadding = false;
             this.sum_tongcong.StylePriority.UseTextAlignment = false;
-            xrSummary6.FormatString = "{0:#,#0.00}";
+            xrSummary6.FormatString = this.sothapphan;
+            xrSummary6.IgnoreNullValues = true;
             xrSummary6.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
             this.sum_tongcong.Summary = xrSummary6;
             this.sum_tongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
@@ -750,6 +782,8 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             // 
             this.sum_thucxuat.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.sum_thucxuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thucxuat", this.sothapphan)});
             this.sum_thucxuat.Font = new System.Drawing.Font("Tahoma", 9F);
             this.sum_thucxuat.Name = "sum_thucxuat";
             this.sum_thucxuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
@@ -1520,17 +1554,6 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             this.xrLabel34.StylePriority.UseTextAlignment = false;
             this.xrLabel34.Text = "Thực xuất";
             this.xrLabel34.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            // 
-            // xrLabel11
-            // 
-            this.xrLabel11.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(493.5352F, 142.8333F);
-            this.xrLabel11.Name = "xrLabel11";
-            this.xrLabel11.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel11.SizeF = new System.Drawing.SizeF(165F, 23F);
-            this.xrLabel11.StylePriority.UseFont = false;
-            this.xrLabel11.StylePriority.UseTextAlignment = false;
-            this.xrLabel11.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // rptPhieuXuatKhoNB
             // 
