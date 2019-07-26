@@ -37,11 +37,14 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
         if(oper == "CA_01_InPhieuXKNB")
         {
             thucxuat = "nknb_cdh.sl_thucxuat";
-            sum_thucxuat = string.Format("SUM({0})", thucxuat);
+            sum_thucxuat = "@sum_thucxuat";
         }
         string sql = string.Format(@"
 		    declare @sum_thucxuat decimal(18,4) = (
-                select {5} from md_xuatkhonb xb
+                select 
+                    SUM(nknb_cdh.sl_thucxuat) 
+                from 
+                    md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 where 
                     nknb_cdh.md_xuatkhonb_id = '{0}'
@@ -66,7 +69,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             N'{3}' as yyyy, 
             {4} as thucxuat,
             nknb_cdh.tong_sl_xuat + isnull(nknb_cdh.ghino, 0) - isnull(nknb_cdh.truno, 0) as tongcong,
-            @sum_thucxuat as sum_thucxuat,
+            {5} as sum_thucxuat,
             N'{6}' as logo
 		    from md_xuatkhonb xb
 		    left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
