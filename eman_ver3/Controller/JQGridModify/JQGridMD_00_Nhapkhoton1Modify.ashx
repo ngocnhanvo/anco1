@@ -34,65 +34,78 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
     {
         EntityContext db = new EntityContext();
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", msg_success = "", muti_ma = "";
+        string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "PNK", 1);
         int count_slnhap = 0;
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            //Xu Ly nhap kho
-            foreach (md_nhapkhoton nk in db.md_nhapkhoton.Where(s => s.md_nhapkhoton_id == id).ToList())
+            try
             {
-                if (nk.trangthai == "HIEULUC")
+                //Xu Ly nhap kho
+
+                foreach (var nk in db.md_nhapkhoton.Where(s => s.md_nhapkhoton_id == id).ToList())
                 {
-                    msg = "<div style='color:red'>Lỗi: dòng \"" + nk.sochungtu + "\" đã hiệu lực.</div>";
-                    break;
-                }
-                foreach(md_nhapkhoton_cdh dh in db.md_nhapkhoton_cdh.Where(s => s.md_nhapkhoton_id == nk.md_nhapkhoton_id).ToList())
-                {
-                    md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-                    decimal nhanvoi = 1;
-                    if (nk.denkho == null & nk.denkho == null | nk.denkho == "" & nk.denkho == "")
+                    if (nk.trangthai == "HIEULUC")
                     {
-                        msg += "<div style='color:red'>Lỗi: dòng \"" + nk.sochungtu + "\" chưa có kho đến.</div>";
+                        msg = "<div style='color:red'>Lỗi: dòng \"" + nk.sochungtu + "\" đã hiệu lực.</div>";
+                        break;
                     }
-                    else if (dh.sl_nhap < 0)
+                    foreach (var dh in db.md_nhapkhoton_cdh.Where(s => s.md_nhapkhoton_id == nk.md_nhapkhoton_id).ToList())
                     {
-                        msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" Số lượng nhập phải lớn hơn 0 .</div>";
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                        decimal nhanvoi = 1;
+                        if (string.IsNullOrEmpty(nk.denkho) | nk.denkho == " ")
+                        {
+                            msg += "<div style='color:red'>Lỗi: dòng \"" + nk.sochungtu + "\" chưa có kho đến.</div>";
+                        }
+                        else if (dh.sl_nhap < 0)
+                        {
+                            msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" Số lượng nhập phải lớn hơn 0 .</div>";
+                        }
+
+                        if (msg.Length <= 0 & dh.sl_nhap > 0)
+                        {
+                            count_slnhap = 1;
+                            decimal sl_nhap = dh.sl_nhap.Value;
+                            //--cap nhat vao kho
+                            nhap_kho(db, dh, nk, nhanvoi, us);
+                            db.SaveChanges();
+                            //--tao lich su nhap kho
+                            add_kho_ls(db, dh, nk, nhanvoi, us);
+                            db.SaveChanges();
+                            msg_success += "<div style='color:blue'>Dòng \"" + nk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" + sl_nhap.DropTrailingZeros() + "\"</div>";
+                        }
                     }
 
-                    if (msg.Length <= 0 & dh.sl_nhap > 0)
+                    if (count_slnhap <= 0)
                     {
-                        count_slnhap = 1;
-                        decimal sl_nhap = dh.sl_nhap.Value;
-                        //--cap nhat vao kho
-                        nhap_kho(db, dh, nk, nhanvoi, us);
-                        //--tao lich su nhap kho
-                        add_kho_ls(db, dh, nk, nhanvoi, us);
-
-                        msg_success += "<div style='color:blue'>Dòng \"" + nk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" + sl_nhap.DropTrailingZeros() + "\"</div>";
+                        msg += "<div style='color:red'>Dòng \"" + nk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
                     }
-                }
 
-                if (count_slnhap <= 0)
-                {
-                    msg += "<div style='color:red'>Dòng \"" + nk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
-                }
-
-                //Kiem tra de chuyen thanh Hieu Luc
-                if (msg.Length <= 0)
-                {
-                    msg = msg_success + msg;
-                    nk.trangthai = "HIEULUC";
-                    db.SaveChanges();
+                    //Kiem tra de chuyen thanh Hieu Luc
+                    if (msg.Length <= 0)
+                    {
+                        nk.trangthai = "HIEULUC";
+                        db.SaveChanges();
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            catch (Exception ex)
+            {
+                msg = "false#" + ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = msg_success;
+                transaction.Commit();
+            }
+            else
+            {
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }

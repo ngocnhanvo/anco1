@@ -47,7 +47,8 @@ System.Web.SessionState.IRequiresSessionState
         EntityContext db = new EntityContext();
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
         Security.id_phongban(context));
-        string msg = "", msg_sucess = "";
+        string msg = "";
+        var ids = new List<string>();
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
@@ -170,7 +171,7 @@ System.Web.SessionState.IRequiresSessionState
                                         kq = tao_phieu(db, dcht, md_kho_id, md_sanpham_id, us);
                                         id_new = kq[0];
                                         sochungtu = kq[1];
-                                        msg_sucess += id_new + ",";
+                                        ids.Add(id_new);
                                     }
 
                                     var cdvc = new md_vanchuyennoibo_cdvc
@@ -182,7 +183,7 @@ System.Web.SessionState.IRequiresSessionState
                                         soluong_toida = slLayCP,
                                         soluong_dachuyen = 0,
                                         soluong_muonchuyen = slLayCP,
-                                        soluong_dichchuyen = 0,
+                                        soluong_dichchuyen = slLayCP,
                                         dachuyenhet = false,
                                         sapxep = "",
                                         nguoitao = us.ad_user_id,
@@ -239,6 +240,10 @@ System.Web.SessionState.IRequiresSessionState
             if (msg.Length <= 0)
             {
                 transaction.Commit();
+                string formData = "";
+                formData += string.Format(@"oper=CA_01_XuLyVanChuyen");
+                formData += string.Format(@"&id={0}", string.Join(",", ids));
+                VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx", formData);
             }
             else
             {
@@ -253,6 +258,10 @@ System.Web.SessionState.IRequiresSessionState
         string[] kq = new string[2];
         kq[0] = Helper.getNewId();
         string md_kho_id = db.md_sanpham.Where(s => s.md_sanpham_id == md_sanpham_id).Select(s => s.khomacdinh).Take(1).FirstOrDefault();
+        if(string.IsNullOrEmpty(md_kho_id))
+        {
+            md_kho_id = db.md_kho.Where(s => s.ten_kho == "KHO THÀNH PHẨM AN CO 2").Select(s=>s.md_kho_id).FirstOrDefault();
+        }
         string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
         //Tạo phiếu lấy hàng tồn
         //md_vanchuyennoibo check = db.md_vanchuyennoibo.Where(s => s.c_doichieuhangton_id == dcht.c_doichieuhangton_id & s.tukho == tukho & s.denkho == md_kho_id).FirstOrDefault();
@@ -264,7 +273,7 @@ System.Web.SessionState.IRequiresSessionState
         vc.md_vanchuyennoibo_id = kq[0];
         vc.sochungtu = sochungtu;
         vc.c_doichieuhangton_id = dcht.c_doichieuhangton_id;
-        vc.md_trangthai_id = "SOANTHAO";
+        vc.md_trangthai_id = "DANHAN";
         vc.sctdathang = dcht.so_donhang;
         vc.loaichuyen = "VANCNB";
         vc.ngaychuyen = DateTime.Now;

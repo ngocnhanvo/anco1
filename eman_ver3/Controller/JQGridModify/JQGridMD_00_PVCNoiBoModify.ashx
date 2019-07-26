@@ -95,6 +95,16 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", vcnb.sochungtu);
                             break;
                         }
+                        else if(string.IsNullOrEmpty(vcnb.tukho))
+                        {
+                            msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" chưa chọn ""Từ kho"".</div>", vcnb.sochungtu);
+                            break;
+                        }
+                        else if(string.IsNullOrEmpty(vcnb.denkho))
+                        {
+                            msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" chưa chọn ""Đến kho"".</div>", vcnb.sochungtu);
+                            break;
+                        }
 
                         var slChuyen = db.md_vanchuyennoibo_cdvc
                                    .Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).Sum(s=>s.soluong_dichchuyen);
@@ -107,7 +117,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id);
                         int tong_sl_dachuyenhet = vcnb_cdvcs.Where(s => s.dachuyenhet == true).Count();
 
-                         var khoSPDic = new Dictionary<string, decimal>();
+                        var khoSPDic = new Dictionary<string, decimal>();
                         foreach (var vcnb_cdvc in vcnb_cdvcs.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).OrderBy(s => s.denkho).ToList())
                         {
                             //start Xuat kho
