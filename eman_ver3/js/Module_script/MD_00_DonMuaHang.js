@@ -5,8 +5,8 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
     var masterId = id_parent;
     if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selarrrow'); }
 
-	var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-	var ma_module = tengrid.replace('grid','');
+    var CLform_infor = new get_Forminfor(ma_case, Form_infor);
+    var ma_module = tengrid.replace('grid', '');
     $('body').append(`
     <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
 		<div class="dlg_content">
@@ -33,11 +33,11 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
 			<div id="pagergridMD_00_KHMHHVT_cp"></div>
 		</div>
 	</div>`);
-	var input_focus = '';
-	$('#dlg_gridSmall').dialog({
-		modal: true,
-		width: CLform_infor.dodai,
-		height: CLform_infor.docao,
+    var input_focus = '';
+    $('#dlg_gridSmall').dialog({
+        modal: true,
+        width: CLform_infor.dodai,
+        height: CLform_infor.docao,
         open: function (event, ui) {
             $('#btnSLMbangSLCM').off('click');
             $('#btnSLMbangSLCM').click(function () {
@@ -54,15 +54,15 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                 donvitinh = donvitinh.replace(/\\'/g, "'").replace(/'/g, '"');
                 donvitinh = JSON.parse(donvitinh);
                 $('.sel_loadkhmvt').html(json['khmvt']);
-                
-				$('.sel_loadkhmvt').change(function() {
-					$('#gridMD_00_KHMHHVT_cp').trigger("reloadGrid");
-				});
+
+                $('.sel_loadkhmvt').change(function () {
+                    $('#gridMD_00_KHMHHVT_cp').trigger("reloadGrid");
+                });
                 var config = {
-                  '.sel_loadkhmvt' : { search_contains: true, allow_single_deselect:true }
+                    '.sel_loadkhmvt': { search_contains: true, allow_single_deselect: true }
                 }
                 for (var selector in config) {
-                  $(selector).chosen(config[selector]);
+                    $(selector).chosen(config[selector]);
                 }
 
                 jQuery('#gridMD_00_KHMHHVT_cp').jqGrid({
@@ -118,60 +118,60 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                     caption: ' '
                 });
             });
-			Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
-		},
-		close: function () {
-			$(this).dialog('destroy').remove();
-		},
-		buttons: [
-		{
-			id: 'btn-ok',
-			text: 'Đồng ý',
-			click: function () {
-				if($('.sel_loadkhmvt').val() != '1') {
-					var ids_sel = jQuery("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
-					var arr_sl = '', arr_ncc='', arr_id = '', arr_dvt = '';
-					for(var i=0;i < ids_sel.length;i++) {
-						arr_sl += getCellValue(ids_sel[i], 'sl_semua') + ',';
-						//--
-						arr_ncc += getCellValue(ids_sel[i], 'md_doitackinhdoanh_id') + ',';
-						//--
-                        arr_dvt += getCellValue(ids_sel[i], 'md_donvitinhsanpham_id') + ',';
-                        //--
-						arr_id += ids_sel[i] + ',';
-					}
-					$('#btn-ok').button('option', 'disabled', true);
-					$('.err_MD_00_KHMHHVT').html('<div class="nhan_loading"></div>');
-					$.post('Controller/JQGridModify/JQGridMD_00_KHMVTModify.ashx?oper=CA_01_Taodomuavattu&ma_module=' + ma_module,
-                        {
-                            id: $('.sel_loadkhmvt').val(),
-                            arr_sl: arr_sl,
-                            arr_dvt: arr_dvt,
-                            arr_ncc: arr_ncc,
-                            arr_id: arr_id
-                        }, function (result) {
-						    $('#btn-ok').button('option', 'disabled', false);
-                            $('.err_MD_00_KHMHHVT').html(result);
-                            if (result.lastIndexOf('Lỗi') <= -1) {
-                                loadclick(tengrid, 'edit', load_stt);
-                                Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                            }
-					});
-				}
-				else {
-					alert('Phải chọn 1 kế hoạch mua vật tư.');
-				}
-			}
-		},
-		{
-			id: 'btn-close',
-			text: 'Thoát',
-			click: function () {
-				$(this).dialog('destroy').remove();
-			}
-		}
-		]
-	});
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-ok',
+                text: 'Đồng ý',
+                click: function () {
+                    if ($('.sel_loadkhmvt').val() != '1') {
+                        var ids_sel = jQuery("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
+                        var arr_sl = '', arr_ncc = '', arr_id = '', arr_dvt = '';
+                        for (var i = 0; i < ids_sel.length; i++) {
+                            arr_sl += getCellValue(ids_sel[i], 'sl_semua') + ',';
+                            //--
+                            arr_ncc += getCellValue(ids_sel[i], 'md_doitackinhdoanh_id') + ',';
+                            //--
+                            arr_dvt += getCellValue(ids_sel[i], 'md_donvitinhsanpham_id') + ',';
+                            //--
+                            arr_id += ids_sel[i] + ',';
+                        }
+                        $('#btn-ok').button('option', 'disabled', true);
+                        $('.err_MD_00_KHMHHVT').html('<div class="nhan_loading"></div>');
+                        $.post('Controller/JQGridModify/JQGridMD_00_KHMVTModify.ashx?oper=CA_01_Taodomuavattu&ma_module=' + ma_module,
+                            {
+                                id: $('.sel_loadkhmvt').val(),
+                                arr_sl: arr_sl,
+                                arr_dvt: arr_dvt,
+                                arr_ncc: arr_ncc,
+                                arr_id: arr_id
+                            }, function (result) {
+                                $('#btn-ok').button('option', 'disabled', false);
+                                $('.err_MD_00_KHMHHVT').html(result);
+                                if (result.lastIndexOf('Lỗi') <= -1) {
+                                    loadclick(tengrid, 'edit', load_stt);
+                                    Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+                                }
+                            });
+                    }
+                    else {
+                        alert('Phải chọn 1 kế hoạch mua vật tư.');
+                    }
+                }
+            },
+            {
+                id: 'btn-close',
+                text: 'Thoát',
+                click: function () {
+                    $(this).dialog('destroy').remove();
+                }
+            }
+        ]
+    });
 }
 //end CA_01_THemmoiDMHHVT
 
@@ -185,10 +185,10 @@ function CA_01_KetThucDonMuHang(tengrid, id_parent, ma_case, Form_infor, Model_i
     }
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid','');
+        var ma_module = tengrid.replace('grid', '');
         $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
             '<div class="dlg_content">Thực hiện chức năng này?</div>' +
-        '</div>');
+            '</div>');
         $('#dlg_gridSmall').dialog({
             modal: true,
             width: CLform_infor.dodai,
@@ -200,28 +200,28 @@ function CA_01_KetThucDonMuHang(tengrid, id_parent, ma_case, Form_infor, Model_i
                 $(this).dialog('destroy').remove();
             },
             buttons: [
-            {
-                id: 'btn-ok',
-                text: 'Đồng ý',
-                click: function () {
-                	  $('#btn-ok').button('option', 'disabled', true);
-                	  $('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                    $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_KetThucDonMuHang&ma_module=' + ma_module,
-                    { id:masterId.toString() }, function (result) {
-                        $('#btn-ok').button('option', 'disabled', false);
-                        $('.dlg_content').html(result);
-                        loadclick(tengrid, 'edit', load_stt);
-                        Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                    });
+                {
+                    id: 'btn-ok',
+                    text: 'Đồng ý',
+                    click: function () {
+                        $('#btn-ok').button('option', 'disabled', true);
+                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                        $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_KetThucDonMuHang&ma_module=' + ma_module,
+                            { id: masterId.toString() }, function (result) {
+                                $('#btn-ok').button('option', 'disabled', false);
+                                $('.dlg_content').html(result);
+                                loadclick(tengrid, 'edit', load_stt);
+                                Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+                            });
+                    }
+                },
+                {
+                    id: 'btn-close',
+                    text: 'Thoát',
+                    click: function () {
+                        $(this).dialog('destroy').remove();
+                    }
                 }
-            },
-            {
-                id: 'btn-close',
-                text: 'Thoát',
-                click: function () {
-                    $(this).dialog('destroy').remove();
-                }
-            }
             ]
         });
     }
@@ -238,22 +238,35 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
     }
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid','');
-        $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-            '<div class="dlg_content">' +
-				'<table>' +
-					'<tr>' +
-						'<td><input type="radio" checked name="rdo_SLVC" class="rdo_SLVC" style="outline:none" value="KHO VẬT TƯ"/></td>' +
-						'<td> In phiếu xác nhận nhập kho VT</td>' +
-					'</tr>' +
+        var ma_module = tengrid.replace('grid', '');
+        $('body').append(`<div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+            <div class="dlg_content">
+				<table>
+					<tr>
+						<td><input type="radio" checked name="rdo_SLVC" class="rdo_SLVC" style="outline:none" value="KHO VẬT TƯ"/></td>
+						<td> In phiếu xác nhận nhập kho VT</td>
+					</tr>
 
-					'<tr>' +
-						'<td><input type="radio" name="rdo_SLVC" class="rdo_SLVC"  style="outline:none" value="KHO TỒN THÀNH PHẨM"/></td>' +
-						'<td> In phiếu xác nhận nhập kho TP</td>' +
-					'</tr>' +
-				'</table>' +
-			'<div>' +
-        '</div>');
+					<tr>
+						<td><input type="radio" name="rdo_SLVC" class="rdo_SLVC"  style="outline:none" value="KHO TỒN THÀNH PHẨM"/></td>
+						<td> In phiếu xác nhận nhập kho TP</td>
+					</tr>
+
+                    <tr>
+                        <td colspan="2"> 
+                            <select id="sothapphan" class="FormElement">
+                                <option value="0">Không lấy số thập phân</option>
+                                <option value="1">Lấy 1 số thập phân</option>
+                                <option value="2">Lấy 2 số thập phân</option>
+                                <option value="3">Lấy 3 số thập phân</option>
+                                <option value="4">Lấy 4 số thập phân</option>
+                                <option selected value="5">Lấy số thập phân tự động</option>
+                            </select>
+                        </td>
+                    </tr>
+				</table>
+			<div>
+        </div>`);
         $('#dlg_gridSmall').dialog({
             modal: true,
             width: CLform_infor.dodai,
@@ -265,28 +278,25 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
                 $(this).dialog('destroy').remove();
             },
             buttons: [
-            {
-                id: 'btn-ok',
-                text: 'Đồng ý',
-                click: function () {
-                	//$('.dlg_content').prepend('<div class="nhan_loading"></div>');
-					/*$.get('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_XacNhanNhapkho&ma_module=' + ma_module,
-					{ id:masterId.toString() }, function (result) {*/
-					var url = url_org_sys + 'View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho&ma_module=' + 
-					ma_module + '&md_nhapkho_ncc_id=' + masterId.toString() + '&khoden=' + $('.rdo_SLVC:checked').val();
-					var strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-					var left = (window.innerWidth - 1024) / 2 - 10;
-					window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
-					//});
+                {
+                    id: 'btn-ok',
+                    text: 'Đồng ý',
+                    click: function () {
+                        let sothapphan = $('#sothapphan').val();
+                        let url = url_org_sys + 'View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho&ma_module=' +
+                            ma_module + '&md_nhapkho_ncc_id=' + masterId.toString() + '&stp=' + sothapphan;
+                        let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                        let left = (window.innerWidth - 1024) / 2 - 10;
+                        window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                    }
+                },
+                {
+                    id: 'btn-close',
+                    text: 'Thoát',
+                    click: function () {
+                        $(this).dialog('destroy').remove();
+                    }
                 }
-            },
-            {
-                id: 'btn-close',
-                text: 'Thoát',
-                click: function () {
-                    $(this).dialog('destroy').remove();
-                }
-            }
             ]
         });
     }
@@ -303,10 +313,10 @@ function CA_01_TPNKMG2(tengrid, id_parent, ma_case, Form_infor, Model_infor, loa
     }
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid','');
+        var ma_module = tengrid.replace('grid', '');
         $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
             '<div class="dlg_content">Tạo phiếu nhập kho từ đơn mua hàng này.?</div>' +
-        '</div>');
+            '</div>');
         $('#dlg_gridSmall').dialog({
             modal: true,
             width: CLform_infor.dodai,
@@ -318,28 +328,28 @@ function CA_01_TPNKMG2(tengrid, id_parent, ma_case, Form_infor, Model_infor, loa
                 $(this).dialog('destroy').remove();
             },
             buttons: [
-            {
-                id: 'btn-ok',
-                text: 'Đồng ý',
-                click: function () {
-                	  $('#btn-ok').button('option', 'disabled', true);
-                	  $('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                    $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG2&ma_module=' + ma_module,
-                    { id:masterId.toString() }, function (result) {
-                        $('#btn-ok').button('option', 'disabled', false);
-                        $('.dlg_content').html(result);
-                        loadclick(tengrid, 'edit', load_stt);
-                        Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                    });
+                {
+                    id: 'btn-ok',
+                    text: 'Đồng ý',
+                    click: function () {
+                        $('#btn-ok').button('option', 'disabled', true);
+                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                        $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG2&ma_module=' + ma_module,
+                            { id: masterId.toString() }, function (result) {
+                                $('#btn-ok').button('option', 'disabled', false);
+                                $('.dlg_content').html(result);
+                                loadclick(tengrid, 'edit', load_stt);
+                                Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+                            });
+                    }
+                },
+                {
+                    id: 'btn-close',
+                    text: 'Thoát',
+                    click: function () {
+                        $(this).dialog('destroy').remove();
+                    }
                 }
-            },
-            {
-                id: 'btn-close',
-                text: 'Thoát',
-                click: function () {
-                    $(this).dialog('destroy').remove();
-                }
-            }
             ]
         });
     }
@@ -362,21 +372,34 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
         var ma_module = tengrid.replace('grid', '');
-        $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-            '<div class="dlg_content">' +
-				'<table>' +
-					'<tr>' +
-						'<td><input type="radio" name="rdo_SLVC" class="rdo_SLVC" style="outline:none" value="0"/></td>' +
-						'<td> In đơn mua hàng </td>' +
-					'</tr>' +
+        $('body').append(`<div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+            <div class="dlg_content">
+				<table>
+					<tr>
+						<td><input type="radio" checked name="rdo_SLVC" class="rdo_SLVC" style="outline:none" value="KHO VẬT TƯ"/></td>
+						<td> In đơn mua hàng</td>
+					</tr>
 
-					'<tr>' +
-						'<td><input type="radio" name="rdo_SLVC" style="outline:none" value="1"/></td>' +
-						'<td> In đon mua vật tư </td>' +
-					'</tr>' +
-				'</table>' +
-			'<div>' +
-        '</div>');
+					<tr>
+						<td><input type="radio" name="rdo_SLVC" class="rdo_SLVC"  style="outline:none" value="KHO TỒN THÀNH PHẨM"/></td>
+						<td> In đơn mua vật tư</td>
+					</tr>
+
+                    <tr>
+                        <td colspan="2"> 
+                            <select id="sothapphan" class="FormElement">
+                                <option value="0">Không lấy số thập phân</option>
+                                <option value="1">Lấy 1 số thập phân</option>
+                                <option value="2">Lấy 2 số thập phân</option>
+                                <option value="3">Lấy 3 số thập phân</option>
+                                <option value="4">Lấy 4 số thập phân</option>
+                                <option selected value="5">Lấy số thập phân tự động</option>
+                            </select>
+                        </td>
+                    </tr>
+				</table>
+			<div>
+        </div>`);
         $('#dlg_gridSmall').dialog({
             modal: true,
             width: CLform_infor.dodai,
@@ -389,36 +412,37 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                 $(this).dialog('destroy').remove();
             },
             buttons: [
-            {
-                id: 'btn-ok',
-                text: 'Đồng ý',
-                click: function () {
-                    var sel_val = $("input:radio[name=rdo_SLVC]:checked").val();
-                    var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-                    var ma_module = tengrid.replace('grid', '');
-                    if (sel_val == 1) {
-                        let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
-						ma_module + "&id=" + masterId;
-                        let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                        let left = (window.innerWidth - 1024) / 2 - 10;
-                        window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                {
+                    id: 'btn-ok',
+                    text: 'Đồng ý',
+                    click: function () {
+                        let sothapphan = $('#sothapphan').val();
+                        let sel_val = $("input:radio[name=rdo_SLVC]:checked").val();
+                        let CLform_infor = new get_Forminfor(ma_case, Form_infor);
+                        let ma_module = tengrid.replace('grid', '');
+                        if (sel_val == 1) {
+                            let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
+                                ma_module + "&id=" + masterId + "&stp=" + sothapphan;
+                            let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                            let left = (window.innerWidth - 1024) / 2 - 10;
+                            window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                        }
+                        else {
+                            let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
+                                ma_module + "&id=" + masterId + "&stp=" + sothapphan;
+                            let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                            let left = (window.innerWidth - 1024) / 2 - 10;
+                            window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                        }
                     }
-                    else {
-                        let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/donMuaHangHoa.aspx?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
-						ma_module + "&id=" + masterId;
-                        let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                        let left = (window.innerWidth - 1024) / 2 - 10;
-                        window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                },
+                {
+                    id: 'btn-close',
+                    text: 'Thoát',
+                    click: function () {
+                        $(this).dialog('destroy').remove();
                     }
                 }
-            },
-            {
-                id: 'btn-close',
-                text: 'Thoát',
-                click: function () {
-                    $(this).dialog('destroy').remove();
-                }
-            }
             ]
         });
     }
@@ -430,102 +454,102 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
 function CA_01_TPNKMG(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
     var masterId = id_parent, cell = null;
     if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
-	cell = $('#'+ tengrid).getRowData(masterId);
+    cell = $('#' + tengrid).getRowData(masterId);
     if (masterId == null) {
         alert('Chưa chọn đối tượng cần thao tác.');
     }
-	else if(cell['md_trangthai_id'] != 'HIEULUC') {
-		alert('Chỉ có thể thao tác với đơn mua hàng có trạng thái \"Hiệu lực\".');
-	}
+    else if (cell['md_trangthai_id'] != 'HIEULUC') {
+        alert('Chỉ có thể thao tác với đơn mua hàng có trạng thái \"Hiệu lực\".');
+    }
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid','');
+        var ma_module = tengrid.replace('grid', '');
         $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
             '<div class="dlg_content"><div class="nhan_loading">&nbsp;</div></div>' +
-        '</div>');
+            '</div>');
         $('#dlg_gridSmall').dialog({
             modal: true,
             width: CLform_infor.dodai,
             height: CLform_infor.docao,
             open: function (event, ui) {
-				$.get('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=load_donghang&id=' + masterId, function(result) {
-					$('.dlg_content').html(result);
-					format_number($('.input_soluong'),0, 4);
-					var dem_chk = 0, sl_toida = $('.chk_tosx').length - $('.chk_tosx.nhan_disable').length;
-					$('.chk_tosx').change(function(){
-						var input = '.input_' + $(this).val();
-						if($(this).prop('checked') == true) {
-							$(input).removeAttr('disabled').removeClass('nhan_disable');
-							dem_chk++;
-							if(dem_chk >= sl_toida) {
-								$('.chk_tosx_all').prop('checked', true);
-							}
-						}
-						else {
-							dem_chk--;
-							$('.chk_tosx_all').prop('checked', false);
-							$(input).addClass('nhan_disable').attr('disabled','disabled');
-						}
-					});
-					
-					$('.chk_tosx_all').change(function(){
-						if($(this).prop('checked') == true) {
-							$('.chk_tosx').each(function(){
-								if(!$(this).hasClass('nhan_disable')) {
-									$(this).prop('checked', true);
-									$('.input_' + $(this).val()).removeAttr('disabled').removeClass('nhan_disable');;
-								}
-							});
-							dem_chk = sl_toida;
-						}
-						else {
-							$('.chk_tosx').prop('checked', false);
-							$('.input_soluong').addClass('nhan_disable').attr('disabled','disabled');
-							dem_chk = 0;
-						}
-					});
-				});
+                $.get('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=load_donghang&id=' + masterId, function (result) {
+                    $('.dlg_content').html(result);
+                    format_number($('.input_soluong'), 0, 4);
+                    var dem_chk = 0, sl_toida = $('.chk_tosx').length - $('.chk_tosx.nhan_disable').length;
+                    $('.chk_tosx').change(function () {
+                        var input = '.input_' + $(this).val();
+                        if ($(this).prop('checked') == true) {
+                            $(input).removeAttr('disabled').removeClass('nhan_disable');
+                            dem_chk++;
+                            if (dem_chk >= sl_toida) {
+                                $('.chk_tosx_all').prop('checked', true);
+                            }
+                        }
+                        else {
+                            dem_chk--;
+                            $('.chk_tosx_all').prop('checked', false);
+                            $(input).addClass('nhan_disable').attr('disabled', 'disabled');
+                        }
+                    });
+
+                    $('.chk_tosx_all').change(function () {
+                        if ($(this).prop('checked') == true) {
+                            $('.chk_tosx').each(function () {
+                                if (!$(this).hasClass('nhan_disable')) {
+                                    $(this).prop('checked', true);
+                                    $('.input_' + $(this).val()).removeAttr('disabled').removeClass('nhan_disable');;
+                                }
+                            });
+                            dem_chk = sl_toida;
+                        }
+                        else {
+                            $('.chk_tosx').prop('checked', false);
+                            $('.input_soluong').addClass('nhan_disable').attr('disabled', 'disabled');
+                            dem_chk = 0;
+                        }
+                    });
+                });
                 Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
             },
             close: function () {
                 $(this).dialog('destroy').remove();
             },
             buttons: [
-            {
-                id: 'btn-ok',
-                text: 'Đồng ý',
-                click: function () {
-					$('#btn-ok').button('option', 'disabled', true);
-					$('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                    var id_sel = '', value_sl = '';
-					$('.chk_tosx').each(function(index, val){
-						if($(this).prop('checked') == true){
-							id_sel += $(this).val() + ',';
-							value_sl += $('.input_' + $(this).val()).val() + ',';
-						}
-					});
-					$.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG&ma_module=' + ma_module,
-                    { id:masterId.toString(), id_sel: id_sel, value_sl: value_sl }, function (result) {
-						if(result.indexOf('div') > -1) {
-							$('.dlg_content').html(result);
-							loadclick(tengrid, 'edit', load_stt);
-							Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-						}
-						else {
-							$('#btn-ok').button('option', 'disabled', false);
-							$('.nhan_loading').remove();
-							alert(result);
-                        }
-                    });
+                {
+                    id: 'btn-ok',
+                    text: 'Đồng ý',
+                    click: function () {
+                        $('#btn-ok').button('option', 'disabled', true);
+                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                        var id_sel = '', value_sl = '';
+                        $('.chk_tosx').each(function (index, val) {
+                            if ($(this).prop('checked') == true) {
+                                id_sel += $(this).val() + ',';
+                                value_sl += $('.input_' + $(this).val()).val() + ',';
+                            }
+                        });
+                        $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG&ma_module=' + ma_module,
+                            { id: masterId.toString(), id_sel: id_sel, value_sl: value_sl }, function (result) {
+                                if (result.indexOf('div') > -1) {
+                                    $('.dlg_content').html(result);
+                                    loadclick(tengrid, 'edit', load_stt);
+                                    Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
+                                }
+                                else {
+                                    $('#btn-ok').button('option', 'disabled', false);
+                                    $('.nhan_loading').remove();
+                                    alert(result);
+                                }
+                            });
+                    }
+                },
+                {
+                    id: 'btn-close',
+                    text: 'Thoát',
+                    click: function () {
+                        $(this).dialog('destroy').remove();
+                    }
                 }
-            },
-            {
-                id: 'btn-close',
-                text: 'Thoát',
-                click: function () {
-                    $(this).dialog('destroy').remove();
-                }
-            }
             ]
         });
     }
@@ -533,7 +557,7 @@ function CA_01_TPNKMG(tengrid, id_parent, ma_case, Form_infor, Model_infor, load
 //end CA_01_TPNKMG
 
 function getCellValue(rowId, cellId) {
-    var cell = $('#' + rowId + '_' + cellId);        
+    var cell = $('#' + rowId + '_' + cellId);
     var val = cell.val();
     return val;
 }
