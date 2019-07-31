@@ -95,6 +95,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_baoCaoChiTietTinhHinhThu
         WHERE dmh.md_trangthai_id != N'SOANTHAO'
 		    AND dmh.ngaydonhang >= @tungay
 		    AND dmh.ngaydonhang <= @denngay
+		    AND isnull(sp.vattu, 0) = 1
 		ORDER BY dmh.sochungtu asc, sp.ma_sanpham asc
 		"
         , ""

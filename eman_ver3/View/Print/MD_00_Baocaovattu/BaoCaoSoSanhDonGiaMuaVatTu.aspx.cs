@@ -88,6 +88,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
 		    AND nkncc.kho = '{0}'
 		    AND nkncc.ngaychuyen >= @tungay
 		    AND nkncc.ngaychuyen <= @denngay
+            AND isnull(sp.vattu, 0) = 1
 		ORDER BY nkncc.ngaychuyen desc, nkncc.sochungtu asc, sp.ma_sanpham asc
 		"
         , kho
