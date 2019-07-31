@@ -195,7 +195,7 @@ public class lenhXuatKho : DevExpress.XtraReports.UI.XtraReport
     /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    public rptPhieuXuatKhoNB(string stp)
+    public lenhXuatKho(string stp)
     {
         this.sothapphan = stp;
         InitializeComponent();
@@ -1590,7 +1590,7 @@ public class lenhXuatKho : DevExpress.XtraReports.UI.XtraReport
         this.xrLabel46.Text = ".......................................................................";
         this.xrLabel46.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
         // 
-        // rptPhieuXuatKhoNB
+        // lenhXuatKho
         // 
         this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.Detail,
