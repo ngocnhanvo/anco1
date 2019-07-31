@@ -21,12 +21,28 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
 
     public void viewReport(XtraReport report, String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
+        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
+        var ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        var tbl = ds.Tables[0];
+        if (tbl.Rows.Count > 0)
+        {
+            double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
+
+            tbl.Columns.Add("sum_duocnhap", Type.GetType("System.Double"));
+            foreach (DataRow row in tbl.Rows)
+            {
+                row["sum_duocnhap"] = sum_duocnhap;
+            }
+
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<h1>Không có dữ liệu</h1>");
+        }
     }
 
     public String CreateSql(HttpContext context)
@@ -488,7 +504,7 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.dongia.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.####}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", this.sothapphan)});
         this.dongia.Font = new System.Drawing.Font("Tahoma", 9F);
         this.dongia.Multiline = true;
         this.dongia.Name = "dongia";
@@ -505,7 +521,7 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         this.thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.####}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", this.sothapphan)});
         this.thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
         this.thanhtien.Multiline = true;
         this.thanhtien.Name = "thanhtien";
@@ -742,8 +758,9 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.sum_duocnhap.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.sum_duocnhap.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "duocnhap")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_duocnhap", this.sothapphan)});
         this.sum_duocnhap.Font = new System.Drawing.Font("Tahoma", 9F);
+        this.sum_duocnhap.Multiline = true;
         this.sum_duocnhap.Name = "sum_duocnhap";
         this.sum_duocnhap.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
         this.sum_duocnhap.StylePriority.UseBorders = false;
@@ -752,7 +769,6 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         this.sum_duocnhap.StylePriority.UseTextAlignment = false;
         xrSummary4.FormatString = this.sothapphan;
         xrSummary4.IgnoreNullValues = true;
-        xrSummary4.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_duocnhap.Summary = xrSummary4;
         this.sum_duocnhap.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
         this.sum_duocnhap.Weight = 0.30298813626765053D;
@@ -787,7 +803,6 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         xrSummary6.FormatString = this.sothapphan;
         xrSummary6.IgnoreNullValues = true;
         this.sum_tongcong.Summary = xrSummary6;
-        this.sum_tongcong.Text = "x";
         this.sum_tongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
         this.sum_tongcong.Weight = 0.28241060759959435D;
         // 

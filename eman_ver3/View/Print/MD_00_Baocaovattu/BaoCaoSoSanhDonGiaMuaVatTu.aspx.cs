@@ -25,9 +25,28 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
         var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
         var ds = new DataSet();
         da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        ReportViewer1.Report = report;
+        var tbl = ds.Tables[0];
+        if (tbl.Rows.Count > 0)
+        {
+            double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
+            double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
+
+            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+            foreach (DataRow row in tbl.Rows)
+            {
+                row["sum_soluong"] = sum_soluong;
+                row["sum_thanhtien"] = sum_thanhtien;
+            }
+
+            report.DataSource = ds;
+            report.DataAdapter = da;
+            ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<h1>Không có dữ liệu</h1>");
+        }
     }
 
     public string CreateSql(HttpContext context)
@@ -802,7 +821,7 @@ public class baoCaoSoSanhDonGiaMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.sum_soluong.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.sum_soluong.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "soluong")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_soluong", this.sothapphan)});
         this.sum_soluong.Font = new System.Drawing.Font("Tahoma", 9F);
         this.sum_soluong.Multiline = true;
         this.sum_soluong.Name = "sum_soluong";
@@ -812,7 +831,6 @@ public class baoCaoSoSanhDonGiaMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         this.sum_soluong.StylePriority.UsePadding = false;
         this.sum_soluong.StylePriority.UseTextAlignment = false;
         xrSummary6.FormatString = this.sothapphan;
-        xrSummary6.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_soluong.Summary = xrSummary6;
         this.sum_soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
         this.sum_soluong.Weight = 0.34642368686355735D;
@@ -838,7 +856,7 @@ public class baoCaoSoSanhDonGiaMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         this.sum_thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.sum_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thanhtien", "{0:#,#0.####}")});
         this.sum_thanhtien.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.sum_thanhtien.Multiline = true;
         this.sum_thanhtien.Name = "sum_thanhtien";
@@ -848,7 +866,6 @@ public class baoCaoSoSanhDonGiaMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         this.sum_thanhtien.StylePriority.UsePadding = false;
         this.sum_thanhtien.StylePriority.UseTextAlignment = false;
         xrSummary8.FormatString = "{0:#,#0.####}";
-        xrSummary8.Running = DevExpress.XtraReports.UI.SummaryRunning.Report;
         this.sum_thanhtien.Summary = xrSummary8;
         this.sum_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
         this.sum_thanhtien.Weight = 0.4186356314384872D;
