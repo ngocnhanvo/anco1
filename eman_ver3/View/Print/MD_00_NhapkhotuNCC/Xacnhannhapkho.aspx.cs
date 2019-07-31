@@ -488,7 +488,7 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.dongia.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", this.sothapphan)});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.####}")});
         this.dongia.Font = new System.Drawing.Font("Tahoma", 9F);
         this.dongia.Multiline = true;
         this.dongia.Name = "dongia";
@@ -505,7 +505,7 @@ public class phieuXNNhapVatTu : DevExpress.XtraReports.UI.XtraReport
         this.thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
         | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", this.sothapphan)});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.####}")});
         this.thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
         this.thanhtien.Multiline = true;
         this.thanhtien.Name = "thanhtien";

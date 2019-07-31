@@ -500,7 +500,7 @@ public class donDatMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.dongia.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", this.sothapphan)});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#0.####}")});
         this.dongia.Font = new System.Drawing.Font("Tahoma", 9F);
         this.dongia.Multiline = true;
         this.dongia.Name = "dongia";
@@ -516,7 +516,7 @@ public class donDatMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", this.sothapphan)});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#0.####}")});
         this.thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
         this.thanhtien.Multiline = true;
         this.thanhtien.Name = "thanhtien";
@@ -773,7 +773,7 @@ public class donDatMuaVatTu : DevExpress.XtraReports.UI.XtraReport
         // 
         this.sum_thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
         this.sum_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thanhtien", this.sothapphan)});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thanhtien", "{0:#,#0.####}")});
         this.sum_thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
         this.sum_thanhtien.Name = "sum_thanhtien";
         this.sum_thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
