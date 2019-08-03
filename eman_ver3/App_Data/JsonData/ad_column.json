@@ -48521,7 +48521,7 @@
     "editable": "true",
     "editrules": "1",
     "edittype": " ",
-    "editoptions": "dataInit: function (elem) { format_datetime(elem); }",
+    "editoptions": "defaultValue: now ,dataInit: function (elem) { format_datetime(elem); }",
     "important": "false",
     "colspan": " ",
     "formatoptions": "srcformat: 'm/d/Y', newformat:format_srcdatetime()",
@@ -48545,7 +48545,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "03/08/2019 10:23:37",
-    "ngaycapnhat": "03/08/2019 10:45:51",
+    "ngaycapnhat": "03/08/2019 11:56:33",
     "mota": " ldg.ngaylap ",
     "hoatdong": "True"
   },
