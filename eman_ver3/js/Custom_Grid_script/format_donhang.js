@@ -66,6 +66,16 @@ function timkiem_donhang(id_elem, type) {
                         let whereSQL = '';
                         if (tengrid0 != 'gridMD_00_GiamHanNgach')
                             whereSQL = " and dsdh.trangthai = 'HIEULUC'";
+
+                        if (tengrid0 == 'gridMD_00_LenhDongGoi')
+                        {
+                            whereSQL += " and (";
+                            whereSQL += " select count(1)";
+                            whereSQL += " from c_dongdsdh";
+                            whereSQL += " where c_danhsachdathang_id = dsdh.c_danhsachdathang_id";
+                            whereSQL += " and (sl_dathang - isnull(sl_giamhanngach,0) - isnull(sl_donggoi, 0)) > 0";
+                            whereSQL += " ) > 0";
+                        }
                         return whereSQL;
                     }
                 },

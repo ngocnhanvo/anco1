@@ -79,6 +79,12 @@
                         public int? khuon { get; set; }
                 
 						
+                        #region md_xuatkhonb_lenhdonggoi_wintaFN
+                        
+                        #endregion md_xuatkhonb_lenhdonggoi_wintaFN
+                        public string lenhdonggoi { get; set; }
+                
+						
                         #region md_xuatkhonb_md_doitackinhdoanh_id_wintaFN
                         
                         #endregion md_xuatkhonb_md_doitackinhdoanh_id_wintaFN

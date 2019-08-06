@@ -239,11 +239,11 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                 decimal sl_xuat_cuoi2 = sl_xuat_cuoi;
                                 if (sl_xuat2 > 0)
                                 {
-                                    if (xk.bosung != 1)
+                                    bool ghino = true;
+                                    decimal? truno = dh.truno;
+                                    if (new int[] { 0, 3, 4 }.Contains(xk.bosung.GetValueOrDefault(-1)))
                                     {
                                         var arrLSX = dh.lsx_to.Split(',');
-                                        bool ghino = true;
-                                        decimal? truno = dh.truno;
                                         foreach (var lsxTo in arrLSX.OrderByDescending(s => s))
                                         {
                                             string[] arr = lsxTo.Split(new[] { " --- " }, StringSplitOptions.None);
@@ -257,24 +257,22 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
                                             if (xk.bosung == 0 | xk.bosung == 3)
                                             {
-
                                                 foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_vattu.
-                                                        Where(s => s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id &
-                                                        s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                                                        Where(s =>
+                                                        s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id
+                                                        & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                                                 {
                                                     decimal tslhn = ddhpx_cdh.soluong.Value - ddhpx_cdh.sl_hanngach.Value - ddhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
                                                     //xuat thieu du
                                                     if (tslhn >= sl_xuat_cuoi)
                                                     {
                                                         ddhpx_cdh.sl_hanngach += sl_xuat_cuoi;
-                                                        //update_soanthao(db, sp.md_sanpham_id, lsx.md_dondathangphanxuong_id, xk_id, sl_xuat_cuoi);
                                                         sl_xuat_cuoi = 0;
                                                     }
                                                     //xuat du
                                                     else
                                                     {
                                                         ddhpx_cdh.sl_hanngach += tslhn;
-                                                        //update_soanthao(db, sp.md_sanpham_id, lsx.md_dondathangphanxuong_id, xk_id, tslhn);
                                                         sl_xuat_cuoi = sl_xuat_cuoi - tslhn;
                                                     }
 
@@ -284,38 +282,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         add_kho_no(db, dh, xk, lsxTo, us, lsx.md_phanxuong_id, tentoLSX, dh.ghino);
                                                         ghino = false;
                                                     }
-
-                                                    //if (truno > 0)
-                                                    //{
-                                                    //    decimal trunoTo = truno.GetValueOrDefault(0), noTo = 0;
-                                                    //    decimal tslhn2 = ddhpx_cdh.soluong.Value - ddhpx_cdh.sl_hanngach.Value - ddhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
-                                                    //    trunoTo = trunoTo >= tslhn2 ? tslhn2 : trunoTo;
-
-                                                    //    foreach (var theno in db.md_kho_ghino.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id
-                                                    //         & s.tosx == tentoLSX).ToList())
-                                                    //    {
-                                                    //        if (theno.soluong_no >= trunoTo)
-                                                    //        {
-                                                    //            noTo += trunoTo;
-                                                    //            ddhpx_cdh.sl_hanngach += trunoTo;
-                                                    //            theno.soluong_no -= trunoTo;
-                                                    //            trunoTo = 0;
-                                                    //                if(theno.soluong_no <= 0)
-                                                    //                    db.md_kho_ghino.Remove(theno);
-                                                    //            break;
-                                                    //        }
-                                                    //        else
-                                                    //        {
-                                                    //            noTo += theno.soluong_no.GetValueOrDefault(0);
-                                                    //            ddhpx_cdh.sl_hanngach += theno.soluong_no;
-                                                    //            theno.soluong_no = 0;
-                                                    //            trunoTo = trunoTo - theno.soluong_no.GetValueOrDefault(0);
-                                                    //            db.md_kho_ghino.Remove(theno);
-                                                    //        }
-                                                    //    }
-                                                    //    truno = (truno.GetValueOrDefault(0) - noTo).Set0WhenlessThan0();
-                                                    //    db.SaveChanges();
-                                                    //}
 
                                                     var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
                                                        s.md_xuatkhonb_id != xk.md_xuatkhonb_id
@@ -327,13 +293,13 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                         ck_dh.sl_xuat = 0;
                                                         ck_dh.sl_xuat2 = 0;
-                                                        if(ck_dh.truno > 0)
+                                                        if (ck_dh.truno > 0)
                                                         {
                                                             if (ck_dh.truno > ck_dh.tong_sl_xuat)
                                                                 ck_dh.truno = ck_dh.tong_sl_xuat;
                                                         }
 
-                                                        if(ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
+                                                        if (ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
                                                             ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
                                                         else
                                                             ck_dh.ghino = (ck_dh.sl_muonxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
@@ -387,7 +353,66 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                         db.SaveChanges();
                                         msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";
                                     }
-                                    else {
+                                    else if (xk.bosung == 2)
+                                    {
+                                        var ldg = db.md_lenhdonggoi.FirstOrDefault(s => s.sochungtu == xk.lenhdonggoi);
+                                        foreach (var ddhpx_cdh in db.md_lenhdonggoi_vattu.
+                                                        Where(s =>
+                                                        s.md_sanpham_id == sp.md_sanpham_id
+                                                        & s.md_lenhdonggoi_id == ldg.md_lenhdonggoi_id).ToList())
+                                        {
+                                            decimal tslhn = ddhpx_cdh.soluong.GetValueOrDefault(0) - ddhpx_cdh.soluong_dagiao.GetValueOrDefault(0);
+                                            if (tslhn >= sl_xuat_cuoi)
+                                            {
+                                                ddhpx_cdh.soluong_dagiao = ddhpx_cdh.soluong_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi;
+                                                sl_xuat_cuoi = 0;
+                                            }
+                                            else
+                                            {
+                                                ddhpx_cdh.soluong_dagiao = ddhpx_cdh.soluong_dagiao.GetValueOrDefault(0) + tslhn;
+                                                sl_xuat_cuoi = sl_xuat_cuoi - tslhn;
+                                            }
+
+                                            //--ghi nợ / có
+                                            if (ghino == true)
+                                            {
+                                                add_kho_no(db, dh, xk, null, us, null, xk.xuatden, dh.ghino);
+                                                ghino = false;
+                                            }
+
+                                            var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
+                                                    s.md_xuatkhonb_id != xk.md_xuatkhonb_id
+                                                    & s.md_sanpham_id == dh.md_sanpham_id
+                                                    & db.md_xuatkhonb.Where(t => 
+                                                        t.md_xuatkhonb_id == s.md_xuatkhonb_id 
+                                                        & t.trangthai != "HIEULUC"
+                                                        & t.lenhdonggoi == ldg.sochungtu
+                                                    ).Count() > 0
+                                                ).FirstOrDefault();
+                                            if (ck_dh != null)
+                                            {
+                                                ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
+                                                ck_dh.sl_xuat = 0;
+                                                ck_dh.sl_xuat2 = 0;
+                                                if (ck_dh.truno > 0)
+                                                {
+                                                    if (ck_dh.truno > ck_dh.tong_sl_xuat)
+                                                        ck_dh.truno = ck_dh.tong_sl_xuat;
+                                                }
+
+                                                if (ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
+                                                    ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                                                else
+                                                    ck_dh.ghino = (ck_dh.sl_muonxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                                            }
+                                            db.SaveChanges();
+                                        }
+
+                                        db.SaveChanges();
+                                        msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";
+                                    }
+                                    else
+                                    {
                                         msg_success += "<div style='color:blue'>Dòng \"" + xk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + sl_xuat2.DropTrailingZeros() + "\"</div>";
                                     }
                                 }
@@ -585,6 +610,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             giao.lydo = "";
             giao.md_phanxuong_id = pxId;
             giao.tosx = tento;
+            giao.md_to_id = px.md_to_id;
             giao.nguoitao = us.ad_user_id;
             giao.vaitrotao = us.ad_role_id;
             giao.bophantao = us.md_phongban_id;

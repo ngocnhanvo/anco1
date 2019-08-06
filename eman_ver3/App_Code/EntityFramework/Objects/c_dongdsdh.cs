@@ -193,6 +193,12 @@
                         public Decimal? sl_dathang { get; set; }
                 
 						
+                        #region c_dongdsdh_sl_donggoi_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_donggoi_wintaFN
+                        public Decimal? sl_donggoi { get; set; }
+                
+						
                         #region c_dongdsdh_sl_giamhanngach_wintaFN
                         
                         #endregion c_dongdsdh_sl_giamhanngach_wintaFN
