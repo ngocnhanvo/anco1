@@ -67,6 +67,12 @@
                         public string md_sanpham_id { get; set; }
                 
 						
+                        #region md_kho_ghino_md_to_id_wintaFN
+                        
+                        #endregion md_kho_ghino_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_kho_ghino_mota_wintaFN
                         
                         #endregion md_kho_ghino_mota_wintaFN

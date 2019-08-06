@@ -325,4 +325,16 @@ public class Public
                         select a.md_sanpham_bom_id).FirstOrDefault();
         return bomId;
     }
+
+    public string getBOMDongGoi(string spId, EntityContext db)
+    {
+        string bomId = (from a in db.md_sanpham_bom
+                        where a.md_sanpham_id == spId
+                        & string.IsNullOrEmpty(a.md_phanxuong_id)
+                        & string.IsNullOrEmpty(a.md_to_id)
+                        & a.bom_donggoi == true
+                        orderby a.ngay_hieuluc descending
+                        select a.md_sanpham_bom_id).FirstOrDefault();
+        return bomId;
+    }
 }

@@ -272,7 +272,6 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
                 }
                 else
                 {
-                    System.Threading.Thread.Sleep(1000);
                     string select_sql = VNN_Config.Select_sql(mod.ma_module, db);
                     select_sql = select_sql.Remove(select_sql.Length - 1);
                     string sql = "";

@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_lenhdonggoi_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion md_lenhdonggoi_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
                         #region md_lenhdonggoi_hoatdong_wintaFN
                         
                         #endregion md_lenhdonggoi_hoatdong_wintaFN

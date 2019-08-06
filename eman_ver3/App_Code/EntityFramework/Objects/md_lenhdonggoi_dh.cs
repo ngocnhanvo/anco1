@@ -7,6 +7,12 @@
                     public partial class md_lenhdonggoi_dh
                     {
                         
+                        #region md_lenhdonggoi_dh_bomdonggoi_id_wintaFN
+                        
+                        #endregion md_lenhdonggoi_dh_bomdonggoi_id_wintaFN
+                        public string bomdonggoi_id { get; set; }
+                
+						
                         #region md_lenhdonggoi_dh_bophancapnhat_wintaFN
                         
                         #endregion md_lenhdonggoi_dh_bophancapnhat_wintaFN

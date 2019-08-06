@@ -25,6 +25,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_lenhdonggoi_vattu_md_donvitinhsanpham_id_wintaFN
+                        
+                        #endregion md_lenhdonggoi_vattu_md_donvitinhsanpham_id_wintaFN
+                        public string md_donvitinhsanpham_id { get; set; }
+                
+						
                         #region md_lenhdonggoi_vattu_md_lenhdonggoi_id_wintaFN
                         
                         #endregion md_lenhdonggoi_vattu_md_lenhdonggoi_id_wintaFN
