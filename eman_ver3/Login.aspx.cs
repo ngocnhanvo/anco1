@@ -7,18 +7,18 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        string userId = Security.id_taikhoan(Context);
-        if (userId != "")
-        {
-            var db = new EntityContext();
-            db.Configuration.AutoDetectChangesEnabled = false;
-            db.Configuration.LazyLoadingEnabled = false;
-            int tk = db.ad_user.Where(p => p.ad_user_id == userId).Take(1).Count();
-            if (tk > 0)
-            {
-                Response.Redirect(Security.UrlBase(), true);
-            }
-        }
+        //string userId = Security.id_taikhoan(Context);
+        //if (userId != "")
+        //{
+        //    var db = new EntityContext();
+        //    db.Configuration.AutoDetectChangesEnabled = false;
+        //    db.Configuration.LazyLoadingEnabled = false;
+        //    int tk = db.ad_user.Where(p => p.ad_user_id == userId).Take(1).Count();
+        //    if (tk > 0)
+        //    {
+        //        Response.Redirect(Security.UrlBase(), true);
+        //    }
+        //}
     }
 
     protected void btnLogin_Click(object sender, EventArgs e)
