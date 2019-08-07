@@ -6,10 +6,10 @@ public partial class _Default : System.Web.UI.Page , System.Web.SessionState.IRe
     protected void Page_Load(object sender, EventArgs e)
     {
         //EntityContext db = new EntityContext();
-        string ad_userID = Security.id_taikhoan(Context);
-        if (ad_userID == "")
-        {
-            Response.Redirect(Security.UrlBase() + "Login.aspx");
-        }
+        //string ad_userID = Security.id_taikhoan(Context);
+        //if (string.IsNullOrEmpty(ad_userID))
+        //{
+        //    Response.Redirect(Security.UrlBase() + "Login.aspx");
+        //}
     }
 }
