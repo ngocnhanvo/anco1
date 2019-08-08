@@ -28,7 +28,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         var db = new EntityContext();
         string str = "<select>";
         str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
-        foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> Regex.Replace(s.ma_kho, "[^0-9]", "")))
+        foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> int.Parse(Regex.Replace(s.ma_kho, "[^0-9]", ""))))
         {
             str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>", cn.md_kho_id, cn.ten_kho,
                 cn.vattu == true ? "KVT" :

@@ -35,6 +35,22 @@ public static class VNN_Function
         return user;
     }
 
+    public static User_TK get_user(string ad_user_id, string ad_role_id, string md_phongban_id, EntityContext db)
+    {
+        var tk = db.ad_user.FirstOrDefault(s => s.ad_user_id == ad_user_id);
+        var vtr = db.ad_role.Where(s => s.ad_role_id == ad_role_id).Take(1).FirstOrDefault();
+        var pb = db.ad_department.Where(s => s.md_phongban_id == md_phongban_id).Take(1).FirstOrDefault();
+        var user = new User_TK();
+        user.ad_user_id = tk.ad_user_id;
+        user.ad_role_id = tk.ad_role_id;
+        user.md_phongban_id = pb.md_phongban_id;
+        user.ma_user = tk.ma_user;
+        user.ma_role = vtr.ma_role;
+        user.ten_role = vtr.ten_role;
+        user.ten_phongban = pb.ten_phongban;
+        return user;
+    }
+
     public static string ADGetColumn_SQL(string ten_table, string ma_module, string where_ex)
     {
         string hoatdong = "";
@@ -597,10 +613,9 @@ public static class VNN_Function
         return kq;
     }
 
-    public static string setFunction_AutoLoad()
+    public static string setFunction_AutoLoad(EntityContext db)
     {
         string kq = "";
-        EntityContext db = new EntityContext();
         kq += "\n\nfunction Load_Auto(i_dem, loadgrid_at) {";
         foreach (ad_autoload au_load in db.ad_autoload.Where(s => s.hoatdong == true).ToList())
         {
