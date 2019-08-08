@@ -309,9 +309,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             }
                                             else if (xk.bosung == 4)
                                             {
-                                                string khoNext = db.md_kho.Where(s =>
-                                                    s.md_phanxuong_id == lsxTSX.md_phanxuong_id
-                                                    & s.md_to_id == lsxTSX.md_phanxuong_to_id).Select(s => s.md_kho_id).FirstOrDefault();
+                                                string khoNext = Helper.layKhoCuaTo(lsxTSX.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                                 string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);
                                                 add_nhapkho_hsd(db, dh, khoNext, us, KSPID);
                                                 add_nhapkho_ls(db, dh, khoNext, xk.ngaychuyen, xk.sochungtu, 1, us);
@@ -383,8 +381,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
                                                     s.md_xuatkhonb_id != xk.md_xuatkhonb_id
                                                     & s.md_sanpham_id == dh.md_sanpham_id
-                                                    & db.md_xuatkhonb.Where(t => 
-                                                        t.md_xuatkhonb_id == s.md_xuatkhonb_id 
+                                                    & db.md_xuatkhonb.Where(t =>
+                                                        t.md_xuatkhonb_id == s.md_xuatkhonb_id
                                                         & t.trangthai != "HIEULUC"
                                                         & t.lenhdonggoi == ldg.sochungtu
                                                     ).Count() > 0
@@ -991,9 +989,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         {
                             var lsxTSX = Extension.getLSXToId(tsxId, db);
                             var lsxTSX_prev = Extension.getLSXToId_Prev(lsxTSX, db);
-                            var kho = db.md_kho.Where(s =>
-                                s.md_phanxuong_id == lsxTSX_prev.md_phanxuong_id
-                                & s.md_to_id == lsxTSX_prev.md_phanxuong_to_id).FirstOrDefault();
+                            var kho = Helper.layKhoCuaTo(lsxTSX_prev.md_phanxuong_id, lsxTSX_prev.md_phanxuong_to_id, db);
+                            
                             if (kho != null & lsxTSX != null)
                             {
                                 if (kho.md_kho_id == tukho)

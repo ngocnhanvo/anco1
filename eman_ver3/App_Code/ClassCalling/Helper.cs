@@ -1,5 +1,7 @@
-﻿using System;
+﻿using DataAcess;
+using System;
 using System.Globalization;
+using System.Linq;
 using System.Web;
 /// <summary>
 /// Summary description for Helper
@@ -70,5 +72,13 @@ public static class Helper
         }
         var result = firstThursday.AddDays(weekNum * 7);
         return result.AddDays(-3);
+    }
+
+    public static md_kho layKhoCuaTo(string pxId, string toId, EntityContext db)
+    {
+        return db.md_kho.Where(s =>
+                                s.md_phanxuong_id == pxId
+                                & s.md_to_id == toId
+                                & s.hangton == false).FirstOrDefault();
     }
 }

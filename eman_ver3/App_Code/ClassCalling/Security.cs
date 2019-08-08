@@ -110,7 +110,6 @@ public static class Security
             }
             else
             {
-                System.Web.Security.FormsAuthentication.SignOut();
                 return "";
             }
         }

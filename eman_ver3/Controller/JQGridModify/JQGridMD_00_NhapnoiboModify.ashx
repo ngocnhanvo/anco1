@@ -435,9 +435,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                         foreach (var lsxTSXId in arrTSX)
                         {
                             var tsx = Extension.getLSXToId(lsxTSXId, db);
-                            var kho = db.md_kho.Where(s =>
-                                s.md_phanxuong_id == tsx.md_phanxuong_id
-                                & s.md_to_id == tsx.md_phanxuong_to_id).FirstOrDefault();
+                            var kho = Helper.layKhoCuaTo(tsx.md_phanxuong_id, tsx.md_phanxuong_to_id, db);
 
                             if (kho.md_kho_id == denkho)
                             {

@@ -23,10 +23,9 @@ public class VNN_VariablePublic
 	public static string format_so = "";
 	public static Worksheet ws = null;
     public static string API_AncoTrading = System.Web.Configuration.WebConfigurationManager.AppSettings["API_AncoTrading"];
-    public static string[] Module_script()
+    public static string[] Module_script(ADmin_JSON json)
     {
         string[] kq = new string[3];
-        ADmin_JSON json = new ADmin_JSON();
         List<ad_module> modules = json.ad_moduleJSON();
         foreach (ad_module mod in modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")))
         {
@@ -98,10 +97,9 @@ public class VNN_VariablePublic
 		return km;
 	}
 	
-	public static string get_mauhienthi_sochungtu(){
-		EntityContext db = new EntityContext();
+	public static string get_mauhienthi_sochungtu(EntityContext db) {
 		string msg = "if(1 == 2) { }";
-		foreach(md_sochungtu sct in db.md_sochungtu.Where(s=>s.md_trangthai_id == "HIEULUC")) {
+		foreach(var sct in db.md_sochungtu.Where(s=>s.md_trangthai_id == "HIEULUC")) {
 			msg += "\nelse if(ma_sct == '"+ sct.ma_sochungtu +"'){";
 			msg += "	kq = '" + sct.mau_hienthi + "';";
 			msg += "\n}";
@@ -226,12 +224,12 @@ public class Module_TK
 
 public class User_TK
 {
-    public string ad_user_id;
-    public string ad_role_id;
-    public string md_phongban_id;
-    public string ma_user;
-	public string ma_role;
-    public string ten_role;
-    public string ten_phongban;
+    public string ad_user_id { get; set; }
+    public string ad_role_id { get; set; }
+    public string md_phongban_id { get; set; }
+    public string ma_user { get; set; }
+    public string ma_role { get; set; }
+    public string ten_role { get; set; }
+    public string ten_phongban { get; set; }
 }
 
