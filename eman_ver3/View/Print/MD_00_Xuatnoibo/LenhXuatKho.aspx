@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="LenhXuatKho.aspx.cs" Inherits="PrintControllers_MD_00_Xuatnoibo_LenhXuatKho" %>
 
-<%@ Register assembly="DevExpress.XtraReports.v11.2.Web, Version=11.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
+<%@ Register assembly="DevExpress.XtraReports.v16.1.Web, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -11,10 +11,16 @@
 	<script>
 
 	</script>
+    <style type="text/css">
+        .reportDEX > .dxmLite.dxm-ltr{
+            display:table;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div align="center">
+    <div class="reportDEX" align="center">
     
         <dx:ReportToolbar ID="ReportToolbar1" runat="server" 
             ReportViewerID="ReportViewer1" ShowDefaultButtons="False">
@@ -46,11 +52,6 @@
                     </Elements>
                 </dx:ReportToolbarComboBox>
             </Items>
-            <Styles>
-                <LabelStyle>
-                <Margins MarginLeft="3px" MarginRight="3px" />
-                </LabelStyle>
-            </Styles>
         </dx:ReportToolbar>
         <dx:ReportViewer ID="ReportViewer1" runat="server" ReportName="XtraReport1">
         </dx:ReportViewer>

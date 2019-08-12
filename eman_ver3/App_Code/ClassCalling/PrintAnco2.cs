@@ -15,6 +15,9 @@ public class PrintAnco2
         return new InfoPrint
         {
             logo = urlBase + "/" + ttc.logo,
+            dd = DateTime.Now.ToString("dd"),
+            MM = DateTime.Now.ToString("MM"),
+            yyyy = DateTime.Now.ToString("yyyy"),
         };
     }
 
@@ -49,4 +52,7 @@ public class PrintAnco2
 public class InfoPrint
 {
     public string logo { get; set; }
+    public string dd { get; set; }
+    public string MM { get; set; }
+    public string yyyy { get; set; }
 }

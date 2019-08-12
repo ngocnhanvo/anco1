@@ -44,17 +44,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Data.v17.1, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Office.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Pdf.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.PivotGrid.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Printing.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.RichEdit.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Sparkline.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraCharts.v17.1, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraGauges.v17.1.Core, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraReports.v17.1, Version=17.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Charts.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v16.1, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.PivotGrid.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Sparkline.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraCharts.v16.1, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGauges.v16.1.Core, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraReports.v16.1, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
@@ -177,10 +176,22 @@
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Data\TonKhoSL.cs">
+    <Compile Include="App_Data\baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="App_Data\rpPhieuDeNghiVT.cs">
+    <Compile Include="App_Data\donDatMuaVatTu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="App_Data\baoCaoSoSanhDonGiaMuaVatTu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="App_Data\phieuYeuCauMuaVatTu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="App_Data\phieuXNNhapVatTu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="App_Data\TonKhoSL.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="App_Data\rptPhieuXuatKhoNB.cs">
@@ -194,6 +205,7 @@
     <Compile Include="About.aspx.designer.cs">
       <DependentUpon>About.aspx</DependentUpon>
     </Compile>
+    <Compile Include="App_Start\PrintAnco2.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
@@ -213,6 +225,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report\lenhXuatKho.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\lenhXuatKho.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>lenhXuatKho.resx</DependentUpon>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -248,16 +268,33 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="App_Data\baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.resx">
+      <DependentUpon>baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_Data\donDatMuaVatTu.resx">
+      <DependentUpon>donDatMuaVatTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_Data\baoCaoSoSanhDonGiaMuaVatTu.resx">
+      <DependentUpon>baoCaoSoSanhDonGiaMuaVatTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_Data\phieuYeuCauMuaVatTu.resx">
+      <DependentUpon>phieuYeuCauMuaVatTu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_Data\phieuXNNhapVatTu.resx">
+      <DependentUpon>phieuXNNhapVatTu.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="App_Data\TonKhoSL.resx">
       <DependentUpon>TonKhoSL.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\rpPhieuDeNghiVT.resx">
-      <DependentUpon>rpPhieuDeNghiVT.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="App_Data\rptPhieuXuatKhoNB.resx">
       <DependentUpon>rptPhieuXuatKhoNB.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Report\lenhXuatKho.resx">
+      <DependentUpon>lenhXuatKho.cs</DependentUpon>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>lenhXuatKho.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
