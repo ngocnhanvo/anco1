@@ -8,13 +8,16 @@
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
     <title>[eMan] Đơn đạt hàng phân xưởng</title>
-	<script>
-
-	</script>
+	<style type="text/css">
+        .reportDEX > .dxmLite.dxm-ltr{
+            display:table;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div align="center">
+    <div class="reportDEX" align="center">
     
         <dx:ReportToolbar ID="ReportToolbar1" runat="server" 
             ReportViewerID="ReportViewer1" ShowDefaultButtons="False">
@@ -46,11 +49,6 @@
                     </Elements>
                 </dx:ReportToolbarComboBox>
             </Items>
-            <Styles>
-                <LabelStyle>
-                <Margins MarginLeft="3px" MarginRight="3px" />
-                </LabelStyle>
-            </Styles>
         </dx:ReportToolbar>
         <dx:ReportViewer ID="ReportViewer1" runat="server" ReportName="XtraReport1">
         </dx:ReportViewer>

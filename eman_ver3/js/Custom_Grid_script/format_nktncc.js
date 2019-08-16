@@ -50,6 +50,7 @@ function timkiem_nktncc(id_elem, type) {
                         if ($('#' + id_elem).prop('disabled') != true) {
                             $('#' + id_elem).val(cell['sochungtu']);
                             $('#' + id_elem + '_id').val(cell['c_donmuahang_id']);
+                            $(`#value_khodonhang option:containsExact(${cell['diadiem_giaohang']})`).prop('selected', true);
                         }
                         id_gridMD_00_DMHHVT_cp = ids;
                         $(`#${namegrid}_child`)[0].triggerToolbar();
@@ -62,6 +63,7 @@ function timkiem_nktncc(id_elem, type) {
                     { key: false, fixed: true, label: 'Phiếu nhập kho', name: 'phieunhapkho', index: 'dmh.phieunhapkho', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center', stype: 'select', searchoptions: { sopt: ['eq'], value: { '': '', ' ': 'Chưa tạo phiếu', 'Đã tạo phiếu': 'Đã tạo phiếu', 'Đã nhập kho': 'Đã nhập kho' } }, frozen: false, formoptions: { label: 'Phiếu nhập kho' } },
                     { key: false, fixed: true, label: 'Đơn hàng tham chiếu', name: 'donhang_thamchieu', index: ' dmh.donhang_thamchieu ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 150 }, frozen: false, formoptions: { label: 'Đơn hàng tham chiếu' } },
                     { key: false, fixed: true, label: 'CT Kế Hoạch mua VT', name: 'sctkehoach', index: 'dmh.sctkehoach', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'CT Kế Hoạch mua VT' } },
+                    { key: false, fixed: true, label: 'Địa điểm giao hàng', name: 'diadiem_giaohang', index: 'dmh.diadiem_giaohang', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Địa điểm giao hàng' } },
                 ],
                 postData: {
                     where_ex: function () {

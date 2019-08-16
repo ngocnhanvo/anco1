@@ -22,12 +22,6 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             case "del":
                 this.del(context);
                 break;
-            case "load_donghang":
-                this.load_donghang(context);
-                break;
-            case "CA_01_TPNKMG":
-                this.CA_01_TPNKMG(context);
-                break;
             case "CA_01_TPNKMG2":
                 this.CA_01_TPNKMG2(context);
                 break;
@@ -207,153 +201,6 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             db.SaveChanges();
         }
         context.Response.Write(msg);
-    }
-
-    public void load_donghang(HttpContext context)
-    {
-        /*EntityContext db = new EntityContext();
-        string id = context.Request.QueryString["id"];
-        string html = "";
-        html += "<table style='width:100%'>";
-        html += "<th style='border: 1px solid #CC3;'><input type='checkbox' class='chk_tosx_all'/></th><th>Mã sản phẩm</th><th>SL đặt hàng</th><th>SL nhập kho</th>";
-        var sp_dmh = from a in db.c_donmuahang_cdmhs
-                      join b in db.md_sanphams on a.md_sanpham_id equals b.md_sanpham_id
-                      where a.c_donmuahang_id == id
-                      select new { b.md_sanpham_id, b.ma_sanpham, a.sl_dadat, a.sl_hanngach };
-
-        foreach (var sp in sp_dmh.OrderBy(s => s.ma_sanpham))
-        {
-            html += "<tr>";
-            if(sp.sl_hanngach.Value <= 0)
-                html += "<td align=center><input class='chk_tosx nhan_disable' disabled type='checkbox' value='" + sp.md_sanpham_id + "' /></td>";
-            else
-                html += "<td align=center><input class='chk_tosx' type='checkbox' value='" + sp.md_sanpham_id + "' /></td>";
-
-            html += "<td style='text-align:center;color:blue'>" + sp.ma_sanpham + "</td>";
-            html += "<td style='text-align:center;color:blue'>" + VNN_VariablePublic.autoRound(sp.sl_dadat.Value, 4) + "</td>";
-
-            html += "<td align=center><input disabled class='nhan_disable input_soluong input_" + sp.md_sanpham_id + "' style='width:120px;text-align:right;' type='text' value='" + VNN_VariablePublic.autoRound(sp.sl_hanngach.Value, 4) + "'/></td>";
-            html += "</tr>";
-        }
-        html += "</table>";
-        context.Response.Write(html);*/
-    }
-
-    public void CA_01_TPNKMG(HttpContext context)
-    {
-        /*EntityContext db = new EntityContext();
-        string[] vnn = context.Request.Form["id_sel"].Split(',');
-        string[] vnn_sl = context.Request.Form["value_sl"].Split(',');
-        string id = context.Request.Form["id"];
-        string msg = "";
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        c_donmuahang dmh = db.c_donmuahang.Where(s=>s.c_donmuahang_id == id).Take(1).FirstOrDefault();
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "PNK", 1);
-        if(dmh == null) {
-            msg = "Lỗi: Không tìm thấy đơn mua hàng đã chọn.";
-        }
-        else if(context.Request.Form["value_sl"] == "") {
-            msg = "Lỗi: Chưa chọn dòng hàng.";
-        }
-        else {
-            md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s=>s.md_doitackinhdoanh_id == dmh.md_doitackinhdoanh_id).Take(1).FirstOrDefault();
-            string add_master = "";
-            for(int i=0;i < vnn.Length; i++)
-            {
-                md_sanpham sp = db.md_sanpham.Where(s=>s.md_sanpham_id == vnn[i]).Take(1).FirstOrDefault();
-                if(sp != null)
-                {
-                    c_donmuahang_cdmh dmh_cdmh = db.c_donmuahang_cdmh.Where(s=>s.c_donmuahang_id == dmh.c_donmuahang_id & s.md_sanpham_id == vnn[i]).Take(1).FirstOrDefault();
-                    decimal sl_nhapkho = 0;
-                    try { sl_nhapkho = decimal.Parse(vnn_sl[i]); } catch { sl_nhapkho = -1; }
-
-                    if (sl_nhapkho > dmh_cdmh.sl_hanngach.Value)
-                    {
-                        msg = "Lỗi: Sản phẩm \"" + sp.ma_sanpham + "\" chỉ có thể nhập kho tối đa là: \"" + VNN_VariablePublic.autoRound(dmh_cdmh.sl_hanngach.Value, 4) + "\"";
-                        break;
-                    }
-                    else if (sl_nhapkho == 0)
-                    {
-                        msg = "Lỗi: Sản phẩm \"" + sp.ma_sanpham + "\" phải nhập số lượng lớn hơn 0";
-                        break;
-                    }
-                    else if (sl_nhapkho < 0)
-                    {
-                        msg = "Lỗi: Sản phẩm \"" + sp.ma_sanpham + "\", số lượng nhập kho không phải là số.";
-                        break;
-                    }
-                    else 
-                    {
-                        if(add_master == "") {
-                            add_master = Helper.getNewId();
-                            md_nhapkho_ncc nk_ncc = new md_nhapkho_ncc{
-                                md_nhapkho_ncc_id = add_master,
-                                c_donmuahang_id = dmh.c_donmuahang_id,
-                                sochungtu = sochungtu,
-                                donhang_thamchieu = dmh.donhang_thamchieu,
-                                ngaychuyen = DateTime.Now,
-                                kho = sp.khomacdinh,
-                                trangthai = "SOANTHAO",
-                                check_hieuluc = false,
-                                md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id,
-                                ten_dtkd = dtkd.ten_dtkd,
-                                sctdathang = dmh.sctdathang,
-                                nguoidung = dtkd.daidien,
-                                nguoitao = us.ad_user_id,
-                                vaitrotao = us.ad_role_id,
-                                bophantao = us.md_phongban_id,
-                                value_nguoitao = us.ma_user,
-                                value_vaitrotao = us.ten_role,
-                                value_bophantao = us.ten_phongban,
-                                nguoicapnhat = us.ad_user_id,
-                                vaitrocapnhat = us.ad_role_id,
-                                bophancapnhat = us.md_phongban_id,
-                                value_nguoicapnhat = us.ma_user,
-                                value_vaitrocapnhat = us.ten_role,
-                                value_bophancapnhat = us.ten_phongban,
-                                hoatdong = true
-                            };
-                            db.md_nhapkho_nccs.Add(nk_ncc);			
-                        }
-
-                        md_nhapkho_ncc_dh nk_ncc_dh = new md_nhapkho_ncc_dh{
-                            md_nhapkho_ncc_dh_id = Helper.getNewId(),
-                            md_nhapkho_ncc_id = add_master,
-                            md_sanpham_id = sp.md_sanpham_id,
-                            md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                            mota_tiengviet = sp.mota_tiengviet,
-                            mota_tienganh = sp.mota_tienganh,
-                            khoden = sp.khomacdinh,
-                            tong_sl_dat = sl_nhapkho,
-                            sl_danhap = 0,
-                            sl_nhap = 0,
-                            nguoitao = us.ad_user_id,
-                            vaitrotao = us.ad_role_id,
-                            bophantao = us.md_phongban_id,
-                            value_nguoitao = us.ma_user,
-                            value_vaitrotao = us.ten_role,
-                            value_bophantao = us.ten_phongban,
-                            nguoicapnhat = us.ad_user_id,
-                            vaitrocapnhat = us.ad_role_id,
-                            bophancapnhat = us.md_phongban_id,
-                            value_nguoicapnhat = us.ma_user,
-                            value_vaitrocapnhat = us.ten_role,
-                            value_bophancapnhat = us.ten_phongban,
-                            hoatdong = true
-                        };
-                        db.md_nhapkho_ncc_dhs.Add(nk_ncc_dh);
-                        dmh_cdmh.sl_hanngach -= sl_nhapkho;
-                    }
-                }
-            }
-
-            if(msg.Length <= 0){
-                dmh.phieunhapkho = "Đã nhập kho";
-                msg = "<div style='color:blue'>Tạo phiếu nhập kho từ NCC: \""+ sochungtu +"\" thành công</div>";
-                db.SaveChanges();
-            }
-        }
-        context.Response.Write(msg);*/
     }
 
     //--tao phieu nhap kho
@@ -590,7 +437,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 }
             }
 
-            if (msg_err.Length > 0)
+            if (msg_err.Length > 0 & msg.Length <= 0)
                 msg = "false#Lỗi:" + msg_err;
 
             if (msg.Length <= 0)

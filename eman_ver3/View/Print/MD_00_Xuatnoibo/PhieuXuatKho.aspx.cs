@@ -1,0 +1,119 @@
+﻿using System;
+using System.Web;
+using DevExpress.XtraReports.UI;
+using System.Data.SqlClient;
+using System.Data;
+using DataAcess;
+using System.Linq;
+public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.UI.Page
+{
+    public string logo = "", sothapphan = "";
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        var context = HttpContext.Current;
+        sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Phiếu Xuất Kho.repx");
+        var report = XtraReport.FromFile(file, true);
+        string sql = CreateSql(context);
+        viewReport(report, sql);
+        //Response.Write(sql);
+    }
+
+    public void viewReport(XtraReport report, String SqlQuery)
+    {
+        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
+        DataSet ds = new DataSet();
+        da.Fill(ds);
+        report.DataSource = ds;
+        report.DataAdapter = da;
+        var tbl = ds.Tables[0];
+        if (tbl.Rows.Count > 0)
+        {
+            var infoPrint = PrintAnco2.GetInfoPrint();
+            var soluong = report.Report.FindControl("soluong", true);
+            soluong.DataBindings[0].FormatString = sothapphan;
+
+            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+            tbl.Columns.Add("logo", Type.GetType("System.String"));
+            tbl.Columns.Add("dd", Type.GetType("System.String"));
+            tbl.Columns.Add("MM", Type.GetType("System.String"));
+            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
+            //Header
+            tbl.Rows[0]["logo"] = infoPrint.logo;
+            tbl.Rows[0]["dd"] = infoPrint.dd;
+            tbl.Rows[0]["MM"] = infoPrint.MM;
+            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            //Footer
+            int lastRow = tbl.Rows.Count - 1;
+            var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
+            if (string.IsNullOrEmpty(sumSL))
+                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
+            else
+                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
+
+            var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
+            if(string.IsNullOrEmpty(sumTT))
+                tbl.Rows[lastRow]["sum_thanhtien"] =  DBNull.Value;
+            else
+                tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sumTT);
+
+            var sum_soluong = report.Report.FindControl("sum_soluong", true);
+            sum_soluong.DataBindings[0].FormatString = sothapphan;
+            this.ReportViewer1.Report = report;
+        }
+        else
+        {
+            Response.Write("<h1>Không có dữ liệu</h1>");
+        }
+    }
+
+    public String CreateSql(HttpContext context)
+    {
+        var db = new EntityContext();
+        string md_xuatkhonb_id = context.Request.QueryString["id"];
+        string oper = context.Request.QueryString["oper"];
+        var xk = db.md_xuatkhonb.FirstOrDefault(s => s.md_xuatkhonb_id == md_xuatkhonb_id);
+        string khonhap = "null";
+        if(xk.bosung == 4)
+        {
+            khonhap = "(select top 1 ten_kho from md_kho where md_to_id = xb.md_to_id and isnull(hangton, 0) = 0)";
+        }
+        string sql = string.Format(@"
+		    select 
+                sp.ma_sanpham as ma_vthh 
+                , sp.mota_tiengviet as ten_vthh
+		        , dvtsp.ten_dvt as dvt
+                , xb.sochungtu as sct_lsx 
+                , xb.ngaychuyen as ngaychuyen
+                , isnull(
+                    (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
+                    (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
+                ) as xuatcho
+                , (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan
+                , kho.ten_kho as khoxuat
+                , xb.mota as diengiai
+                , nknb_cdh.sl_thucxuat as soluong
+                , null as dongia
+                , null as thanhtien
+                , {1} as khonhap
+		    from md_xuatkhonb xb
+		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
+                left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
+                left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+                left join md_kho kho on xb.tukho = kho.md_kho_id
+		    where 
+                nknb_cdh.md_xuatkhonb_id = '{0}'
+                and nknb_cdh.sl_muonxuat > 0
+            order by sp.ma_sanpham asc
+		"
+        , md_xuatkhonb_id
+        , khonhap
+        );
+        return sql;
+    }
+}
+
+
+
+

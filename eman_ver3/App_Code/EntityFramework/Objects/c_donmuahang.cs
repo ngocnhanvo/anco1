@@ -187,6 +187,12 @@
                         public string sctkehoach { get; set; }
                 
 						
+                        #region c_donmuahang_so_donmuahang_wintaFN
+                        
+                        #endregion c_donmuahang_so_donmuahang_wintaFN
+                        public string so_donmuahang { get; set; }
+                
+						
                         #region c_donmuahang_sochungtu_wintaFN
                         
                         #endregion c_donmuahang_sochungtu_wintaFN

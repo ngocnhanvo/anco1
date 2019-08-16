@@ -64,6 +64,7 @@ function timkiem_dmh(id_elem, type) {
                     { key: false, fixed: true, label: 'Tên đối tác', name: 'ten_dtkd', index: 'dtkd.ten_dtkd', width: 170, editable: false, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Tên đối tác' } },
                     { key: false, fixed: true, label: 'Đơn hàng tham chiếu', name: 'donhang_thamchieu', index: ' dmh.donhang_thamchieu ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 150 }, frozen: false, formoptions: { label: 'Đơn hàng tham chiếu' } },
                     { key: false, fixed: true, label: 'CT Kế Hoạch mua VT', name: 'sctkehoach', index: 'dmh.sctkehoach', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'CT Kế Hoạch mua VT' } },
+                    { key: false, fixed: true, label: 'Địa điểm giao hàng', name: 'diadiem_giaohang', index: 'dmh.diadiem_giaohang', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Địa điểm giao hàng' } },
                 ],
                 postData: {
                     where_ex: function () {

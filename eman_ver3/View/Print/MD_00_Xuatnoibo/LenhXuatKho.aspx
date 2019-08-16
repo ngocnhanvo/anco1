@@ -7,10 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] Phiếu xuất kho nội bộ</title>
-	<script>
-
-	</script>
+    <title>[eMan] Lệnh xuất kho</title>
     <style type="text/css">
         .reportDEX > .dxmLite.dxm-ltr{
             display:table;

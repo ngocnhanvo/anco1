@@ -11,7 +11,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/lenhXuatKho.repx");
+        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Lệnh Xuất Kho.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
         viewReport(report, sql);
