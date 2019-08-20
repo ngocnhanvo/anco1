@@ -150,9 +150,9 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     db.SaveChanges();
                                 }
 
-                                decimal? countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
+                                int countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
                                     s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id
-                                    ).ToList().Sum(s => s.tong_sl_dat - s.sl_hoanthanh.GetValueOrDefault(0));
+                                    ).ToList().Where(s => s.tong_sl_dat - s.sl_giamhanngach.GetValueOrDefault(0) - s.sl_hoanthanh.GetValueOrDefault(0) > 0).Count();
 
                                 if(countSLHT <= 0)
                                 {
