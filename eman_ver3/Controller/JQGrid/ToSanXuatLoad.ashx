@@ -53,7 +53,21 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
 
             string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY " + orderby + ")";
             string sql = string.Format(@"sELeCt * fRoM (
-            sELeCt tosx.md_lenhsanxuat_tosx_id, lsx.sochungtu, pxto.ten_to, px.ten_phanxuong, tosx.stt,  " + ROW_NUMBER + " as RowNum " +
+            sELeCt tosx.md_lenhsanxuat_tosx_id
+                , lsx.sochungtu
+                , pxto.ten_to
+                , px.ten_phanxuong
+                , (select top 1 kho.md_kho_id from md_kho kho where kho.md_phanxuong_id = px.md_phanxuong_id and kho.md_to_id = pxto.md_to_id and isnull(kho.hangton, 0) = 0) as md_kho_id
+                , (
+                    select top 1 kho.md_kho_id 
+                    from md_kho kho 
+                    where 
+                        kho.md_phanxuong_id = px.md_phanxuong_id 
+                        and kho.md_to_id = (select top 1 md_to_id from md_phanxuong_to where md_phanxuong_id = px.md_phanxuong_id and cast(sapxep as int) < cast(pxto.sapxep as int) order by sapxep desc) 
+                        and isnull(kho.hangton, 0) = 0
+                ) as khoprev
+                , tosx.stt
+                , " + ROW_NUMBER + " as RowNum " +
             @" fRoM md_lenhsanxuat_tosx tosx
                 left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
                 left join md_phanxuong_to pxto on pxto.md_to_id = tosx.md_phanxuong_to_id
@@ -71,6 +85,7 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
             System.Data.DataTable dt_select = Mbg.Data.SqlClient.SqlHelper.GetData(sql_select);
             Mbg.Web.JqGrid.JqGResult rs = new Mbg.Web.JqGrid.JqGResult(dt_select, count, page, limit);
             context.Response.Write(rs.WriteJson());
+            //context.Response.Write(sql);
         }
     }
     public bool IsReusable

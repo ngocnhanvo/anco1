@@ -149,6 +149,22 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     ddhpx.sl_hoanthanh += vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
                                     db.SaveChanges();
                                 }
+
+                                decimal? countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
+                                    s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id
+                                    ).ToList().Sum(s => s.tong_sl_dat - s.sl_hoanthanh.GetValueOrDefault(0));
+
+                                if(countSLHT <= 0)
+                                {
+                                    var dhpx = db.md_dondathangphanxuong.Where(s =>
+                                        s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id).FirstOrDefault();
+                                    if(dhpx != null)
+                                    {
+                                        dhpx.md_trangthai_id = "KETTHUC";
+                                        lsxto.lsx.md_trangthai_id = "HOANTHANH";
+                                    }
+                                    db.SaveChanges();
+                                }
                             }
                             else
                             {
