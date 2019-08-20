@@ -128,7 +128,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             if (vcnb.loaichuyen == "VANCNBCTKGH")
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
-                                var tsx = Extension.getLSXToId(vcnb_cdvc.lsx_to, db);
+                                var lsxto = Extension.getLSXToId2(vcnb_cdvc.lsx_to, db);
+                                var tsx = lsxto.tsx;
                                 var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                             s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
                                             & s.macuoi.Contains(sp.ma_sanpham));
@@ -139,6 +140,15 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     lstSPId.Add(cai.md_sanpham_id);
                                 }
                                 db.SaveChanges();
+
+                                var ddhpx = db.md_dondathangphanxuong_cdh.Where(s =>
+                                    s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id
+                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+                                if (ddhpx != null)
+                                {
+                                    ddhpx.sl_hoanthanh += vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                                    db.SaveChanges();
+                                }
                             }
                             else
                             {

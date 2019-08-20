@@ -50,7 +50,7 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 }
                 else
                 {
-                    decimal sltd = cdvc.soluong_toida.Value - cdvc.soluong_dachuyen.Value;
+                    decimal sltd = cdvc.soluong_muonchuyen.GetValueOrDefault(0);
                     if (sel_val == "0")
                     {
                         cdvc.soluong_dichchuyen = sltd;
