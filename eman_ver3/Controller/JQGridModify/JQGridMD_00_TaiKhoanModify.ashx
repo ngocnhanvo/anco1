@@ -148,17 +148,16 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
+            string[] id_del = context.Request.Form["id"].Split(',');
+            int count = id_del.Length;
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => s.ad_user_id).Take(1).FirstOrDefault();
+                msg_del = ""; var id_del_ = id_del[i];
+                var object_ = db.ad_user.Where(p => p.ad_user_id == id_del_).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
@@ -167,17 +166,14 @@ string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => 
 
                 if (msg_del.Length <= 0)
                 {
-                    string action = context.Request.Params["oper"];
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, "ad_user", action, column_ex, db);
+                    db.ad_user.Remove(object_);
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
+
             if (msg.Length <= 0)
             {
                 msg = "true#Xóa thành công.";
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
@@ -211,16 +207,16 @@ string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => 
             ad_user_role tk_vtr = db.ad_user_role.Where(s => s.ad_user_id == cookie & s.ad_role_id == ad_role_id).Take(1).FirstOrDefault();
 
             //--update Password
-            string oldPassword= context.Request.Form["oldpassword"];
-            string newPassword= context.Request.Form["newpassword"];
-            string confirmPassword= context.Request.Form["confirm"];
+            string oldPassword = context.Request.Form["oldpassword"];
+            string newPassword = context.Request.Form["newpassword"];
+            string confirmPassword = context.Request.Form["confirm"];
             //
 
 
             if (tk_dangnhap != null)
             {
                 //--update Password
-                if(tk_dangnhap.ma_user != "giamdoc" & tk_dangnhap.ma_user != "vanthu" & tk_dangnhap.ma_user != "truongphong" & tk_dangnhap.ma_user != "nhanvien")
+                if (tk_dangnhap.ma_user != "giamdoc" & tk_dangnhap.ma_user != "vanthu" & tk_dangnhap.ma_user != "truongphong" & tk_dangnhap.ma_user != "nhanvien")
                 {
                     if (tk_dangnhap.matkhau.Equals(Security.EncodeMd5Hash(oldPassword)))
                     {
@@ -229,7 +225,8 @@ string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => 
                             tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
                             db.SaveChanges();
                         }
-                        else {
+                        else
+                        {
                             msg = "Xác nhận mật khẩu không đúng";
                             error = false;
                         }
@@ -266,13 +263,13 @@ string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => 
                     FormsAuthentication.SignOut();
                     System.Threading.Thread.Sleep(1000);
                     FormsAuthentication.SetAuthCookie(token, false);
-                     msg = "Chỉnh sửa thông tin thành công!!!";
+                    msg = "Chỉnh sửa thông tin thành công!!!";
                     error = true;
                 }
-          
+
                 if (msg != "")
                 {
-                    context.Response.Write(error + "(##)" + Security.UrlBase() + "(##)<div class='nhan-thanhcong'>"+ msg +"</div>");
+                    context.Response.Write(error + "(##)" + Security.UrlBase() + "(##)<div class='nhan-thanhcong'>" + msg + "</div>");
                 }
             }
         }
@@ -312,7 +309,7 @@ string object_ = db.ad_user.Where(p => p.ad_user_id == (id_del[i])).Select(s => 
         {
             ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == (cookie)).Take(1).FirstOrDefault();
             string id_phongban = Security.id_phongban(context);
-            ad_department pb = db.ad_department.Where(p => p.md_phongban_id == id_phongban ).FirstOrDefault();
+            ad_department pb = db.ad_department.Where(p => p.md_phongban_id == id_phongban).FirstOrDefault();
 
             var vaitro = from a in db.ad_user_role
                          join b in db.ad_role on a.ad_role_id equals b.ad_role_id
