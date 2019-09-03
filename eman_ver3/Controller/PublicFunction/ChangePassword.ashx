@@ -13,7 +13,7 @@ public class ChangePassword : IHttpHandler, System.Web.SessionState.IRequiresSes
 
     public void ProcessRequest (HttpContext context) {
         EntityContext db = new EntityContext();
-        string ck = context.Session["user_login"].ToString();
+        string ck = Security.id_taikhoan(context);
         String oldPassword= context.Request.Form["oldpassword"];
         String newPassword= context.Request.Form["newpassword"];
         String confirmPassword= context.Request.Form["confirm"];
