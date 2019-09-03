@@ -140,6 +140,39 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Compile Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[SX] Thẻ Giao Việc Sản Xuất.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[KT] Phiếu Nhập Kho.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[VT] Phiếu yêu cầu mua vật tư.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[VT] Phiếu xác nhận nhập kho vật tư.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[VT] Đơn đặt mua vật tư.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[KT] Phiếu Xuất Kho.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[KT] Phiếu Xuất Kho Kiêm Phiếu Chuyển Kho Nội Bộ.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[KT] Bảng Kê Chi Tiết Mua Hàng.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -176,27 +209,6 @@
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Data\baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\donDatMuaVatTu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\baoCaoSoSanhDonGiaMuaVatTu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\phieuYeuCauMuaVatTu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\phieuXNNhapVatTu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\TonKhoSL.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="App_Data\rptPhieuXuatKhoNB.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
@@ -225,6 +237,30 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report\donDatHangPhanXuong.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\donDatHangPhanXuong.Designer.cs">
+      <DependentUpon>donDatHangPhanXuong.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Report\phieuXuatKho.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\phieuXuatKho.Designer.cs">
+      <DependentUpon>phieuXuatKho.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Report\phieuYeuCauSuaChuaHangTon.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\phieuYeuCauSuaChuaHangTon.Designer.cs">
+      <DependentUpon>phieuYeuCauSuaChuaHangTon.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Report\lenhXuatKho.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -255,7 +291,9 @@
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
@@ -268,32 +306,59 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App_Data\baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.resx">
-      <DependentUpon>baoCaoChiTietTinhHinhThucHienDonDatMuaVatTu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\donDatMuaVatTu.resx">
-      <DependentUpon>donDatMuaVatTu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\baoCaoSoSanhDonGiaMuaVatTu.resx">
-      <DependentUpon>baoCaoSoSanhDonGiaMuaVatTu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\phieuYeuCauMuaVatTu.resx">
-      <DependentUpon>phieuYeuCauMuaVatTu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\phieuXNNhapVatTu.resx">
-      <DependentUpon>phieuXNNhapVatTu.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\TonKhoSL.resx">
-      <DependentUpon>TonKhoSL.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_Data\rptPhieuXuatKhoNB.resx">
-      <DependentUpon>rptPhieuXuatKhoNB.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Report\donDatHangPhanXuong.resx">
+      <DependentUpon>donDatHangPhanXuong.cs</DependentUpon>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>donDatHangPhanXuong.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\phieuXuatKho.resx">
+      <DependentUpon>phieuXuatKho.cs</DependentUpon>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>phieuXuatKho.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\phieuYeuCauSuaChuaHangTon.resx">
+      <DependentUpon>phieuYeuCauSuaChuaHangTon.cs</DependentUpon>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>phieuYeuCauSuaChuaHangTon.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\lenhXuatKho.resx">
       <DependentUpon>lenhXuatKho.cs</DependentUpon>
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>lenhXuatKho.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.resx">
+      <DependentUpon>[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.resx">
+      <DependentUpon>[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.resx">
+      <DependentUpon>[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Thẻ Giao Việc Sản Xuất.resx">
+      <DependentUpon>[SX] Thẻ Giao Việc Sản Xuất.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[KT] Bảng Kê Chi Tiết Mua Hàng.resx">
+      <DependentUpon>[KT] Bảng Kê Chi Tiết Mua Hàng.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[KT] Phiếu Nhập Kho.resx">
+      <DependentUpon>[KT] Phiếu Nhập Kho.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[KT] Phiếu Xuất Kho Kiêm Phiếu Chuyển Kho Nội Bộ.resx">
+      <DependentUpon>[KT] Phiếu Xuất Kho Kiêm Phiếu Chuyển Kho Nội Bộ.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[KT] Phiếu Xuất Kho.resx">
+      <DependentUpon>[KT] Phiếu Xuất Kho.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[VT] Phiếu yêu cầu mua vật tư.resx">
+      <DependentUpon>[VT] Phiếu yêu cầu mua vật tư.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[VT] Phiếu xác nhận nhập kho vật tư.resx">
+      <DependentUpon>[VT] Phiếu xác nhận nhập kho vật tư.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[VT] Đơn đặt mua vật tư.resx">
+      <DependentUpon>[VT] Đơn đặt mua vật tư.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

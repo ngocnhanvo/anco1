@@ -668,11 +668,11 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string ma_module = context.Request.QueryString["ma_module"];
         string tukho = context.Request.Form["tukho"];
         string denkho = context.Request.Form["denkho"];
-
+        string id = context.Request.Form["id"];
         try
         {
-            string id = context.Request.Form["id"];
-            md_vanchuyennoibo object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id).Take(1).FirstOrDefault();
+            var ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
+            var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id).Take(1).FirstOrDefault();
             denkho = db.md_kho.Where(s => s.md_kho_id == denkho).Select(s => s.md_kho_id).FirstOrDefault();
             tukho = db.md_kho.Where(s => s.md_kho_id == tukho).Select(s => s.md_kho_id).FirstOrDefault();
             if (object_ == null)
@@ -691,17 +691,16 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Lỗi:Bạn phải chọn Kho chuyển và kho đến";
             }
+            else if (ngaychuyen.IsDate() == false)
+            {
+                msg = "false#Lỗi:Ngày chuyển không đúng định dạng";
+            }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_vanchuyennoibo";
-                VNN_Function.SetFormValue("tukho", tukho);
-                VNN_Function.SetFormValue("denkho", denkho);
-                VNN_Function.SetFormValue("md_trangthai_id", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                object_.ngaychuyen = ngaychuyen;
+                object_.ngaycapnhat = DateTime.Now;
+                object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }

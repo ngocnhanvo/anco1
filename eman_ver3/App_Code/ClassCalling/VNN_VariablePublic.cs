@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using System.IO;
+using System.Drawing;
 
 public class VNN_VariablePublic
 {
@@ -201,6 +202,25 @@ public class VNN_VariablePublic
         var sr = new StreamReader(request.GetResponse().GetResponseStream());
         string result = sr.ReadToEnd();
         return result;
+    }
+
+    public static float GetWidthOfString(string str, string font, float? sizeF, bool? Bold)
+    {
+        Bitmap objBitmap = default(Bitmap);
+        Graphics objGraphics = default(Graphics);
+
+        objBitmap = new Bitmap(500, 200);
+        objGraphics = Graphics.FromImage(objBitmap);
+        var fontF = new Font(
+                font == null ? "Arial" : font
+                , sizeF == null ? 12 : sizeF.Value
+                , Bold == null ? FontStyle.Regular : FontStyle.Bold);
+        SizeF stringSize = objGraphics.MeasureString(str,
+            fontF);
+
+        objBitmap.Dispose();
+        objGraphics.Dispose();
+        return stringSize.Width;
     }
 }
 

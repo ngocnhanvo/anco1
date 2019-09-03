@@ -1696,7 +1696,6 @@ D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.AspNet.TelemetryCorrelation.dll
 D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.Web.Infrastructure.dll
 D:\ESC\Git Anco2\GenerateModels\bin\Newtonsoft.Json.dll
-D:\ESC\Git Anco2\GenerateModels\bin\System.Collections.Immutable.dll
 D:\ESC\Git Anco2\GenerateModels\bin\System.Diagnostics.DiagnosticSource.dll
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.Helpers.dll
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.Mvc.dll
@@ -1707,7 +1706,6 @@ D:\ESC\Git Anco2\GenerateModels\bin\System.Web.WebPages.dll
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.WebPages.Razor.dll
 D:\ESC\Git Anco2\GenerateModels\bin\WebGrease.dll
 D:\ESC\Git Anco2\GenerateModels\bin\InfoDB.pdb
-D:\ESC\Git Anco2\GenerateModels\bin\InfoDB.dll.config
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.Helpers.xml
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.Mvc.xml
 D:\ESC\Git Anco2\GenerateModels\bin\System.Web.Optimization.xml
@@ -1723,8 +1721,6 @@ D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.AI.DependencyCollector.xml
 D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.AI.WindowsServer.xml
 D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.AI.Web.xml
 D:\ESC\Git Anco2\GenerateModels\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.csprojAssemblyReference.cache
-D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.csproj.CoreCompileInputs.cache
-D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.csproj.CopyComplete
 D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.dll
 D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.pdb
+D:\ESC\Git Anco2\GenerateModels\obj\Debug\GenerateModels.csprojResolveAssemblyReference.cache

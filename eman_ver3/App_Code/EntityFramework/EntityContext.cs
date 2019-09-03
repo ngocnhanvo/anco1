@@ -9254,6 +9254,10 @@
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_kiemke>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_kiemke>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
@@ -9965,6 +9969,10 @@
                             .Property(p => p.mota)
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.ngaybatdausx)
+                            .HasColumnName("ngaybatdausx")
+                            .HasColumnType("datetime");
                             modelBuilder.Entity<md_lenhsanxuat_tosx>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
@@ -10934,6 +10942,14 @@
                             .HasColumnName("ngaychuyen")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.ngaygiaohang)
+                            .HasColumnName("ngaygiaohang")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
@@ -10949,6 +10965,10 @@
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.phieugiaohang)
+                            .HasColumnName("phieugiaohang")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkho_ncc>()
                             .Property(p => p.phieuXNNK)
                             .HasColumnName("phieuXNNK")
@@ -11450,6 +11470,10 @@
                             .HasColumnName("ngaychuyen")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_nhapkhonb>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_nhapkhonb>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
@@ -11704,6 +11728,10 @@
                             modelBuilder.Entity<md_nhapkhoton>()
                             .Property(p => p.ngaychuyen)
                             .HasColumnName("ngaychuyen")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_nhapkhoton>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_nhapkhoton>()
                             .Property(p => p.ngaytao)
@@ -14062,6 +14090,10 @@
                             .HasColumnName("ngaychuyen")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
@@ -14390,6 +14422,10 @@
                             .HasColumnName("ngaychuyen")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.ngaydonhang)
                             .HasColumnName("ngaydonhang")
                             .HasColumnType("datetime");
@@ -14668,6 +14704,10 @@
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.ngaychuyen)
                             .HasColumnName("ngaychuyen")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_xuatkhonb>()
+                            .Property(p => p.ngaydenghi)
+                            .HasColumnName("ngaydenghi")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.ngaytao)

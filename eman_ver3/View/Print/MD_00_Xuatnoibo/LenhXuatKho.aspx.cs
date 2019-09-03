@@ -48,9 +48,10 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+            tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+            tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+            tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["sum_soluong"] = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
@@ -69,36 +70,36 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
 
     public String CreateSql(HttpContext context)
     {
-        string md_xuatkhonb_id = context.Request.QueryString["md_xuatkhonb_id"];
+        string md_xuatkhonb_id = context.Request.QueryString["id"];
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
 		    select 
-            sp.ma_sanpham as ma_vthh, 
-            sp.mota_tiengviet as ten_vthh,
-            sp.quycachdonggoi as quycach,
-		    dvtsp.ten_dvt as dvt, 
-            xb.sochungtu as sct_lsx, 
-            xb.ngaychuyen as ngaychuyen,
-            isnull(
-                (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
-                (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
-            ) as xuatcho,
-           (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan,
-            kho.ten_kho as khoxuat,
-            xb.mota as diengiai,
-            nknb_cdh.tong_sl_xuat as soluong,
-            isnull(nknb_cdh.ghino, 0) as ghino,
-            isnull(nknb_cdh.truno, 0) as truno,
-            null as thucxuat,
-            nknb_cdh.tong_sl_xuat + isnull(nknb_cdh.ghino, 0) - isnull(nknb_cdh.truno, 0) as tongcong
+                sp.ma_sanpham as ma_vthh
+                , sp.mota_tiengviet as ten_vthh
+                , sp.quycachdonggoi as quycach
+		        , dvtsp.ten_dvt as dvt
+                , xb.sochungtu as sct_lsx 
+                , xb.ngaydenghi
+                , isnull(
+                    (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
+                    (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
+                ) as xuatcho
+                , (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan
+                , kho.ten_kho as khoxuat
+                , xb.mota as diengiai
+                , nknb_cdh.tong_sl_xuat as soluong
+                , isnull(nknb_cdh.ghino, 0) as ghino
+                , isnull(nknb_cdh.truno, 0) as truno
+                , null as thucxuat
+                , nknb_cdh.tong_sl_xuat + isnull(nknb_cdh.ghino, 0) - isnull(nknb_cdh.truno, 0) as tongcong
 		    from md_xuatkhonb xb
-		    left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
-            left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
-            left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
-            left join md_kho kho on xb.tukho = kho.md_kho_id
+		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
+                left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
+                left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+                left join md_kho kho on xb.tukho = kho.md_kho_id
 		    where 
-            nknb_cdh.md_xuatkhonb_id = '{0}'
-            and nknb_cdh.sl_muonxuat > 0
+                nknb_cdh.md_xuatkhonb_id = '{0}'
+                and nknb_cdh.sl_muonxuat > 0
             order by sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id

@@ -79,6 +79,18 @@
                         public DateTime? ngaychuyen { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_ngaydenghi_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_ngaydenghi_wintaFN
+                        public DateTime? ngaydenghi { get; set; }
+                
+						
+                        #region md_nhapkho_ncc_ngaygiaohang_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_ngaygiaohang_wintaFN
+                        public DateTime? ngaygiaohang { get; set; }
+                
+						
                         #region md_nhapkho_ncc_ngaytao_wintaFN
                         
                         #endregion md_nhapkho_ncc_ngaytao_wintaFN
@@ -101,6 +113,12 @@
                         
                         #endregion md_nhapkho_ncc_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region md_nhapkho_ncc_phieugiaohang_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_phieugiaohang_wintaFN
+                        public string phieugiaohang { get; set; }
                 
 						
                         #region md_nhapkho_ncc_phieuXNNK_wintaFN

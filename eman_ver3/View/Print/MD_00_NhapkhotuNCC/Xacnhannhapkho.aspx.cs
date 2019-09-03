@@ -36,12 +36,20 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
+            tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
+            tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
+            tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
             tbl.Columns.Add("sum_duocnhap", Type.GetType("System.Double"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+            tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+            tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+            tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+            var ngaygiaohang = tbl.Rows[0]["ngaygiaohang"] as DateTime?;
+            tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
+            tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
+            tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
@@ -51,8 +59,11 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             duocnhap_cell.DataBindings[0].FormatString = sothapphan;
             var sum_duocnhap_cell = report.Report.FindControl("sum_duocnhap", true);
             sum_duocnhap_cell.DataBindings[0].FormatString = sothapphan;
-
-            
+            var kho_cell = report.Report.FindControl("kho", true);
+            var withF = kho_cell.WidthF;
+            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)9.5, true);
+            var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
+            theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
             ReportViewer1.Report = report;
         }
         else
@@ -75,7 +86,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
 		    , sp.quycachdonggoi as quycach 
             , nk_ncc_dh.giatriVND as dongia
             , null as thanhtien
-            , (select ten_kho from md_kho where md_kho_id = dmh.diadiem_giaohang) as kho
+            , (select ten_kho from md_kho where md_kho_id = nk_ncc.kho) as kho
 		    , dmh.sochungtu as sct_dmh
             , dmh.ngaydonhang as dd_dmh
             , dmh.ngaydonhang as MM_dmh
@@ -83,6 +94,9 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             , dmh.donhang_thamchieu as sodonhang
             , dtkd.ma_dtkd as nhacungcap
             , nk_ncc.phieuXNNK as sct_pxnnvt
+            , nk_ncc.phieugiaohang
+            , nk_ncc.ngaygiaohang
+            , nk_ncc.ngaydenghi
 		from md_nhapkho_ncc_dh nk_ncc_dh
             inner join md_nhapkho_ncc nk_ncc on nk_ncc.md_nhapkho_ncc_id = nk_ncc_dh.md_nhapkho_ncc_id
 		    left join md_sanpham sp on nk_ncc_dh.md_sanpham_id = sp.md_sanpham_id

@@ -498,6 +498,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 tosx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
                                 tosx.md_phanxuong_to_id = px_to.md_to_id;
                                 tosx.md_phanxuong_id = px_to.md_phanxuong_id;
+                                tosx.ngaybatdausx = object_.ngay_hieuluc;
                                 tosx.ngaydkht = lsx.ngayketthuc;
                                 tosx.check_hoanthanh = false;
                                 tosx.sapxep = px_to.sapxep;

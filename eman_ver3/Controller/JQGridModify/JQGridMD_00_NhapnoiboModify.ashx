@@ -556,41 +556,28 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
         string md_lenhsanxuat_id = context.Request.Form["md_lenhsanxuat_id"];
+        string id = context.Request.Form["id"];
         try
         {
-            string id = context.Request.Form["id"];
+            var ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
             md_nhapkhonb object_ = db.md_nhapkhonb.Where(p => p.md_nhapkhonb_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                msg = @"false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
             else if (object_.trangthai == "HIEULUC")
             {
-                msg = "false#Lỗi:Đối tượng đã nhập kho";
+                msg = @"false#Lỗi:Phiếu nhập kho đã ""Hiệu Lực""";
             }
-
-            if (md_lenhsanxuat_id != null & md_lenhsanxuat_id != "")
+            else if (ngaychuyen.IsDate() == false)
             {
-                md_lenhsanxuat lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == md_lenhsanxuat_id).FirstOrDefault();
-                md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
+                msg = "Lỗi: Ngày nhập kho không đúng định dạng";
             }
-            else
-            {
-                msg = "false#Không tìm thấy lệnh sản xuất \"" + md_lenhsanxuat_id + "\"";
-            }
-
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_nhapkhonb";
-                VNN_Function.SetFormValue("md_lenhsanxuat_id", md_lenhsanxuat_id);
-                VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
-                VNN_Function.SetFormValue("nhaptu", "VNN_notpost");
-                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                object_.ngaychuyen = ngaychuyen;
+                object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }
@@ -609,14 +596,13 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_nhapkhonb";
             int count = context.Request.Form["id"].Split(',').Count();
             string[] id_del = new string[count];
             id_del = context.Request.Form["id"].Split(',');
             for (int i = 0; i < count; i++)
             {
                 msg_del = ""; var id_del_ = id_del[i];
-                md_nhapkhonb object_ = db.md_nhapkhonb.Where(p => p.md_nhapkhonb_id == id_del_).Take(1).FirstOrDefault();
+                var object_ = db.md_nhapkhonb.Where(p => p.md_nhapkhonb_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
@@ -634,19 +620,13 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 }
                 if (msg_del.Length <= 0)
                 {
-                    /* foreach (md_lenhsanxuat_tosx_cdh lsx_to_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == object_.md_lenhsanxuat_tosx_id))
-                     {
-                         md_nhapkhonb_cdh nknb_cdh = db.md_nhapkhonb_cdh.Where(s => s.md_nhapkhonb_id == object_.md_nhapkhonb_id & s.md_sanpham_id == lsx_to_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                         if (nknb_cdh != null)
-                             lsx_to_cdh.sl_dahoanthanh -= nknb_cdh.tong_sl_dat;
-                     }*/
-                    db.md_nhapkhonb.Remove(object_);
+                    object_.trangthai = "SOANTHAO";
                 }
             }
             VNN_Function.loaddulieu_Auto(db, ma_module);
             if (msg.Length <= 0)
             {
-                msg = "true#Xóa thành công.";
+                msg = "true#Trả về bên đề nghị thành công.";
             }
             else
             {
@@ -655,14 +635,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

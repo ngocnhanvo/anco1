@@ -129,7 +129,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             c_donmuahang_id = dmh.c_donmuahang_id,
                             sochungtu = sochungtu,
                             donhang_thamchieu = dmh.donhang_thamchieu,
-                            ngaychuyen = DateTime.Now,
+                            ngaydenghi = DateTime.Now,
                             kho = khoNH,
                             trangthai = "SOANTHAO",
                             check_hieuluc = false,
