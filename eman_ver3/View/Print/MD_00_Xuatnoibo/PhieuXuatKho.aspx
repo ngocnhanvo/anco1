@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="PhieuXuatKho.aspx.cs" Inherits="PrintControllers_MD_00_Xuatnoibo_LenhXuatKho" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="PhieuXuatKho.aspx.cs" Inherits="PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho" %>
 
 <%@ Register assembly="DevExpress.XtraReports.v16.1.Web, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
 

@@ -61,7 +61,7 @@ public partial class PrintControllers_MD_00_XuatBan_phieuGiaoHang : System.Web.U
             , xb_cdh.sl_muonxuat as slgiao
             , xb.sochungtu as so
             , xb.sctdathang as sct_donhang
-            , xb.donhang_thamchieu
+            , xb.donhang_thamchieu as so_po
             , xb.diachi as diadiemgiaohang
             , xb.mota as diengiai
 		from md_xuatban_cdh xb_cdh

@@ -436,7 +436,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         str += firstnull ? string.Format("<option value=\"\"></option>") : "";
         foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & s.tuychon == "NHANCONG").OrderBy(s=>s.ten_banggia).ToList())
         {
-            var kho = db.md_kho.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.md_to_id == object_.md_to_id).FirstOrDefault();
+            var kho = db.md_kho.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.md_to_id == object_.md_to_id & s.hangton == false).FirstOrDefault();
             if(kho != null)
                 str += string.Format(@"<option kho='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, kho.md_kho_id);
         }

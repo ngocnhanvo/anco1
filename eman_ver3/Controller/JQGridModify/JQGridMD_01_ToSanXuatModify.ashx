@@ -540,29 +540,41 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string ngayhoanthanh = context.Request.Form["ngayhoanthanh"];
-        string mota = context.Request.Form["mota"];
-        bool check_hoanthanh = false;
         try
         {
             string id = context.Request.Form["id"];
-            md_lenhsanxuat_tosx object_ = db.md_lenhsanxuat_tosx.Where(p => p.md_lenhsanxuat_tosx_id == id).Take(1).FirstOrDefault();
+            var object_ = db.md_lenhsanxuat_tosx.Where(p => p.md_lenhsanxuat_tosx_id == id).Take(1).FirstOrDefault();
+            var ngaybdsx = VNN_Config.setDateTime(context.Request.Form["ngaybatdausx"]);
+            var ngaydkht = VNN_Config.setDateTime(context.Request.Form["ngaydkht"]);
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else
+            else if(object_.ngayhoanthanh != null)
             {
-                md_lenhsanxuat lsx = db.md_lenhsanxuat.Where(p => p.md_lenhsanxuat_id.Equals(object_.md_lenhsanxuat_id)).Take(1).FirstOrDefault();
-                if (lsx.md_trangthai_id == "HOANTHANH")
-                {
-                    msg = "false#Lỗi: lệnh sản xuất \"" + lsx.sochungtu + "\" đã hoàn thành, không thể chỉnh sửa.";
-                }
+                msg = "false#Lỗi: Đã hoàn thành, không thể chỉnh sửa.";
+            }
+            else if(ngaybdsx.IsDate() == false)
+            {
+                msg = "false#Lỗi: Ngày bắt đầu sản xuất không đúng định dạng.";
+            }
+            else if(ngaydkht.IsDate() == false)
+            {
+                msg = "false#Lỗi: Ngày dự kiến hoàn thành không đúng định dạng.";
             }
 
             if (!string.IsNullOrEmpty(ngayhoanthanh) & ngayhoanthanh != " ")
             {
-                check_hoanthanh = true;
-                object_.ngayhoanthanh = VNN_Config.setDateTime(context.Request.Form["ngayhoanthanh"]);
+                var ngayht = VNN_Config.setDateTime(ngayhoanthanh);
+                if (ngayht.IsDate() == false)
+                {
+                    msg = "false#Lỗi: Ngày hoàn thành không đúng định dạng.";
+                }
+                else
+                {
+                    object_.ngayhoanthanh = ngayht;
+                    object_.check_hoanthanh = true;
+                }
             }
             else
             {
@@ -571,9 +583,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
             if (msg.Length <= 0)
             {
-                object_.ngaydkht = VNN_Config.setDateTime(context.Request.Form["ngaydkht"]);
-                
-                object_.check_hoanthanh = check_hoanthanh;
+                object_.ngaybatdausx = ngaybdsx;
+                object_.ngaydkht = ngaydkht;
                 object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";

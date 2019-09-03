@@ -76,8 +76,6 @@ D:\ESC\Git Anco2\DataAccess\InfoDB\bin\Debug\InfoDB.dll
 D:\ESC\Git Anco2\DataAccess\InfoDB\bin\Debug\InfoDB.pdb
 D:\ESC\Git Anco2\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.dll
 D:\ESC\Git Anco2\DataAccess\InfoDB\bin\Debug\Newtonsoft.Json.xml
-D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
-D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
-D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
 D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.dll
 D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
+D:\ESC\Git Anco2\DataAccess\InfoDB\obj\Debug\InfoDB.csprojResolveAssemblyReference.cache

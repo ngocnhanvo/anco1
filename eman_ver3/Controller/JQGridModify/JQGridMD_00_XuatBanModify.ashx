@@ -244,7 +244,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                         px.trangthai = "HIEULUC";
                         db.SaveChanges();
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -290,7 +290,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         }
         return id_new;
     }
-	
+
     //xuat kho
     public string xuat_kho(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us)
     {
@@ -338,7 +338,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         db.md_kho_giaodich.Add(giao);
         return id_new;
     }
-	public string add_kho_hsd(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us, string khospId)
+    public string add_kho_hsd(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us, string khospId)
     {
         string msg = "";
         var spid = db.md_kho_sanpham.
@@ -361,7 +361,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
 
         return msg;
     }
-	
+
     public void add(HttpContext context)
     {
         EntityContext db = new EntityContext();
@@ -418,7 +418,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             }
             else if (object_.trangthai == "HIEULUC")
             {
-                msg = "false#Lỗi:Đối tượng đã xuất kho.";
+                msg = string.Format(@"false#Lỗi:Phiếu xuất kho đã ""Hiệu Lực"".");
             }
             else if (dtk == null)
             {
@@ -454,7 +454,6 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_xuatban";
             int count = context.Request.Form["id"].Split(',').Count();
             string[] id_del = new string[count];
             id_del = context.Request.Form["id"].Split(',');
@@ -464,22 +463,18 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                 md_xuatban object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
+                    msg_del = "Lỗi:Không tìm thấy đối tượng " + i;
                     msg += msg_del + "<br>";
                 }
                 else if (object_.trangthai == "HIEULUC")
                 {
-                    msg_del = "Lỗi:Đối tượng đã hiệu lực " + i;
-                    msg += msg_del + "<br>";
-                }
-                else if(db.md_vanchuyennoibo.Where(s=>s.chungtuthamchieu == object_.sochungtu).Count() > 0) {
-                    msg_del = "Lỗi:\""+ object_.sochungtu +"\" có phiếu vận chuyển nội bộ đang sử dụng, không thể xóa dòng này.";
+                    msg_del = string.Format(@"Lỗi:Phiếu xuất kho đã ""Hiệu Lực"".");
                     msg += msg_del + "<br>";
                 }
 
                 if (msg_del.Length <= 0)
                 {
-                    db.md_xuatban.Remove(object_);
+                    object_.trangthai = "SOANTHAO";
                 }
             }
 
@@ -495,14 +490,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

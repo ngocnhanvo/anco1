@@ -73,6 +73,12 @@
                         public DateTime? ngaychuyen { get; set; }
                 
 						
+                        #region md_xuatban_ngaydenghi_wintaFN
+                        
+                        #endregion md_xuatban_ngaydenghi_wintaFN
+                        public DateTime? ngaydenghi { get; set; }
+                
+						
                         #region md_xuatban_ngaydonhang_wintaFN
                         
                         #endregion md_xuatban_ngaydonhang_wintaFN
