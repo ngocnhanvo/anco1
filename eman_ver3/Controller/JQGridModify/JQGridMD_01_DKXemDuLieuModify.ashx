@@ -72,7 +72,7 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string id = context.Request.QueryString["id"];
+            string id = context.Request.Form["id"];
             string moduleId = context.Request.Form["ad_module_id"];
             var mod = db.ad_module.Where(s => s.ad_module_id == moduleId).FirstOrDefault();
             var object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id).FirstOrDefault();
