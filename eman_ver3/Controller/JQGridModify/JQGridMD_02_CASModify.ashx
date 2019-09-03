@@ -413,7 +413,12 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
         string ad_module_id = context.Request.QueryString["ad_module_id"];
 
         int i = 1;
-        foreach (ad_case cn in cases.Where(s => s.ad_module_id == ad_module_id & s.isview == (false) & (s.thuake == null | s.thuake == "")).OrderBy(p => p.sapxep))
+        foreach (var cn in cases.Where(s => 
+            s.ad_module_id == ad_module_id 
+            & s.isview == (false) 
+            & string.IsNullOrEmpty(s.thuake)
+            & s.hoatdong == true
+            ).OrderBy(p => p.sapxep))
         {
             foreach (ad_role_mmc pq in role_mmcs.Where(p => p.ad_module_id == cn.ad_module_id & p.ad_role_id == id))
             {
@@ -442,7 +447,12 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
         string ad_module_id = context.Request.QueryString["ad_module_id"];
 
         int i = 1;
-        foreach (ad_case cn in cases.Where(s => s.ad_module_id == ad_module_id & s.isview == (true) & (s.thuake == null | s.thuake == "")).OrderBy(p => p.sapxep))
+        foreach (ad_case cn in cases.Where(s => 
+            s.ad_module_id == ad_module_id 
+            & s.isview == true 
+            & string.IsNullOrEmpty(s.thuake)
+            & s.hoatdong == true
+            ).OrderBy(p => p.sapxep))
         {
             foreach (ad_role_mmc pq in role_mmcs.Where(p => p.ad_module_id == cn.ad_module_id & p.ad_role_id == id))
             {
