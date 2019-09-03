@@ -6,10 +6,11 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
-    public void ProcessRequest (HttpContext context) {
+    public void ProcessRequest(HttpContext context)
+    {
         string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
         {
             case "add":
@@ -34,8 +35,9 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
         try
         {
             string id = context.Request.QueryString["id"];
-            ad_module mod = db.ad_module.Where(s => s.ad_module_id == context.Request.Form["ad_module_id"]).Take(1).FirstOrDefault();
-            ad_role_where object_ = new ad_role_where();
+            string moduleId = context.Request.Form["ad_module_id"];
+            var mod = db.ad_module.Where(s => s.ad_module_id == moduleId).Take(1).FirstOrDefault();
+            var object_ = new ad_role_where();
             //start truyền các giá trị cần thêm
             object_.ad_role_where_id = id_new;
             object_.ad_role_id = id;
@@ -56,7 +58,7 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
             db.SaveChanges();
             msg = "true#Thêm thành công";
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             msg = "false#" + ex.Message;
         }
@@ -71,8 +73,9 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
         try
         {
             string id = context.Request.QueryString["id"];
-            ad_module mod = db.ad_module.Where(s => s.ad_module_id == context.Request.Form["ad_module_id"]).Take(1).FirstOrDefault();
-            ad_role_where object_ = db.ad_role_where.SingleOrDefault(p=>p.ad_role_where_id == id);
+            string moduleId = context.Request.Form["ad_module_id"];
+            var mod = db.ad_module.Where(s => s.ad_module_id == moduleId).FirstOrDefault();
+            var object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id).FirstOrDefault();
             if (object_ != null)
             {
                 //start truyền các giá trị cần sửa
@@ -95,7 +98,7 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             msg = "false#" + ex.Message;
         }
@@ -104,18 +107,18 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        var db = new EntityContext();
+        string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
+            string[] id_del = context.Request.Form["id"].Split(',');
+            int count = id_del.Length;
             for (int i = 0; i < count; i++)
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id_del_).Select(s => s.ad_role_where_id).Take(1).FirstOrDefault();
+                msg_del = "";
+                var id_del_ = id_del[i];
+                var object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id_del_).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
@@ -124,17 +127,14 @@ string object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id_del_).Sele
 
                 if (msg_del.Length <= 0)
                 {
-                    string action = context.Request.Params["oper"];
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, "ad_role_where", action, column_ex, db);
+                    db.ad_role_where.Remove(object_);
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
+            
             if (msg.Length <= 0)
             {
                 msg = "true#Xóa thành công.";
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
@@ -143,14 +143,7 @@ string object_ = db.ad_role_where.Where(p => p.ad_role_where_id == id_del_).Sele
         }
         catch (Exception ex)
         {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
+            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }
