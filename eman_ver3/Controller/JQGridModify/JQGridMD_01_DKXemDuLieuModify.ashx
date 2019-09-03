@@ -67,10 +67,10 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        //try
         {
             string id = context.Request.Form["id"];
             string moduleId = context.Request.Form["ad_module_id"];
@@ -79,7 +79,6 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
             if (object_ != null)
             {
                 //start truyền các giá trị cần sửa
-                object_.ad_role_id = id;
                 object_.ad_menu_id = mod.ad_menu_id;
                 object_.ad_module_id = mod.ad_module_id;
                 object_.ma_module = mod.ma_module;
@@ -88,7 +87,7 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
                 object_.vaitrocapnhat = Security.id_vaitro(context);
                 object_.bophancapnhat = Security.id_taikhoan(context);
                 object_.mota = "";
-                object_.hoatdong = bool.Parse(context.Request.Form["hoatdong"]);
+                object_.hoatdong = context.Request.Form["hoatdong"] == "True";
                 //#end truyền các giá trị cần sửa
                 db.SaveChanges();
                 msg = "true#Cập nhật thành công";
@@ -98,9 +97,9 @@ public class JQGridMD_01_DKXemDuLieuModify : IHttpHandler, System.Web.SessionSta
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
         }
-        catch (Exception ex)
+        //catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            //msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }
