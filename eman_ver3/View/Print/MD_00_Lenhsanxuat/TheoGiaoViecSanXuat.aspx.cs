@@ -86,7 +86,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
 	            , lsx_tsx.ngaybatdausx as ngaysanxuat
 	            , lsx_tsx.ngaydkht as ngayhoanthanh
 	            , lsx_tsx_cdh.mota as ghichu
-	            , dhpx.huongdankhac as huongdanlamhang
+	            , dhpx.hdlh as huongdanlamhang
             from md_lenhsanxuat lsx
 	            left join md_dondathangphanxuong dhpx on lsx.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
                 left join md_lenhsanxuat_tosx lsx_tsx on lsx_tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
