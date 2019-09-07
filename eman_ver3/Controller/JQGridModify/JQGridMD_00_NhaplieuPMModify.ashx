@@ -9,6 +9,7 @@ using ExcelLibrary;
 using System.IO;
 using System.Data;
 using Mbg.Data.SqlClient;
+using System.Threading.Tasks;
 public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
@@ -111,12 +112,22 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             {
                 try
                 {
-                    Workbook wb = Workbook.Load(stream);
-                    context.Session["worksheets"] = wb.Worksheets[0].Cells;
-                    if (msg.Length <= 0)
+                    Workbook wb = null;
+                    var task = Task.Run(() => {
+                        wb = Workbook.Load(stream);
+                        context.Session["worksheets"] = wb.Worksheets[0].Cells;
+                    });
+
+                    if (!task.Wait(TimeSpan.FromSeconds(30)))
+                        msg = "false#file very large to read.";
+                    else if(wb != null)
+                    {
                         msg = this.NewFromCellCollection(context, wb.Worksheets[0].Cells, ip, file, db);
+                    }
                     else
+                    {
                         msg = "false#1";
+                    }
                 }
                 catch (Exception ex)
                 {
