@@ -118,7 +118,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
 	            , c_dongdsdh ddsdh
                 , md_donvitinhsanpham dvt
             where 1=1
-	            and dtkd.ma_dtkd = 'ANCO2'
+	            and dtkd.ma_dtkd = 'BP-XUONG AN CO 2'
 	            AND dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
 	            AND ddsdh.md_sanpham_id = sp.md_sanpham_id
 	            AND sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id

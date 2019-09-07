@@ -119,7 +119,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                     });
 
                     if (!task.Wait(TimeSpan.FromSeconds(30)))
-                        msg = "false#file very large to read.";
+                        msg = "false#Tập tin này quá lớn và phức tạp để hệ thống có thể đọc hiểu.";
                     else if(wb != null)
                     {
                         msg = this.NewFromCellCollection(context, wb.Worksheets[0].Cells, ip, file, db);
@@ -652,7 +652,15 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string change_avariable(string sql, User_TK us)
     {
-        string kq = sql.Replace("@ad_user_id", us.ad_user_id).Replace("@ad_role_id", us.ad_role_id)
+        string kq = sql.Replace("'@ad_user_id'", string.Format(@"N'{0}'", us.ad_user_id));
+        kq = kq.Replace("'@ad_role_id'", string.Format(@"N'{0}'", us.ad_role_id));
+        kq = kq.Replace("'@md_phongban_id'", string.Format(@"N'{0}'", us.md_phongban_id));
+        kq = kq.Replace("'@ma_user'", string.Format(@"N'{0}'", us.ma_user));
+        kq = kq.Replace("'@ma_role'", string.Format(@"N'{0}'", us.ma_role));
+        kq = kq.Replace("'@ten_role'", string.Format(@"N'{0}'", us.ten_role));
+        kq = kq.Replace("'@ten_phongban'", string.Format(@"N'{0}'", us.ten_phongban));
+
+        kq = kq.Replace("@ad_user_id", us.ad_user_id).Replace("@ad_role_id", us.ad_role_id)
         .Replace("@md_phongban_id", us.md_phongban_id).Replace("@ma_user", us.ma_user)
         .Replace("@ma_role", us.ma_role).Replace("@ten_role", us.ten_role).Replace("@ten_phongban", us.ten_phongban);
 
