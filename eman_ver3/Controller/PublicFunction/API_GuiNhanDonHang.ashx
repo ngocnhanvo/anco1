@@ -133,7 +133,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.md_sanpham_id = ma_sanpham + "";
                             c_dongdsdh.md_donggoi_id = b["md_donggoi_id"] + "";
                             c_dongdsdh.md_doitackinhdoanh_id = b["md_doitackinhdoanh_id"] + "";
-                            c_dongdsdh.ma_sanpham_khach = ma_sanpham + "";
+                            c_dongdsdh.ma_sanpham_khach = b["ma_sanpham_khach"] + "";
                             c_dongdsdh.l2 = Convert.ToDecimal(b["l2"]);
                             c_dongdsdh.l1 = Convert.ToDecimal(b["l1"]);
                             c_dongdsdh.huongdan_dathang = b["huongdan_dathang"] + "";

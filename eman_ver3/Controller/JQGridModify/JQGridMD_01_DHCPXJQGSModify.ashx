@@ -225,11 +225,18 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
                         msg += "<div style='color:red'>Dòng " + px.ten_phanxuong + " của " + dhcpx.donhang + " đã tạo đơn!!</div>";
                     }
 
-                    if (db.c_kehoachdathang_dhcpx_vattu.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).Count() <= 0)
+                    foreach (var dh_dkpx in db.c_kehoachdathang_dhcpx_cdh.Where(s =>
+                         s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).ToList())
                     {
-                        msg += "<div style='color:red'>Dòng " + px.ten_phanxuong + " của " + dhcpx.donhang + " chưa có BOM!!</div>";
+                        if (
+                                db.md_sanpham_bom_vattu.Where(t =>
+                                   t.md_sanpham_bom_id == dh_dkpx.md_sanpham_bom_id
+                                ).Count() <= 0
+                        )
+                        {
+                            msg += "<div style='color:red'>Dòng " + dh_dkpx.macuoi + " chưa có vật tư trong BOM!!</div>";
+                        }
                     }
-
                     if (msg.Length <= 0)
                     {
                         //--them dong don dat hang phan xuong
@@ -528,83 +535,14 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
                         object_.mota = DateTime.Now + "\n\n" + ghichu + "\n" + "__________________" + "\n\n" + object_.mota;
                     else
                         object_.mota = DateTime.Now + "\n\n" + ghichu;
-
-                    object_.hdlh = context.Request.Form["hdlh"];
-                    object_.hdlhchung = context.Request.Form["hdlhchung"];
                 }
                 else
                 {
                     object_.mota = DateTime.Now + "\n\n" + ghichu;
+                    object_.hdlh = context.Request.Form["hdlh"];
+                    object_.hdlhchung = context.Request.Form["hdlhchung"];
                 }
                 object_.ngayHTcham = VNN_Config.setDateTime(context.Request.Form["ngayHTcham"]);
-
-                /*c_kehoachdathang_dhcpx object_1 = db.c_kehoachdathang_dhcpx.FirstOrDefault(s => s.c_kehoachdathang_id == id & s.md_phanxuong_id == md_phanxuong_id);
-                if(object_1 != null)
-                {
-                    decimal soluong = 0;
-                    int i = 0;
-                    string id_kehoachdathang_dhcpx = "",c_kehoachdathang_id = "";;
-                    foreach (c_kehoachdathang_dhcpx_cdh cdh_px in db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id))
-                    {
-                        c_kehoachdathang_dhcpx dhcpx = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_dhcpx_id == cdh_px.c_kehoachdathang_dhcpx_id).FirstOrDefault();
-                        soluong = cdh_px.soluong.Value;
-                        c_kehoachdathang_id = dhcpx.c_kehoachdathang_id;
-                            if (i == 0)
-                            {
-                                c_kehoachdathang_dhcpx dhcpx_check = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id &
-                                s.md_phanxuong_id == md_phanxuong_id & s.dongdathang == " ").Take(1).FirstOrDefault();
-                                if (dhcpx_check == null)
-                                {
-                                    id_kehoachdathang_dhcpx = Helper.getNewId();
-                                    c_kehoachdathang_dhcpx dhcpx_new = Clone(dhcpx);
-                                    dhcpx_new.c_kehoachdathang_dhcpx_id = id_kehoachdathang_dhcpx;
-                                    dhcpx_new.md_phanxuong_id = md_phanxuong_id;
-                                    db.c_kehoachdathang_dhcpx.Add(dhcpx_new);
-                                }
-                                else {
-                                    id_kehoachdathang_dhcpx = dhcpx_check.c_kehoachdathang_dhcpx_id;
-                                }
-                            }
-                            //--
-                            c_kehoachdathang_dhcpx_cdh cdh_dhcpx_check = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == id_kehoachdathang_dhcpx
-                            & s.md_sanpham_id == cdh_px.md_sanpham_id).Take(1).FirstOrDefault();
-                            if (cdh_dhcpx_check == null)
-                            {
-                                c_kehoachdathang_dhcpx_cdh cdh_px_new = Clone(cdh_px);
-                                cdh_px_new.c_kehoachdathang_dhcpx_cdh_id = Helper.getNewId();
-                                cdh_px_new.c_kehoachdathang_dhcpx_id = id_kehoachdathang_dhcpx;
-                                cdh_px_new.soluong = soluong;
-                                cdh_px_new.ngaycapnhat = null;
-                                db.c_kehoachdathang_dhcpx_cdh.Add(cdh_px_new);
-                            }
-                            else {
-                                cdh_dhcpx_check.soluong += soluong;
-                            }
-                            //--
-                            cdh_px.soluong -= soluong;
-                            i = 1;
-                    }
-                    if (msg.Length <= 0)
-                    {
-                        md_phanxuong px = db.md_phanxuong.Where(s => s.md_phanxuong_id == md_phanxuong_id).FirstOrDefault();
-                        msg = "<div style='color:blue'>Đặt hàng  \"" + px.ten_phanxuong + "\" thành công.</div>";
-                        db.SaveChanges();
-                        foreach (c_kehoachdathang_dhcpx dhcpx in db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == c_kehoachdathang_id))
-                        {
-                            decimal tong_soluong = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).Select(s => s.soluong.Value).Sum();
-                            if (tong_soluong <= 0)
-                            {
-                                db.c_kehoachdathang_dhcpx.Remove(dhcpx);
-                            }
-                            else {
-                                foreach (c_kehoachdathang_dhcpx_cdh dhcpx_cdh in db.c_kehoachdathang_dhcpx_cdh.Where(s => s.soluong <= 0))
-                                {
-                                    db.c_kehoachdathang_dhcpx_cdh.Remove(dhcpx_cdh);
-                                }
-                            }
-                        }
-                    }				
-                }*/
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }

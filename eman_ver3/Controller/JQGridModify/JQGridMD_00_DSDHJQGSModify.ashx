@@ -696,13 +696,13 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         int tgsx = -1;
                         foreach (var dh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh1.c_danhsachdathang_id).ToList())
                         {
-                            var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == dh.ma_sanpham_khach).FirstOrDefault();
+                            var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == dh.md_sanpham_id).FirstOrDefault();
 
                             if (sp == null)
                                 msgDetail += string.Format(@"
                                 <div style='color:red'>
                                     Lỗi: HHVT ""{0}"" không tồn tại.
-                                </div>", dh.ma_sanpham_khach);
+                                </div>", dh.md_sanpham_id);
                             else
                             {
                                 var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db);
@@ -711,7 +711,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                     msgDetail += string.Format(@"
                                     <div style='color:red'>
                                         Lỗi: HHVT ""{0}"" không  BOM.
-                                    </div>", dh.ma_sanpham_khach);
+                                    </div>", dh.md_sanpham_id);
                                 }
                                 else
                                 {
