@@ -218,7 +218,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                 //--update Password
                 if (tk_dangnhap.ma_user != "giamdoc" & tk_dangnhap.ma_user != "vanthu" & tk_dangnhap.ma_user != "truongphong" & tk_dangnhap.ma_user != "nhanvien")
                 {
-                    if (!string.IsNullOrEmpty(tk_dangnhap.matkhau) |
+                    if (!string.IsNullOrEmpty(newPassword) |
                         !string.IsNullOrEmpty(oldPassword) |
                         !string.IsNullOrEmpty(confirmPassword))
                     {
@@ -226,8 +226,17 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                         {
                             if (newPassword.Equals(confirmPassword))
                             {
-                                tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
-                                db.SaveChanges();
+                                if (!string.IsNullOrEmpty(newPassword)
+                                        & string.IsNullOrEmpty(confirmPassword))
+                                {
+                                    tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    msg = "Mật khẩu mới không thể để trống";
+                                    error = false; 
+                                }
                             }
                             else
                             {
