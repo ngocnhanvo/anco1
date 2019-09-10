@@ -37,6 +37,12 @@
                         public bool? datruno { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_dento_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_dento_wintaFN
+                        public string dento { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_ghichu_donvi2_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_ghichu_donvi2_wintaFN
@@ -49,6 +55,12 @@
                         public Decimal? ghino { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_gianhancong_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_gianhancong_wintaFN
+                        public Decimal? gianhancong { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_hoatdong_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_hoatdong_wintaFN
@@ -59,6 +71,12 @@
                         
                         #endregion md_xuatkhonb_cdh_lsx_to_wintaFN
                         public string lsx_to { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_lsxId_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_lsxId_wintaFN
+                        public string lsxId { get; set; }
                 
 						
                         #region md_xuatkhonb_cdh_md_donvitinhsanpham_id_wintaFN
@@ -191,6 +209,12 @@
                         
                         #endregion md_xuatkhonb_cdh_truno_wintaFN
                         public Decimal? truno { get; set; }
+                
+						
+                        #region md_xuatkhonb_cdh_tuto_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_tuto_wintaFN
+                        public string tuto { get; set; }
                 
 						
                         #region md_xuatkhonb_cdh_vaitrocapnhat_wintaFN
