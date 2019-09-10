@@ -59,20 +59,20 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
             }
             else
             {
-                
-				var gsp = db.md_giasanpham.
-						Where(s =>
-							s.md_sanpham_id == sp.md_sanpham_id &
-							s.md_phienbangia_id == dmh.md_phienbangia_id &
-							s.md_donvitinhsanpham_id == donvitinhId).FirstOrDefault();
-				if (gsp != null)
-				{
-					if (dongiamua <= 0)
-						dongiamua = gsp.gia.GetValueOrDefault(0);
 
-					giachuan = gsp.gia.GetValueOrDefault(0);
-					thanhtien = dongiamua * sl_dadat;
-				}
+                var gsp = db.md_giasanpham.
+                        Where(s =>
+                            s.md_sanpham_id == sp.md_sanpham_id &
+                            s.md_phienbangia_id == dmh.md_phienbangia_id &
+                            s.md_donvitinhsanpham_id == donvitinhId).FirstOrDefault();
+                if (gsp != null)
+                {
+                    if (dongiamua <= 0)
+                        dongiamua = gsp.gia.GetValueOrDefault(0);
+
+                    giachuan = gsp.gia.GetValueOrDefault(0);
+                    thanhtien = dongiamua * sl_dadat;
+                }
 
                 if (dongiamua <= 0)
                     msg = "false#Bảng giá của đơn mua hàng \"" + dmh.sochungtu + "\" không có giá cho sản phẩm \"" + sp.ma_sanpham + "\".";
@@ -437,10 +437,8 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "c_donmuahang_cdmh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
+            string[] id_del = context.Request.Form["id"].Split(',');
+            int count = id_del.Length;
             decimal tong_tienhang_update = 0, tong_tatca_update = 0;
             string c_donmuahang_id = "";
             for (int i = 0; i < count; i++)
