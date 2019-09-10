@@ -194,6 +194,15 @@ public static class Extension
         return prev;
     }
 
+    public static decimal getGiaNhanCong(string spId, string dvt, string PBGNC, EntityContext db)
+    {
+        var gia = db.md_giasanpham.Where(s =>
+            s.md_phienbangia_id == PBGNC
+            & s.md_sanpham_id == spId
+            & s.md_donvitinhsanpham_id == dvt).Select(s=>s.gia).FirstOrDefault();
+        return gia.GetValueOrDefault(0);
+    }
+
     public static bool IsDate(this DateTime date)
     {
         bool ok = true;
