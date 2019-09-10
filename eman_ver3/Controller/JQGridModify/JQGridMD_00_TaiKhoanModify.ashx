@@ -218,23 +218,28 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                 //--update Password
                 if (tk_dangnhap.ma_user != "giamdoc" & tk_dangnhap.ma_user != "vanthu" & tk_dangnhap.ma_user != "truongphong" & tk_dangnhap.ma_user != "nhanvien")
                 {
-                    if (tk_dangnhap.matkhau.Equals(Security.EncodeMd5Hash(oldPassword)))
+                    if (!string.IsNullOrEmpty(tk_dangnhap.matkhau) |
+                        !string.IsNullOrEmpty(oldPassword) |
+                        !string.IsNullOrEmpty(confirmPassword))
                     {
-                        if (newPassword.Equals(confirmPassword))
+                        if (tk_dangnhap.matkhau.Equals(Security.EncodeMd5Hash(oldPassword)))
                         {
-                            tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
-                            db.SaveChanges();
+                            if (newPassword.Equals(confirmPassword))
+                            {
+                                tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                msg = "Xác nhận mật khẩu không đúng";
+                                error = false;
+                            }
                         }
                         else
                         {
-                            msg = "Xác nhận mật khẩu không đúng";
+                            msg = "Sai mật khẩu cũ.";
                             error = false;
                         }
-                    }
-                    else
-                    {
-                        msg = "Sai mật khẩu cũ.";
-                        error = false;
                     }
                 }
                 else
