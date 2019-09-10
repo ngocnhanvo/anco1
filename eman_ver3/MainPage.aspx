@@ -239,7 +239,8 @@
 		//Xem chi tiết tài khoản
 		let ma_tk = '<%=tk.ma_user %>';
 		let ma_role = '<%=tk.ma_role %>';
-		let ten_role = '<%=tk.ten_role %>';
+        let ten_role = '<%=tk.ten_role %>';
+        let ma_phongban = '<%=tk.ma_phongban %>';
 		let token = '<%=tk.ad_user_id + "-" + tk.ad_role_id %>';
 		//thong tin chung
 		let url_org_sys = '<%=Security.UrlBase() %>';

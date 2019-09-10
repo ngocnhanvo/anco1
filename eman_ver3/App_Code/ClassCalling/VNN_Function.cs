@@ -48,6 +48,7 @@ public static class VNN_Function
         user.ma_role = vtr.ma_role;
         user.ten_role = vtr.ten_role;
         user.ten_phongban = pb.ten_phongban;
+        user.ma_phongban = pb.ma_phongban;
         return user;
     }
 

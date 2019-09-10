@@ -251,5 +251,6 @@ public class User_TK
     public string ma_role { get; set; }
     public string ten_role { get; set; }
     public string ten_phongban { get; set; }
+    public string ma_phongban { get; set; }
 }
 
