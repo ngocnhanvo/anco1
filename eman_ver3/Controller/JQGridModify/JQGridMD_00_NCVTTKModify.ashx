@@ -180,7 +180,8 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                     //--Xoa du lieu
                     var dondhpxs = from a in db.c_kehoachdathang_dhcpx
                                    join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
-                                   where b.ngaykehoach >= ncvt.tungay & b.ngaykehoach <= ncvt.denngay
+                                   join c in db.c_danhsachdathang on b.sodonhang equals c.sochungtu
+                                   where c.ngaylap >= ncvt.tungay & c.ngaylap <= ncvt.denngay
                                    & b.xulykehoach == true
                                    & (
                                        !arr_got.Contains(a.c_kehoachdathang_dhcpx_id)

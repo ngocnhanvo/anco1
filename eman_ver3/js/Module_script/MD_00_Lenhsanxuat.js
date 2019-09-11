@@ -190,7 +190,7 @@ function CA_01_TaoPhieuXuatVattuTong(tengrid, id_parent, ma_case, Form_infor, Mo
 
 //start CA_01_TinhTongVattu
 function CA_01_TinhTongVattu(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    var masterId = id_parent;
+    let masterId = id_parent;
     if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selarrrow'); }
     if (masterId == null | masterId == '') {
         alert('Chưa chọn đối tượng cần thao tác.');
@@ -244,14 +244,14 @@ function CA_01_TinhTongVattu(tengrid, id_parent, ma_case, Form_infor, Model_info
 
 //start CA_01_Taophieuxuatkho
 function CA_01_Taophieuxuatkho(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    var masterId = id_parent;
+    let masterId = id_parent;
     if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selarrrow'); }
     if (masterId == null | masterId == '') {
         alert('Chưa chọn đối tượng cần thao tác.');
     }
     else {
         var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid','');
+        var ma_module = tengrid.replace('grid', '');
         $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
             '<div class="dlg_content">Thực hiện chức năng này?</div>' +
         '</div>');
@@ -270,14 +270,14 @@ function CA_01_Taophieuxuatkho(tengrid, id_parent, ma_case, Form_infor, Model_in
                 id: 'btn-ok',
                 text: 'Đồng ý',
                 click: function () {
-                $('#btn-ok').button('option', 'disabled', true);
-                $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                    $('#btn-ok').button('option', 'disabled', true);
+                    $('.dlg_content').prepend('<div class="nhan_loading"></div>');
                     $.post('Controller/JQGridModify/JQGridMD_00_LenhsanxuatModify.ashx?oper=CA_01_Taophieuxuatkho&ma_module=' + ma_module,
-                    { id:masterId.toString() }, function (result) {
+                    { id: masterId.toString() }, function (result) {
                         $('#btn-ok').button('option', 'disabled', false);
                         $('.dlg_content').html(result);
                         loadclick(tengrid, 'edit', load_stt);
-						$("#"+tengrid2)[0].triggerToolbar();
+                        $("#" + tengrid2)[0].triggerToolbar();
                         Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
                     });
                 }
