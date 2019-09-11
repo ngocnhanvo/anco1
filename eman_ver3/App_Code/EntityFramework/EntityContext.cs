@@ -4634,6 +4634,10 @@
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.ngaybatdausx)
+                            .HasColumnName("ngaybatdausx")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");

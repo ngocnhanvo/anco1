@@ -387,6 +387,7 @@ System.Web.SessionState.IRequiresSessionState
                             kh.xulykehoach = false;
                             kh.c_doichieuhangton_id = dcht.c_doichieuhangton_id;
                             kh.mota = dcht.mota;
+                            kh.ngaybatdausx = ds.ngaybatdau;
                             kh.sodonhang = dcht.so_donhang;
                             kh.ten_kh = dcht.ten_donhang;
                             kh.ngaykehoach = dcht.ngaykehoach;

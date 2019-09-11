@@ -49,6 +49,12 @@
                         public string mota { get; set; }
                 
 						
+                        #region c_kehoachdathang_ngaybatdausx_wintaFN
+                        
+                        #endregion c_kehoachdathang_ngaybatdausx_wintaFN
+                        public DateTime? ngaybatdausx { get; set; }
+                
+						
                         #region c_kehoachdathang_ngaycapnhat_wintaFN
                         
                         #endregion c_kehoachdathang_ngaycapnhat_wintaFN
