@@ -374,7 +374,15 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
             {
                 foreach (var lsx in db.md_lenhsanxuat.Where(s => nht.Contains(s.md_lenhsanxuat_id)).ToList())
                 {
-                    lsx.md_trangthai_id = "KHDXL";
+                    if (lsx.md_trangthai_id == "CHUAHOANTHANH")
+                    {
+                        lsx.md_trangthai_id = "KHDXL";
+                    }
+                    else
+                    {
+                        msg = string.Format(@"Lệnh sản xuất ""{0}"" đã được xử lý hàng tồn rồi.", lsx.sochungtu);
+                        break;
+                    }
                 }
                 db.SaveChanges();
             }
