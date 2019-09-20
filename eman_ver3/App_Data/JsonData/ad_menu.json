@@ -547,7 +547,7 @@
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "13/05/2015 13:07:32",
     "ngaycapnhat": "28/01/2016 14:52:26",
-    "mota": "select * from ad_user where\nhoten COLLATE SQL_Latin1_General_Cp1_CI_AI like\nN'%' +  N'xưởng' COLLATE SQL_Latin1_General_Cp1_CI_AI + '%'",
+    "mota": "select * from ad_user where\r\nhoten COLLATE SQL_Latin1_General_Cp1_CI_AI like\r\nN'%' +  N'xưởng' COLLATE SQL_Latin1_General_Cp1_CI_AI + '%'",
     "hoatdong": "True"
   },
   {
@@ -1446,7 +1446,7 @@
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "30/03/2015 13:12:02",
     "ngaycapnhat": "03/02/2016 14:17:17",
-    "mota": "123\n456\n78910",
+    "mota": "123\r\n456\r\n78910",
     "hoatdong": "True"
   },
   {
