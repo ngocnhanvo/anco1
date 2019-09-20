@@ -635,10 +635,10 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sct_dmvt")});
             this.sct_dmvt.Dpi = 100F;
             this.sct_dmvt.Font = new System.Drawing.Font("Tahoma", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sct_dmvt.LocationFloat = new DevExpress.Utils.PointFloat(112.8334F, 68.33331F);
+            this.sct_dmvt.LocationFloat = new DevExpress.Utils.PointFloat(117.1668F, 69.33334F);
             this.sct_dmvt.Name = "sct_dmvt";
-            this.sct_dmvt.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 0, 100F);
-            this.sct_dmvt.SizeF = new System.Drawing.SizeF(99.32008F, 23F);
+            this.sct_dmvt.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.sct_dmvt.SizeF = new System.Drawing.SizeF(198.4867F, 23F);
             this.sct_dmvt.StylePriority.UseFont = false;
             this.sct_dmvt.StylePriority.UsePadding = false;
             this.sct_dmvt.StylePriority.UseTextAlignment = false;
@@ -897,7 +897,7 @@ namespace XtraReportSerialization
             this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(25.0001F, 69.33331F);
             this.xrLabel7.Name = "xrLabel7";
             this.xrLabel7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel7.SizeF = new System.Drawing.SizeF(85.83334F, 23.00001F);
+            this.xrLabel7.SizeF = new System.Drawing.SizeF(90F, 23F);
             this.xrLabel7.StylePriority.UseFont = false;
             this.xrLabel7.StylePriority.UseTextAlignment = false;
             this.xrLabel7.Text = "Số chứng từ:";
