@@ -47,9 +47,12 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
             tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
             var ngaygiaohang = tbl.Rows[0]["ngaygiaohang"] as DateTime?;
-            tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
-            tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
-            tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
+            if (ngaygiaohang != null)
+            {
+                tbl.Rows[0]["dd_yeucau"] = ngaygiaohang.Value.ToString("dd");
+                tbl.Rows[0]["MM_yeucau"] = ngaygiaohang.Value.ToString("MM");
+                tbl.Rows[0]["yyyy_yeucau"] = ngaygiaohang.Value.ToString("yyyy");
+            }
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
