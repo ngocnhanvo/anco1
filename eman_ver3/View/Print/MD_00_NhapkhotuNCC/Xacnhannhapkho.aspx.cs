@@ -92,7 +92,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             , dmh.ngaydonhang as MM_dmh
             , dmh.ngaydonhang as yyyy_dmh 
             , dmh.donhang_thamchieu as sodonhang
-            , dtkd.ma_dtkd as nhacungcap
+            , dtkd.ten_dtkd as nhacungcap
             , nk_ncc.phieuXNNK as sct_pxnnvt
             , nk_ncc.phieugiaohang
             , nk_ncc.ngaygiaohang
