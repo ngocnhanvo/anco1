@@ -139,6 +139,12 @@
                         public DateTime? ngaytao { get; set; }
                 
 						
+                        #region c_donmuahang_ngaythanhtoan_wintaFN
+                        
+                        #endregion c_donmuahang_ngaythanhtoan_wintaFN
+                        public DateTime? ngaythanhtoan { get; set; }
+                
+						
                         #region c_donmuahang_nguoicapnhat_wintaFN
                         
                         #endregion c_donmuahang_nguoicapnhat_wintaFN

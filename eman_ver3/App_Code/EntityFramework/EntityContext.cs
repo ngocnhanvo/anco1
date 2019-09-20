@@ -4300,6 +4300,10 @@
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.ngaythanhtoan)
+                            .HasColumnName("ngaythanhtoan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");
