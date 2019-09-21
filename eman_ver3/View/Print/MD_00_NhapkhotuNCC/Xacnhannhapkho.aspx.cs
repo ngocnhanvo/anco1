@@ -40,6 +40,9 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
             tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
             tbl.Columns.Add("sum_duocnhap", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_slsct", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_thucnhap", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
             var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
@@ -56,12 +59,29 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
+            double sum_slsct = double.Parse(tbl.Compute("Sum(slsct)", string.Empty).ToString());
+            double sum_thucnhap = double.Parse(tbl.Compute("Sum(thucnhap)", string.Empty).ToString());
+            double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
             tbl.Rows[lastRow]["sum_duocnhap"] = sum_duocnhap;
+            tbl.Rows[lastRow]["sum_slsct"] = sum_slsct;
+            tbl.Rows[lastRow]["sum_thucnhap"] = sum_thucnhap;
+            tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
             //FormatString
             var duocnhap_cell = report.Report.FindControl("duocnhap", true);
             duocnhap_cell.DataBindings[0].FormatString = sothapphan;
             var sum_duocnhap_cell = report.Report.FindControl("sum_duocnhap", true);
             sum_duocnhap_cell.DataBindings[0].FormatString = sothapphan;
+
+            var slsct_cell = report.Report.FindControl("slsct", true);
+            slsct_cell.DataBindings[0].FormatString = sothapphan;
+            var sum_slsct_cell = report.Report.FindControl("sum_slsct", true);
+            sum_slsct_cell.DataBindings[0].FormatString = sothapphan;
+
+            var thucnhap_cell = report.Report.FindControl("thucnhap", true);
+            thucnhap_cell.DataBindings[0].FormatString = sothapphan;
+            var sum_thucnhap_cell = report.Report.FindControl("sum_thucnhap", true);
+            sum_thucnhap_cell.DataBindings[0].FormatString = sothapphan;
+
             var kho_cell = report.Report.FindControl("kho", true);
             var withF = kho_cell.WidthF;
             kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)9.5, true);
@@ -85,7 +105,9 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             , sp.mota_tiengviet as ten_vthh
 		    , dvtsp.ten_dvt as dvt
             , nk_ncc_dh.tong_sl_dat as duocnhap
-            , null as thucnhap
+            , isnull(nk_ncc_dh.sl_nhap, 0) as thucnhap
+            , nk_ncc_dh.sl_muonnhap as slsct
+            , (isnull(nk_ncc_dh.sl_nhap, 0) * nk_ncc_dh.giatriVND) as thanhtien
 		    , sp.quycachdonggoi as quycach 
             , nk_ncc_dh.giatriVND as dongia
             , null as thanhtien

@@ -100,7 +100,7 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell ten_vthh;
         private DevExpress.XtraReports.UI.XRTableCell quycach;
         private DevExpress.XtraReports.UI.XRTableCell dvt;
-        private DevExpress.XtraReports.UI.XRTableCell sct;
+        private DevExpress.XtraReports.UI.XRTableCell slsct;
         private DevExpress.XtraReports.UI.XRTableCell duocnhap;
         private DevExpress.XtraReports.UI.XRTableCell thucnhap;
         private DevExpress.XtraReports.UI.XRTableCell dongia;
@@ -168,11 +168,11 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell1;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell13;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell20;
-        private DevExpress.XtraReports.UI.XRTableCell sum_soluong;
+        private DevExpress.XtraReports.UI.XRTableCell sum_slsct;
         private DevExpress.XtraReports.UI.XRTableCell sum_duocnhap;
         private DevExpress.XtraReports.UI.XRTableCell sum_thucnhap;
         private DevExpress.XtraReports.UI.XRTableCell sum_tongcong;
-        private DevExpress.XtraReports.UI.XRTableCell sum_thucxuat;
+        private DevExpress.XtraReports.UI.XRTableCell sum_thanhtien;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell3;
         private DevExpress.XtraReports.UI.XRLabel xrLabel22;
         private DevExpress.XtraReports.UI.XRLabel xrLabel27;
@@ -221,7 +221,7 @@ namespace XtraReportSerialization
             this.ten_vthh = new DevExpress.XtraReports.UI.XRTableCell();
             this.quycach = new DevExpress.XtraReports.UI.XRTableCell();
             this.dvt = new DevExpress.XtraReports.UI.XRTableCell();
-            this.sct = new DevExpress.XtraReports.UI.XRTableCell();
+            this.slsct = new DevExpress.XtraReports.UI.XRTableCell();
             this.duocnhap = new DevExpress.XtraReports.UI.XRTableCell();
             this.thucnhap = new DevExpress.XtraReports.UI.XRTableCell();
             this.dongia = new DevExpress.XtraReports.UI.XRTableCell();
@@ -295,11 +295,11 @@ namespace XtraReportSerialization
             this.xrTableCell1 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell13 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell20 = new DevExpress.XtraReports.UI.XRTableCell();
-            this.sum_soluong = new DevExpress.XtraReports.UI.XRTableCell();
+            this.sum_slsct = new DevExpress.XtraReports.UI.XRTableCell();
             this.sum_duocnhap = new DevExpress.XtraReports.UI.XRTableCell();
             this.sum_thucnhap = new DevExpress.XtraReports.UI.XRTableCell();
             this.sum_tongcong = new DevExpress.XtraReports.UI.XRTableCell();
-            this.sum_thucxuat = new DevExpress.XtraReports.UI.XRTableCell();
+            this.sum_thanhtien = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell3 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrLabel22 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel27 = new DevExpress.XtraReports.UI.XRLabel();
@@ -365,7 +365,7 @@ namespace XtraReportSerialization
             this.ten_vthh,
             this.quycach,
             this.dvt,
-            this.sct,
+            this.slsct,
             this.duocnhap,
             this.thucnhap,
             this.dongia,
@@ -455,20 +455,22 @@ namespace XtraReportSerialization
             this.dvt.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dvt.Weight = 0.13195656947575468D;
             // 
-            // sct
+            // slsct
             // 
-            this.sct.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.sct.Dpi = 100F;
-            this.sct.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.sct.Multiline = true;
-            this.sct.Name = "sct";
-            this.sct.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
-            this.sct.StylePriority.UseBorders = false;
-            this.sct.StylePriority.UseFont = false;
-            this.sct.StylePriority.UsePadding = false;
-            this.sct.StylePriority.UseTextAlignment = false;
-            this.sct.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sct.Weight = 0.24822799338718271D;
+            this.slsct.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "slsct")});
+            this.slsct.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.slsct.Dpi = 100F;
+            this.slsct.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.slsct.Multiline = true;
+            this.slsct.Name = "slsct";
+            this.slsct.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
+            this.slsct.StylePriority.UseBorders = false;
+            this.slsct.StylePriority.UseFont = false;
+            this.slsct.StylePriority.UsePadding = false;
+            this.slsct.StylePriority.UseTextAlignment = false;
+            this.slsct.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.slsct.Weight = 0.24822799338718271D;
             // 
             // duocnhap
             // 
@@ -1537,11 +1539,11 @@ namespace XtraReportSerialization
             this.xrTableCell1,
             this.xrTableCell13,
             this.xrTableCell20,
-            this.sum_soluong,
+            this.sum_slsct,
             this.sum_duocnhap,
             this.sum_thucnhap,
             this.sum_tongcong,
-            this.sum_thucxuat,
+            this.sum_thanhtien,
             this.xrTableCell3});
             this.xrTableRow3.Dpi = 100F;
             this.xrTableRow3.Name = "xrTableRow3";
@@ -1592,20 +1594,22 @@ namespace XtraReportSerialization
             this.xrTableCell20.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell20.Weight = 0.13179163549512268D;
             // 
-            // sum_soluong
+            // sum_slsct
             // 
-            this.sum_soluong.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.sum_soluong.Dpi = 100F;
-            this.sum_soluong.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.sum_soluong.Multiline = true;
-            this.sum_soluong.Name = "sum_soluong";
-            this.sum_soluong.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
-            this.sum_soluong.StylePriority.UseBorders = false;
-            this.sum_soluong.StylePriority.UseFont = false;
-            this.sum_soluong.StylePriority.UsePadding = false;
-            this.sum_soluong.StylePriority.UseTextAlignment = false;
-            this.sum_soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_soluong.Weight = 0.24791773891823532D;
+            this.sum_slsct.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_slsct")});
+            this.sum_slsct.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.sum_slsct.Dpi = 100F;
+            this.sum_slsct.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.sum_slsct.Multiline = true;
+            this.sum_slsct.Name = "sum_slsct";
+            this.sum_slsct.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
+            this.sum_slsct.StylePriority.UseBorders = false;
+            this.sum_slsct.StylePriority.UseFont = false;
+            this.sum_slsct.StylePriority.UsePadding = false;
+            this.sum_slsct.StylePriority.UseTextAlignment = false;
+            this.sum_slsct.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_slsct.Weight = 0.24791773891823532D;
             // 
             // sum_duocnhap
             // 
@@ -1626,6 +1630,8 @@ namespace XtraReportSerialization
             // 
             // sum_thucnhap
             // 
+            this.sum_thucnhap.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thucnhap")});
             this.sum_thucnhap.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.sum_thucnhap.Dpi = 100F;
             this.sum_thucnhap.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -1653,20 +1659,22 @@ namespace XtraReportSerialization
             this.sum_tongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_tongcong.Weight = 0.28241065069204035D;
             // 
-            // sum_thucxuat
+            // sum_thanhtien
             // 
-            this.sum_thucxuat.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.sum_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thanhtien")});
+            this.sum_thanhtien.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.sum_thucxuat.Dpi = 100F;
-            this.sum_thucxuat.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.sum_thucxuat.Name = "sum_thucxuat";
-            this.sum_thucxuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
-            this.sum_thucxuat.StylePriority.UseBorders = false;
-            this.sum_thucxuat.StylePriority.UseFont = false;
-            this.sum_thucxuat.StylePriority.UsePadding = false;
-            this.sum_thucxuat.StylePriority.UseTextAlignment = false;
-            this.sum_thucxuat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_thucxuat.Weight = 0.282410650692093D;
+            this.sum_thanhtien.Dpi = 100F;
+            this.sum_thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.sum_thanhtien.Name = "sum_thanhtien";
+            this.sum_thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
+            this.sum_thanhtien.StylePriority.UseBorders = false;
+            this.sum_thanhtien.StylePriority.UseFont = false;
+            this.sum_thanhtien.StylePriority.UsePadding = false;
+            this.sum_thanhtien.StylePriority.UseTextAlignment = false;
+            this.sum_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_thanhtien.Weight = 0.282410650692093D;
             // 
             // xrTableCell3
             // 
