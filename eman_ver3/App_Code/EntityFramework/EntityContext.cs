@@ -10150,6 +10150,14 @@
                             .HasColumnName("tinhhangton")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.tolayton)
+                            .HasColumnName("tolayton")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.tolaytonId)
+                            .HasColumnName("tolaytonId")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");
@@ -10264,6 +10272,10 @@
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_hoanthanh)
                             .HasColumnName("sl_hoanthanh")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.sl_laytondu)
+                            .HasColumnName("sl_laytondu")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_nhapkho)

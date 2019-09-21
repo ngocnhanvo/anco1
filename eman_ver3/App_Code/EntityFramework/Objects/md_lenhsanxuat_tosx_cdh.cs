@@ -127,6 +127,12 @@
                         public Decimal? sl_hoanthanh { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sl_laytondu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_laytondu_wintaFN
+                        public Decimal? sl_laytondu { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_nhapkho_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_nhapkho_wintaFN

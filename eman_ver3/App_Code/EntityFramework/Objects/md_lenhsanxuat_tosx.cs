@@ -127,6 +127,18 @@
                         public bool? tinhhangton { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_tolayton_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_tolayton_wintaFN
+                        public string tolayton { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_tolaytonId_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_tolaytonId_wintaFN
+                        public string tolaytonId { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_vaitrocapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_vaitrocapnhat_wintaFN
