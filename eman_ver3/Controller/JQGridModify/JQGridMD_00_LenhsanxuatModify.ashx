@@ -486,10 +486,8 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_lenhsanxuat";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
+            string[] id_del = context.Request.Form["id"].Split(',');
+            int count = id_del.Count();
             for (int i = 0; i < count; i++)
             {
                 msg_del = "";
@@ -500,14 +498,15 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
                     msg += msg_del + ",";
                 }
-                else if (object_.phieuXK != " " & object_.phieuXK != "" & object_.phieuXK != null)
-                {
-                    msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã tạo phiếu xuất kho, không thể xóa.";
-                    msg += msg_del + ",";
-                }
                 else if (object_.md_trangthai_id != "CHUAHOANTHANH")
                 {
                     msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã hiệu lực.";
+                    msg += msg_del + ",";
+                }
+                else if (db.md_lenhsanxuat_tosx.Where(s=>s.md_lenhsanxuat_id == object_.md_lenhsanxuat_id
+                    & !string.IsNullOrEmpty(s.phieulayht)).Count() > 0)
+                {
+                    msg_del = "Lỗi:Lệnh sản xuất này đã được lấy hàng tồn.";
                     msg += msg_del + ",";
                 }
                 else

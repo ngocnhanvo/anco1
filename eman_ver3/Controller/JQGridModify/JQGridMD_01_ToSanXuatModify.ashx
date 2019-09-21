@@ -64,6 +64,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 {
                     msg = @"Chỉ có thể tính hàng tồn khi LSX ở trạng thái ""Đang xử lý""";
                 }
+                else if (!string.IsNullOrEmpty(tsx.phieulayht))
+                {
+                    msg = @"Đã lấy hàng tồn, không được tính lại.";
+                }
                 else
                 {
                     db.md_lenhsanxuat_tosx_dklht.RemoveRange(db.md_lenhsanxuat_tosx_dklht.Where(s => s.md_lenhsanxuat_tosx_id == id));
@@ -118,6 +122,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string id = context.Request.Form["id"];
         string msg = "";
+        var ids = new List<string>();
 
         using (var transaction = db.Database.BeginTransaction())
         {
@@ -127,7 +132,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).FirstOrDefault();
                 var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).FirstOrDefault();
                 var kho = db.md_kho.Where(s => s.md_to_id == tsx.md_phanxuong_to_id & s.hangton == true).FirstOrDefault();
-
+                string toLayHTId = "", toLayHT = "";
                 var tsx2 = db.md_lenhsanxuat_tosx.Where(s =>
                         s.stt > tsx.stt
                         & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
@@ -137,10 +142,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 if(tsx2 != null)
                 {
                     kho2 = Helper.layKhoCuaTo(tsx2.md_phanxuong_id, tsx2.md_phanxuong_to_id, db);
+                    toLayHTId = tsx2.md_phanxuong_to_id;
+                    toLayHT = db.md_phanxuong_to.Where(s => s.md_to_id == toLayHTId).Select(s => s.ten_to).FirstOrDefault();
                 }
                 else
                 {
                     kho2 = Helper.layKhoCuaTo(tsx.md_phanxuong_id, tsx.md_phanxuong_to_id, db);
+                    toLayHTId = tsx.md_phanxuong_to_id;
+                    toLayHT = db.md_phanxuong_to.Where(s => s.md_to_id == toLayHTId).Select(s => s.ten_to).FirstOrDefault();
                 }
 
                 if (lsx.md_trangthai_id != "CHUAHOANTHANH")
@@ -175,7 +184,12 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
                                 if (lht.sl_tonkho == slTonKho)
                                 {
-                                    cdh.sl_chiato = cdh.sl_dat - lht.sl_layton.GetValueOrDefault(0);
+                                    cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) - lht.sl_layton.GetValueOrDefault(0);
+                                    if(cdh.sl_chiato < 0)
+                                    {
+                                        cdh.sl_laytondu = 0 - cdh.sl_chiato;
+                                        cdh.sl_chiato = 0;
+                                    }
                                     listLHT.Add(lht);
                                 }
                                 else
@@ -215,7 +229,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                             db.md_vanchuyennoibo.Add(vcnb);
                             db.SaveChanges();
 
-                            foreach (var lht in listLHT.Where(s => s.sl_layton > 0))
+                            foreach (var lht in listLHT.Distinct().Where(s => s.sl_layton > 0))
                             {
                                 var cdvc = new md_vanchuyennoibo_cdvc();
                                 cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
@@ -237,7 +251,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 db.md_vanchuyennoibo_cdvc.Add(cdvc);
                             }
                             tsx.phieulayht = sochungtu;
+                            tsx.tolaytonId = toLayHTId;
+                            tsx.tolayton = toLayHT;
                             db.SaveChanges();
+                            ids.Add(vcnb.md_vanchuyennoibo_id);
                         }
                         else
                         {
@@ -255,6 +272,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             {
                 msg = string.Format("<div style='color:blue'>Tính hàng tồn thành công.</div>");
                 transaction.Commit();
+
+                if (ids.Count > 0)
+                {
+                    string formData = "";
+                    formData += string.Format(@"oper=CA_01_XuLyVanChuyen");
+                    formData += string.Format(@"&id={0}", string.Join(",", ids));
+                    VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx", formData);
+                }
             }
             else
             {
