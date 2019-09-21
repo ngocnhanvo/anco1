@@ -14,7 +14,7 @@ public class PrintAnco2
         string urlBase = Security.UrlBase();
         return new InfoPrint
         {
-            logo = urlBase + "/" + ttc.logo,
+            logo = urlBase + "/" + ttc.logo + "?ver=1",
             dd = DateTime.Now.ToString("dd"),
             MM = DateTime.Now.ToString("MM"),
             yyyy = DateTime.Now.ToString("yyyy"),
