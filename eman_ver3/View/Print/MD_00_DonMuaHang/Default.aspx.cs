@@ -80,7 +80,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         string c_donmuahang_id = context.Request.QueryString["id"];	
 		string sql = string.Format(@"
 		select 
-            dmh.sochungtu as sct_dmvt
+            dmh.so_donmuahang as sct_dmvt
             , dmh.ngaygiaohang as thoihan_giaohang
             , dmh.ngaythanhtoan as thoihanthanhtoan
             , (select ten_kho from md_kho where md_kho_id = dmh.diadiem_giaohang) as diadiem_giaohang
