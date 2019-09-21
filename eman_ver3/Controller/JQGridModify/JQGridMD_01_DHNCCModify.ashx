@@ -124,22 +124,19 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         decimal tong_sl_dat = decimal.Parse(context.Request.Form["tong_sl_dat"]);
         decimal sl_nhap = decimal.Parse(context.Request.Form["sl_nhap"]);
         decimal sl_nhap2 = sl_nhap;
-        string md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
-        string co_ngayhethan = context.Request.Form["co_ngayhethan"];
-        decimal saiso = 0;
+        
         try
         {
             string id = context.Request.Form["id"];
             var object_ = db.md_nhapkho_ncc_dh.Where(p => p.md_nhapkho_ncc_dh_id == id).Take(1).FirstOrDefault();
             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
             var vcnb = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).FirstOrDefault();
-            string ghichu_donvi2 = "";
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -154,46 +151,7 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
             }
             else if (sl_nhap > tong_sl_dat)
             {
-                msg = "false#Số lượng thực nhập phải ít hơn hoặc bằng số lượng muốn nhập";
-            }
-            else if (sp.md_donvitinhsanpham_id != object_.md_donvitinhsanpham_id)
-            {
-                string idDMH = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).Select(s => s.c_donmuahang_id).FirstOrDefault();
-                var donghang = db.c_donmuahang_cdmh.Where(s =>
-                    s.c_donmuahang_id == idDMH &
-                    s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
-                if (donghang != null)
-                {
-                    decimal tile = donghang.sl_dadat2.GetValueOrDefault(0) / donghang.sl_dadat.Value;
-                    sl_nhap2 = sl_nhap2 * tile;
-                }
-                else
-                {
-                    msg = "false#Đơn vị tính đã chọn không thể quy đổi.";
-                }
-            }
-
-            if (co_ngayhethan == "True")
-            {
-                if (string.IsNullOrEmpty(context.Request.Form["ngay_hethan"]))
-                    msg = @"false#""Hạn sử dụng"" không thể để trống.";
-            }
-            else
-                VNN_Function.SetFormValue("ngay_hethan", "null");
-
-            if (sl_nhap > object_.tong_sl_dat)
-            {
-                msg = "false#Chỉ có thể nhập số lượng tối đa là: \"" + VNN_VariablePublic.autoRound(object_.tong_sl_dat.Value, 4) + "\"";
-                msg += "<br> + Số lượng đang muốn nhập: \"" + VNN_VariablePublic.autoRound(sl_nhap, 4) + "\"";
-                msg += "<br> + Độ sai lệch cho phép: \"" + VNN_VariablePublic.autoRound(saiso, 4) + "\"";
-            }
-
-            foreach (var ncc in db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).ToList())
-            {
-                if (ncc.trangthai == "HIEULUC")
-                {
-                    msg = "false#Phiếu nhập kho đã hiệu lực.";
-                }
+                msg = "false#Số lượng thực nhập không được lớn hơn tổng số lượng";
             }
 
             if (msg.Length <= 0)
@@ -201,10 +159,10 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
                 string action = "edit";
                 string[] column_ex = { "sl_muonnhap2", "sl_nhap2" };
                 string ten_table = "md_nhapkho_ncc_dh";
-                VNN_Function.SetFormValue("ghichu_donvi2", ghichu_donvi2);
                 VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
                 VNN_Function.SetFormValue("tenhang", "VNN_notpost");
                 VNN_Function.SetFormValue("sl_muonnhap", "VNN_notpost");
+                VNN_Function.SetFormValue("sl_nhap", sl_nhap.ToString());
                 VNN_Function.SetFormValue("sl_nhap2", sl_nhap2.ToString());
                 VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
                 VNN_Function.Set_DefaultvalueColumn(context, action);
