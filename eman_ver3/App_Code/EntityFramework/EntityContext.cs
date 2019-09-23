@@ -10256,6 +10256,10 @@
                             .HasColumnName("sl_chiato")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.sl_chiato2)
+                            .HasColumnName("sl_chiato2")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_dahoanthanh)
                             .HasColumnName("sl_dahoanthanh")
                             .HasColumnType("decimal").HasPrecision(18, 4);
@@ -10274,6 +10278,10 @@
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_hoanthanh)
                             .HasColumnName("sl_hoanthanh")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.sl_layton)
+                            .HasColumnName("sl_layton")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_laytondu)
