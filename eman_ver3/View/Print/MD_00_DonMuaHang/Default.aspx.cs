@@ -48,7 +48,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
             double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
             double sum_thue10 = sum_thanhtien * thueVAT / 100;
-            double sum_tongcong = sum_thanhtien + thueVAT;
+            double sum_tongcong = sum_thanhtien + sum_thue10;
             var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
             tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
