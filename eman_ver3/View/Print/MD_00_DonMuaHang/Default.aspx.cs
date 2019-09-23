@@ -36,6 +36,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
+            tbl.Columns.Add("thueVatText", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
             tbl.Rows[0]["dd"] = infoPrint.dd;
@@ -45,8 +46,9 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             int lastRow = tbl.Rows.Count - 1;
             double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
             double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
-            double sum_thue10 = sum_thanhtien * 10 / 100;
-            double sum_tongcong = sum_thanhtien + sum_thue10;
+            double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
+            double sum_thue10 = sum_thanhtien * thueVAT / 100;
+            double sum_tongcong = sum_thanhtien + thueVAT;
             var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
             tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
@@ -58,6 +60,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             tbl.Rows[lastRow]["sum_thue10"] = sum_thue10;
             tbl.Rows[lastRow]["sum_tongcong"] = arr.Value;
             tbl.Rows[lastRow]["bangchu"] = arr.Key;
+            tbl.Rows[lastRow]["thueVatText"] = "Thuế VAT " + thueVAT + "%";
             //FormatString
             var soluong_cell = report.Report.FindControl("soluong", true);
             soluong_cell.DataBindings[0].FormatString = sothapphan;
@@ -94,6 +97,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
 		    , cdmh.sl_dadat as soluong
             , cdmh.dongiamua as dongia
             , cdmh.thanhtien as thanhtien
+            , thue.giatri as thueVAT
 		from c_donmuahang dmh
 		    left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
 		    left join md_sanpham sp on sp.md_sanpham_id = cdmh.md_sanpham_id
