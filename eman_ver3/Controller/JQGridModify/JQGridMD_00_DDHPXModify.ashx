@@ -636,6 +636,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                     s.md_sanpham_bom_id == bomSpId
                                     ).ToList();
 
+                                item2.noigiaohang = bomSpId;
+
                                 if (bomSP.Count > 0)
                                 {
                                     foreach (var vattusp in bomSP.Where(s=>s.soluong > 0))

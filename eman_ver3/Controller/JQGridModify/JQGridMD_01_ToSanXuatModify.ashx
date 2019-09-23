@@ -191,6 +191,50 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                         cdh.sl_chiato = 0;
                                     }
                                     listLHT.Add(lht);
+
+                                    var bomSP = db.md_sanpham_bom_vattu.Where(s =>
+                                        s.md_sanpham_bom_id == cdh.noigiaohang
+                                        & s.sanphamId == cdh.md_sanpham_id
+                                        ).ToList();
+
+                                    if (bomSP.Count > 0)
+                                    {
+                                        foreach (var vattusp in bomSP.Where(s=>s.soluong > 0))
+                                        {
+                                            var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
+                                               s.md_sanpham_id == vattusp.md_sanpham_id &
+                                               s.md_lenhsanxuat_tosx_id == tsx_.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                            var addVTLSX = vtlsxto;
+                                            if (addVTLSX == null)
+                                            {
+                                                vtlsxto = new md_lenhsanxuat_tosx_vattu();
+                                                vtlsxto.md_lenhsanxuat_tosx_vattu_id = Helper.getNewId();
+                                                vtlsxto.md_lenhsanxuat_tosx_id = tsx_.md_lenhsanxuat_tosx_id;
+                                                vtlsxto.md_sanpham_id = vattusp.md_sanpham_id;
+                                                vtlsxto.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
+                                                vtlsxto.sl_hanngach = 0;
+                                                vtlsxto.sl_giamhanngach = 0;
+                                            }
+                                            vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) -
+                                                (decimal)vattusp.soluong.GetValueOrDefault(0) *
+                                                cdh.sl_chiato.GetValueOrDefault(0);
+
+                                            if (addVTLSX == null)
+                                                db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string err = string.Format(@"<br>HHVT ""{0}"" chưa có BOM cho tổ ""{2} - {1}""",
+                                            db.md_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
+                                            db.md_phanxuong.Where(s => s.md_phanxuong_id == tsx_.md_phanxuong_id).Select(s => s.ten_phanxuong).FirstOrDefault(),
+                                            db.md_phanxuong_to.Where(s => s.md_to_id == tsx_.md_phanxuong_to_id).Select(s => s.ten_to).FirstOrDefault());
+                                        if (!msg.Contains(err))
+                                        {
+                                            msg += err;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -270,7 +314,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
             if (msg.Length <= 0)
             {
-                msg = string.Format("<div style='color:blue'>Tính hàng tồn thành công.</div>");
+                msg = string.Format("<div style='color:blue'>Lấy hàng tồn thành công.</div>");
                 transaction.Commit();
 
                 if (ids.Count > 0)
