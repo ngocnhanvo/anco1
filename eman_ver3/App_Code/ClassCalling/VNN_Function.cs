@@ -30,7 +30,8 @@ public static class VNN_Function
             ma_user = tk.ma_user,
             ma_role = vtr.ma_role,
             ten_role = vtr.ten_role,
-            ten_phongban = pb.ten_phongban
+            ten_phongban = pb.ten_phongban,
+            ma_phongban = pb.ma_phongban
         };
         return user;
     }

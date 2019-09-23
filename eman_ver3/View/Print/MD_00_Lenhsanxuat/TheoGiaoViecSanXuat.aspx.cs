@@ -69,6 +69,16 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
     public String CreateSql(HttpContext context)
     {
         var db = new EntityContext();
+        var us = VNN_Function.get_user(
+            Security.id_taikhoan(context),
+            Security.id_vaitro(context),
+            Security.id_phongban(context));
+
+        string slchiato = "sl_chiato";
+        if(us.ma_phongban == "PKH")
+        {
+            slchiato = "sl_chiato2";
+        }
         string md_nhapkho_ncc_id = context.Request.QueryString["id"];
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
@@ -82,7 +92,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
 	            , sp.ma_sanpham as ma_vthh
 	            , sp.mota_tiengviet as ten_vthh
 	            , dvtsp.ten_dvt as dvt
-	            , lsx_tsx_cdh.sl_chiato as soluong
+	            , lsx_tsx_cdh.{1} as soluong
 	            , lsx_tsx.ngaybatdausx as ngaysanxuat
 	            , lsx_tsx.ngaydkht as ngayhoanthanh
 	            , lsx_tsx_cdh.mota as ghichu
@@ -95,10 +105,11 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
                 left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
             where 1=1
                 and lsx_tsx.md_lenhsanxuat_tosx_id in ('{0}')
-                and lsx_tsx_cdh.sl_chiato > 0
+                and lsx_tsx_cdh.{1} > 0
             order by sp.ma_sanpham asc
 		"
         , md_nhapkho_ncc_id
+        , slchiato
         );
         return sql;
     }
