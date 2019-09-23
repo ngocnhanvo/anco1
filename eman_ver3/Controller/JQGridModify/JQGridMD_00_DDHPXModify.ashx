@@ -599,6 +599,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                     //sltd = (sltd.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
                                     lsx_tosx_cdh.sl_dat = lsx_tosx_cdh.sl_dat.GetValueOrDefault(0) + sltd;
                                     lsx_tosx_cdh.sl_chiato = lsx_tosx_cdh.sl_chiato.GetValueOrDefault(0) + sltd;
+                                    lsx_tosx_cdh.sl_chiato2 = lsx_tosx_cdh.sl_chiato;
                                     lsx_tosx_cdh.sl_tinhvattu = lsx_tosx_cdh.sl_tinhvattu.GetValueOrDefault(0) + sltd;
                                     lsx_tosx_cdh.sl_dahoanthanh = 0;
                                     if (!lsx_tosx_cdh.macuoi.Contains(ma_bo))
@@ -634,6 +635,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 string bomSpId = spBom == null ? "" : spBom.md_sanpham_bom_id;
                                 var bomSP = db.md_sanpham_bom_vattu.Where(s =>
                                     s.md_sanpham_bom_id == bomSpId
+                                    & s.sanphamId == item2.md_sanpham_id
                                     ).ToList();
 
                                 item2.noigiaohang = bomSpId;

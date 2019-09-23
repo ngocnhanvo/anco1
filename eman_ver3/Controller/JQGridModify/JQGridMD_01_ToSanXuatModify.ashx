@@ -175,6 +175,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
                                 & s.sl_layton > 0
                             ).FirstOrDefault();
+
                             if (lht != null)
                             {
                                 var slTonKho = db.md_kho_sanpham.Where(s =>
@@ -185,10 +186,18 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 if (lht.sl_tonkho == slTonKho)
                                 {
                                     cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) - lht.sl_layton.GetValueOrDefault(0);
-                                    if(cdh.sl_chiato < 0)
+                                    decimal? sltdHT = 0;
+                                    if (cdh.sl_chiato < 0)
                                     {
-                                        cdh.sl_laytondu = 0 - cdh.sl_chiato;
+                                        sltdHT = 0 - cdh.sl_chiato;
+                                        cdh.sl_laytondu += cdh.sl_laytondu.GetValueOrDefault(0) + sltdHT;
                                         cdh.sl_chiato = 0;
+
+                                        if(lht.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id)
+                                            cdh.sl_layton = lht.sl_layton.GetValueOrDefault(0);
+
+                                        if (cdh.sl_layton.GetValueOrDefault(0) <= cdh.sl_laytondu.GetValueOrDefault(0))
+                                            cdh.sl_laytondu = cdh.sl_layton.GetValueOrDefault(0);
                                     }
                                     listLHT.Add(lht);
 
@@ -205,23 +214,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                                s.md_sanpham_id == vattusp.md_sanpham_id &
                                                s.md_lenhsanxuat_tosx_id == tsx_.md_lenhsanxuat_tosx_id).FirstOrDefault();
                                             var addVTLSX = vtlsxto;
-                                            if (addVTLSX == null)
+                                            if (vtlsxto != null)
                                             {
-                                                vtlsxto = new md_lenhsanxuat_tosx_vattu();
-                                                vtlsxto.md_lenhsanxuat_tosx_vattu_id = Helper.getNewId();
-                                                vtlsxto.md_lenhsanxuat_tosx_id = tsx_.md_lenhsanxuat_tosx_id;
-                                                vtlsxto.md_sanpham_id = vattusp.md_sanpham_id;
-                                                vtlsxto.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
-                                                vtlsxto.sl_hanngach = 0;
-                                                vtlsxto.sl_giamhanngach = 0;
+                                                vtlsxto.soluong =
+                                                    vtlsxto.soluong.GetValueOrDefault(0) -
+                                                    (decimal)vattusp.soluong.GetValueOrDefault(0) * lht.sl_layton.GetValueOrDefault(0) +
+                                                    (decimal)vattusp.soluong.GetValueOrDefault(0) * sltdHT.GetValueOrDefault(0);
+                                                db.SaveChanges();
                                             }
-                                            vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) -
-                                                (decimal)vattusp.soluong.GetValueOrDefault(0) *
-                                                cdh.sl_chiato.GetValueOrDefault(0);
-
-                                            if (addVTLSX == null)
-                                                db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
-                                            db.SaveChanges();
                                         }
                                     }
                                     else
