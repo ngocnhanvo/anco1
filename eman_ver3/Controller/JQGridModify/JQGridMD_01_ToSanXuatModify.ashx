@@ -71,9 +71,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 else
                 {
                     db.md_lenhsanxuat_tosx_dklht.RemoveRange(db.md_lenhsanxuat_tosx_dklht.Where(s => s.md_lenhsanxuat_tosx_id == id));
+                    db.md_lenhsanxuat_tosx_tonkho.RemoveRange(db.md_lenhsanxuat_tosx_tonkho.Where(s => s.md_lenhsanxuat_tosx_id == id));
                     db.SaveChanges();
+
+                    var kieudangs = new List<string>();
                     foreach (var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == id).ToList())
                     {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).FirstOrDefault();
+                        kieudangs.Add(sp.ma_sanpham.Substring(0, 11));
                         var lht = new md_lenhsanxuat_tosx_dklht();
                         lht.md_lenhsanxuat_tosx_dklht_id = Helper.getNewId();
                         lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id;
@@ -94,6 +99,27 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         db.md_lenhsanxuat_tosx_dklht.Add(lht);
                     }
                     tsx.tinhhangton = true;
+                    db.SaveChanges();
+
+                    var tonkhos = from a in ksp
+                                  join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
+                                  where kieudangs.Distinct().Contains(b.ma_sanpham.Substring(0, 11))
+                                  select a;
+                    foreach(var tksp in tonkhos)
+                    {
+                        var tk = new md_lenhsanxuat_tosx_tonkho();
+                        tk.md_lenhsanxuat_tosx_tonkho_id = Helper.getNewId();
+                        tk.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id;
+                        tk.md_sanpham_id = tksp.md_sanpham_id;
+                        tk.sl_tonkho = tksp.soluong.GetValueOrDefault(0);
+                        tk.ngaytao = DateTime.Now;
+                        tk.ngaycapnhat = DateTime.Now;
+                        tk.nguoitao = us.ad_user_id;
+                        tk.nguoicapnhat = us.ad_user_id;
+                        tk.value_nguoitao = us.ma_user;
+                        tk.value_nguoicapnhat = us.ma_user;
+                        db.md_lenhsanxuat_tosx_tonkho.Add(tk);
+                    }
                     db.SaveChanges();
                 }
             }
