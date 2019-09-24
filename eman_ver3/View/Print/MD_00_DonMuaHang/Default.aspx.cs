@@ -47,7 +47,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
             double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
             double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
-            double sum_thue10 = sum_thanhtien * thueVAT / 100;
+            double sum_thue10 = Math.Ceiling(sum_thanhtien * thueVAT / 100);
             double sum_tongcong = sum_thanhtien + sum_thue10;
             var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
             tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
@@ -96,7 +96,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             , dvt.ten_dvt as dvt
 		    , cdmh.sl_dadat as soluong
             , cdmh.dongiamua as dongia
-            , cdmh.thanhtien as thanhtien
+            , CEILING(cdmh.thanhtien) as thanhtien
             , thue.giatri as thueVAT
 		from c_donmuahang dmh
 		    left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
