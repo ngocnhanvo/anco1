@@ -604,7 +604,7 @@ namespace XtraReportSerialization
             this.xrLabel1.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel1.LocationFloat = new DevExpress.Utils.PointFloat(304.0352F, 131.3451F);
             this.xrLabel1.Name = "xrLabel1";
-            this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 2, 2, 100F);
+            this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 1, 2, 2, 100F);
             this.xrLabel1.SizeF = new System.Drawing.SizeF(30F, 22.99998F);
             this.xrLabel1.StylePriority.UseFont = false;
             this.xrLabel1.StylePriority.UsePadding = false;
@@ -824,7 +824,7 @@ namespace XtraReportSerialization
             this.xrLabel43.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel43.LocationFloat = new DevExpress.Utils.PointFloat(304.0352F, 107.6875F);
             this.xrLabel43.Name = "xrLabel43";
-            this.xrLabel43.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 2, 2, 100F);
+            this.xrLabel43.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 1, 2, 2, 100F);
             this.xrLabel43.SizeF = new System.Drawing.SizeF(30F, 22.99998F);
             this.xrLabel43.StylePriority.UseFont = false;
             this.xrLabel43.StylePriority.UsePadding = false;
@@ -871,7 +871,7 @@ namespace XtraReportSerialization
             this.nhacungcap.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.nhacungcap.LocationFloat = new DevExpress.Utils.PointFloat(474.3332F, 131.6875F);
             this.nhacungcap.Name = "nhacungcap";
-            this.nhacungcap.Padding = new DevExpress.XtraPrinting.PaddingInfo(1, 0, 0, 0, 100F);
+            this.nhacungcap.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 0, 0, 0, 100F);
             this.nhacungcap.SizeF = new System.Drawing.SizeF(332.6668F, 23F);
             this.nhacungcap.StylePriority.UseFont = false;
             this.nhacungcap.StylePriority.UsePadding = false;
