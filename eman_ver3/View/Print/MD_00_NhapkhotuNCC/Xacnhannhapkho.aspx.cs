@@ -107,10 +107,9 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             , nk_ncc_dh.tong_sl_dat as duocnhap
             , isnull(nk_ncc_dh.sl_nhap, 0) as thucnhap
             , nk_ncc_dh.sl_muonnhap as slsct
-            , (isnull(nk_ncc_dh.sl_nhap, 0) * nk_ncc_dh.giatriVND) as thanhtien
+            , CEILING((isnull(nk_ncc_dh.sl_nhap, 0) * nk_ncc_dh.giatriVND)) as thanhtien
 		    , sp.quycachdonggoi as quycach 
             , nk_ncc_dh.giatriVND as dongia
-            , null as thanhtien
             , (select ten_kho from md_kho where md_kho_id = nk_ncc.kho) as kho
 		    , dmh.so_donmuahang as sct_dmh
             , dmh.ngaydonhang as dd_dmh
