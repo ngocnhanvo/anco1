@@ -355,6 +355,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         object_.md_dongtien_id = bg.md_dongtien_id;
                         object_.tygiaVND = Extension.TyGiaVND(bg.md_dongtien_id, object_.ngaydonhang.Value, db);
                         object_.mota = context.Request.Form["mota"];
+                        object_.hinhthucthanhtoan = context.Request.Form["hinhthucthanhtoan"];
                         db.c_donmuahang_thue.RemoveRange(db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id));
                         db.SaveChanges();
 
