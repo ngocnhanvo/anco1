@@ -129,6 +129,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
 		    left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
 		where 
             nk_ncc_dh.md_nhapkho_ncc_id = '{0}' 
+            and nk_ncc_dh.sl_nhap > 0
         order by sp.ma_sanpham asc"
         , md_nhapkho_ncc_id
         );
