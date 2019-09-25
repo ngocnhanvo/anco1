@@ -191,7 +191,6 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRLabel xrLabel18;
         private DevExpress.XtraReports.UI.XRLabel xrLabel29;
         private System.Resources.ResourceManager _resources;
-        private DevExpress.XtraReports.UI.XRLabel xrLabel31;
         private string _resourceString;
         public VNN_report18()
         {
@@ -312,7 +311,6 @@ namespace XtraReportSerialization
             this.xrLabel23 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel18 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel29 = new DevExpress.XtraReports.UI.XRLabel();
-            this.xrLabel31 = new DevExpress.XtraReports.UI.XRLabel();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).BeginInit();
@@ -1187,7 +1185,6 @@ namespace XtraReportSerialization
             // PageHeader
             // 
             this.PageHeader.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
-            this.xrLabel31,
             this.xrLabel42,
             this.xrLabel17,
             this.xrLabel16,
@@ -1229,10 +1226,10 @@ namespace XtraReportSerialization
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel17.Dpi = 100F;
             this.xrLabel17.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrLabel17.LocationFloat = new DevExpress.Utils.PointFloat(594.673F, 22.29167F);
+            this.xrLabel17.LocationFloat = new DevExpress.Utils.PointFloat(594.673F, 0F);
             this.xrLabel17.Name = "xrLabel17";
             this.xrLabel17.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel17.SizeF = new System.Drawing.SizeF(63.86218F, 22.29166F);
+            this.xrLabel17.SizeF = new System.Drawing.SizeF(63.86218F, 44.58332F);
             this.xrLabel17.StylePriority.UseBackColor = false;
             this.xrLabel17.StylePriority.UseBorders = false;
             this.xrLabel17.StylePriority.UseFont = false;
@@ -1409,10 +1406,10 @@ namespace XtraReportSerialization
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel34.Dpi = 100F;
             this.xrLabel34.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrLabel34.LocationFloat = new DevExpress.Utils.PointFloat(658.5352F, 22.29167F);
+            this.xrLabel34.LocationFloat = new DevExpress.Utils.PointFloat(658.5352F, 0F);
             this.xrLabel34.Name = "xrLabel34";
             this.xrLabel34.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel34.SizeF = new System.Drawing.SizeF(86.13776F, 22.29166F);
+            this.xrLabel34.SizeF = new System.Drawing.SizeF(86.13776F, 44.58332F);
             this.xrLabel34.StylePriority.UseBackColor = false;
             this.xrLabel34.StylePriority.UseBorders = false;
             this.xrLabel34.StylePriority.UseFont = false;
@@ -1838,24 +1835,6 @@ namespace XtraReportSerialization
             this.xrLabel29.StylePriority.UseTextAlignment = false;
             this.xrLabel29.Text = "Lưu trình";
             this.xrLabel29.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            // 
-            // xrLabel31
-            // 
-            this.xrLabel31.BackColor = System.Drawing.Color.Transparent;
-            this.xrLabel31.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right)));
-            this.xrLabel31.Dpi = 100F;
-            this.xrLabel31.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrLabel31.LocationFloat = new DevExpress.Utils.PointFloat(594.673F, 0F);
-            this.xrLabel31.Name = "xrLabel31";
-            this.xrLabel31.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel31.SizeF = new System.Drawing.SizeF(150F, 22.29166F);
-            this.xrLabel31.StylePriority.UseBackColor = false;
-            this.xrLabel31.StylePriority.UseBorders = false;
-            this.xrLabel31.StylePriority.UseFont = false;
-            this.xrLabel31.StylePriority.UseTextAlignment = false;
-            this.xrLabel31.Text = "Số lượng";
-            this.xrLabel31.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // VNN_report18
             // 
