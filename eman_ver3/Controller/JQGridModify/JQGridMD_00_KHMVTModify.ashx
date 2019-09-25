@@ -373,6 +373,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                 dmh.ngaydonhang = DateTime.Now;
                                 dmh.ngaygiaohang = DateTime.Now.AddDays(4);
                                 dmh.diadiem_giaohang = "";
+                                dmh.hinhthucthanhtoan = db.md_hinhthucthanhtoan.OrderBy(s=>s.sapxep).FirstOrDefault().ten;
                                 dmh.md_doitackinhdoanh_id = khmvt_cdh.md_doitackinhdoanh_id;
                                 dmh.nguoilienhe = khmvt_cdh.daidien;
                                 dmh.md_banggia_id = check_gia == null ? "" : check_gia.md_banggia_id;
