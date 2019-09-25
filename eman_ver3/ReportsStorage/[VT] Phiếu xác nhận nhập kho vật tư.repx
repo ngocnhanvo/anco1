@@ -872,9 +872,10 @@ namespace XtraReportSerialization
             this.nhacungcap.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.nhacungcap.LocationFloat = new DevExpress.Utils.PointFloat(477.3332F, 131.6875F);
             this.nhacungcap.Name = "nhacungcap";
-            this.nhacungcap.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.nhacungcap.SizeF = new System.Drawing.SizeF(326.9851F, 23F);
+            this.nhacungcap.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.nhacungcap.SizeF = new System.Drawing.SizeF(329.6668F, 23F);
             this.nhacungcap.StylePriority.UseFont = false;
+            this.nhacungcap.StylePriority.UsePadding = false;
             this.nhacungcap.StylePriority.UseTextAlignment = false;
             this.nhacungcap.Text = "ncc";
             this.nhacungcap.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
@@ -1002,7 +1003,7 @@ namespace XtraReportSerialization
             this.ncc2.LocationFloat = new DevExpress.Utils.PointFloat(436F, 155.21F);
             this.ncc2.Name = "ncc2";
             this.ncc2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.ncc2.SizeF = new System.Drawing.SizeF(368.3185F, 22.92F);
+            this.ncc2.SizeF = new System.Drawing.SizeF(371F, 22.92F);
             this.ncc2.StylePriority.UseFont = false;
             this.ncc2.StylePriority.UseTextAlignment = false;
             this.ncc2.Text = "ncc2";
@@ -1014,10 +1015,10 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "phieugiaohang")});
             this.phieugiaohang.Dpi = 100F;
             this.phieugiaohang.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.phieugiaohang.LocationFloat = new DevExpress.Utils.PointFloat(240.487F, 131.6875F);
+            this.phieugiaohang.LocationFloat = new DevExpress.Utils.PointFloat(226.8685F, 131.6875F);
             this.phieugiaohang.Name = "phieugiaohang";
             this.phieugiaohang.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.phieugiaohang.SizeF = new System.Drawing.SizeF(62F, 23F);
+            this.phieugiaohang.SizeF = new System.Drawing.SizeF(75.61845F, 23F);
             this.phieugiaohang.StylePriority.UseFont = false;
             this.phieugiaohang.StylePriority.UseTextAlignment = false;
             this.phieugiaohang.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
@@ -1029,11 +1030,11 @@ namespace XtraReportSerialization
             this.xrLabel8.LocationFloat = new DevExpress.Utils.PointFloat(10.0001F, 131.6875F);
             this.xrLabel8.Name = "xrLabel8";
             this.xrLabel8.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 0, 2, 2, 100F);
-            this.xrLabel8.SizeF = new System.Drawing.SizeF(230F, 23F);
+            this.xrLabel8.SizeF = new System.Drawing.SizeF(216.8684F, 23F);
             this.xrLabel8.StylePriority.UseFont = false;
             this.xrLabel8.StylePriority.UsePadding = false;
             this.xrLabel8.StylePriority.UseTextAlignment = false;
-            this.xrLabel8.Text = "Căn cứ theo phiếu giao hàng ( HĐ ) số:";
+            this.xrLabel8.Text = "Căn cứ theo phiếu giao hàng (HĐ) số:";
             this.xrLabel8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel4
