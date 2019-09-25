@@ -604,10 +604,10 @@ namespace XtraReportSerialization
             // 
             this.xrLabel1.Dpi = 100F;
             this.xrLabel1.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel1.LocationFloat = new DevExpress.Utils.PointFloat(324.0352F, 131.3451F);
+            this.xrLabel1.LocationFloat = new DevExpress.Utils.PointFloat(305.0352F, 131.3451F);
             this.xrLabel1.Name = "xrLabel1";
-            this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
-            this.xrLabel1.SizeF = new System.Drawing.SizeF(34.31555F, 22.99998F);
+            this.xrLabel1.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 2, 2, 100F);
+            this.xrLabel1.SizeF = new System.Drawing.SizeF(30F, 22.99998F);
             this.xrLabel1.StylePriority.UseFont = false;
             this.xrLabel1.StylePriority.UsePadding = false;
             this.xrLabel1.StylePriority.UseTextAlignment = false;
@@ -618,11 +618,12 @@ namespace XtraReportSerialization
             // 
             this.xrLabel2.Dpi = 100F;
             this.xrLabel2.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel2.LocationFloat = new DevExpress.Utils.PointFloat(404.3642F, 131.345F);
+            this.xrLabel2.LocationFloat = new DevExpress.Utils.PointFloat(380.6077F, 131.345F);
             this.xrLabel2.Name = "xrLabel2";
-            this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel2.SizeF = new System.Drawing.SizeF(8F, 23F);
+            this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.xrLabel2.SizeF = new System.Drawing.SizeF(5F, 23F);
             this.xrLabel2.StylePriority.UseFont = false;
+            this.xrLabel2.StylePriority.UsePadding = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
             this.xrLabel2.Text = "/";
             this.xrLabel2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
@@ -633,7 +634,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "MM_yeucau")});
             this.MM_yeucau.Dpi = 100F;
             this.MM_yeucau.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.MM_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(385.6076F, 131.3451F);
+            this.MM_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(359.6076F, 131.3451F);
             this.MM_yeucau.Name = "MM_yeucau";
             this.MM_yeucau.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.MM_yeucau.SizeF = new System.Drawing.SizeF(18F, 23F);
@@ -646,11 +647,12 @@ namespace XtraReportSerialization
             // 
             this.xrLabel38.Dpi = 100F;
             this.xrLabel38.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel38.LocationFloat = new DevExpress.Utils.PointFloat(377.6076F, 131.345F);
+            this.xrLabel38.LocationFloat = new DevExpress.Utils.PointFloat(353.8511F, 131.345F);
             this.xrLabel38.Name = "xrLabel38";
-            this.xrLabel38.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel38.SizeF = new System.Drawing.SizeF(8F, 23F);
+            this.xrLabel38.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.xrLabel38.SizeF = new System.Drawing.SizeF(5F, 23F);
             this.xrLabel38.StylePriority.UseFont = false;
+            this.xrLabel38.StylePriority.UsePadding = false;
             this.xrLabel38.StylePriority.UseTextAlignment = false;
             this.xrLabel38.Text = "/";
             this.xrLabel38.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
@@ -661,7 +663,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "dd_yeucau")});
             this.dd_yeucau.Dpi = 100F;
             this.dd_yeucau.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.dd_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(358.8509F, 131.3451F);
+            this.dd_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(335.8509F, 131.3451F);
             this.dd_yeucau.Name = "dd_yeucau";
             this.dd_yeucau.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.dd_yeucau.SizeF = new System.Drawing.SizeF(18F, 23F);
@@ -676,7 +678,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "yyyy_yeucau")});
             this.yyyy_yeucau.Dpi = 100F;
             this.yyyy_yeucau.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.yyyy_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(412.3642F, 131.345F);
+            this.yyyy_yeucau.LocationFloat = new DevExpress.Utils.PointFloat(386.3642F, 131.345F);
             this.yyyy_yeucau.Name = "yyyy_yeucau";
             this.yyyy_yeucau.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.yyyy_yeucau.SizeF = new System.Drawing.SizeF(36.7016F, 23F);
@@ -689,9 +691,9 @@ namespace XtraReportSerialization
             // 
             this.xrLabel46.Dpi = 100F;
             this.xrLabel46.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel46.LocationFloat = new DevExpress.Utils.PointFloat(449.3332F, 131.6875F);
+            this.xrLabel46.LocationFloat = new DevExpress.Utils.PointFloat(423.3332F, 131.6875F);
             this.xrLabel46.Name = "xrLabel46";
-            this.xrLabel46.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
+            this.xrLabel46.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 0, 2, 2, 100F);
             this.xrLabel46.SizeF = new System.Drawing.SizeF(63F, 22.99997F);
             this.xrLabel46.StylePriority.UseFont = false;
             this.xrLabel46.StylePriority.UsePadding = false;
@@ -705,7 +707,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "yyyy_dmh", "{0:yyyy}")});
             this.yy_dmh.Dpi = 100F;
             this.yy_dmh.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.yy_dmh.LocationFloat = new DevExpress.Utils.PointFloat(412.1318F, 107.6874F);
+            this.yy_dmh.LocationFloat = new DevExpress.Utils.PointFloat(386.1318F, 107.6874F);
             this.yy_dmh.Name = "yy_dmh";
             this.yy_dmh.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.yy_dmh.SizeF = new System.Drawing.SizeF(36.7016F, 23F);
@@ -720,7 +722,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "dd_dmh", "{0:dd}")});
             this.dd_dmh.Dpi = 100F;
             this.dd_dmh.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.dd_dmh.LocationFloat = new DevExpress.Utils.PointFloat(358.6185F, 107.6875F);
+            this.dd_dmh.LocationFloat = new DevExpress.Utils.PointFloat(335.6185F, 107.6875F);
             this.dd_dmh.Name = "dd_dmh";
             this.dd_dmh.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.dd_dmh.SizeF = new System.Drawing.SizeF(18F, 23F);
@@ -733,11 +735,12 @@ namespace XtraReportSerialization
             // 
             this.xrLabel54.Dpi = 100F;
             this.xrLabel54.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel54.LocationFloat = new DevExpress.Utils.PointFloat(377.3752F, 107.6874F);
+            this.xrLabel54.LocationFloat = new DevExpress.Utils.PointFloat(353.6187F, 107.6874F);
             this.xrLabel54.Name = "xrLabel54";
-            this.xrLabel54.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel54.SizeF = new System.Drawing.SizeF(8F, 23F);
+            this.xrLabel54.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.xrLabel54.SizeF = new System.Drawing.SizeF(5F, 23.00001F);
             this.xrLabel54.StylePriority.UseFont = false;
+            this.xrLabel54.StylePriority.UsePadding = false;
             this.xrLabel54.StylePriority.UseTextAlignment = false;
             this.xrLabel54.Text = "/";
             this.xrLabel54.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
@@ -748,7 +751,7 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "MM_dmh", "{0:MM}")});
             this.MM_dmh.Dpi = 100F;
             this.MM_dmh.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.MM_dmh.LocationFloat = new DevExpress.Utils.PointFloat(385.3752F, 107.6875F);
+            this.MM_dmh.LocationFloat = new DevExpress.Utils.PointFloat(359.3752F, 107.6875F);
             this.MM_dmh.Name = "MM_dmh";
             this.MM_dmh.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.MM_dmh.SizeF = new System.Drawing.SizeF(18F, 23F);
@@ -761,11 +764,12 @@ namespace XtraReportSerialization
             // 
             this.xrLabel56.Dpi = 100F;
             this.xrLabel56.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel56.LocationFloat = new DevExpress.Utils.PointFloat(404.1318F, 107.6874F);
+            this.xrLabel56.LocationFloat = new DevExpress.Utils.PointFloat(380.3752F, 107.6874F);
             this.xrLabel56.Name = "xrLabel56";
-            this.xrLabel56.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel56.SizeF = new System.Drawing.SizeF(8F, 23F);
+            this.xrLabel56.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.xrLabel56.SizeF = new System.Drawing.SizeF(5F, 23.00001F);
             this.xrLabel56.StylePriority.UseFont = false;
+            this.xrLabel56.StylePriority.UsePadding = false;
             this.xrLabel56.StylePriority.UseTextAlignment = false;
             this.xrLabel56.Text = "/";
             this.xrLabel56.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
@@ -790,7 +794,7 @@ namespace XtraReportSerialization
             this.xrLabel41.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel41.LocationFloat = new DevExpress.Utils.PointFloat(9.499889F, 107.6875F);
             this.xrLabel41.Name = "xrLabel41";
-            this.xrLabel41.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 2, 2, 2, 100F);
+            this.xrLabel41.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 0, 2, 2, 100F);
             this.xrLabel41.SizeF = new System.Drawing.SizeF(185.6536F, 22.99999F);
             this.xrLabel41.StylePriority.UseFont = false;
             this.xrLabel41.StylePriority.UsePadding = false;
@@ -807,7 +811,7 @@ namespace XtraReportSerialization
             this.sct_dmh.LocationFloat = new DevExpress.Utils.PointFloat(196.2019F, 107.6875F);
             this.sct_dmh.Name = "sct_dmh";
             this.sct_dmh.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.sct_dmh.SizeF = new System.Drawing.SizeF(126.8881F, 22.99998F);
+            this.sct_dmh.SizeF = new System.Drawing.SizeF(108.5065F, 22.99998F);
             this.sct_dmh.StylePriority.UseFont = false;
             this.sct_dmh.StylePriority.UseTextAlignment = false;
             this.sct_dmh.Text = "xuatcho";
@@ -817,10 +821,10 @@ namespace XtraReportSerialization
             // 
             this.xrLabel43.Dpi = 100F;
             this.xrLabel43.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel43.LocationFloat = new DevExpress.Utils.PointFloat(324.0352F, 107.6875F);
+            this.xrLabel43.LocationFloat = new DevExpress.Utils.PointFloat(305.0352F, 107.6875F);
             this.xrLabel43.Name = "xrLabel43";
-            this.xrLabel43.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
-            this.xrLabel43.SizeF = new System.Drawing.SizeF(34.08316F, 22.99998F);
+            this.xrLabel43.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 2, 2, 100F);
+            this.xrLabel43.SizeF = new System.Drawing.SizeF(30F, 22.99998F);
             this.xrLabel43.StylePriority.UseFont = false;
             this.xrLabel43.StylePriority.UsePadding = false;
             this.xrLabel43.StylePriority.UseTextAlignment = false;
@@ -850,7 +854,7 @@ namespace XtraReportSerialization
             this.xrLabel39.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel39.LocationFloat = new DevExpress.Utils.PointFloat(10.00008F, 178.6875F);
             this.xrLabel39.Name = "xrLabel39";
-            this.xrLabel39.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 2, 2, 2, 100F);
+            this.xrLabel39.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 0, 2, 2, 100F);
             this.xrLabel39.SizeF = new System.Drawing.SizeF(173.4868F, 23F);
             this.xrLabel39.StylePriority.UseFont = false;
             this.xrLabel39.StylePriority.UsePadding = false;
@@ -864,10 +868,10 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "nhacungcap")});
             this.nhacungcap.Dpi = 100F;
             this.nhacungcap.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.nhacungcap.LocationFloat = new DevExpress.Utils.PointFloat(512.3332F, 131.6875F);
+            this.nhacungcap.LocationFloat = new DevExpress.Utils.PointFloat(486.3332F, 131.6875F);
             this.nhacungcap.Name = "nhacungcap";
             this.nhacungcap.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.nhacungcap.SizeF = new System.Drawing.SizeF(291.9851F, 23F);
+            this.nhacungcap.SizeF = new System.Drawing.SizeF(317.9851F, 23F);
             this.nhacungcap.StylePriority.UseFont = false;
             this.nhacungcap.StylePriority.UseTextAlignment = false;
             this.nhacungcap.Text = "ncc";
@@ -979,8 +983,8 @@ namespace XtraReportSerialization
             this.xrLabel9.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(10F, 155.21F);
             this.xrLabel9.Name = "xrLabel9";
-            this.xrLabel9.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 2, 2, 2, 100F);
-            this.xrLabel9.SizeF = new System.Drawing.SizeF(429.17F, 22.92F);
+            this.xrLabel9.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 0, 2, 2, 100F);
+            this.xrLabel9.SizeF = new System.Drawing.SizeF(426F, 22.92F);
             this.xrLabel9.StylePriority.UseFont = false;
             this.xrLabel9.StylePriority.UsePadding = false;
             this.xrLabel9.StylePriority.UseTextAlignment = false;
@@ -993,10 +997,10 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "nhacungcap")});
             this.ncc2.Dpi = 100F;
             this.ncc2.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.ncc2.LocationFloat = new DevExpress.Utils.PointFloat(447.29F, 155.21F);
+            this.ncc2.LocationFloat = new DevExpress.Utils.PointFloat(436F, 155.21F);
             this.ncc2.Name = "ncc2";
             this.ncc2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.ncc2.SizeF = new System.Drawing.SizeF(357.0286F, 22.92F);
+            this.ncc2.SizeF = new System.Drawing.SizeF(368.3185F, 22.92F);
             this.ncc2.StylePriority.UseFont = false;
             this.ncc2.StylePriority.UseTextAlignment = false;
             this.ncc2.Text = "ncc2";
@@ -1008,10 +1012,10 @@ namespace XtraReportSerialization
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "phieugiaohang")});
             this.phieugiaohang.Dpi = 100F;
             this.phieugiaohang.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.phieugiaohang.LocationFloat = new DevExpress.Utils.PointFloat(244.4869F, 131.6875F);
+            this.phieugiaohang.LocationFloat = new DevExpress.Utils.PointFloat(240.487F, 131.6875F);
             this.phieugiaohang.Name = "phieugiaohang";
             this.phieugiaohang.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.phieugiaohang.SizeF = new System.Drawing.SizeF(78.60309F, 23F);
+            this.phieugiaohang.SizeF = new System.Drawing.SizeF(64.22145F, 23F);
             this.phieugiaohang.StylePriority.UseFont = false;
             this.phieugiaohang.StylePriority.UseTextAlignment = false;
             this.phieugiaohang.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
@@ -1022,8 +1026,8 @@ namespace XtraReportSerialization
             this.xrLabel8.Font = new System.Drawing.Font("Tahoma", 9F);
             this.xrLabel8.LocationFloat = new DevExpress.Utils.PointFloat(10.0001F, 131.6875F);
             this.xrLabel8.Name = "xrLabel8";
-            this.xrLabel8.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 2, 2, 2, 100F);
-            this.xrLabel8.SizeF = new System.Drawing.SizeF(233.4867F, 23F);
+            this.xrLabel8.Padding = new DevExpress.XtraPrinting.PaddingInfo(4, 0, 2, 2, 100F);
+            this.xrLabel8.SizeF = new System.Drawing.SizeF(230F, 23F);
             this.xrLabel8.StylePriority.UseFont = false;
             this.xrLabel8.StylePriority.UsePadding = false;
             this.xrLabel8.StylePriority.UseTextAlignment = false;
