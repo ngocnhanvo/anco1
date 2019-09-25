@@ -98,6 +98,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             , cdmh.dongiamua as dongia
             , CEILING(cdmh.thanhtien) as thanhtien
             , thue.giatri as thueVAT
+            , dmh.hinhthucthanhtoan
 		from c_donmuahang dmh
 		    left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
 		    left join md_sanpham sp on sp.md_sanpham_id = cdmh.md_sanpham_id
