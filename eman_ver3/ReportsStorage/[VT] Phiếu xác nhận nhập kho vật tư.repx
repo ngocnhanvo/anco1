@@ -1635,7 +1635,7 @@ namespace XtraReportSerialization
             this.sum_slsct.StylePriority.UsePadding = false;
             this.sum_slsct.StylePriority.UseTextAlignment = false;
             this.sum_slsct.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_slsct.Weight = 0.24539603092143314D;
+            this.sum_slsct.Weight = 0.24791797322991013D;
             // 
             // sum_duocnhap
             // 
@@ -1652,7 +1652,7 @@ namespace XtraReportSerialization
             this.sum_duocnhap.StylePriority.UsePadding = false;
             this.sum_duocnhap.StylePriority.UseTextAlignment = false;
             this.sum_duocnhap.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_duocnhap.Weight = 0.30202878073052247D;
+            this.sum_duocnhap.Weight = 0.3029885069590702D;
             // 
             // sum_thucnhap
             // 
@@ -1668,7 +1668,7 @@ namespace XtraReportSerialization
             this.sum_thucnhap.StylePriority.UsePadding = false;
             this.sum_thucnhap.StylePriority.UseTextAlignment = false;
             this.sum_thucnhap.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_thucnhap.Weight = 0.28589185786752724D;
+            this.sum_thucnhap.Weight = 0.28241018933050249D;
             // 
             // sum_tongcong
             // 
