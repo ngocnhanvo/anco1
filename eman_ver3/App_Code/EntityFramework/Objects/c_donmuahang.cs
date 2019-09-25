@@ -67,6 +67,12 @@
                         public string donhang_thamchieu { get; set; }
                 
 						
+                        #region c_donmuahang_hinhthucthanhtoan_wintaFN
+                        
+                        #endregion c_donmuahang_hinhthucthanhtoan_wintaFN
+                        public string hinhthucthanhtoan { get; set; }
+                
+						
                         #region c_donmuahang_hoatdong_wintaFN
                         
                         #endregion c_donmuahang_hoatdong_wintaFN

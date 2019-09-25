@@ -342,46 +342,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
-        string sctdathang = context.Request.Form["sctdathang"];
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "PXKT", 1);
-        try
-        {
-            md_doitackinhdoanh dtk = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).FirstOrDefault();
-            c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s=>s.sochungtu == sctdathang).FirstOrDefault();
-            string id = context.Request.Form["id"];
-            /*  if (md_dtk_id == null)
-              {
-                  msg = "false#Lỗi: Đối tác  \"" + md_dtk_id + "\" không tồn tại.";
-              }*/
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { "xuat_thanhly" };
-                string ten_table = "md_xuatban";
-                if(dtk != null) {
-                    VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk.md_doitackinhdoanh_id);
-                    VNN_Function.SetFormValue("diachi", dtk.diachi);
-                }
-                if(dsdh != null) {
-                    VNN_Function.SetFormValue("c_danhsachdathang_id", dsdh.c_danhsachdathang_id);
-                }
-                VNN_Function.SetFormValue("sochungtu", sochungtu);
-                VNN_Function.SetFormValue("xuat_thanhly", "1");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
-        context.Response.Write(msg);
+        context.Response.Write("");
     }
 
     public void edit(HttpContext context)
