@@ -85,11 +85,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         lht.md_sanpham_id = cdh.md_sanpham_id;
                         lht.macuoi = cdh.macuoi;
                         lht.md_donvitinhsanpham_id = cdh.md_donvitinhsanpham_id;
-                        var kspSLT = ksp.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_to_id == tsx.md_phanxuong_to_id).ToList();
+                        var kspSLT = ksp.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_to_id == tsx.md_phanxuong_to_id).FirstOrDefault();
                         lht.sl_lsx = cdh.sl_dat;
-                        lht.sl_tonkho = kspSLT.Sum(s => s.soluong.GetValueOrDefault(0));
-                        lht.sl_layton = db.c_kehoachdathang_dhcpx_hanngach.Where(s => s.c_kehoachdathang_dhcpx_id == khdhpxId
-                            & s.md_sanpham_id == cdh.md_sanpham_id & s.md_to_id == tsx.md_phanxuong_to_id).Select(s => s.soluong).FirstOrDefault();
+                        lht.sl_tonkho = kspSLT == null ? 0 : kspSLT.soluong.GetValueOrDefault(0);
+                        lht.sl_layton = lht.sl_tonkho > lht.sl_lsx ? lht.sl_lsx : lht.sl_tonkho;
                         lht.ngaytao = DateTime.Now;
                         lht.ngaycapnhat = DateTime.Now;
                         lht.nguoitao = us.ad_user_id;
@@ -103,7 +102,9 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
                     var tonkhos = from a in ksp
                                   join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-                                  where kieudangs.Distinct().Contains(b.ma_sanpham.Substring(0, 11))
+                                  where
+                                    kieudangs.Distinct().Contains(b.ma_sanpham.Substring(0, 11))
+                                    & a.md_to_id == tsx.md_phanxuong_to_id
                                   select a;
                     foreach(var tksp in tonkhos)
                     {
@@ -204,11 +205,11 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
                             if (lht != null)
                             {
-                                var slTonKho = db.md_kho_sanpham.Where(s =>
+                                var tonkhosp = db.md_kho_sanpham.Where(s =>
                                     s.md_kho_id == kho.md_kho_id
                                     & s.md_sanpham_id == cdh.md_sanpham_id
-                                    ).Sum(s => s.soluong);
-
+                                    ).FirstOrDefault();
+                                var slTonKho = tonkhosp == null ? 0 : tonkhosp.soluong;
                                 if (lht.sl_tonkho == slTonKho)
                                 {
                                     cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) - lht.sl_layton.GetValueOrDefault(0);
