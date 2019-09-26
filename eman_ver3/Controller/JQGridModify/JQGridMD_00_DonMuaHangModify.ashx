@@ -149,6 +149,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             value_nguoicapnhat = us.ma_user,
                             value_vaitrocapnhat = us.ten_role,
                             value_bophancapnhat = us.ten_phongban,
+                            ngaytao = DateTime.Now,
+                            ngaycapnhat = DateTime.Now,
                             hoatdong = true,
                             ketoan = true
                         };
