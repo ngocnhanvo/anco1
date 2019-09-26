@@ -228,7 +228,9 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         nk.ngaycapnhat = DateTime.Now;
 
         foreach (var check_nk in db.md_nhapkho_ncc.
-                Where(s => s.md_nhapkho_ncc_id != nk.md_nhapkho_ncc_id & s.c_donmuahang_id == nk.c_donmuahang_id & s.trangthai == "SOANTHAO").ToList())
+                Where(s => s.md_nhapkho_ncc_id != nk.md_nhapkho_ncc_id 
+                    & s.c_donmuahang_id == nk.c_donmuahang_id 
+                    & new string[] { "SOANTHAO", "DANHAN" }.Contains(s.trangthai)).ToList())
         {
             foreach (var ck_dh in db.md_nhapkho_ncc_dh.
                     Where(s => s.md_nhapkho_ncc_id == check_nk.md_nhapkho_ncc_id & s.md_sanpham_id == dh.md_sanpham_id).ToList())
