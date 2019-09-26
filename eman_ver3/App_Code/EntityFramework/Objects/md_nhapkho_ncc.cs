@@ -43,6 +43,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_ketoan_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_ketoan_wintaFN
+                        public bool? ketoan { get; set; }
+                
+						
                         #region md_nhapkho_ncc_kho_wintaFN
                         
                         #endregion md_nhapkho_ncc_kho_wintaFN

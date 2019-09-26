@@ -11363,6 +11363,10 @@
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.ketoan)
+                            .HasColumnName("ketoan")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
                             .Property(p => p.kho)
                             .HasColumnName("kho")
                             .HasColumnType("nvarchar");
@@ -11869,6 +11873,10 @@
                             modelBuilder.Entity<md_nhapkhonb>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_nhapkhonb>()
+                            .Property(p => p.ketoan)
+                            .HasColumnName("ketoan")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_nhapkhonb>()
                             .Property(p => p.khuon)
@@ -14499,6 +14507,10 @@
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.ketoan)
+                            .HasColumnName("ketoan")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.loaichuyen)
                             .HasColumnName("loaichuyen")
                             .HasColumnType("nvarchar");
@@ -15225,6 +15237,10 @@
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_xuatkhonb>()
+                            .Property(p => p.ketoan)
+                            .HasColumnName("ketoan")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.kh_ddhpx)
