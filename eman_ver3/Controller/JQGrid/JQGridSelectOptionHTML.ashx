@@ -17,7 +17,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
             case "selKho":
                 this.selKho(context);
                 break;
-             case "selBoPhanToPX":
+            case "selBoPhanToPX":
                 this.selBoPhanToPX(context);
                 break;
         }
@@ -30,12 +30,14 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
         foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> int.Parse(Regex.Replace(s.ma_kho, "[^0-9]", ""))))
         {
-            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>", cn.md_kho_id, cn.ten_kho,
+            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>", 
+                cn.md_kho_id, 
+                cn.ten_kho,
                 cn.vattu == true ? "KVT" :
-                    (!string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) ? "KSX" :
-                        (cn.hangton == true ? "KTTP" : "KTP")
-                    )
-                );
+                    !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
+                        !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
+                            cn.hangton == true ? "KTTP" : "KTP"
+            );
         }
         str += "</select>";
         context.Response.Write(str);
