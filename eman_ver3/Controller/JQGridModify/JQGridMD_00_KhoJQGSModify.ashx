@@ -104,27 +104,26 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string ten_table = "md_kho";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
+            string[] id_del = context.Request.Form["id"].Split(',');
+            int count = id_del.Length;
             for (int i = 0; i < count; i++)
             {
                 msg_del = "";
                 var id_del_ = id_del[i];
-                string object_ = db.md_kho.Where(p => p.md_kho_id == id_del_).Select(s => s.md_kho_id).Take(1).FirstOrDefault();
+                var object_ = db.md_kho.Where(p => p.md_kho_id == id_del_).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
+                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa";
+                    msg += msg_del + "\n";
+                }
+                else if(db.md_kho_sanpham.Where(s=>s.md_kho_id == object_.md_kho_id).Sum(s=>s.soluong) > 0)
+                {
+                    msg_del = "Lỗi:Kho còn hàng, không thể xóa";
                     msg += msg_del + "\n";
                 }
                 if (msg_del.Length <= 0)
                 {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table , action, column_ex, db);
+                    db.md_kho.Remove(object_);
                 }
             }
             VNN_Function.loaddulieu_Auto(db, ma_module);
