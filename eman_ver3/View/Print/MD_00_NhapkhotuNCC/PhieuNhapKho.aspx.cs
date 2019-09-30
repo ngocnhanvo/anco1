@@ -114,8 +114,8 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.W
                 , kho.ten_kho as khoxuat
                 , xb.mota as diengiai
                 , nknb_cdh.sl_nhap as soluong
-                , null as dongia
-                , null as thanhtien
+                , nknb_cdh.giatriVND as dongia
+                , ceiling(nknb_cdh.giatriVND * nknb_cdh.sl_nhap) as thanhtien
                 , xb.phieuXNNK as yeucau
 		    from md_nhapkho_ncc xb
 		        left join md_nhapkho_ncc_dh nknb_cdh on xb.md_nhapkho_ncc_id = nknb_cdh.md_nhapkho_ncc_id
