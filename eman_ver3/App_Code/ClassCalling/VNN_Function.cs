@@ -156,10 +156,15 @@ public static class VNN_Function
             db.ad_selectop_save.RemoveRange(db.ad_selectop_save.Where(s=>s.ten_table == sel_save.ten_table));
         }
         db.SaveChanges();
-        db.Dispose();
         string jsonData = JsonConvert.SerializeObject(selectoptions, Formatting.Indented);
-        json.urlData = typeof(ad_selectoption).Name;
-        json.WriteJson(jsonData);
+        if(jsonData != null) 
+        {
+            if(jsonData.Replace("\n","").Replace(" ","").Length > 0) 
+            { 
+	            json.urlData = typeof(ad_selectoption).Name;
+                json.WriteJson(jsonData);
+            }
+        }
         return "";
     }
 
