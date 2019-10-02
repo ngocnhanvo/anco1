@@ -74,10 +74,17 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
         string bplvt = context.Request.QueryString["bplvt"];
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
-            declare @xuatcho nvarchar(MAX) = isnull(
-                    (select top 1 ten_to from md_phanxuong_to where md_to_id = '{1}'),
-                    (select top 1 ten_phongban from ad_department where md_phongban_id = '{1}')
-                );
+            declare @xuatcho nvarchar(MAX), @px nvarchar(MAX);
+            select top 1 @xuatcho = ten_to, @px = md_phanxuong_id from md_phanxuong_to where md_to_id = '{1}';
+            if(@xuatcho is null)
+            begin
+                set @xuatcho = (select top 1 ten_phongban from ad_department where md_phongban_id = '{1}');
+            end
+            else
+            begin
+                set @px = (select top 1 ten_phanxuong from md_phanxuong where md_phanxuong_id = @px);
+            end
+            
 		    select 
                 sp.ma_sanpham as ma_vthh
                 , sp.mota_tiengviet as ten_vthh
@@ -85,14 +92,8 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
 		        , dvtsp.ten_dvt as dvt
                 , xb.sochungtu as sct_lsx 
                 , xb.ngaydenghi
-                , isnull(
-                    @xuatcho,
-                    isnull(
-                        (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
-                        (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
-                    )
-                ) as xuatcho
-                , (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan
+                , @xuatcho as xuatcho
+                , @px as bophan
                 , kho.ten_kho as khoxuat
                 , xb.mota as diengiai
                 , nknb_cdh.tong_sl_xuat as soluong
