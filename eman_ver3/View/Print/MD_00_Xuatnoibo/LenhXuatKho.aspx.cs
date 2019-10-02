@@ -71,8 +71,13 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
     public String CreateSql(HttpContext context)
     {
         string md_xuatkhonb_id = context.Request.QueryString["id"];
+        string bplvt = context.Request.QueryString["bplvt"];
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
+            declare @xuatcho nvarchar(MAX) = isnull(
+                    (select top 1 ten_to from md_phanxuong_to where md_to_id = '{1}'),
+                    (select top 1 ten_phongban from ad_department where md_phongban_id = '{1}')
+                );
 		    select 
                 sp.ma_sanpham as ma_vthh
                 , sp.mota_tiengviet as ten_vthh
@@ -81,8 +86,11 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
                 , xb.sochungtu as sct_lsx 
                 , xb.ngaydenghi
                 , isnull(
-                    (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
-                    (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
+                    @xuatcho,
+                    isnull(
+                        (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
+                        (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
+                    )
                 ) as xuatcho
                 , (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan
                 , kho.ten_kho as khoxuat
@@ -103,6 +111,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             order by sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id
+        , bplvt
         );
         //
         return sql;

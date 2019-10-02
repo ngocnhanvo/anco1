@@ -20,6 +20,9 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
             case "selBoPhanToPX":
                 this.selBoPhanToPX(context);
                 break;
+            case "selBoPhanLay":
+                this.selBoPhanLay(context);
+                break;
         }
     }
 
@@ -30,8 +33,8 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
         foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> int.Parse(Regex.Replace(s.ma_kho, "[^0-9]", ""))))
         {
-            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>", 
-                cn.md_kho_id, 
+            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>",
+                cn.md_kho_id,
                 cn.ten_kho,
                 cn.vattu == true ? "KVT" :
                     !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
@@ -65,6 +68,25 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
             str += string.Format(@"<option value=""{0}"">{1}</option>", row["id"] + "", row["value"] + "");
         }
         str += "</select>";
+        context.Response.Write(str);
+    }
+
+    public void selBoPhanLay(HttpContext context)
+    {
+        var db = new EntityContext();
+        string id = context.Request.QueryString["id"];
+        var cdhs = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == id).Select(s => s.md_kho_id).Distinct();
+        var bophanlay = db.md_phanxuong_to.Where(s => cdhs.Contains(s.md_to_id)).Select(s=>new { id = s.md_to_id, ten = s.ten_to });
+        var bophanlay2 = db.ad_department.Where(s => cdhs.Contains(s.md_phongban_id)).Select(s=>new { id = s.md_phongban_id, ten = s.ten_phongban });
+        var bophanlayAll = bophanlay.Union(bophanlay2);
+        string str = "";
+        foreach (var cn in bophanlayAll.ToList())
+        {
+            str += string.Format(@"<option value=""{0}"">{1}</option>"
+                , cn.id
+                , cn.ten           
+            );
+        }
         context.Response.Write(str);
     }
 
