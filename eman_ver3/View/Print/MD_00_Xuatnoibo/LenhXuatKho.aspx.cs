@@ -108,6 +108,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
 		    where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_muonxuat > 0
+                and nknb_cdh.md_kho_id = '{1}'
             order by sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id
