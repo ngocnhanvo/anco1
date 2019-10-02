@@ -82,6 +82,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         var infoPrint = PrintAnco2.GetInfoPrint();
         string c_donmuahang_id = context.Request.QueryString["id"];	
 		string sql = string.Format(@"
+        declare @httt nvarchar(MAX) = (select top 1 ten from md_hinhthucthanhtoan order by sapxep asc)
 		select 
             dmh.so_donmuahang as sct_dmvt
             , dmh.ngaygiaohang as thoihan_giaohang
@@ -98,7 +99,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             , cdmh.dongiamua as dongia
             , CEILING(cdmh.thanhtien) as thanhtien
             , thue.giatri as thueVAT
-            , dmh.hinhthucthanhtoan
+            , isnull(dmh.hinhthucthanhtoan, @httt) as hinhthucthanhtoan
 		from c_donmuahang dmh
 		    left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
 		    left join md_sanpham sp on sp.md_sanpham_id = cdmh.md_sanpham_id

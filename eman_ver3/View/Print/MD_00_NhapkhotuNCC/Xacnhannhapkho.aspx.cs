@@ -84,7 +84,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
 
             var kho_cell = report.Report.FindControl("kho", true);
             var withF = kho_cell.WidthF;
-            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)9.5, true);
+            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)10.5, true);
             var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
             theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
             ReportViewer1.Report = report;
