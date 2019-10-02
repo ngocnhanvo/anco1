@@ -130,7 +130,7 @@
         </tr>
 
          <tr>
-            <td><label>Fax</label><br />
+            <td><label>Version</label><br />
             <input type="text" id="txt_Fax" name="txt_Fax"  runat="server" /></td>
 
             <td><label>Website</label><br />
