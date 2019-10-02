@@ -28,9 +28,10 @@ public class VNN_VariablePublic
     {
         string[] kq = new string[3];
         List<ad_module> modules = json.ad_moduleJSON();
+        var systemconfig = json.ad_systemconfigJSON().FirstOrDefault();
         foreach (ad_module mod in modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")))
         {
-            kq[0] += "<script async src=\"" + Security.UrlBase() + "js/Module_script/"+ mod.ma_module +".js\" type=\"text/javascript\"></script>";
+            kq[0] += "<script async src=\"" + Security.UrlBase() + "js/Module_script/"+ mod.ma_module +".js?ver="+ systemconfig.fax + "\" type=\"text/javascript\"></script>";
 			kq[1] += "<input type='hidden' id=\"org_grid"+ mod.ma_module +"\"/>";
             kq[2] += string.Format(@"let id_{0} = 0;", mod.ma_module);
             kq[2] += string.Format(@"let filter_{0} = null, filterVal_{0} = null;", mod.ma_module);
