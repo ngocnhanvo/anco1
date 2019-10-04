@@ -283,21 +283,22 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         ghino = false;
                                                     }
 
-                                                    var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
+                                                    var ck_dhs = db.md_xuatkhonb_cdh.Where(s =>
                                                        s.md_xuatkhonb_id != xk.md_xuatkhonb_id
                                                        & s.md_sanpham_id == dh.md_sanpham_id
-                                                       & s.lsx_to.Contains(lsxTo)
-                                                       & db.md_xuatkhonb.Where(t => t.md_xuatkhonb_id == s.md_xuatkhonb_id & t.trangthai != "HIEULUC").Count() > 0).FirstOrDefault();
-                                                    if (ck_dh != null)
+                                                       // & s.lsx_to.Contains(lsxTo)
+                                                       & db.md_xuatkhonb.Where(t =>
+                                                            t.md_xuatkhonb_id == s.md_xuatkhonb_id
+                                                            & t.md_to_id == xk.md_to_id
+                                                            & t.trangthai != "HIEULUC").Count() > 0);
+
+                                                    foreach (var ck_dh in ck_dhs)
                                                     {
-                                                        ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
-                                                        ck_dh.sl_xuat = 0;
-                                                        ck_dh.sl_xuat2 = 0;
-                                                        if (ck_dh.truno > 0)
+                                                        if (ck_dh.lsx_to.Contains(lsxTo))
                                                         {
-                                                            if (ck_dh.truno > ck_dh.tong_sl_xuat)
-                                                                ck_dh.truno = ck_dh.tong_sl_xuat;
+                                                            ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                         }
+                                                        ck_dh.truno = ck_dh.tong_sl_xuat > ck_dh.truno ? ck_dh.truno : ck_dh.tong_sl_xuat;
 
                                                         if (ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
                                                             ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
@@ -378,25 +379,23 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                 ghino = false;
                                             }
 
-                                            var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
-                                                    s.md_xuatkhonb_id != xk.md_xuatkhonb_id
-                                                    & s.md_sanpham_id == dh.md_sanpham_id
-                                                    & db.md_xuatkhonb.Where(t =>
-                                                        t.md_xuatkhonb_id == s.md_xuatkhonb_id
-                                                        & t.trangthai != "HIEULUC"
-                                                        & t.lenhdonggoi == ldg.sochungtu
-                                                    ).Count() > 0
-                                                ).FirstOrDefault();
-                                            if (ck_dh != null)
+                                            var ck_dhs = db.md_xuatkhonb_cdh.Where(s =>
+                                                       s.md_xuatkhonb_id != xk.md_xuatkhonb_id
+                                                       & s.md_sanpham_id == dh.md_sanpham_id
+                                                       // & s.lsx_to.Contains(lsxTo)
+                                                       & db.md_xuatkhonb.Where(t =>
+                                                            t.md_xuatkhonb_id == s.md_xuatkhonb_id
+                                                            & t.md_to_id == xk.md_to_id
+                                                            & t.trangthai != "HIEULUC").Count() > 0);
+
+                                            foreach (var ck_dh in ck_dhs)
                                             {
-                                                ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
-                                                ck_dh.sl_xuat = 0;
-                                                ck_dh.sl_xuat2 = 0;
-                                                if (ck_dh.truno > 0)
+                                                var xnbLDG = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == ck_dh.md_xuatkhonb_id).FirstOrDefault();
+                                                if(xnbLDG.lenhdonggoi == xk.lenhdonggoi)
                                                 {
-                                                    if (ck_dh.truno > ck_dh.tong_sl_xuat)
-                                                        ck_dh.truno = ck_dh.tong_sl_xuat;
+                                                    ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                 }
+                                                ck_dh.truno = ck_dh.tong_sl_xuat > ck_dh.truno ? ck_dh.truno : ck_dh.tong_sl_xuat;
 
                                                 if (ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
                                                     ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
@@ -990,7 +989,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                             var lsxTSX = Extension.getLSXToId(tsxId, db);
                             var lsxTSX_prev = Extension.getLSXToId_Prev(lsxTSX, db);
                             var kho = Helper.layKhoCuaTo(lsxTSX_prev.md_phanxuong_id, lsxTSX_prev.md_phanxuong_to_id, db);
-                            
+
                             if (kho != null & lsxTSX != null)
                             {
                                 if (kho.md_kho_id == tukho)
