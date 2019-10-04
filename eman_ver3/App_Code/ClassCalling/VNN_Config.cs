@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataAcess;
+using System.Text.RegularExpressions;
 
 public static class VNN_Config
 {
@@ -502,12 +503,13 @@ public static class VNN_Config
 			kq += "\nfunction taonut_header1(tengrid_hd) {";
 		else if(capmodule == 2)
 			kq += "\nfunction taonut_header2(tengrid_hd) {";
-			
+
         kq += "\n//lam moi nut header";
         kq += "\nvar nutnhan =  '<div style=\"margin: -5px 0 0 0; height:25px\">';";
         kq += "\nvar chuotphai = '<div id=\"div_chuotphai\" class=\"div_fixed\">';";
         kq += "\nchuotphai += '" + kq_btnheader + "';";
         kq += "\nchuotphai += '<table class=\"table_div_chuotphai\">';";
+        string detailfncChuotPhai = "";
         foreach (ad_case cn in cases.OrderBy(p => p.sapxep))
         {
             if (cn.thuake == null | cn.thuake == "")
@@ -517,10 +519,10 @@ public static class VNN_Config
                     string hamxuly = cn.hamxuly.Replace("ma_case", "\\'" + cn.ma_case + "\\'");
                     if (cn.id_parent == true) { hamxuly = hamxuly.Replace("id_parent", "null"); }
                     string id_case = "img_btn" + cn.ma_case, title_case = cn.ten_case;
-                    //kq += "\nnutnhan += '<img onclick=\"" + hamxuly + "\" id=\"img_btn" + cn.ma_case + "\" class=\"img_btnmacdinh\"  title=\"" + cn.ten_case + "\" alt=\"\" src=\"" + cn.logo + "\"/>';";
+                    string mota = string.IsNullOrEmpty(cn.mota) ? "1==1" : cn.mota;
+                    
                     kq += "\nnutnhan += '" + VNN_Function.set_Icon(cn.logo, "img_btnmacdinh", hamxuly, id_case, title_case) + "';";
-
-                    kq += "\nchuotphai +='<tr onclick=\"" + hamxuly + "\">' +";
+                    kq += "\nchuotphai +='<tr id=\""+ cn.ma_case +"\" onclick=\"" + hamxuly + "\">' +";
                     kq += "\n'<td style=\"width: 25px;\">' +";
                     kq += "\n'" + VNN_Function.set_Icon(cn.logo, "img_rightdiv", "", "", "") + "' +";
                     kq += "\n'</td>' +";
@@ -528,6 +530,11 @@ public static class VNN_Config
                     kq += "\n'<a>" + cn.ten_case + "</a>' +";
                     kq += "\n'</td>' +";
                     kq += "\n'</tr>';";
+                    detailfncChuotPhai += "if("+ mota + ") {";
+                    detailfncChuotPhai += "$('#"+cn.ma_case+"').show()";
+                    detailfncChuotPhai += "} else {";
+                    detailfncChuotPhai += "$('#" + cn.ma_case + "').hide()";
+                    detailfncChuotPhai += "}";
                 }
             }
         }
@@ -541,13 +548,21 @@ public static class VNN_Config
         kq += "\n//trang chu";
         kq += "\nnutnhan += '" + VNN_Function.set_Icon(icon_home, "img_btnmacdinh", hamxuly_home, "img_btntrangchu", title_home) + "';";
 
+        kq += string.Format(@"let fncChuotPhai = function() {{ 
+            let idSel = $('#' + tengrid_hd).jqGrid('getGridParam', 'selrow');
+			let rowData = $('#'+ tengrid_hd).jqGrid('getRowData', idSel);
+            console.log(rowData);
+            {0}
+        }}", detailfncChuotPhai);
+
         kq += "\n//tao nut tren header";
         kq += "\nchuotphai += '</table></div>';";
-        kq += "\nload_menurightclick(tengrid_hd,chuotphai);";
+        kq += "\nload_menurightclick(tengrid_hd, chuotphai, fncChuotPhai);";
         kq += "\nSetWidth_BtnHeader(10);";
 		kq += "\nload_menuleftclick(tengrid_hd, nutnhan);";
 		kq += "\n$('#org_' + tengrid_hd).val(0);";
         kq += "\n}";
+       
 
         if (VNN_VariablePublic.view_origination == true)
             VNN_VariablePublic.view_origination = false;

@@ -695,13 +695,35 @@ function click_refreshPage() {
     }
 }
 function click_back() { $(function () { $("#input_nhanback").val("true"), $("#input_ghinhomodule").val(""); var t = $("#input_trovetrangtruoc").val().split("/").length - 1, n = $("#input_trovetrangtruoc").val().split("/")[t - 1], i = $("#input_trovetrangtruoc").val().split("/")[t], a = $("#input_trovetrangtruoc").val().length, e = ""; if (n.indexOf("&") < 0 & i.indexOf("&") < 0) { var o = $("#input_trovetrangtruoc").val().split("/")[t].length; a > 16 && $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(), $("#" + n).click() } else if (i.indexOf("&") > -1) { var r = i.split("&").length - 1, o = i.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r - 1; d >= 1; d--){ var c = i.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + i.split("&")[0]).click() } else { var r = n.split("&").length - 1, o = n.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r; d >= 1; d--){ var c = n.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + n.split("&")[0]).click() } $("#input_trovetrangtruoc").val(e) }) } function click_doimau() { $("body").append('<div id="dlg_dsvt_daketthuc" title="Đổi màu phần mềm theo ý khách hàng"><table id="xemchitietcv" align="left"><tr><td><input class="nhan_radio" type="radio" id="mau_01" name="rdiMau" value="rgba(9, 80, 153, 0.909804)"/></td><td style="background-color:rgba(9, 80, 153, 0.909804); width:50px"></td><td><p>Màu mặc định</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_02" name="rdiMau" value="rgba(153, 9, 31, 0.8)"/></td><td style="background-color:red; width:50px"></td><td><p>Màu đỏ</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_03" name="rdiMau" value="rgb(111, 111, 111)"/></td><td style="background-color:grey; width:50px"></td><td><p>Màu xám</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_04" name="rdiMau" value="rgb(72, 137, 61)"/></td><td style="background-color:rgb(72, 137, 61); width:50px"></td><td><p>Màu xanh lá cây</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_05" name="rdiMau" value="rgb(90, 24, 142)"/></td><td style="background-color:rgb(90, 24, 142); width:50px"></td><td><p>Màu tím</p></td></tr></table></div>'), $("#dlg_dsvt_daketthuc").dialog({ modal: !1, width: 260, height: 250, open: function () { $.get("Controller/PublicFunction/ConfigSystem.ashx?oper=loadColor", function (t) { $("#" + t).attr("checked", !0) }), $(".nhan_radio").change(function () { $("#mainpane").css("background-color", $(this).val()), load_doimau_client($(this).attr("id")) }) }, close: function () { load_doimau(this) }, buttons: [{ id: "btn-ok", text: "Lưu", click: function () { var t = $("input[name=rdiMau]:checked"); $("#dlg_dsvt_daketthuc").prepend('<div class="nhan_loading"></div>'), $.post("Controller/PublicFunction/ConfigSystem.ashx?oper=changeColor&mausac=" + t.attr("id"), function () { $(".nhan-loading").remove() }), load_doimau(this) } }, { id: "btn-close", text: "Thoát", click: function () { load_doimau(this) } }] }) } function load_doimau_client(t) { "mau_01" == t ? ($(".div_chiacach").css("background-color", "rgba(247, 247, 247, 0.95)"), $(".nhan_header").css("background", 'url("images/toolbar0.png")'), $(".label_bg_body").css("background-image", "url(images/Menu/menu_labelBody.png)"), $(".label_bg_right").css("background-image", "url(images/Menu/menu_labelRight.png)"), $(".label_bg_left").css("background-image", "url(images/Menu/menu_labelLeft.png)"), $("#mainpane").css("background-color", "rgba(9, 80, 153, 0.909804)")) : "mau_02" == t ? ($(".div_chiacach").css("background-color", "rgb(175, 70, 66)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_02.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgba(153, 9, 31, 0.8)")) : "mau_03" == t ? ($(".div_chiacach").css("background-color", "rgb(121, 116, 117)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_03.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgb(111, 111, 111)")) : "mau_04" == t ? ($(".div_chiacach").css("background-color", "rgb(72, 137, 61)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_04.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgb(72, 137, 61)")) : "mau_05" == t && ($(".div_chiacach").css("background-color", "rgb(90, 24, 142)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_05.png")'), $(".label_bg_body").css("background-image", "url(images/Menu/menu_labelBody.png)"), $(".label_bg_right").css("background-image", "url(images/Menu/menu_labelRight.png)"), $(".label_bg_left").css("background-image", "url(images/Menu/menu_labelLeft.png)"), $("#mainpane").css("background-color", "rgb(90, 24, 142)")) } function load_doimau(t) { $.get("Controller/PublicFunction/ConfigSystem.ashx?oper=loadColor", function (n) { load_doimau_client(n), null != t && $(t).dialog("destroy").remove() }) }
-function load_menurightclick(t,n){var i=$("#gview_"+t+" .ui-jqgrid-bdiv");i=null==i.attr("class")?tengrid2:"#gview_"+t+" .ui-jqgrid-bdiv";
-for(var a=i.split(","),e=0;e<a.length;e++)
-    $(a[e]).bind("contextmenu",function(t){return 2==t.button?($(this).click(),$("#div_chuotphai").remove(),
-                                                               $(".cl_table_noidung").prepend(n),
-                                                               div_load("div_chuotphai",n,t),!1):!0})}
+function load_menurightclick(tg, n, f) {
+	let i=$("#gview_"+ tg +" .ui-jqgrid-bdiv");
+	i=null==i.attr("class") ? tengrid2:"#gview_"+ tg +" .ui-jqgrid-bdiv";
+	for(let a=i.split(","),e=0;e<a.length;e++) {
+		$(a[e]).bind("contextmenu",function(t){
+			if(2==t.button) {
+				$(this).click();
+				$("#div_chuotphai").remove();
+				$(".cl_table_noidung").prepend(n);
+				div_load("div_chuotphai",n,t);
+				f();
+				return false;
+			}
+			else {
+				return false;
+			}
+		})
+	}
+}
 
-function load_menuleftclick(t,n){var i=$("#gview_"+t+" .ui-jqgrid-bdiv");i=null==i.attr("class")?tengrid2:"#gview_"+t+" .ui-jqgrid-bdiv";for(var a=i.split(","),e=0;e<a.length;e++)$(a[e]).click(function(){$(".cl_div_chuathanhcongcu").html(n)})}function fix_loi_screen(){$("#logo_right").css("background-color","ccc"),$.get("Controller/JQGridModify/JQGridMD_00_MNZModify.ashx?oper=fixloi_nhieunguoixuly",function(){$("#logo_right").removeAttr("style")})}
+function load_menuleftclick(t,n){
+	let i=$("#gview_"+t+" .ui-jqgrid-bdiv");
+	i=null==i.attr("class")?tengrid2:"#gview_"+t+" .ui-jqgrid-bdiv";
+	for(let a=i.split(","),e=0;e<a.length;e++)
+		$(a[e]).click(function(){$(".cl_div_chuathanhcongcu").html(n)})
+}
+	
+	
+function fix_loi_screen(){$("#logo_right").css("background-color","ccc"),$.get("Controller/JQGridModify/JQGridMD_00_MNZModify.ashx?oper=fixloi_nhieunguoixuly",function(){$("#logo_right").removeAttr("style")})}
 //--
 function checkbox_JQgrid_(t, n) {
 	$("." + t).change(function() {
