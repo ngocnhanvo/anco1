@@ -216,7 +216,7 @@ public static class Extension
         var xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xnb_cdh.md_xuatkhonb_id).FirstOrDefault();
         //string tento = db.md_phanxuong_to.Where(s => s.md_to_id == xnb.md_to_id).Select(s => s.ten_to).FirstOrDefault();
         var notos = db.md_kho_ghino.Where(s => s.md_sanpham_id == xnb_cdh.md_sanpham_id);
-        notos = db.md_kho_ghino.Where(s =>
+        notos = notos.Where(s =>
                 s.md_phanxuong_id == xnb.md_phanxuong_id
                 & s.md_to_id == xnb.md_to_id
                 );
