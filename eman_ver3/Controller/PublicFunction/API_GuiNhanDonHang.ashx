@@ -60,12 +60,10 @@ public class API_GuiNhanDonHang : IHttpHandler
         using (var transaction = db.Database.BeginTransaction())
         {
             string strdata = context.Request.Form["data"];
-            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
-            var result = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data["result"] + "");
-
-
             try
             {
+                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+                var result = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data["result"] + "");
                 foreach (var a in result)
                 {
                     var item = JsonConvert.DeserializeObject<Dictionary<string, object>>(a["c_danhsachdathang"] + "");
@@ -112,19 +110,20 @@ public class API_GuiNhanDonHang : IHttpHandler
                         {
                             string ma_sanpham = b["md_sanpham_id"] + "";
                             var c_dongdsdh = new c_dongdsdh();
-                            c_dongdsdh.w2 = Convert.ToDecimal(b["w2"]);
-                            c_dongdsdh.w1 = Convert.ToDecimal(b["w1"]);
-                            c_dongdsdh.vn = Convert.ToDecimal(b["vn"]);
-                            c_dongdsdh.vl = Convert.ToDecimal(b["vl"]);
-                            c_dongdsdh.vd = Convert.ToDecimal(b["vd"]);
-                            c_dongdsdh.v2 = Convert.ToDecimal(b["v2"]);
+                            c_dongdsdh.w2 = Convert.ToDecimal(b["w2"] == null ? "0" : b["w2"]);
+                            c_dongdsdh.w1 = Convert.ToDecimal(b["w1"] == null ? "0" : b["w1"]);
+                            c_dongdsdh.vn = Convert.ToDecimal(b["vn"] == null ? "0" : b["vn"]);
+                            c_dongdsdh.vl = Convert.ToDecimal(b["vl"] == null ? "0" : b["vl"]);
+                            c_dongdsdh.vd = Convert.ToDecimal(b["vd"] == null ? "0" : b["vd"]);
+                            c_dongdsdh.v2 = Convert.ToDecimal(b["v2"] == null ? "0" : b["v2"]);
+                            c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"] == null ? "0" : b["sl_huy"]);
                             c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
                             c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
                             c_dongdsdh.sl_outer = Convert.ToDecimal(b["sl_outer"]);
                             c_dongdsdh.dvt_outer = b["dvt_outer"] + "";
                             c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
                             c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
-                            c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"]);
+                            
                             c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
                             c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
                             c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
@@ -170,7 +169,10 @@ public class API_GuiNhanDonHang : IHttpHandler
             }
             catch (Exception ex)
             {
-                msg += string.Format(@"<div style='color:red'>Có lỗi xảy ra: {0}</div>", ex.Message);
+                msg += string.Format(@"
+                    <div style='color:red'>Có lỗi xảy ra: {0}</div>
+                    <div style='display:none'>{1}</div>
+                    ", ex.Message, strdata);
             }
 
             if (msg.Length <= 0)
