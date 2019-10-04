@@ -100,7 +100,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
                 , isnull(nknb_cdh.ghino, 0) as ghino
                 , isnull(nknb_cdh.truno, 0) as truno
                 , null as thucxuat
-                , nknb_cdh.tong_sl_xuat + isnull(nknb_cdh.ghino, 0) - isnull(nknb_cdh.truno, 0) as tongcong
+                , nknb_cdh.sl_muonxuat as tongcong
 		    from md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
