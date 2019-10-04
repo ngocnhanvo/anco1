@@ -705,7 +705,9 @@ function load_menurightclick(tg, n, f) {
 				$("#div_chuotphai").remove();
 				$(".cl_table_noidung").prepend(n);
 				div_load("div_chuotphai",n,t);
-				f();
+				if(f) {
+					f();
+				}
 				return false;
 			}
 			else {
