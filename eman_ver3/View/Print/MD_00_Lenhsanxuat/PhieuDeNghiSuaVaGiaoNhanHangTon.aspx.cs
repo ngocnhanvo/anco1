@@ -31,11 +31,8 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
         if (tbl.Rows.Count > 0)
         {
             var infoPrint = PrintAnco2.GetInfoPrint();
-            var soluong = report.Report.FindControl("soluong", true);
-            soluong.DataBindings[0].FormatString = sothapphan;
 
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_sl_denghigiao", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
@@ -50,14 +47,16 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
             //Footer
             int lastRow = tbl.Rows.Count - 1;
-            var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sumSL))
-                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
+            var sum_sl_denghigiao = tbl.Compute("Sum(sl_denghigiao)", string.Empty).ToString();
+            if (string.IsNullOrEmpty(sum_sl_denghigiao))
+                tbl.Rows[lastRow]["sum_sl_denghigiao"] = DBNull.Value;
             else
-                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
+                tbl.Rows[lastRow]["sum_sl_denghigiao"] = double.Parse(sum_sl_denghigiao);
 
-            var sum_soluong = report.Report.FindControl("sum_soluong", true);
-            sum_soluong.DataBindings[0].FormatString = sothapphan;
+            var sl_denghigiao_cell = report.Report.FindControl("sl_denghigiao", true);
+            sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
+            var sum_sl_denghigiao_cell = report.Report.FindControl("sum_sl_denghigiao", true);
+            sum_sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
             this.ReportViewer1.Report = report;
         }
         else
