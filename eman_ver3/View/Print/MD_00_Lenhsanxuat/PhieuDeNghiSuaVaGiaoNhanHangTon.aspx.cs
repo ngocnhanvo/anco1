@@ -79,36 +79,32 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
         {
             slchiato = "sl_chiato2";
         }
-        string md_nhapkho_ncc_id = context.Request.QueryString["id"];
+        string md_lenhsanxuat_id = context.Request.QueryString["id"];
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
 		    select 
                 lsx.sochungtu
-	            , dhpx.sochungtu as sct_dhpx
-	            , dhpx.donhang_thamchieu as donhang
-	            , (select ten_to from md_phanxuong_to where lsx_tsx.md_phanxuong_to_id = md_to_id) as tosx
-	            , (select ten_phanxuong from md_phanxuong where lsx_tsx.md_phanxuong_id = md_phanxuong_id) as px
-	            , lsx_tsx.mota as diengiai
 	            , sp.ma_sanpham as ma_vthh
-	            , sp.mota_tiengviet as ten_vthh
 	            , dvtsp.ten_dvt as dvt
-	            , lsx_tsx_cdh.{1} as soluong
-	            , lsx_tsx.ngaybatdausx as ngaysanxuat
-	            , lsx_tsx.ngaydkht as ngayhoanthanh
-	            , lsx_tsx_cdh.mota as ghichu
-	            , dhpx.hdlh as huongdanlamhang
+	            , lht.sl_layton as sl_denghigiao
+	            , dhpx.donhang_thamchieu as theodonhang
+	            , lht.mota as ghichu
+	            , pxto.ten_to as tosx
+	            , pxto.congdoan as congdoancanhoanthien
+	            , (select ten_phanxuong from md_phanxuong where lsx_tsx.md_phanxuong_id = md_phanxuong_id) as bophanyc
             from md_lenhsanxuat lsx
 	            left join md_dondathangphanxuong dhpx on lsx.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
                 left join md_lenhsanxuat_tosx lsx_tsx on lsx_tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
-                left join md_lenhsanxuat_tosx_cdh lsx_tsx_cdh on lsx_tsx_cdh.md_lenhsanxuat_tosx_id = lsx_tsx.md_lenhsanxuat_tosx_id
-                left join md_sanpham sp on lsx_tsx_cdh.md_sanpham_id = sp.md_sanpham_id
+                left join md_lenhsanxuat_tosx_dklht lht on lht.md_lenhsanxuat_tosx_id = lsx_tsx.md_lenhsanxuat_tosx_id
+                left join md_sanpham sp on lht.md_sanpham_id = sp.md_sanpham_id
                 left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+	            left join md_phanxuong_to pxto on pxto.md_to_id = lsx_tsx.md_phanxuong_to_id
             where 1=1
-                and lsx_tsx.md_lenhsanxuat_tosx_id in ('{0}')
-                and lsx_tsx_cdh.{1} > 0
+                and lsx_tsx.md_lenhsanxuat_id in ('{0}')
+                and lht.sl_layton > 0
             order by sp.ma_sanpham asc
 		"
-        , md_nhapkho_ncc_id
+        , md_lenhsanxuat_id
         , slchiato
         );
         return sql;
