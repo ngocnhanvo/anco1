@@ -298,7 +298,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         {
                                                             ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                         }
-                                                        ck_dh.truno = ck_dh.tong_sl_xuat > ck_dh.truno ? ck_dh.truno : ck_dh.tong_sl_xuat;
+                                                        ck_dh.truno = ck_dh.tong_sl_xuat > ck_dh.truno.GetValueOrDefault(0) ? ck_dh.truno.GetValueOrDefault(0) : ck_dh.tong_sl_xuat;
 
                                                         if (ck_dh.sl_thucxuat.GetValueOrDefault(0) > 0)
                                                             ck_dh.ghino = (ck_dh.sl_thucxuat - ck_dh.tong_sl_xuat + ck_dh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
