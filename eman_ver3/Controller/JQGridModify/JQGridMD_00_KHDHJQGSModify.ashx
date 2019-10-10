@@ -298,7 +298,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                          b.sodonhang,
                                          b.mota,
                                          c.md_donvitinhsanpham_id,
-                                         ngayhoanthanh = (e.ngayhoanthanh == null ? e.hangiaohang_po : e.ngayhoanthanh)
+                                         ngayhoanthanh = (e.ngayhoanthanh == null ? e.hangiaohang_po.Value.AddDays(-7) : e.ngayhoanthanh)
                                      };
                         //start
                         foreach (var item in candat.Where(s =>
