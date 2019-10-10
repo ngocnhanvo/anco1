@@ -631,6 +631,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 object_.ngaybatdausx = ngaybdsx;
                 object_.ngaydkht = ngaydkht;
                 object_.mota = context.Request.Form["mota"];
+                object_.hoatdong = context.Request.Form["hoatdong"].ToLower() == "true";
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }

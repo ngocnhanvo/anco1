@@ -72,7 +72,10 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
                 left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
                 left join md_phanxuong_to pxto on pxto.md_to_id = tosx.md_phanxuong_to_id
                 left join md_phanxuong px on px.md_phanxuong_id = lsx.md_phanxuong_id
-            WHeRe 1=1 and isnull(tosx.check_hoanthanh, 0) = 0 and N'{1}' like '%' + lsx.sochungtu + '%' {0} {2} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
+            WHeRe 1=1 
+            and isnull(tosx.check_hoanthanh, 0) = 0 
+            and isnull(tosx.hoatdong, 0) = 1
+            and N'{1}' like '%' + lsx.sochungtu + '%' {0} {2} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
             filter, id, where_ex);
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
