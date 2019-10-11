@@ -286,7 +286,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                             vcnb.denkho = kho2.md_kho_id;
                             vcnb.loaichuyen = "VANCNBTC";
                             vcnb.chungtuthamchieu = "";
-                            vcnb.ketoan = true;
+                            vcnb.ketoan = false;
                             vcnb.sctdathang = dhpx.sctdathang;
                             vcnb.donhang_thamchieu = dhpx.donhang_thamchieu;
                             vcnb.ngaydenghi = DateTime.Now;
