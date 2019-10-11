@@ -113,6 +113,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
         string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'01/{0}/{1} 00:00:00',103);
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
+            set @denngay = DATEADD(second ,23 * 60 * 60 + 59 * 60 + 59, @denngay);
             declare @ngaycuoikytruoc datetime = @tungay - 1;
             declare @namkytruoc int = year(@ngaycuoikytruoc);
             declare @thangkytruoc int = month(@ngaycuoikytruoc);
@@ -133,6 +134,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	            , sum(A.tondauky) as tondauky
 	            , sum(A.nhaptrongky) as nhaptrongky
 	            , sum(A.xuattrongky) as xuattrongky
+                , N'Kỳ {0}/{1}' as ky
             from (
 	            select
 		            kgd.md_sanpham_id
