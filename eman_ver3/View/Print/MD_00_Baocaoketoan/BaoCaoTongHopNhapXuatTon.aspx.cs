@@ -134,7 +134,6 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	            , sum(A.tondauky) as tondauky
 	            , sum(A.nhaptrongky) as nhaptrongky
 	            , sum(A.xuattrongky) as xuattrongky
-                , N'Kỳ {0}/{1}' as ky
             from (
 	            select
 		            kgd.md_sanpham_id
@@ -170,7 +169,9 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 		            A.md_sanpham_id
 		            , A.md_donvitinhsanpham_id
             
-            select A.*, (A.tondauky + A.nhaptrongky - A.xuattrongky) as toncuoiky 
+            select A.*
+            , (A.tondauky + A.nhaptrongky - A.xuattrongky) as toncuoiky 
+            , N'Kỳ {0}/{1}' as ky
             from 
             (
                 select 
