@@ -43,36 +43,14 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
+
             //Footer
             int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
+            
             var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_soluong))
-                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sum_soluong);
-
             var sum_thanhtien = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_thanhtien))
-                tbl.Rows[lastRow]["sum_thanhtien"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sum_thanhtien);
-
             var sum_thuegtgt = tbl.Compute("Sum(thuegtgt)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_thuegtgt))
-                tbl.Rows[lastRow]["sum_thuegtgt"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_thuegtgt"] = double.Parse(sum_thuegtgt);
-
             var sum_tongthanhtoan = tbl.Compute("Sum(tongthanhtoan)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_tongthanhtoan))
-                tbl.Rows[lastRow]["sum_tongthanhtoan"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_tongthanhtoan"] = double.Parse(sum_tongthanhtoan);
 
             var soluong_cell = report.Report.FindControl("soluong", true);
             soluong_cell.DataBindings[0].FormatString = sothapphan;
@@ -82,8 +60,35 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
             sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
             //Group 1
             string group_sochungtu = "";
-            foreach(DataRow row in tbl.Rows)
+            for(int i = 0; i < tbl.Rows.Count; i++)
             {
+                DataRow row = tbl.Rows[i];
+                //Header
+                row["logo"] = infoPrint.logo;
+                //Footer
+                row["dd"] = infoPrint.dd;
+                row["MM"] = infoPrint.MM;
+                row["yyyy"] = infoPrint.yyyy;
+                if (string.IsNullOrEmpty(sum_soluong))
+                    row["sum_soluong"] = DBNull.Value;
+                else
+                    row["sum_soluong"] = double.Parse(sum_soluong);
+
+                if (string.IsNullOrEmpty(sum_thanhtien))
+                    row["sum_thanhtien"] = DBNull.Value;
+                else
+                    row["sum_thanhtien"] = double.Parse(sum_thanhtien);
+
+                if (string.IsNullOrEmpty(sum_thuegtgt))
+                    row["sum_thuegtgt"] = DBNull.Value;
+                else
+                    row["sum_thuegtgt"] = double.Parse(sum_thuegtgt);
+
+                if (string.IsNullOrEmpty(sum_tongthanhtoan))
+                    row["sum_tongthanhtoan"] = DBNull.Value;
+                else
+                    row["sum_tongthanhtoan"] = double.Parse(sum_tongthanhtoan);
+
                 string sochungtu = row["sochungtu"].ToString();
                 if(group_sochungtu != sochungtu)
                 {
@@ -125,21 +130,24 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
 		string denngay = context.Request.QueryString["den"];
 		DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
 		DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
 		string kho = context.Request.QueryString["kho"];
-		
-		string sql = string.Format(@"	 
+	    string dtkd = context.Request.QueryString["dtkd"];
+
+        if (!string.IsNullOrEmpty(dtkd))
+            dtkd = string.Format("and dtkd.ma_dtkd = N'{0}'", dtkd);
+
+        string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59',103);
             select distinct
                 ncc.sochungtu
 	            , ncc.ngaychuyen as ngay
 	            , (select sochungtu from c_donmuahang where c_donmuahang_id = ncc.c_donmuahang_id) as donhangmua
-	            , (select ten_dtkd from md_doitackinhdoanh where md_doitackinhdoanh_id = ncc.md_doitackinhdoanh_id) as nhacungcap
+	            , dtkd.ten_dtkd as nhacungcap
 	            , sp.ma_sanpham as ma_vthh
                 , sp.mota_tiengviet as ten_vthh
 	            , dh.sl_nhap2 as soluong
@@ -154,14 +162,17 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
                 left join md_nhapkho_ncc_dh dh on ncc.md_nhapkho_ncc_id = dh.md_nhapkho_ncc_id
                 left join md_sanpham sp on dh.md_sanpham_id = sp.md_sanpham_id
                 left join md_donvitinhsanpham dvtsp on dh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+                left join md_doitackinhdoanh dtkd on ncc.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
             WHERE ncc.trangthai != N'SOANTHAO'
 	            AND ncc.ngaychuyen >= @tungay
 	            AND ncc.ngaychuyen <= @denngay
                 AND dh.sl_nhap2 > 0
+                {2}
             ORDER BY ncc.sochungtu asc, sp.ma_sanpham asc
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
+        , dtkd
         );
 		return sql;
     }

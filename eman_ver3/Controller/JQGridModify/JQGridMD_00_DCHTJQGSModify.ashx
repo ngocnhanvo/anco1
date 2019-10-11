@@ -278,6 +278,7 @@ System.Web.SessionState.IRequiresSessionState
         vc.loaichuyen = "VANCNB";
         vc.ngaychuyen = DateTime.Now;
         vc.tukho = tukho;
+        vc.ketoan = true;
         vc.denkho = md_kho_id;
         vc.nguoitao = us.ad_user_id;
         vc.vaitrotao = us.ad_role_id;
