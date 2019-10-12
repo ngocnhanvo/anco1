@@ -283,7 +283,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         var candat = from a in db.c_kehoachdathang_cdhcd
                                      join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
                                      join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
-                                     join e in db.c_danhsachdathang on b.sodonhang equals e.sochungtu
+                                     join e in db.c_doichieuhangton on b.c_doichieuhangton_id equals e.c_doichieuhangton_id
                                      select new
                                      {
                                          a.md_phanxuong_id,
@@ -298,8 +298,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                          b.sodonhang,
                                          b.mota,
                                          c.md_donvitinhsanpham_id,
-                                         e.hangiaohang_po,
-                                         ngayhoanthanh = (e.ngayhoanthanh == null ? e.hangiaohang_po.Value.Subtract(new TimeSpan(7, 0, 0, 0)) : e.ngayhoanthanh)
+                                         e.ngayhoanthanh
                                      };
                         //start
                         foreach (var item in candat.Where(s =>
