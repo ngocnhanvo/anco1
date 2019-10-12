@@ -73,6 +73,15 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
                 row["dd"] = infoPrint.dd;
                 row["MM"] = infoPrint.MM;
                 row["yyyy"] = infoPrint.yyyy;
+                if (row["tondauky"] + "" == "0")
+                    row["tondauky"] = DBNull.Value;
+                if (row["nhaptrongky"] + "" == "0")
+                    row["nhaptrongky"] = DBNull.Value;
+                if (row["xuattrongky"] + "" == "0")
+                    row["xuattrongky"] = DBNull.Value;
+                if (row["toncuoiky"] + "" == "0")
+                    row["toncuoiky"] = DBNull.Value;
+
                 if (string.IsNullOrEmpty(sum_tondauky))
                     row["sum_tondauky"] = DBNull.Value;
                 else
