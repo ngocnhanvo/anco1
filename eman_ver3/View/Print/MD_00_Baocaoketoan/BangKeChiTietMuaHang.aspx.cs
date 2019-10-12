@@ -153,8 +153,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
 	            , dh.sl_nhap2 as soluong
 	            , dh.giatriVND as dongia
 	            , (dh.giatriVND * dh.sl_nhap2) as thanhtien
-	            , (dh.giatriVND * dh.sl_nhap2 * 10 / 100) as thuegtgt
-	            , (dh.giatriVND * dh.sl_nhap2 + dh.giatriVND * dh.sl_nhap2 * 10 / 100) as tongthanhtoan
+	            , (dh.giatriVND * dh.sl_nhap2 * isnull(thue.giatri, 0) / 100) as thuegtgt
+	            , (dh.giatriVND * dh.sl_nhap2 + dh.giatriVND * dh.sl_nhap2 * isnull(thue.giatri, 0) / 100) as tongthanhtoan
 	            , dvtsp.ten_dvt as dvt
                 , @tungay as tungay
                 , @denngay as denngay
@@ -163,6 +163,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
                 left join md_sanpham sp on dh.md_sanpham_id = sp.md_sanpham_id
                 left join md_donvitinhsanpham dvtsp on dh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
                 left join md_doitackinhdoanh dtkd on ncc.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id
+                left join md_thue_sanpham thue on dh.thue = thue.md_thue_sanpham_id
             WHERE ncc.trangthai != N'SOANTHAO'
 	            AND ncc.ngaychuyen >= @tungay
 	            AND ncc.ngaychuyen <= @denngay
