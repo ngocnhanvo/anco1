@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_phanxuong_to_congdoan_wintaFN
+                        
+                        #endregion md_phanxuong_to_congdoan_wintaFN
+                        public string congdoan { get; set; }
+                
+						
                         #region md_phanxuong_to_hoatdong_wintaFN
                         
                         #endregion md_phanxuong_to_hoatdong_wintaFN

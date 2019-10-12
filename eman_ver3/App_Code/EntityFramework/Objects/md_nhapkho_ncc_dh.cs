@@ -169,6 +169,12 @@
                         public int? STT { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_dh_thue_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_dh_thue_wintaFN
+                        public string thue { get; set; }
+                
+						
                         #region md_nhapkho_ncc_dh_tong_sl_dat_wintaFN
                         
                         #endregion md_nhapkho_ncc_dh_tong_sl_dat_wintaFN

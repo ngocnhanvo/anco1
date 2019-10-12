@@ -11584,6 +11584,10 @@
                             .HasColumnName("STT")
                             .HasColumnType("int");
                             modelBuilder.Entity<md_nhapkho_ncc_dh>()
+                            .Property(p => p.thue)
+                            .HasColumnName("thue")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkho_ncc_dh>()
                             .Property(p => p.tong_sl_dat)
                             .HasColumnName("tong_sl_dat")
                             .HasColumnType("decimal").HasPrecision(18, 4);
@@ -12894,6 +12898,10 @@
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_phanxuong_to>()
+                            .Property(p => p.congdoan)
+                            .HasColumnName("congdoan")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_phanxuong_to>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
