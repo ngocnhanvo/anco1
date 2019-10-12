@@ -73,8 +73,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
                 row["dd"] = infoPrint.dd;
                 row["MM"] = infoPrint.MM;
                 row["yyyy"] = infoPrint.yyyy;
-                if (row["tondauky"].ToString() == "0")
-                    row["tondauky"] = DBNull.Value;
+
+                row["tondauky"] = DBNull.Value;
                 if (row["nhaptrongky"] + "" == "0")
                     row["nhaptrongky"] = DBNull.Value;
                 if (row["xuattrongky"] + "" == "0")
