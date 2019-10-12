@@ -175,6 +175,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         sl_nhap2 = slthaythe,
                         sl_muonnhap = tslDat,
                         sl_muonnhap2 = slthaythe,
+                        thue = dmh_cdmh.thue,
                         giatriVND = dmh_cdmh.dongiamua.GetValueOrDefault(0).NgoaiTeToiVND(dmh.md_dongtien_id, dmh.ngaydonhang, db),
                         ngay_hethan = null,
                         nguoitao = us.ad_user_id,
