@@ -61,9 +61,9 @@ System.Web.SessionState.IRequiresSessionState
                 var khohangton = from a in db.md_kho
                                  join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
                                  join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
-                                 where a.hangton == true 
+                                 where a.hangton == true
                                  & string.IsNullOrEmpty(a.md_phanxuong_id)
-                                 & string.IsNullOrEmpty(a.md_to_id) 
+                                 & string.IsNullOrEmpty(a.md_to_id)
                                  select new
                                  {
                                      a.md_kho_id,
@@ -279,6 +279,7 @@ System.Web.SessionState.IRequiresSessionState
         vc.sctdathang = dcht.so_donhang;
         vc.loaichuyen = "VANCNB";
         vc.ngaychuyen = DateTime.Now;
+        vc.ngaydenghi = DateTime.Now;
         vc.tukho = tukho;
         vc.ketoan = true;
         vc.denkho = md_kho_id;
@@ -682,7 +683,7 @@ System.Web.SessionState.IRequiresSessionState
                                      join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
                                      where a.hangton == true
                                      & string.IsNullOrEmpty(a.md_phanxuong_id)
-                                     & string.IsNullOrEmpty(a.md_to_id) 
+                                     & string.IsNullOrEmpty(a.md_to_id)
                                      select new
                                      {
                                          a.md_kho_id,
