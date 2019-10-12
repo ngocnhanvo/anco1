@@ -620,7 +620,7 @@ namespace XtraReportSerialization {
             // 
             this.tosx.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.tosx.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "tosx")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "bophanyc")});
             this.tosx.Dpi = 100F;
             this.tosx.Font = new System.Drawing.Font("Tahoma", 9F);
             this.tosx.Name = "tosx";
