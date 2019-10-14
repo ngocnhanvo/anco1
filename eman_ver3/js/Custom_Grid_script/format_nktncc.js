@@ -18,7 +18,7 @@ function timkiem_nktncc(id_elem, type) {
             <table id="${namegrid}"></table>
             <div id="pager${namegrid}"></div>
             <table id="${namegrid}_child"></table>
-            <div id="${namegrid}_child"></div>
+            <div id="pager${namegrid}_child"></div>
         </div>`);
 
     $('#dlg_gridSmal_2').dialog({
