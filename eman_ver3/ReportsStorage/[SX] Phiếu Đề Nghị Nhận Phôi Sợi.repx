@@ -779,7 +779,7 @@ namespace XtraReportSerialization {
             this.xrLabel5.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel5.Dpi = 100F;
             this.xrLabel5.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel5.LocationFloat = new DevExpress.Utils.PointFloat(11.33875F, 1.166656F);
+            this.xrLabel5.LocationFloat = new DevExpress.Utils.PointFloat(11.33875F, 4.166656F);
             this.xrLabel5.Name = "xrLabel5";
             this.xrLabel5.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrLabel5.SizeF = new System.Drawing.SizeF(176F, 22F);
@@ -795,7 +795,7 @@ namespace XtraReportSerialization {
             this.xrLabel27.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel27.Dpi = 100F;
             this.xrLabel27.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(11.33875F, 23.16667F);
+            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(11.33875F, 26.16667F);
             this.xrLabel27.Name = "xrLabel27";
             this.xrLabel27.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrLabel27.SizeF = new System.Drawing.SizeF(176F, 22F);
@@ -811,7 +811,7 @@ namespace XtraReportSerialization {
             this.xrLabel32.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel32.Dpi = 100F;
             this.xrLabel32.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.xrLabel32.LocationFloat = new DevExpress.Utils.PointFloat(11.33881F, 45.16666F);
+            this.xrLabel32.LocationFloat = new DevExpress.Utils.PointFloat(11.33881F, 48.16666F);
             this.xrLabel32.Name = "xrLabel32";
             this.xrLabel32.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrLabel32.SizeF = new System.Drawing.SizeF(176F, 22F);
