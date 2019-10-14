@@ -4,7 +4,7 @@
 function CA_01_InPhieuVatTu(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
     id_parent = null;
     let masterId = id_parent, cell = null;
-    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
+    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selarrrow'); }
     let dec = vnn_formatnumber()[0], thous = vnn_formatnumber()[1];
     let CLform_infor = new get_Forminfor(ma_case, Form_infor);
     let ma_module = tengrid.replace('grid', '');
@@ -19,6 +19,10 @@ function CA_01_InPhieuVatTu(tengrid, id_parent, ma_case, Form_infor, Model_infor
                         <tr>
                             <td><input id="inPXK2" type="radio" name="rdo_SLVC" class ="rdo_SLVC" style="outline:none" value="2"/></td>
                             <td><label for="inPXK2">In phiếu đề nghị sửa và giao nhận hàng tồn</label></td>
+                        </tr>
+                        <tr>
+                            <td><input id="inPXK3" type="radio" name="rdo_SLVC" class ="rdo_SLVC" style="outline:none" value="3"/></td>
+                            <td><label for="inPXK3">In phiếu đề nghị nhận phôi sợi</label></td>
                         </tr>
                     </table>
                 </div>
@@ -159,6 +163,16 @@ function CA_01_InPhieuVatTu(tengrid, id_parent, ma_case, Form_infor, Model_infor
                 }
                 else if (sel_val == 2) {
                     let url = url_org_sys + 'View/Print/MD_00_LenhSanXuat/PhieuDeNghiSuaVaGiaoNhanHangTon.aspx?oper=' +
+                            '&ma_module=' + ma_module +
+                            "&id=" + masterId.toString() +
+                            "&stp=5";
+
+                    let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
+                    let left = (window.innerWidth - 1024) / 2 - 10;
+                    window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
+                }
+                else if (sel_val == 3) {
+                    let url = url_org_sys + 'View/Print/MD_00_LenhSanXuat/PhieuDeNghiNhanPhoiSoi.aspx?oper=' +
                             '&ma_module=' + ma_module +
                             "&id=" + masterId.toString() +
                             "&stp=5";
