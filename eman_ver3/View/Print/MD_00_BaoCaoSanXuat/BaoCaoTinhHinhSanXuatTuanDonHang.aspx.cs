@@ -18,7 +18,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatTua
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
         viewReport(report, sql);
-        // Response.Write(sql);
+        //Response.Write(sql);
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
@@ -39,28 +39,9 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatTua
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_soluong))
-                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sum_soluong);
-
-            var sum_thanhtien = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_thanhtien))
-                tbl.Rows[lastRow]["sum_thanhtien"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sum_thanhtien);
-
-            var soluong_cell = report.Report.FindControl("soluong", true);
-           soluong_cell.DataBindings[0].FormatString = sothapphan;
-
-            var sum_soluong_cell = report.Report.FindControl("sum_soluong", true);
-            sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
+            tbl.Rows[0]["dd"] = infoPrint.dd;
+            tbl.Rows[0]["MM"] = infoPrint.MM;
+            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
 
             report.DataSource = ds;
             report.DataAdapter = da;
@@ -80,34 +61,47 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatTua
         string px = context.Request.QueryString["px"];
         DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
 		DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
-		string kho = context.Request.QueryString["kho"];
 		
 		string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59',103);
             select 
-	            A.donhang
+	            A.donhang as thegiaoviecsx
 	            , Sum(isnull(A.nlduc, 0)) as nlduc
 	            , Sum(isnull(A.banduc, 0)) as banduc
 	            , Sum(isnull(A.bancat, 0)) as bancat
 	            , Sum(isnull(A.mai, 0)) as mai
 	            , Sum(isnull(A.hoantat, 0)) as hoantat
-	            , A.ngaygiaoduc
-	            , A.ngaygiaobancat
-	            , A.ngaygiaomai
-	            , A.ngaygiaohoantat
+	            , (
+		            select ngaygiao from md_lenhsanxuat_tosx where stt = 0 and md_lenhsanxuat_id = A.md_lenhsanxuat_id
+	            ) as ngaygiaoduc
+	            , (
+		            select ngaygiao from md_lenhsanxuat_tosx where stt = 1 and md_lenhsanxuat_id = A.md_lenhsanxuat_id
+	            ) as ngaygiaobancat
+	            , (
+		            select ngaygiao from md_lenhsanxuat_tosx where stt = 2 and md_lenhsanxuat_id = A.md_lenhsanxuat_id
+	            ) as ngaygiaomai
+	            , (
+		            select ngaygiao from md_lenhsanxuat_tosx where stt = 9999 and md_lenhsanxuat_id = A.md_lenhsanxuat_id
+	            ) as ngaygiaohoantat
+                , A.ngaytheolsx
 	            , A.thoigiansx
 	            , A.ngaydkgiaotp
 	            , A.ngayxindc
 	            , A.lydo
-	            , A.tuanthu
+	            , N'Tuần ' + cast(A.tuanthu as varchar(3)) as tuanthu
+                , DATEADD(dd, -(DATEPART(dw, A.ngaytuan)-2), A.ngaytuan) as nbdt
+	            , DATEADD(dd, 7-(DATEPART(dw, A.ngaytuan)), A.ngaytuan) as nktt
+                , @tungay as tungay
+                , @denngay as denngay
             from (
 	            select
 		            dhpx.donhang_thamchieu as donhang
+		            , lsx.md_lenhsanxuat_id
 		            --duc
 		            , (
 			            select 
-				            sum(isnull(sl_dahoanthanh, 0)) * 100 / sum(isnull(sl_chiato, 0)) 
+				            sum(isnull(sl_dahoanthanh, 0)) / sum(isnull(sl_chiato, 0)) 
 			            from 
 				            md_lenhsanxuat_tosx_cdh
 			            where 
@@ -116,62 +110,50 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatTua
 		            ) as nlduc
 		            , (
 			            select 
-				            sum(isnull(sl_dagiao, 0)) * 100 / sum(isnull(sl_chiato, 0)) 
+				            sum(isnull(sl_dagiao, 0)) / sum(isnull(sl_chiato, 0)) 
 			            from 
 				            md_lenhsanxuat_tosx_cdh
 			            where 
 				            md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 				            and tsx.stt = 0
 		            ) as banduc
-		            , (
-			            select tsx.ngaygiao where tsx.stt = 0
-		            ) as ngaygiaoduc
 		            --ban cat
 		            , (
 			            select 
-				            sum(isnull(sl_dagiao, 0)) * 100 / sum(isnull(sl_chiato, 0)) 
+				            sum(isnull(sl_dagiao, 0)) / sum(isnull(sl_chiato, 0)) 
 			            from 
 				            md_lenhsanxuat_tosx_cdh
 			            where 
 				            md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 				            and tsx.stt = 1
 		            ) as bancat
-		            , (
-			            select tsx.ngaygiao where tsx.stt = 1
-		            ) as ngaygiaobancat
 		            --mai
 		            , (
 			            select 
-				            sum(isnull(sl_dagiao, 0)) * 100 / sum(isnull(sl_chiato, 0)) 
+				            sum(isnull(sl_dagiao, 0)) / sum(isnull(sl_chiato, 0)) 
 			            from 
 				            md_lenhsanxuat_tosx_cdh
 			            where 
 				            md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 				            and tsx.stt = 2
 		            ) as mai
-		            , (
-			            select tsx.ngaygiao where tsx.stt = 2
-		            ) as ngaygiaomai
 		            --hoan tat
 		            , (
 			            select 
-				            sum(isnull(sl_dagiao, 0)) * 100 / sum(isnull(sl_chiato, 0)) 
+				            sum(isnull(sl_dagiao, 0)) / sum(isnull(sl_chiato, 0)) 
 			            from 
 				            md_lenhsanxuat_tosx_cdh
 			            where 
 				            md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 				            and tsx.stt = 9999
 		            ) as hoantat
-		            , (
-			            select tsx.ngaygiao where tsx.stt = 9999
-		            ) as ngaygiaohoantat
-		            , lsx.ngaydkgiaotp - 7 as thoigiansx
+                    , lsx.ngayketthuc as ngaytheolsx
+		            , lsx.ngayketthuc - 7 as thoigiansx
 		            , lsx.ngaydkgiaotp
 		            , lsx.ngayhoanthanh as ngayxindc
 		            , lsx.lydogiaosom_tre as lydo
 		            , DATEPART(wk, isnull(lsx.ngayhoanthanh, lsx.ngaydkgiaotp)) as tuanthu
-		            , @tungay as tungay
-		            , @denngay as denngay
+                    , isnull(lsx.ngayhoanthanh, lsx.ngaydkgiaotp) as ngaytuan
 	            FROM md_lenhsanxuat lsx
 		            left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
 		            left join md_lenhsanxuat_tosx tsx on tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
@@ -181,18 +163,16 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatTua
             )A
             group by 
 	            A.donhang
-	            , A.ngaygiaoduc
-	            , A.ngaygiaobancat
-	            , A.ngaygiaomai
-	            , A.ngaygiaohoantat
 	            , A.ngaydkgiaotp
 	            , A.ngayxindc
+                , A.ngaytheolsx
 	            , A.thoigiansx
 	            , A.lydo
 	            , A.tuanthu
+                , A.ngaytuan
+	            , A.md_lenhsanxuat_id
             order by A.tuanthu, A.donhang
 		"
-        , kho
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
         , px
