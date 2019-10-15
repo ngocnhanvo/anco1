@@ -317,7 +317,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     & s.md_phanxuong_to_id == kho.md_to_id).FirstOrDefault();
 
                                                 if (lsxKho != null)
-                                                    lsxKho.ngaygiao = xk.ngaydenghi;
+                                                    lsxKho.ngaygiao = xk.ngaychuyen;
 
                                                 string khoNext = Helper.layKhoCuaTo(lsxTSX.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                                 string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);

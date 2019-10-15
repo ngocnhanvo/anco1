@@ -586,12 +586,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string ngayhoanthanh = context.Request.Form["ngayhoanthanh"];
+        string ngaygiao = context.Request.Form["ngaygiao"];
         try
         {
             string id = context.Request.Form["id"];
             var object_ = db.md_lenhsanxuat_tosx.Where(p => p.md_lenhsanxuat_tosx_id == id).Take(1).FirstOrDefault();
             var ngaybdsx = VNN_Config.setDateTime(context.Request.Form["ngaybatdausx"]);
             var ngaydkht = VNN_Config.setDateTime(context.Request.Form["ngaydkht"]);
+
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -625,6 +627,23 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             else
             {
                 object_.ngayhoanthanh = null;
+            }
+
+            if (!string.IsNullOrEmpty(ngaygiao) & ngaygiao != " ")
+            {
+                var ngaygi = VNN_Config.setDateTime(ngaygiao);
+                if (ngaygi.IsDate() == false)
+                {
+                    msg = "false#Lỗi: Ngày giao không đúng định dạng.";
+                }
+                else
+                {
+                    object_.ngaygiao = ngaygi;
+                }
+            }
+            else
+            {
+                object_.ngaygiao = null;
             }
 
             if (msg.Length <= 0)
