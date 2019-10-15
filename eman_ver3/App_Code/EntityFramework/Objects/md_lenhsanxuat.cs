@@ -31,6 +31,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_lenhsanxuat_lydogiaosom_tre_wintaFN
+                        
+                        #endregion md_lenhsanxuat_lydogiaosom_tre_wintaFN
+                        public string lydogiaosom_tre { get; set; }
+                
+						
                         #region md_lenhsanxuat_md_dondathangphanxuong_id_wintaFN
                         
                         #endregion md_lenhsanxuat_md_dondathangphanxuong_id_wintaFN
@@ -65,6 +71,12 @@
                         
                         #endregion md_lenhsanxuat_ngaycapnhat_wintaFN
                         public DateTime? ngaycapnhat { get; set; }
+                
+						
+                        #region md_lenhsanxuat_ngaydkgiaotp_wintaFN
+                        
+                        #endregion md_lenhsanxuat_ngaydkgiaotp_wintaFN
+                        public DateTime? ngaydkgiaotp { get; set; }
                 
 						
                         #region md_lenhsanxuat_ngayhoanthanh_wintaFN

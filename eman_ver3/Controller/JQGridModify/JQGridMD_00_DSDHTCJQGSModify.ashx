@@ -61,15 +61,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
     public string CA_01_TinhNangLuc(HttpContext context, int type, EntityContext db)
     {
-											   
+
         string poId = context.Request.Form["id"];
         var donhang = db.c_danhsachdathang.Where(dh => dh.c_danhsachdathang_id == poId).FirstOrDefault();
         DataTable dt = pub.TinhNangLuc(donhang, db);
         string result = "";
         string ngaylap = donhang.ngaylap.Value.ToString("dd/MM/yyyy");
-																																		
-																				 
-								
+
+
+
         //DataTable dt = Mbg.Data.SqlClient.SqlHelper.GetData("select * from dbo.f_tinhNangLucCungUng('" + poId + "')");
         DateTime maxDate = DateTime.ParseExact("01/01/1900", "dd/MM/yyyy", null);
         int max_tgnhan_dh = -1, max_tgantoan_dh = -1;
@@ -112,7 +112,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     var tgnhan_dh = (int)row["tgnhan_dh"];
                     var tgantoan_dh = (int)row["tgantoan_dh"];
                     if (maxDate < ngaydukien)
-					 
+
                         maxDate = ngaydukien;
 
                     if (max_tgantoan_dh < tgantoan_dh)
@@ -123,18 +123,18 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 }
             }
             result += "</table></div>";
-			
-			decimal slTongCanDat = 0;
-			if (donhang.anco_check.GetValueOrDefault(false) == false)
-			{
-				slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
-			}
-			else
-			{
-				slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2).GetValueOrDefault(0);
-			}
-			decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
-				
+
+            decimal slTongCanDat = 0;
+            if (donhang.anco_check.GetValueOrDefault(false) == false)
+            {
+                slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2 * s.sl_dathang).GetValueOrDefault(0);
+            }
+            else
+            {
+                slTongCanDat = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == donhang.c_danhsachdathang_id).Sum(s => s.v2).GetValueOrDefault(0);
+            }
+            decimal slCanDat = dt.AsEnumerable().Sum(s => (decimal)s["cbm_candat"]);
+
             if (check > 0)
             {
                 DateTime? ngaydk = null, ngayyc = null;
@@ -155,14 +155,14 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         ngaydk = row.tgdk;
                     else
                         ngaydk = row.tgdk;
-					ngayyc = row.tgyc;
+                    ngayyc = row.tgyc;
                 }
-				
-				string spanNDKYC = "color:green", spanSLCDTCD = "color:green";
-				if(ngaydk > ngayyc)
-					spanNDKYC = "color:red";
-				if(slTongCanDat > slCanDat)
-					spanSLCDTCD = "color:red";
+
+                string spanNDKYC = "color:green", spanSLCDTCD = "color:green";
+                if(ngaydk > ngayyc)
+                    spanNDKYC = "color:red";
+                if(slTongCanDat > slCanDat)
+                    spanSLCDTCD = "color:red";
                 result = string.Format(@"
 				<div style=""padding:15px; border:1px solid red; background:#ffadad;"">
 					<h3 style=""margin:0px;"">
@@ -170,15 +170,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 						<div style=""padding: 10px 0px 5px 0px;font-size: 90% !important;"">Ngày dự kiến: <span style=""{5}"">{0}</span>, Ngày yêu cầu: <span style=""{5}"">{1}</span></div>
 						<div style=""padding: 5px 0px 5px 0px;font-size: 90% !important;"">Năng lực Cung Ứng: <span style=""{6}"">{2}</span>, CBM Đơn Hàng: <span style=""{6}"">{3}</span></div>
 					</h3>
-				</div>{4}", 
-				ngaydk.Value.ToString("dd/MM/yyyy"), 
-				ngayyc.Value.ToString("dd/MM/yyyy"),
-				slCanDat.DropTrailingZeros(), 
-				slTongCanDat.DropTrailingZeros(), 
-				result,
-				spanNDKYC,
-				spanSLCDTCD
-				);
+				</div>{4}",
+                ngaydk.Value.ToString("dd/MM/yyyy"),
+                ngayyc.Value.ToString("dd/MM/yyyy"),
+                slCanDat.DropTrailingZeros(),
+                slTongCanDat.DropTrailingZeros(),
+                result,
+                spanNDKYC,
+                spanSLCDTCD
+                );
             }
             else
             {
@@ -191,7 +191,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     if (check == 0 && slCanDat >= slTongCanDat)
                     {
                         result = "<div style=\"padding:15px; border:1px sold green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>Năng lực Cung Ứng: " + slCanDat.DropTrailingZeros() + ", CBM Đơn Hàng: " + slTongCanDat.DropTrailingZeros() + "</div>" + result;
-										  
+
                     }
                     else
                     {
@@ -204,7 +204,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         if (slCanDat >= sl_chk_lai_TongCanDat)
                         {
                             result = "<div style=\"padding:15px; border:1px solid green; background:#b9fdbf;\"><h3>Năng lực nhà cung ứng đáp ứng được đơn hàng này.!</h3>" + (slCanDat >= slTongCanDat) + "</div>" + result;
-											  
+
                         }
                         else
                         {
@@ -228,7 +228,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 </div>", dt.Rows[0]["tuanthu"], dt.Rows[0]["nam"]);
         }
 
-					 
+
         if (type == 0)
         {
             db.Dispose();
@@ -613,8 +613,8 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             DateTime hangiaohang_po = VNN_Config.setDateTime(context.Request.Form["hangiaohang_po"]);
             string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
             string id = context.Request.QueryString["id"];
-            DateTime ngaybatdau = hangiaohang_po.AddDays(0 - thoigiansx).AddDays(0 - thoigianht);
-            DateTime ngayhoanthanh = hangiaohang_po.AddDays(0 - thoigianht);
+            DateTime ngaybatdau = hangiaohang_po.AddDays(0 - thoigiansx);
+            DateTime ngayhoanthanh = hangiaohang_po.AddDays(-10);
             if (ngaylap == null)
             {
                 msg = "false#Lỗi:Chưa có ngày lập đơn hàng.";

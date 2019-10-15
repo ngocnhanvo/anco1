@@ -9959,6 +9959,10 @@
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_lenhsanxuat>()
+                            .Property(p => p.lydogiaosom_tre)
+                            .HasColumnName("lydogiaosom_tre")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.md_dondathangphanxuong_id)
                             .HasColumnName("md_dondathangphanxuong_id")
                             .HasColumnType("nvarchar");
@@ -9982,6 +9986,10 @@
                             modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_lenhsanxuat>()
+                            .Property(p => p.ngaydkgiaotp)
+                            .HasColumnName("ngaydkgiaotp")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.ngayhoanthanh)

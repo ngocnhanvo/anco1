@@ -437,6 +437,8 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
+        DateTime? nht = VNN_Config.setDateTime(context.Request.Form["ngayhoanthanh"]);
+        DateTime? ndkgtp = VNN_Config.setDateTime(context.Request.Form["ngaydkgiaotp"]);
         try
         {
             string id = context.Request.Form["id"];
@@ -444,30 +446,34 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
             md_dondathangphanxuong ddhpx = db.md_dondathangphanxuong.Where(p => p.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).FirstOrDefault();
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa.";
+                msg = @"false#Lỗi:Không tìm thấy đối tượng cần sửa.";
             }
             else if (ddhpx.md_trangthai_id != "HUY" & md_trangthai_id == "KETTHUC")
             {
-                msg = "false#Lỗi:Đơn đặt hàng phân xưởng " + ddhpx.sochungtu + " chưa 'Hủy'.";
+                msg = @"false#Lỗi:Đơn đặt hàng phân xưởng " + ddhpx.sochungtu + " chưa 'Hủy'.";
             }
             else if (ddhpx.md_trangthai_id == "HUY" & md_trangthai_id == "HOANTHANH")
             {
-                msg = "false#Lỗi:Đơn đặt hàng phân xưởng " + ddhpx.sochungtu + " đã 'Hủy'.";
+                msg = @"false#Lỗi:Đơn đặt hàng phân xưởng " + ddhpx.sochungtu + " đã 'Hủy'.";
             }
-            else if (md_trangthai_id == "CHUAHOANTHANH" & (object_.md_trangthai_id == "DAXL" | object_.md_trangthai_id == "CHUAHOANTHANH" | object_.md_trangthai_id == "KETTHUC"))
+            else if (
+                    md_trangthai_id != object_.md_trangthai_id & md_trangthai_id != "KETTHUC")
             {
-                msg = "false#Lỗi:Không thể trả về trạng thái 'Đang xử lý' ";
+                msg = @"false#Lỗi:Chỉ có thể thay đổi trạng thái thành ""Kết Thúc""";
             }
+
+            if (nht.Value.IsDate() == false)
+                nht = null;
+            if (ndkgtp.Value.IsDate() == false)
+                nht = null;
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_lenhsanxuat";
-                VNN_Function.SetFormValue("md_dondathangphanxuong_id", "VNN_notpost");
-                VNN_Function.SetFormValue("phieuXK", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                object_.md_trangthai_id = md_trangthai_id;
+                object_.ngayhoanthanh = nht;
+                object_.ngaydkgiaotp = ndkgtp;
+                object_.lydogiaosom_tre = context.Request.Form["lydogiaosom_tre"];
+                object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }

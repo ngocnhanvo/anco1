@@ -472,6 +472,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             lsx.sochungtu = sochungtu;
                             lsx.ngaylap = DateTime.Now;
                             lsx.ngayketthuc = ddh.ngayketthuc;
+                            lsx.ngaydkgiaotp = ddh.ngayketthuc;
                             lsx.phieuXK = " ";
 
                             lsx.nguoitao = us.ad_user_id;
@@ -489,6 +490,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             lsx.ngaytao = DateTime.Now;
                             lsx.ngaycapnhat = DateTime.Now;
                             lsx.hoatdong = true;
+
                             if (countPXT == 1)
                                 lsx.md_trangthai_id = "CHUAHOANTHANH";
                             db.md_lenhsanxuat.Add(lsx);

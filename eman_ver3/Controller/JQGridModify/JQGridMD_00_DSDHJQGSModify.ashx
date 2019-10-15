@@ -733,7 +733,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         if (tgsx == -1)
                             tgsx = 40;
                         dsdh1.thoigiansx = tgsx;
-                        dsdh1.ngayhoanthanh = dsdh1.hangiaohang_po.Value.AddDays(-7);
+                        dsdh1.ngayhoanthanh = dsdh1.hangiaohang_po.Value.AddDays(-10);
                         dsdh1.ngaybatdau = dsdh1.hangiaohang_po.Value.AddDays(0 - tgsx);
                         dsdh1.trangthai = "DANHAN";
                         dsdh1.md_trangthai_id = "HIEULUC";
