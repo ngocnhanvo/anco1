@@ -164,6 +164,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     {
                                         dhpx.md_trangthai_id = "KETTHUC";
                                         lsxto.lsx.md_trangthai_id = "HOANTHANH";
+                                        lsxto.lsx.ngayhoanthanh = vcnb.ngaychuyen;
                                     }
                                     db.SaveChanges();
                                 }
