@@ -41,10 +41,11 @@
                 <dx:ReportToolbarButton ItemKind="SaveToWindow" />
                 <dx:ReportToolbarComboBox ItemKind="SaveFormat" Width="70px">
                     <Elements>
+			<dx:ListElement Value="pdf" />
                         <dx:ListElement Value="xls" />
                         <dx:ListElement Value="xlsx" />                        
                         <dx:ListElement Value="csv" />
-						<dx:ListElement Value="pdf" />
+						
 						<dx:ListElement Value="html" />
                     </Elements>
                 </dx:ReportToolbarComboBox>
