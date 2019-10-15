@@ -571,6 +571,8 @@ namespace XtraReportSerialization
             // 
             // ngaydkgiaotp
             // 
+            this.ngaydkgiaotp.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaydkgiaotp")});
             this.ngaydkgiaotp.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ngaydkgiaotp.Dpi = 100F;
             this.ngaydkgiaotp.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -586,6 +588,8 @@ namespace XtraReportSerialization
             // 
             // ngayxindc
             // 
+            this.ngayxindc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngayxindc")});
             this.ngayxindc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ngayxindc.Dpi = 100F;
             this.ngayxindc.Font = new System.Drawing.Font("Tahoma", 9F);
