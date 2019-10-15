@@ -183,7 +183,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                 Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id).ToList();
                         foreach (var dh in md_xuatkhonb_cdhs)
                         {
-                            var kho = db.md_kho_sanpham.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                            var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
+                            var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                             decimal nhanvoi = 1;
                             if (dh.check_kho != true)
@@ -192,7 +193,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                 {
                                     msg += "<div style='color:red'>Lỗi: dòng \"" + xk.sochungtu + "\" chưa chọn kho.</div>";
                                 }
-                                else if (kho == null)
+                                else if (khosp == null)
                                 {
                                     if (dh.sl_thucxuat > 0)
                                     {
@@ -206,13 +207,13 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                     Lỗi: Số lượng xuất của ""{0}"" phải nhỏ hơn ""{1}"".
                                 </div>", sp.ma_sanpham, dh.tong_sl_xuat - dh.sl_daxuat);
                                 }
-                                else if (kho.soluong < dh.sl_thucxuat)
+                                else if (khosp.soluong < dh.sl_thucxuat)
                                 {
                                     string tendvt = db.md_donvitinhsanpham.
                                             Where(s => s.md_donvitinhsanpham_id == sp.md_donvitinhsanpham_id).Select(s => s.ten_dvt).FirstOrDefault();
                                     msg += string.Format(@"<div style='color:red'>
                                     Lỗi: ""{0}"" số lượng trong kho chỉ còn: ""{1} {2}"".</div>",
-                                        sp.ma_sanpham, kho.soluong.Value.DropTrailingZeros(), tendvt);
+                                        sp.ma_sanpham, khosp.soluong.Value.DropTrailingZeros(), tendvt);
                                 }
                             }
 
@@ -310,6 +311,14 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             }
                                             else if (xk.bosung == 4)
                                             {
+                                                var lsxKho = db.md_lenhsanxuat_tosx.Where(s =>
+                                                    s.md_lenhsanxuat_id == lsxTSX.md_lenhsanxuat_id
+                                                    & s.md_phanxuong_id == kho.md_phanxuong_id
+                                                    & s.md_phanxuong_to_id == kho.md_to_id).FirstOrDefault();
+
+                                                if (lsxKho != null)
+                                                    lsxKho.ngaygiao = xk.ngaydenghi;
+
                                                 string khoNext = Helper.layKhoCuaTo(lsxTSX.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                                 string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);
                                                 add_nhapkho_hsd(db, dh, khoNext, us, KSPID);
@@ -346,6 +355,14 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     }
                                                     db.SaveChanges();
                                                 }
+
+                                                foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                                        s.md_lenhsanxuat_tosx_id == lsxKho.md_lenhsanxuat_tosx_id
+                                                        & s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                                                {
+                                                    ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi;
+                                                }
+                                                db.SaveChanges();
                                             }
                                         }
 

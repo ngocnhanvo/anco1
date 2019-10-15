@@ -103,6 +103,12 @@
                         public Decimal? sl_chiato2 { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sl_dagiao_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_dagiao_wintaFN
+                        public Decimal? sl_dagiao { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_dahoanthanh_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_dahoanthanh_wintaFN

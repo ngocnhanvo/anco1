@@ -10216,6 +10216,10 @@
                             .HasColumnName("ngaydkht")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.ngaygiao)
+                            .HasColumnName("ngaygiao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
                             .Property(p => p.ngayhoanthanh)
                             .HasColumnName("ngayhoanthanh")
                             .HasColumnType("datetime");
@@ -10354,6 +10358,10 @@
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_chiato2)
                             .HasColumnName("sl_chiato2")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.sl_dagiao)
+                            .HasColumnName("sl_dagiao")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.sl_dahoanthanh)

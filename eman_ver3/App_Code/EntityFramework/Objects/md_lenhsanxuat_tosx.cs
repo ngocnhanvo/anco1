@@ -79,6 +79,12 @@
                         public DateTime? ngaydkht { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_ngaygiao_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_ngaygiao_wintaFN
+                        public DateTime? ngaygiao { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_ngayhoanthanh_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_ngayhoanthanh_wintaFN
