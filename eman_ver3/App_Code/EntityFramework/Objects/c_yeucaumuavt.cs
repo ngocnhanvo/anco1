@@ -55,6 +55,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region c_yeucaumuavt_khmvt_name_wintaFN
+                        
+                        #endregion c_yeucaumuavt_khmvt_name_wintaFN
+                        public string khmvt_name { get; set; }
+                
+						
                         #region c_yeucaumuavt_khuon_wintaFN
                         
                         #endregion c_yeucaumuavt_khuon_wintaFN
@@ -71,6 +77,12 @@
                         
                         #endregion c_yeucaumuavt_mota_wintaFN
                         public string mota { get; set; }
+                
+						
+                        #region c_yeucaumuavt_ncvt_name_wintaFN
+                        
+                        #endregion c_yeucaumuavt_ncvt_name_wintaFN
+                        public string ncvt_name { get; set; }
                 
 						
                         #region c_yeucaumuavt_ngaycan_wintaFN

@@ -19,6 +19,18 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region c_kehoachmuavt_bophanyc_wintaFN
+                        
+                        #endregion c_kehoachmuavt_bophanyc_wintaFN
+                        public string bophanyc { get; set; }
+                
+						
+                        #region c_kehoachmuavt_bophanyc_value_wintaFN
+                        
+                        #endregion c_kehoachmuavt_bophanyc_value_wintaFN
+                        public string bophanyc_value { get; set; }
+                
+						
                         #region c_kehoachmuavt_c_donmuavattu_id_wintaFN
                         
                         #endregion c_kehoachmuavt_c_donmuavattu_id_wintaFN
