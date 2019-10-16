@@ -108,7 +108,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 	            left join md_donvitinhsanpham dvtsp on cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
             where 1=1
 	            and lsx.md_lenhsanxuat_id in ('{0}')
-
+                and tsx.stt = 0
             order by dhpx.donhang_thamchieu asc, sp.ma_sanpham asc
 		"
         , md_lenhsanxuat_id
