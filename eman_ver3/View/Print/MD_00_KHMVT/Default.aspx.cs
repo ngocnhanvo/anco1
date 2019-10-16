@@ -96,7 +96,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
 		    select 
                 sp.ma_sanpham as ma_vthh 
                 , N'{2}' as nguoilapphieu
-                , khmvt.value_bophantao as bophanyc
+                , isnull(khmvt.bophanyc_value, khmvt.value_bophantao) as bophanyc
                 , sp.mota_tiengviet as ten_vthh 
                 , sp.quycachdonggoi as quycach
                 , dvt.ten_dvt as dvt 
