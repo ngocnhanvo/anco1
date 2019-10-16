@@ -71,6 +71,27 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
         string md_lenhsanxuat_id = context.Request.QueryString["id"];
         md_lenhsanxuat_id = md_lenhsanxuat_id.Replace(",", "','");
         string oper = context.Request.QueryString["oper"];
+  //      string sql = string.Format(@"
+  //          select 
+	 //           lsx.sochungtu
+	 //           , lsx.ngayketthuc as ngayyeucauhoanthanh
+	 //           , dhpx.donhang_thamchieu as donhang
+	 //           , sp.ma_sanpham as ma_vthh
+	 //           , dvtsp.ten_dvt as dvt
+	 //           , cdh.tong_sl_dat as soluong
+  //          from md_lenhsanxuat lsx
+	 //           left join md_dondathangphanxuong dhpx on lsx.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+	 //           left join md_dondathangphanxuong_cdh cdh on cdh.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+	 //           left join md_sanpham sp on cdh.md_sanpham_id = sp.md_sanpham_id
+	 //           left join md_donvitinhsanpham dvtsp on cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+  //          where 1=1
+	 //           and lsx.md_lenhsanxuat_id in ('{0}')
+
+  //          order by dhpx.donhang_thamchieu asc, sp.ma_sanpham asc
+		//"
+  //      , md_lenhsanxuat_id
+  //      );
+
         string sql = string.Format(@"
             select 
 	            lsx.sochungtu
@@ -78,10 +99,11 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 	            , dhpx.donhang_thamchieu as donhang
 	            , sp.ma_sanpham as ma_vthh
 	            , dvtsp.ten_dvt as dvt
-	            , cdh.tong_sl_dat as soluong
+	            , cdh.sl_chiato as soluong
             from md_lenhsanxuat lsx
 	            left join md_dondathangphanxuong dhpx on lsx.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
-	            left join md_dondathangphanxuong_cdh cdh on cdh.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+	            left join md_lenhsanxuat_tosx tsx on tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 	            left join md_sanpham sp on cdh.md_sanpham_id = sp.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
             where 1=1
