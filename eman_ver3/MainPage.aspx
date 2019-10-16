@@ -24,8 +24,8 @@
     <script src="js/Public_script/prism.js" type="text/javascript" charset="utf-8"></script>
     <!--Script VNN-->
     <script src="js/VNN_script/GridFunction_View.js" type="text/javascript"></script>
-    <script src="js/VNN_script/GridFunction_Admin.js?ver=1" type="text/javascript"></script>
-    <script async src="js/VNN_script/User_GridFormatter.js" type="text/javascript"></script>
+    <script src="js/VNN_script/GridFunction_Admin.js?ver=2" type="text/javascript"></script>
+    <script async src="js/VNN_script/User_GridFormatter.js?ver=2" type="text/javascript"></script>
     <!-- layout -->
     <script src="js/Public_script/jquery.number.js" type="text/javascript"></script>
     <script src="js/Public_script/jquery.form.js" type="text/javascript"></script>
