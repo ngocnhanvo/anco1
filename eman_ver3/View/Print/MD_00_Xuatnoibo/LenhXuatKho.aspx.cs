@@ -96,11 +96,11 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
                 , @px as bophan
                 , kho.ten_kho as khoxuat
                 , xb.mota as diengiai
-                , nknb_cdh.tong_sl_xuat as soluong
-                , isnull(nknb_cdh.ghino, 0) as ghino
-                , isnull(nknb_cdh.truno, 0) as truno
+                , sum(nknb_cdh.tong_sl_xuat) as soluong
+                , sum(isnull(nknb_cdh.ghino, 0)) as ghino
+                , sum(isnull(nknb_cdh.truno, 0)) as truno
                 , null as thucxuat
-                , nknb_cdh.sl_muonxuat as tongcong
+                , sum(nknb_cdh.sl_muonxuat) as tongcong
 		    from md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
@@ -110,6 +110,15 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_muonxuat > 0
                 and nknb_cdh.md_kho_id = '{1}'
+            group by 
+                sp.ma_sanpham
+                , sp.mota_tiengviet
+                , sp.quycachdonggoi
+		        , dvtsp.ten_dvt
+                , xb.sochungtu 
+                , xb.ngaydenghi
+                , kho.ten_kho
+                , xb.mota
             order by sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id
