@@ -249,6 +249,7 @@ public class User_TK
     public string ad_role_id { get; set; }
     public string md_phongban_id { get; set; }
     public string ma_user { get; set; }
+    public string hoten { get; set; }
     public string ma_role { get; set; }
     public string ten_role { get; set; }
     public string ten_phongban { get; set; }

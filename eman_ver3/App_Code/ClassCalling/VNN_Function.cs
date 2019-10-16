@@ -28,6 +28,7 @@ public static class VNN_Function
             ad_role_id = vtr.ad_role_id,
             md_phongban_id = pb.md_phongban_id,
             ma_user = tk.ma_user,
+            hoten = tk.hoten,
             ma_role = vtr.ma_role,
             ten_role = vtr.ten_role,
             ten_phongban = pb.ten_phongban,

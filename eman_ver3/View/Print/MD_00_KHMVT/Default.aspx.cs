@@ -75,12 +75,27 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
 
     public String CreateSql(HttpContext context)
     {
+        var us = VNN_Function.get_user(
+            Security.id_taikhoan(context),
+            Security.id_vaitro(context),
+            Security.id_phongban(context));
+
+        var db = new EntityContext();
         var infoPrint = PrintAnco2.GetInfoPrint();
         string c_kehoachmuavt_id = context.Request.QueryString["id"];
+        string sct = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == c_kehoachmuavt_id).Select(s => s.sochungtu).FirstOrDefault();
+        var dhtcs = (from ncvt_dhpx in db.c_nhucauvattu_dhpx
+                     join dhpx in db.c_kehoachdathang_dhcpx on ncvt_dhpx.md_dondathangphanxuong_id equals dhpx.c_kehoachdathang_dhcpx_id
+                     join khdh in db.c_kehoachdathang on dhpx.c_kehoachdathang_id equals khdh.c_kehoachdathang_id
+                     join c in db.c_yeucaumuavt on ncvt_dhpx.c_nhucauvattu_id equals c.c_nhucauvattu_id
+                     where c.c_kehoachmuavt_id.Contains(sct)
+                     select khdh.donhang_thamchieu).OrderBy(s=>s).ToList();
+
+        string dhtcsStr = string.Join(", ", dhtcs);
         string sql = string.Format(@"
 		    select 
                 sp.ma_sanpham as ma_vthh 
-                , khmvt.value_nguoitao as nguoilapphieu
+                , N'{2}' as nguoilapphieu
                 , khmvt.value_bophantao as bophanyc
                 , sp.mota_tiengviet as ten_vthh 
                 , sp.quycachdonggoi as quycach
@@ -92,6 +107,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
 		        , cdh.sl_duyet
 		        , cdh.ngayphaico as ngay_dkgiao
                 , khmvt.ten_kehoach as sct_khmvt
+                , N'{1}' as diengiai
 	            , (
                     SELECT 
                         isnull(kho.ten_kho + ',' + char(10), '')
@@ -110,6 +126,8 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
                 cdh.c_kehoachmuavt_id = '{0}' 
              order by sp.ma_sanpham"
              , c_kehoachmuavt_id
+             , dhtcsStr
+             , us.hoten
         );
         return sql;
 

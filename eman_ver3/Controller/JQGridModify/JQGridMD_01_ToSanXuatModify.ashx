@@ -337,7 +337,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
+                msg = ex + "";
             }
 
             if (msg.Length <= 0)

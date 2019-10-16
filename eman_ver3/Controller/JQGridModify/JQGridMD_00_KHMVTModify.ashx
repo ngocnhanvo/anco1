@@ -637,6 +637,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.ngaykehoach = ngaykehoach;
                     object_.tungay = tungay;
                     object_.denngay = denngay;
+                    object_.phieuhangton = context.Request.Form["phieuhangton"];
                     db.SaveChanges();
 
                     if (md_trangthai_id == "HIEULUC")
