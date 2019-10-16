@@ -79,6 +79,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     else
                     {
                         ycmvt.c_kehoachmuavt_id = sochungtu;
+                        ycmvt.khmvt_name = ten_kehoach;
                     }
                 }
 
