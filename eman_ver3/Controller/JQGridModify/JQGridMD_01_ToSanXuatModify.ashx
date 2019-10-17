@@ -165,6 +165,11 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
                     ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
 
+                var tsxHT = db.md_lenhsanxuat_tosx.Where(s =>
+                        s.stt == 9999
+                        & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                    ).Take(1).FirstOrDefault();
+
                 md_kho kho2 = null;
                 if(tsx2 != null)
                 {
@@ -183,11 +188,26 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 {
                     msg = @"Chỉ có thể tính hàng tồn khi LSX ở trạng thái ""Đang xử lý"".";
                 }
+                else if (tsx.tinhhangton.GetValueOrDefault(false) == false)
+                {
+                    msg = @"LSX chưa tính hàng tồn.";
+                }
                 else if (!string.IsNullOrEmpty(tsx.phieulayht))
                 {
                     msg = @"LSX đã lấy hàng tồn cho tổ.";
                 }
-                else
+                else if(tsx.stt != 9999)
+                {
+                    if(tsxHT != null)
+                    {
+                        if(string.IsNullOrEmpty(tsxHT.phieulayht))
+                        {
+                            msg = @"LSX chưa lấy hàng tồn ở tổ Hoàn tất, nếu không có tồn bạn vẫn phải thực hiện chức năng lấy hàng tồn.";
+                        }
+                    }
+                }
+
+                if(msg.Length <= 0)
                 {
                     var listLHT = new List<md_lenhsanxuat_tosx_dklht>();
                     foreach (var tsx_ in db.md_lenhsanxuat_tosx.Where(s =>
@@ -330,7 +350,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         }
                         else
                         {
-                            msg = "Tổng số lượng lấy hàng tồn phải lớn hơn 0.";
+                            tsx.phieulayht = "-";
+                            db.SaveChanges();
                         }
                     }
                 }
