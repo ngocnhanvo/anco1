@@ -72,7 +72,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
 	            , substring(nknb_cdh.lsx_to, 0, 13) as thegiaoviec
                 , sp.ma_sanpham as ma_vthh
 	            , dvtsp.ten_dvt as dvt
-	            , nknb_cdh.sl_muonxuat as giao
+	            , nknb_cdh.sl_thucxuat as giao
                 , xb.ngaydenghi
             from md_xuatkhonb xb
 	            left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
