@@ -181,9 +181,10 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         //var check_ma = db.md_xuatkhonb_cdh.Where(s => s.md_sanpham_id != null & s.md_xuatkhonb_id == xk.md_xuatkhonb_id);
                         var md_xuatkhonb_cdhs = db.md_xuatkhonb_cdh.
                                 Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id).ToList();
+						
+						var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
                         foreach (var dh in md_xuatkhonb_cdhs)
                         {
-                            var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
                             var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                             var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                             decimal nhanvoi = 1;
@@ -244,17 +245,17 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                     decimal? truno = dh.truno;
                                     if (new int[] { 0, 3, 4 }.Contains(xk.bosung.GetValueOrDefault(-1)))
                                     {
-                                        var arrLSX = dh.lsx_to.Split(',');
+                                        var arrLSX = dh.lsx_to.Split('»');
                                         foreach (var lsxTo in arrLSX.OrderByDescending(s => s))
                                         {
                                             string[] arr = lsxTo.Split(new[] { " --- " }, StringSplitOptions.None);
                                             string sctLSX = arr[0];
                                             string tentoLSX = arr[1];
                                             var lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == sctLSX).FirstOrDefault();
-                                            string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
-                                            s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
+                                            //string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
+                                            //s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
                                             var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                                                                & s.md_phanxuong_to_id == toId).FirstOrDefault();
+                                                                & s.md_phanxuong_to_id == xk.md_to_id).FirstOrDefault();
 
                                             if (xk.bosung == 0 | xk.bosung == 3)
                                             {
@@ -312,14 +313,14 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             else if (xk.bosung == 4)
                                             {
                                                 var lsxKho = db.md_lenhsanxuat_tosx.Where(s =>
-                                                    s.md_lenhsanxuat_id == lsxTSX.md_lenhsanxuat_id
+                                                    s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
                                                     & s.md_phanxuong_id == kho.md_phanxuong_id
                                                     & s.md_phanxuong_to_id == kho.md_to_id).FirstOrDefault();
 
                                                 if (lsxKho != null)
                                                     lsxKho.ngaygiao = xk.ngaychuyen;
 
-                                                string khoNext = Helper.layKhoCuaTo(lsxTSX.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
+                                                string khoNext = Helper.layKhoCuaTo(lsx.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                                 string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);
                                                 add_nhapkho_hsd(db, dh, khoNext, us, KSPID);
                                                 add_nhapkho_ls(db, dh, khoNext, xk.ngaychuyen, xk.sochungtu, 1, us);
@@ -459,7 +460,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             }
             catch (Exception ex)
             {
-                msg = "false#" + ex.Message;
+                msg = "false#" + ex;
                 commit = false;
             }
 
