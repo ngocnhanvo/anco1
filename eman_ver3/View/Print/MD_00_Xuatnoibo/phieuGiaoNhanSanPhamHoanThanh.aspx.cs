@@ -82,7 +82,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
             where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_thucxuat > 0
-            order by sp.ma_sanpham asc
+            order by substring(nknb_cdh.lsx_to, 0, 13) asc, sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id
         );
