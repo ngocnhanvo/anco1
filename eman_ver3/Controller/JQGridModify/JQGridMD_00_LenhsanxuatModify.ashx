@@ -376,7 +376,32 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                 {
                     if (lsx.md_trangthai_id == "CHUAHOANTHANH")
                     {
-                        lsx.md_trangthai_id = "KHDXL";
+                        var tsxDuc = db.md_lenhsanxuat_tosx.Where(
+                            s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                            & s.stt == 0
+                            ).FirstOrDefault();
+
+                        var tsxHT = db.md_lenhsanxuat_tosx.Where(
+                            s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                            & s.stt == 9999
+                            ).FirstOrDefault();
+
+                        if(tsxHT != null)
+                        {
+                            if (string.IsNullOrEmpty(tsxHT.phieulayht))
+                                msg = "Chưa lấy hàng tồn tổ Hoàn Tất";
+                        }
+
+                        if (tsxDuc != null & msg.Length <= 0)
+                        {
+                            if (string.IsNullOrEmpty(tsxDuc.phieulayht))
+                                msg = "Chưa lấy hàng tồn tổ đầu tiên";
+                        }
+
+                        if (msg.Length > 0)
+                            break;
+                        else
+                            lsx.md_trangthai_id = "KHDXL";
                     }
                     else
                     {
