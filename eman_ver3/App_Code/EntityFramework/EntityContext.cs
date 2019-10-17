@@ -5461,6 +5461,14 @@
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_kehoachmuavt>()
+                            .Property(p => p.bophanyc)
+                            .HasColumnName("bophanyc")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<c_kehoachmuavt>()
+                            .Property(p => p.bophanyc_value)
+                            .HasColumnName("bophanyc_value")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachmuavt>()
                             .Property(p => p.c_donmuavattu_id)
                             .HasColumnName("c_donmuavattu_id")
                             .HasColumnType("nvarchar");
@@ -6254,6 +6262,10 @@
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.khmvt_name)
+                            .HasColumnName("khmvt_name")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.khuon)
                             .HasColumnName("khuon")
                             .HasColumnType("bit");
@@ -6264,6 +6276,10 @@
                             modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.ncvt_name)
+                            .HasColumnName("ncvt_name")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.ngaycan)
