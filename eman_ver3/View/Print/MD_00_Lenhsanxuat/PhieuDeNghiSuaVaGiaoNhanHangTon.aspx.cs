@@ -101,7 +101,9 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 			            WHERE 
 			            1 = 1
 			            and T.md_phanxuong_id = lsx_tsx.md_phanxuong_id
-			            and cast(T.sapxep as int) > cast(pxto.sapxep as int)
+			            and (cast(T.sapxep as int) > cast(pxto.sapxep as int) or (
+                            pxto.sapxep = T.sapxep and T.sapxep = 9999
+                        ))
 			            order by T.sapxep
 			            FOR XML PATH(''), type
 		            ).value('.','nvarchar(max)') as cdcht
@@ -114,7 +116,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 		            left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
 		            left join md_phanxuong_to pxto on pxto.md_to_id = lsx_tsx.md_phanxuong_to_id
 	            where 1=1
-		            and lsx_tsx.md_lenhsanxuat_id in ('{0}')
+		            and lsx_tsx.md_lenhsanxuat_tosx_id in ('{0}')
 		            and lht.sl_layton > 0
             )A
             order by A.ma_vthh asc
