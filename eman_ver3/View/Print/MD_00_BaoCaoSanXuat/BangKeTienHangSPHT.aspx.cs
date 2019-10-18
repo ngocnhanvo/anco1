@@ -140,6 +140,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 		            left join md_phanxuong px on px.md_phanxuong_id = tsx.md_phanxuong_id
 	            )B
             )C
+            where C.slxuat > 0
             group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx
             order by C.ma_hhvt
 		"
