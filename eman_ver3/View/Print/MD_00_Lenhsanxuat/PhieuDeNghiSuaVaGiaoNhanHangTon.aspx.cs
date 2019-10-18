@@ -102,7 +102,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 			            1 = 1
 			            and T.md_phanxuong_id = lsx_tsx.md_phanxuong_id
 			            and (cast(T.sapxep as int) > cast(pxto.sapxep as int) or (
-                            pxto.sapxep = T.sapxep and T.sapxep = 9999
+                            pxto.sapxep = T.sapxep and lsx_tsx.stt = 9999
                         ))
 			            order by T.sapxep
 			            FOR XML PATH(''), type
