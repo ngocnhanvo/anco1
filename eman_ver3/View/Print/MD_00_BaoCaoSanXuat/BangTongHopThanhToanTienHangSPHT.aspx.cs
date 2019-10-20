@@ -77,12 +77,11 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
                 , tosx.sapxep
 	            , (
 		            select sum(
-			            cdh.sl_daxuat * gsp.gia
+			            cdh.sl_daxuat * cdh.gianhancong
 		            )
 		            from md_xuatkhonb xnb (nolock)
 			            left join md_xuatkhonb_cdh cdh (nolock) on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
 			            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
-			            left join md_giasanpham gsp (nolock) on gsp.md_phienbangia_id = xnb.phienbangiaNC and gsp.md_sanpham_id = cdh.md_sanpham_id
 		            where 
 			            ngaychuyen between @tungay and @denngay
 			            and xnb.bosung = 4
@@ -90,12 +89,11 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
 	            ) as tienhang1
 	            , (
 		            select sum(
-			            cdh.soluong_dachuyen * gsp.gia
+			            cdh.soluong_dachuyen * cdh.gianhancong
 		            )
 		            from md_vanchuyennoibo xnb (nolock)
 			            left join md_vanchuyennoibo_cdvc cdh (nolock) on cdh.md_vanchuyennoibo_id = xnb.md_vanchuyennoibo_id
 			            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
-			            left join md_giasanpham gsp (nolock) on gsp.md_phienbangia_id = xnb.phienbangiaNC and gsp.md_sanpham_id = cdh.md_sanpham_id
 		            where 
 			            ngaychuyen between @tungay and @denngay
 			            and xnb.loaichuyen = 'VANCNBCTKGH'
