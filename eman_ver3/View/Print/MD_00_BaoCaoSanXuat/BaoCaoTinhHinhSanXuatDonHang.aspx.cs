@@ -46,6 +46,46 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
             var sltungdonhang_cell = report.Report.FindControl("sltungdonhang", true);
             sltungdonhang_cell.DataBindings[0].FormatString = sothapphan;
 
+            var ttduc_cell = report.Report.FindControl("ttduc", true);
+            var duc_cell = report.Report.FindControl("duc", true);
+            var ttbancat_cell = report.Report.FindControl("ttbancat", true);
+            var bancat_cell = report.Report.FindControl("bancat", true);
+            var ttmai_cell = report.Report.FindControl("ttmai", true);
+            var mai_cell = report.Report.FindControl("mai", true);
+            var tthoantat_cell = report.Report.FindControl("tthoantat", true);
+            var hoantat_cell = report.Report.FindControl("hoantat", true);
+
+            if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 2")
+            {
+                ttbancat_cell.Text = ttbancat_cell.Text + " + " + ttmai_cell.Text;
+                ttbancat_cell.WidthF = ttbancat_cell.WidthF + ttmai_cell.WidthF;
+                bancat_cell.WidthF = ttbancat_cell.WidthF;
+                ttmai_cell.Visible = false;
+                mai_cell.Visible = false;
+            }
+
+            if (tbl.Rows[0]["px"].ToString() == "Phân xưởng sơn tĩnh điện")
+            {                
+                ttbancat_cell.Visible = false;
+                ttmai_cell.Visible = false;
+                mai_cell.Visible = false;
+                tthoantat_cell.Visible = false;
+
+                var ducbd = duc_cell.DataBindings[0];
+                duc_cell.DataBindings.Remove(ducbd);
+                var hoantatbd = hoantat_cell.DataBindings[0];
+                hoantat_cell.DataBindings.Remove(hoantatbd);
+                var bancatbd = bancat_cell.DataBindings[0];
+                bancat_cell.DataBindings.Remove(bancatbd);
+                bancat_cell.DataBindings.AddRange(new XRBinding[] {
+                    new XRBinding("Text", null, "duc", "{0:#,#0%}")
+                });
+
+                ttduc_cell.Text = "Sơn tĩnh điện";
+                ttduc_cell.WidthF = ttduc_cell.WidthF + ttbancat_cell.WidthF + ttmai_cell.WidthF + tthoantat_cell.WidthF;
+                bancat_cell.WidthF = ttduc_cell.WidthF;
+            }
+
             report.DataSource = ds;
             report.DataAdapter = da;
             ReportViewer1.Report = report;
