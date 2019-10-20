@@ -55,7 +55,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
             var tthoantat_cell = report.Report.FindControl("tthoantat", true);
             var hoantat_cell = report.Report.FindControl("hoantat", true);
 
-            if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 2")
+            if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 1")
             {
                 ttbancat_cell.Text = ttbancat_cell.Text + " + " + ttmai_cell.Text;
                 ttbancat_cell.WidthF = ttbancat_cell.WidthF + ttmai_cell.WidthF;
@@ -63,8 +63,15 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
                 ttmai_cell.Visible = false;
                 mai_cell.Visible = false;
             }
-
-            if (tbl.Rows[0]["px"].ToString() == "Phân xưởng sơn tĩnh điện")
+            else if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 2")
+            {
+                ttbancat_cell.Text = ttbancat_cell.Text + " + " + ttmai_cell.Text;
+                ttbancat_cell.WidthF = ttbancat_cell.WidthF + ttmai_cell.WidthF;
+                bancat_cell.WidthF = ttbancat_cell.WidthF;
+                ttmai_cell.Visible = false;
+                mai_cell.Visible = false;
+            }
+            else
             {                
                 ttbancat_cell.Visible = false;
                 ttmai_cell.Visible = false;
