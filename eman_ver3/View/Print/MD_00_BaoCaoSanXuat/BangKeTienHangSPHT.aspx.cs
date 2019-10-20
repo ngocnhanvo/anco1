@@ -98,7 +98,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 			            , sp.ma_sanpham as ma_hhvt
 			            , dvtsp.ten_dvt as dvt
 			            , A.slxuat
-			            , (select top 1 gia from md_giasanpham where md_phienbangia_id = A.phienbangiaNC and md_sanpham_id = a.md_sanpham_id) as dongia
+			            , A.dongia
 		            from (
 			            select
 				            xnb.sochungtu
@@ -107,6 +107,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            , xnb.phienbangiaNC
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
+                            , dh.gianhancong as dongia
 			            FROM 
 				            md_xuatkhonb xnb (nolock)
 				            left join md_xuatkhonb_cdh dh (nolock) on xnb.md_xuatkhonb_id = dh.md_xuatkhonb_id
@@ -124,6 +125,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            , xnb.phienbangiaNC
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
+                            , dh.gianhancong as dongia
 			            FROM 
 				            md_vanchuyennoibo xnb (nolock)
 				            left join md_vanchuyennoibo_cdvc dh (nolock) on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
