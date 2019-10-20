@@ -57,11 +57,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 
             if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 1")
             {
-                ttbancat_cell.Text = ttbancat_cell.Text + " + " + ttmai_cell.Text;
-                ttbancat_cell.WidthF = ttbancat_cell.WidthF + ttmai_cell.WidthF;
-                bancat_cell.WidthF = ttbancat_cell.WidthF;
-                ttmai_cell.Visible = false;
-                mai_cell.Visible = false;
+
             }
             else if (tbl.Rows[0]["px"].ToString() == "Phân xưởng 2")
             {
