@@ -81,7 +81,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
                 var bancatbd = bancat_cell.DataBindings[0];
                 bancat_cell.DataBindings.Remove(bancatbd);
                 bancat_cell.DataBindings.AddRange(new XRBinding[] {
-                    new XRBinding("Text", null, "duc", "{0:#,#0%}")
+                    new XRBinding("Text", null, "hoantat", "{0:#,#0%}")
                 });
 
                 ttduc_cell.Text = "Sơn tĩnh điện";
