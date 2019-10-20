@@ -126,7 +126,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 left join md_kho kho on xb.tukho = kho.md_kho_id
 		    where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
-                and nknb_cdh.sl_muonxuat > 0
+                and nknb_cdh.sl_thucxuat > 0
             order by sp.ma_sanpham asc
 		"
         , md_xuatkhonb_id

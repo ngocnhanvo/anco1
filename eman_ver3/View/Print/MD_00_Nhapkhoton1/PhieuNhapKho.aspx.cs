@@ -119,7 +119,7 @@ public partial class PrintControllers_MD_00_Nhapkhoton1_PhieuNhapKho : System.We
                 left join md_kho kho on xb.denkho = kho.md_kho_id
 		    where 
                 nknb_cdh.md_nhapkhoton_id = '{0}'
-                and nknb_cdh.tong_sl_dat > 0
+                and nknb_cdh.sl_nhap > 0
             order by sp.ma_sanpham asc
 		"
         , md_nhapkhoton_id

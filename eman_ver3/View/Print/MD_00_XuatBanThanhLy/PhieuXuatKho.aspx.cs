@@ -117,7 +117,7 @@ public partial class PrintControllers_MD_00_XuatBanThanhLy_PhieuXuatKho : System
                 left join md_kho kho on xb.tukho = kho.md_kho_id
 		    where 
                 nknb_cdh.md_xuatban_id = '{0}'
-                and nknb_cdh.tong_sl_xuat > 0
+                and nknb_cdh.sl_xuat > 0
             order by sp.ma_sanpham asc
 		"
         , md_xuatban_id
