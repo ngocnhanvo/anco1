@@ -112,7 +112,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuChuyenKho : System.We
                 left join md_kho kho2 on xb.denkho = kho2.md_kho_id
 		    where 
                 nknb_cdh.md_vanchuyennoibo_id = '{0}'
-                and nknb_cdh.soluong_muonchuyen > 0
+                and nknb_cdh.soluong_dichchuyen > 0
             order by sp.ma_sanpham asc
 		"
         , md_vanchuyennoibo_id

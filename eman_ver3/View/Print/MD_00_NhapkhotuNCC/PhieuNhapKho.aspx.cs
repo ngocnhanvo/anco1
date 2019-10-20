@@ -124,7 +124,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.W
                 left join md_kho kho on xb.kho = kho.md_kho_id
 		    where 
                 nknb_cdh.md_nhapkho_ncc_id = '{0}'
-                and nknb_cdh.sl_muonnhap > 0
+                and nknb_cdh.sl_nhap > 0
             order by sp.ma_sanpham asc
 		"
         , md_nhapkho_ncc_id

@@ -126,7 +126,7 @@ public partial class PrintControllers_MD_00_XuatBan_PhieuXuatKho : System.Web.UI
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xb.md_doitackinhdoanh_id
 		    where 
                 nknb_cdh.md_xuatban_id = '{0}'
-                and nknb_cdh.tong_sl_xuat > 0
+                and nknb_cdh.sl_xuat > 0
             order by sp.ma_sanpham asc
 		"
         , md_xuatban_id
