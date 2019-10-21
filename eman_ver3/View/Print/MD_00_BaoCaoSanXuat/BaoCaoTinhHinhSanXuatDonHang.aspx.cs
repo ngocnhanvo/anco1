@@ -214,7 +214,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 				        , A.md_phanxuong_id
 	        )B
         )C
-        order by C.thegiaoviecsx, C.ngaytheolsx
+        order by C.ngaytheolsx, C.thegiaoviecsx
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
