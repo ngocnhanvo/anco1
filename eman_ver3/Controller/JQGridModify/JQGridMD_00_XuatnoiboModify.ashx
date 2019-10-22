@@ -361,7 +361,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         s.md_lenhsanxuat_tosx_id == lsxKho.md_lenhsanxuat_tosx_id
                                                         & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                                                 {
-                                                    ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi;
+                                                    ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
                                                 }
                                                 db.SaveChanges();
                                             }
