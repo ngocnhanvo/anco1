@@ -11460,6 +11460,10 @@
                             .HasColumnName("sctdathang")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.so_donmuahang)
+                            .HasColumnName("so_donmuahang")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
                             .Property(p => p.sochungtu)
                             .HasColumnName("sochungtu")
                             .HasColumnType("nvarchar");
@@ -11513,6 +11517,10 @@
                             modelBuilder.Entity<md_nhapkho_ncc_dh>()
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkho_ncc_dh>()
+                            .Property(p => p.c_donmuahang_id)
+                            .HasColumnName("c_donmuahang_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_nhapkho_ncc_dh>()
                             .Property(p => p.check_kho)
@@ -11611,6 +11619,10 @@
                             .Property(p => p.sl_nhap2)
                             .HasColumnName("sl_nhap2")
                             .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_nhapkho_ncc_dh>()
+                            .Property(p => p.so_dmh)
+                            .HasColumnName("so_dmh")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkho_ncc_dh>()
                             .Property(p => p.STT)
                             .HasColumnName("STT")

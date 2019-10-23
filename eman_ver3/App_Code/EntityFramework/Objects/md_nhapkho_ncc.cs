@@ -139,6 +139,12 @@
                         public string sctdathang { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_so_donmuahang_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_so_donmuahang_wintaFN
+                        public string so_donmuahang { get; set; }
+                
+						
                         #region md_nhapkho_ncc_sochungtu_wintaFN
                         
                         #endregion md_nhapkho_ncc_sochungtu_wintaFN

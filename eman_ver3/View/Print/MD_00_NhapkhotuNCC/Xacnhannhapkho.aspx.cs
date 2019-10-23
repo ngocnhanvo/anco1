@@ -100,38 +100,50 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
         var infoPrint = PrintAnco2.GetInfoPrint();
 		string md_nhapkho_ncc_id = context.Request.QueryString["md_nhapkho_ncc_id"];
 		string sql = string.Format(@"
-		select 
-            sp.ma_sanpham as ma_vthh
-            , sp.mota_tiengviet as ten_vthh
-		    , dvtsp.ten_dvt as dvt
-            , nk_ncc_dh.tong_sl_dat as duocnhap
-            , isnull(nk_ncc_dh.sl_nhap, 0) as thucnhap
-            , nk_ncc_dh.sl_muonnhap as slsct
-            , CEILING((isnull(nk_ncc_dh.sl_nhap, 0) * nk_ncc_dh.giatriVND)) as thanhtien
-		    , sp.quycachdonggoi as quycach 
-            , nk_ncc_dh.giatriVND as dongia
-            , (select ten_kho from md_kho where md_kho_id = nk_ncc.kho) as kho
-		    , dmh.so_donmuahang as sct_dmh
-            , dmh.ngaydonhang as dd_dmh
-            , dmh.ngaydonhang as MM_dmh
-            , dmh.ngaydonhang as yyyy_dmh 
-            , dmh.donhang_thamchieu as sodonhang
-            , dtkd.ten_dtkd as nhacungcap
-            , nk_ncc.phieuXNNK as sct_pxnnvt
-            , nk_ncc.phieugiaohang
-            , nk_ncc.ngaygiaohang
-            , nk_ncc.ngaydenghi
-		from md_nhapkho_ncc_dh nk_ncc_dh
-            inner join md_nhapkho_ncc nk_ncc on nk_ncc.md_nhapkho_ncc_id = nk_ncc_dh.md_nhapkho_ncc_id
-		    left join md_sanpham sp on nk_ncc_dh.md_sanpham_id = sp.md_sanpham_id
-		    left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
-		    inner join c_donmuahang dmh on dmh.c_donmuahang_id = nk_ncc.c_donmuahang_id
-		    left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-		where 
-            nk_ncc_dh.md_nhapkho_ncc_id = '{0}' 
-            and nk_ncc_dh.sl_nhap > 0
-        order by sp.ma_sanpham asc"
-        , md_nhapkho_ncc_id
+		    select 
+                sp.ma_sanpham as ma_vthh
+                , sp.mota_tiengviet as ten_vthh
+	            , dvtsp.ten_dvt as dvt
+                , sum(nk_ncc_dh.tong_sl_dat) as duocnhap
+                , sum(isnull(nk_ncc_dh.sl_nhap, 0)) as thucnhap
+                , sum(nk_ncc_dh.sl_muonnhap) as slsct
+                , sum(CEILING((isnull(nk_ncc_dh.sl_nhap, 0) * nk_ncc_dh.giatriVND))) as thanhtien
+	            , sp.quycachdonggoi as quycach 
+                , nk_ncc_dh.giatriVND as dongia
+                , (select ten_kho from md_kho where md_kho_id = nk_ncc.kho) as kho
+	            , replace(nk_ncc.so_donmuahang,char(10),', ') as sct_dmh
+                , nk_ncc.donhang_thamchieu as sodonhang
+                , dtkd.ten_dtkd as nhacungcap
+                , nk_ncc.phieuXNNK as sct_pxnnvt
+                , nk_ncc.phieugiaohang
+                , nk_ncc.ngaygiaohang
+                , nk_ncc.ngaydenghi
+            from md_nhapkho_ncc_dh nk_ncc_dh
+                inner join md_nhapkho_ncc nk_ncc on nk_ncc.md_nhapkho_ncc_id = nk_ncc_dh.md_nhapkho_ncc_id
+	            left join md_sanpham sp on nk_ncc_dh.md_sanpham_id = sp.md_sanpham_id
+	            left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = nk_ncc.md_doitackinhdoanh_id
+            where 
+                nk_ncc_dh.md_nhapkho_ncc_id = '{0}' 
+                and nk_ncc_dh.sl_nhap > 0
+	        group by 
+	            sp.ma_sanpham
+                , sp.mota_tiengviet
+	            , dvtsp.ten_dvt
+	            , sp.quycachdonggoi
+                , nk_ncc_dh.giatriVND
+	            , nk_ncc.kho
+	            , nk_ncc.so_donmuahang
+	            , nk_ncc.donhang_thamchieu
+	            , dtkd.ten_dtkd
+                , nk_ncc.phieuXNNK
+                , nk_ncc.phieugiaohang
+                , nk_ncc.ngaygiaohang
+                , nk_ncc.ngaydenghi
+            order by 
+                sp.ma_sanpham asc
+            "
+            , md_nhapkho_ncc_id
         );
 		return sql;
     }

@@ -35,207 +35,142 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
     public void CA_01_XacNhanNKNCC(HttpContext context)
     {
+        string msg = "";
+        context.Response.Write(msg);
+    }
+
+    public void CA_01_XLNKNCC(HttpContext context)
+    {
         var db = new EntityContext();
         var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        var pub = new Public();
+        string msg = "", msg_success = "";
+        string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
-        string[] vnn = id.Split(',');
-        string msg = "";
+        int count_slnhap = 0;
+
         using (var transaction = db.Database.BeginTransaction())
         {
-            foreach (var nkncc in db.md_nhapkho_ncc.Where(s => vnn.Contains(s.md_nhapkho_ncc_id)).ToList())
+            //Xu Ly nhap kho
+            foreach (var px in db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == id).ToList())
             {
-                if (nkncc.trangthai != "SOANTHAO")
-                    msg = string.Format(@"Lỗi: phiếu ""{0}"" đã được xác nhận.<br>", nkncc.sochungtu);
+                if (px.trangthai == "HIEULUC")
+                {
+                    msg += "Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
+                    break;
+                }
+                else if (string.IsNullOrEmpty(px.kho) | px.kho == " ")
+                {
+                    msg += "Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho đến.";
+                    break;
+                }
+                else if(px.trangthai != "DANHAN")
+                {
+                    msg += string.Format(@"Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".", px.sochungtu);
+                    break;
+                }
                 else
-                    nkncc.trangthai = "DANHAN";
+                {
+                    var md_nhapkho_ncc_dhs = db.md_nhapkho_ncc_dh
+                            .Where(s => s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id & s.sl_nhap > 0).ToList();
+                    foreach (var dh in md_nhapkho_ncc_dhs)
+                    {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                        try
+                        {
+                            count_slnhap++;
+                            decimal soluong_nhap = dh.sl_nhap.Value;
+                            //--cap nhat so luong nhap
+                            edit_nhap(db, dh, px, us);
+                            db.SaveChanges();
+                            //--cap nhat vao kho
+                            string khospId = add_kho(db, dh, px, us);
+                            db.SaveChanges();
+                            //--cap nhat vao kho hạn sử dụng
+                            add_kho_hsd(db, dh, px, us, khospId);
+                            db.SaveChanges();
+                            //--tao lich su nhap kho
+                            add_kho_ls(db, dh, px, us);
+                            db.SaveChanges();
+                            //--cap nhat gia tri binh quan gia quyen của sản phẩm
+                            add_kho_bqgq(db, dh, sp, px.kho, us);
+                            db.SaveChanges();
 
-                db.SaveChanges();
+                            msg_success += "<div>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" + soluong_nhap.DropTrailingZeros() + "\"</div>";
+                        }
+                        catch (Exception ex)
+                        {
+                            msg += string.Format("<div style='color:red'>Lỗi: {0}</div>", ex + "");
+                            break;
+                        }
+                    }
+                }
+
+                if (count_slnhap <= 0)
+                {
+                    msg += "Dòng \"" + px.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.";
+                }
+                //Kiem tra de chuyen thanh Hieu Luc
+                if (msg.Length <= 0)
+                {
+                    px.trangthai = "HIEULUC";
+                    db.SaveChanges();
+
+                    var dmhs = db.c_donmuahang.Where(s => px.c_donmuahang_id.Contains(s.c_donmuahang_id)).ToList();
+                    foreach (var dmh in dmhs)
+                    {
+                        var cdhs = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Where(s=>s.sl_dadat > s.sl_hanngach).Count();
+                        if (cdhs <= 0)
+                            dmh.md_trangthai_id = "DAXONG";
+                        else
+                            dmh.md_trangthai_id = "CHUAXONG";
+                    }
+                    db.SaveChanges();
+                }
             }
 
             if (msg.Length <= 0)
             {
-                msg = string.Format(@"<div class='nhan-thanhcong'>Xác nhận phiếu nhập kho thành công.</div>");
+                msg = string.Format("<div style='color:blue'>{0}</div>", msg_success);
                 transaction.Commit();
             }
             else
             {
-                msg = string.Format(@"<div style='color:red'>Lỗi: {0}</div>", msg);
+                msg = string.Format("<div style='color:red'>{0}</div>", msg);
                 transaction.Rollback();
             }
         }
         context.Response.Write(msg);
     }
 
-    public void CA_01_XLNKNCC(HttpContext context)
-    {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", msg_success = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        string id = context.Request.Form["id"];
-        int count_slnhap = 0;
-        int dem_count = 0;
-        try
-        {
-            var checkngayhethan = (from a in db.md_nhapkho_ncc_dh.Where(s => s.md_nhapkho_ncc_id == id).ToList()
-                                   join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-                                   where b.co_ngayhethan == true & a.ngay_hethan == null
-                                   select b.ma_sanpham).ToList<string>();
-
-            if (checkngayhethan.Count > 0)
-            {
-                msg += string.Format(@"
-                    <div style='color:red'>
-                        Những hàng hóa/vật tư chưa có hạn sử dụng:<br>
-                        => {0}.
-                    </div>", string.Join(",", checkngayhethan));
-            }
-            else
-            {
-                bool commit = true;
-                using (var transaction = db.Database.BeginTransaction())
-                {
-                    //Xu Ly nhap kho
-                    foreach (var px in db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == id).ToList())
-                    {
-                        string msgDT = "";
-                        if (px.trangthai == "HIEULUC")
-                        {
-                            msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
-                            commit = false;
-                        }
-                        else if (string.IsNullOrEmpty(px.kho) | px.kho == " ")
-                        {
-                            msgDT += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho đến.</div>";
-                        }
-                        else if(px.trangthai != "DANHAN")
-                        {
-                            msgDT += string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", px.sochungtu);
-                        }
-                        else
-                        {
-                            var check_kho = db.md_nhapkho_ncc_dh.Where(s => s.check_kho == true & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
-                            var check_ma = db.md_nhapkho_ncc_dh.Where(s => s.md_sanpham_id != null & s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id).ToList();
-
-                            var md_nhapkho_ncc_dhs = db.md_nhapkho_ncc_dh
-                                    .Where(s => s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id & (s.check_kho == null | s.check_kho == false)).ToList();
-                            foreach (var dh in md_nhapkho_ncc_dhs)
-                            {
-                                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-
-                                if (dh.sl_nhap > 0)
-                                {
-                                    try
-                                    {
-                                        count_slnhap++;
-                                        decimal soluong_nhap = dh.sl_nhap.Value;
-                                        //--cap nhat so luong nhap
-                                        edit_nhap(db, dh, us);
-                                        db.SaveChanges();
-                                        //--cap nhat vao kho
-                                        string khospId = add_kho(db, dh, px, us);
-                                        db.SaveChanges();
-                                        //--cap nhat vao kho hạn sử dụng
-                                        add_kho_hsd(db, dh, px, us, khospId);
-                                        db.SaveChanges();
-                                        //--tao lich su nhap kho
-                                        add_kho_ls(db, dh, px, us);
-                                        db.SaveChanges();
-                                        //--cap nhat gia tri binh quan gia quyen của sản phẩm
-                                        add_kho_bqgq(db, dh, us);
-                                        db.SaveChanges();
-
-                                        msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" +
-                                        soluong_nhap.DropTrailingZeros() + "\"</div>";
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        msgDT += string.Format("<div style='color:red'>Lỗi: {0}</div>", ex.Message);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (count_slnhap <= 0)
-                        {
-                            msgDT += "<div style='color:red'>Dòng \"" + px.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
-                        }
-                        //Kiem tra de chuyen thanh Hieu Luc
-                        if (msgDT.Length <= 0)
-                        {
-                            msgDT = msg_success + msgDT;
-                            px.trangthai = "HIEULUC";
-                            db.SaveChanges();
-
-                            foreach (var dmh_cdmh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).ToList())
-                            {
-                                if (dmh_cdmh.sl_dadat - dmh_cdmh.sl_hanngach > 0)
-                                {
-                                    dem_count = 1;
-                                }
-                            }
-
-                            var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == px.c_donmuahang_id).FirstOrDefault();
-                            if (dem_count == 0)
-                            {
-                                dmh.md_trangthai_id = "DAXONG";
-                            }
-                            else if (dem_count == 1)
-                            {
-                                dmh.md_trangthai_id = "CHUAXONG";
-                            }
-                            db.SaveChanges();
-                        }
-                        else
-                            commit = false;
-                        msg += msgDT;
-                    }
-
-                    if (commit == true)
-                    {
-                        transaction.Commit();
-                    }
-                    else
-                        transaction.Rollback();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
-        context.Response.Write(msg);
-    }
-
     //--cap nhat so luong nhap
-    public string edit_nhap(EntityContext db, md_nhapkho_ncc_dh dh, User_TK us)
+    public string edit_nhap(EntityContext db, md_nhapkho_ncc_dh dh, md_nhapkho_ncc nk, User_TK us)
     {
         string id_new = dh.md_nhapkho_ncc_id;
-        md_nhapkho_ncc nk = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == dh.md_nhapkho_ncc_id).FirstOrDefault();
-        c_donmuahang_cdmh dmh_cdmh = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == nk.c_donmuahang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        decimal sl_danhap = dh.sl_danhap.Value + dh.sl_nhap.Value;
+        var dmh_cdmh = db.c_donmuahang_cdmh.Where(s =>
+            s.c_donmuahang_id == dh.c_donmuahang_id
+            & s.md_sanpham_id == dh.md_sanpham_id
+        ).FirstOrDefault();
+
         if (dmh_cdmh != null)
-            dmh_cdmh.sl_hanngach += (decimal)dh.sl_nhap;
+            dmh_cdmh.sl_hanngach += dh.sl_nhap.GetValueOrDefault(0);
 
-        if (dh.tong_sl_dat == (decimal)dh.sl_danhap + (decimal)dh.sl_nhap)
-        {
-            dh.check_kho = true;
-            sl_danhap = dh.tong_sl_dat.Value;
-        }
-
-        dh.sl_danhap = dh.sl_nhap + dh.sl_danhap;
+        dh.sl_danhap = dh.sl_nhap.GetValueOrDefault(0);
         nk.ngaycapnhat = DateTime.Now;
 
         foreach (var check_nk in db.md_nhapkho_ncc.
-                Where(s => s.md_nhapkho_ncc_id != nk.md_nhapkho_ncc_id 
-                    & s.c_donmuahang_id == nk.c_donmuahang_id 
+                Where(s => s.md_nhapkho_ncc_id != nk.md_nhapkho_ncc_id
+                    & s.c_donmuahang_id.Contains(dh.c_donmuahang_id)
                     & new string[] { "SOANTHAO", "DANHAN" }.Contains(s.trangthai)).ToList())
         {
-            foreach (var ck_dh in db.md_nhapkho_ncc_dh.
-                    Where(s => s.md_nhapkho_ncc_id == check_nk.md_nhapkho_ncc_id & s.md_sanpham_id == dh.md_sanpham_id).ToList())
+            var ck_dh = db.md_nhapkho_ncc_dh.
+                    Where(s =>
+                        s.md_nhapkho_ncc_id == check_nk.md_nhapkho_ncc_id
+                        & s.c_donmuahang_id == dh.c_donmuahang_id
+                        & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+
+            if(ck_dh != null)
             {
-                ck_dh.tong_sl_dat = ck_dh.tong_sl_dat - sl_danhap;
+                ck_dh.tong_sl_dat = ck_dh.tong_sl_dat - dh.sl_nhap;
             }
         }
         return id_new;
@@ -379,16 +314,15 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         return abc;
     }
 
-    public void add_kho_bqgq(EntityContext db, md_nhapkho_ncc_dh dh, User_TK us)
+    public void add_kho_bqgq(EntityContext db, md_nhapkho_ncc_dh dh, md_sanpham sp, string kho, User_TK us)
     {
-        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        if (sp != null)
-        {
-            decimal? tsl_trongkho = db.md_kho_sanpham.Where(s => s.md_sanpham_id == sp.md_sanpham_id).Select(s => s.soluong).Sum();
-            decimal ve1 = (tsl_trongkho.GetValueOrDefault(0) - dh.sl_nhap2.GetValueOrDefault(0)) * sp.giabinhquan.GetValueOrDefault(0);
-            decimal ve2 = dh.sl_nhap2.GetValueOrDefault(0) * dh.giatriVND.GetValueOrDefault(0);
-            sp.giabinhquan = Math.Ceiling(((ve1 + ve2) / tsl_trongkho).GetValueOrDefault(0));
-        }
+        //if (sp != null)
+        //{
+        //    decimal? tsl_trongkho = db.md_kho_sanpham.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_kho_id == kho).Select(s => s.soluong).Sum();
+        //    decimal ve1 = (tsl_trongkho.GetValueOrDefault(0) - dh.sl_nhap2.GetValueOrDefault(0)) * sp.giabinhquan.GetValueOrDefault(0);
+        //    decimal ve2 = dh.sl_nhap2.GetValueOrDefault(0) * dh.giatriVND.GetValueOrDefault(0);
+        //    sp.giabinhquan = Math.Ceiling(((ve1 + ve2) / tsl_trongkho).GetValueOrDefault(0));
+        //}
     }
 
     public void add(HttpContext context)

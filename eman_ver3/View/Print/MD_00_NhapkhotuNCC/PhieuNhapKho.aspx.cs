@@ -103,28 +103,40 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.W
         string oper = context.Request.QueryString["oper"];
         string sql = string.Format(@"
 		    select 
-                sp.ma_sanpham as ma_vthh 
-                , sp.mota_tiengviet as ten_vthh
-		        , dvtsp.ten_dvt as dvt
-                , xb.sochungtu as sct_lsx 
-                , xb.ngaychuyen
-                , xb.ngaydenghi
-                , (select ten_dtkd from md_doitackinhdoanh where md_doitackinhdoanh_id = xb.md_doitackinhdoanh_id) as xuatcho
-                , null as bophan
-                , kho.ten_kho as khoxuat
-                , xb.mota as diengiai
-                , nknb_cdh.sl_nhap as soluong
-                , nknb_cdh.giatriVND as dongia
-                , ceiling(nknb_cdh.giatriVND * nknb_cdh.sl_nhap) as thanhtien
-                , xb.phieuXNNK as yeucau
-		    from md_nhapkho_ncc xb
-		        left join md_nhapkho_ncc_dh nknb_cdh on xb.md_nhapkho_ncc_id = nknb_cdh.md_nhapkho_ncc_id
-                left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
-                left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
-                left join md_kho kho on xb.kho = kho.md_kho_id
-		    where 
-                nknb_cdh.md_nhapkho_ncc_id = '{0}'
-                and nknb_cdh.sl_nhap > 0
+	            sp.ma_sanpham as ma_vthh 
+	            , sp.mota_tiengviet as ten_vthh
+	            , dvtsp.ten_dvt as dvt
+	            , xb.sochungtu as sct_lsx 
+	            , xb.ngaychuyen
+	            , xb.ngaydenghi
+	            , (select ten_dtkd from md_doitackinhdoanh where md_doitackinhdoanh_id = xb.md_doitackinhdoanh_id) as xuatcho
+	            , null as bophan
+	            , kho.ten_kho as khoxuat
+	            , xb.mota as diengiai
+	            , sum(nknb_cdh.sl_nhap) as soluong
+	            , nknb_cdh.giatriVND as dongia
+	            , sum(ceiling(nknb_cdh.giatriVND * nknb_cdh.sl_nhap)) as thanhtien
+	            , xb.phieuXNNK as yeucau
+            from md_nhapkho_ncc xb
+	            left join md_nhapkho_ncc_dh nknb_cdh on xb.md_nhapkho_ncc_id = nknb_cdh.md_nhapkho_ncc_id
+	            left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
+	            left join md_donvitinhsanpham dvtsp on nknb_cdh.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+	            left join md_kho kho on xb.kho = kho.md_kho_id
+            where 
+	            nknb_cdh.md_nhapkho_ncc_id = '{0}'
+	            and nknb_cdh.sl_nhap > 0
+            group by
+	            sp.ma_sanpham
+	            , sp.mota_tiengviet
+	            , dvtsp.ten_dvt
+	            , xb.sochungtu
+	            , xb.ngaychuyen
+	            , xb.ngaydenghi
+	            , xb.md_doitackinhdoanh_id
+	            , kho.ten_kho
+	            , xb.mota
+	            , nknb_cdh.giatriVND
+	            , xb.phieuXNNK
             order by sp.ma_sanpham asc
 		"
         , md_nhapkho_ncc_id
