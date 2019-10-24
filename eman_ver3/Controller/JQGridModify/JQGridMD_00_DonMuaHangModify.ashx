@@ -119,7 +119,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 }
                 else if (countx > 0)
                 {
-                    msg = string.Format(@"Phiếu nhập kho của ĐMH {0} chưa Hiệu Lực, không thể tạo phiếu mới.", dmh.so_donmuahang);
+                    msg = string.Format(@"Lỗi: Phiếu nhập kho của ĐMH {0} chưa Hiệu Lực, không thể tạo phiếu mới. {1}", dmh.c_donmuahang_id, countx);
                     break;
                 }
                 else
