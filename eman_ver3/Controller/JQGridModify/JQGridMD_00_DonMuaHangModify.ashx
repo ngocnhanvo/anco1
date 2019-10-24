@@ -227,9 +227,9 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                     if (dmh.phieunhapkho == " ")
                         dmh.phieunhapkho = "Đã tạo phiếu";
                 }
-				db.SaveChanges();
             }
-
+			db.SaveChanges();
+			
             if (msg.Length <= 0)
             {
                 transaction.Commit();
