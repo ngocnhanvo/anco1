@@ -13,12 +13,12 @@
         var context = HttpContext.Current;
         var response = context.Response;
 		
-		if (Request.Url.Scheme == "http")
+		if (Request.Url.Scheme.Contains("http"))
 			Response.Redirect(Request.Url.ToString().Replace("http","https"));
 			
         if (!Request.Url.Host.StartsWith("www") & !Request.Url.IsLoopback & !Request.Url.Host.StartsWith("1"))
         {
-			if(!Request.Url.Host.Contains('.local')) 
+			if(!Request.Url.Host.Contains(".local")) 
 			{
 				UriBuilder builder = new UriBuilder(Request.Url);
 				builder.Host = "www." + Request.Url.Host;
