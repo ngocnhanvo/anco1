@@ -701,6 +701,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
             if (msg.Length <= 0)
             {
+                if (object_.loaichuyen == "VANCNBCTKGH")
+                    object_.denkho = denkho;
                 object_.ngaychuyen = ngaychuyen;
                 object_.ngaycapnhat = DateTime.Now;
                 object_.mota = context.Request.Form["mota"];
