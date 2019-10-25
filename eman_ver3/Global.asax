@@ -8,11 +8,14 @@
         DevExpress.XtraReports.Web.ReportDesigner.DefaultReportDesignerContainer.RegisterDataSourceWizardConfigFileConnectionStringsProvider();
     }
 
-    protected void Application_BeginRequest(object sender, EventArgs e)
+    void Application_BeginRequest(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         var response = context.Response;
-
+		
+		if (Request.Url.Scheme == "http")
+			Response.Redirect(Request.Url.ToString().Replace("http","https"));
+			
         if (!Request.Url.Host.StartsWith("www") & !Request.Url.IsLoopback & !Request.Url.Host.StartsWith("1"))
         {
 			if(!Request.Url.Host.Contains('.local')) 
@@ -23,9 +26,6 @@
 				Response.AddHeader("Location", builder.ToString());
 				Response.End();
 			}
-			
-            if (Request.Url.Scheme == "http")
-                Response.Redirect(Request.Url.ToString().Replace("http","https"));
         }
     }
 
