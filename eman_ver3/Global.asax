@@ -15,12 +15,15 @@
 
         if (!Request.Url.Host.StartsWith("www") & !Request.Url.IsLoopback & !Request.Url.Host.StartsWith("1"))
         {
-            UriBuilder builder = new UriBuilder(Request.Url);
-            builder.Host = "www." + Request.Url.Host;
-            Response.StatusCode = 301;
-            Response.AddHeader("Location", builder.ToString());
-            Response.End();
-
+			if(!Request.Url.Host.Contains('.local')) 
+			{
+				UriBuilder builder = new UriBuilder(Request.Url);
+				builder.Host = "www." + Request.Url.Host;
+				Response.StatusCode = 301;
+				Response.AddHeader("Location", builder.ToString());
+				Response.End();
+			}
+			
             if (Request.Url.Scheme == "http")
                 Response.Redirect(Request.Url.ToString().Replace("http","https"));
         }
