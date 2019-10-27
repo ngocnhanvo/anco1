@@ -138,7 +138,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 foreach (var cai in lsxSp.ToList())
                                 {
                                     cai.sl_danhapkho += vcnb_cdvc.soluong_dichchuyen;
-                                    cai.sl_dagiao += vcnb_cdvc.soluong_dichchuyen;
+                                    cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen;
                                     lstSPId.Add(cai.md_sanpham_id);
                                 }
                                 db.SaveChanges();

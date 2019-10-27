@@ -198,7 +198,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 					        left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 					        left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
-				        WHERE lsx.md_trangthai_id = N'DAXL'
+				        WHERE 1=1
 					        and cdh.md_sanpham_id = sp.md_sanpham_id
 					        and lsx.ngayketthuc between @tungay and @denngay
 					        and lsx.md_phanxuong_id = '{2}'
