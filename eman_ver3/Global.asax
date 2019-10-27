@@ -12,21 +12,20 @@
     {
         var context = HttpContext.Current;
         var response = context.Response;
-		
-		if (Request.Url.Scheme.Contains("http"))
-			Response.Redirect(Request.Url.ToString().Replace("http","https"));
-			
-        if (!Request.Url.Host.StartsWith("www") & !Request.Url.IsLoopback & !Request.Url.Host.StartsWith("1"))
+		var urlstr = Request.Url.ToString();
+		var urlhost = Request.Url.Host;
+        if (!urlhost.StartsWith("www") & !Request.Url.IsLoopback & !urlhost.StartsWith("1") & !urlhost.StartsWith(".local"))
         {
-			if(!Request.Url.Host.Contains(".local")) 
-			{
-				UriBuilder builder = new UriBuilder(Request.Url);
-				builder.Host = "www." + Request.Url.Host;
-				Response.StatusCode = 301;
-				Response.AddHeader("Location", builder.ToString());
-				Response.End();
-			}
+			UriBuilder builder = new UriBuilder(Request.Url);
+			builder.Host = "www." + Request.Url.Host;
+			Response.StatusCode = 301;
+			Response.AddHeader("Location", builder.ToString());
+			Response.End();
+			urlstr = builder.ToString();
         }
+		
+		if (urlstr.Contains("http://") & !urlhost.StartsWith("192") & !urlhost.StartsWith("localhost"))
+			Response.Redirect(urlstr.Replace("http","https"));
     }
 
     void Application_End(object sender, EventArgs e)
