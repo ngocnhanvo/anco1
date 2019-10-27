@@ -625,11 +625,11 @@ public static class VNN_Function
     {
         string kq = "";
         kq += "\n\nfunction Load_Auto(i_dem, loadgrid_at) {";
-        foreach (ad_autoload au_load in db.ad_autoload.Where(s => s.hoatdong == true).ToList())
+        foreach (var au_load in db.ad_autoload.Where(s => s.hoatdong == true).ToList())
         {
             int dem = int.Parse(au_load.sapxep);
             kq += "\nif(i_dem == " + dem + ") {";
-            foreach (ad_autoload_mmc au_mod in db.ad_autoload_mmc.Where(s => s.hoatdong == true & s.ad_autoload_id == au_load.ad_autoload_id).ToList())
+            foreach (var au_mod in db.ad_autoload_mmc.Where(s => s.hoatdong == true & s.ad_autoload_id == au_load.ad_autoload_id).ToList())
             {
                 kq += "\ntry { loadclick('grid" + au_mod.ma_module + "', 'edit', i_dem); } catch (r) { }";
             }

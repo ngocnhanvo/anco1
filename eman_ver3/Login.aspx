@@ -3,10 +3,8 @@
 <%@ Import Namespace="DataAcess" %>
 
 <% 
-    EntityContext db = new EntityContext();
-    db.Configuration.AutoDetectChangesEnabled = false;
-    db.Configuration.LazyLoadingEnabled = false;
-    var ttc = db.ad_systemconfig.Take(1).FirstOrDefault();
+    var json = new ADmin_JSON();
+    var ttc = json.ad_systemconfigJSON().FirstOrDefault();
     string url_server = Request.Url.Host;
     string urlBalse = Security.UrlBase();
     string logo = ttc == null ? urlBalse + " images/logo/imagenotfound.jpg" : urlBalse + ttc.logo + "?ver1";
