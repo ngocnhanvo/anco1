@@ -190,7 +190,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        ) as dhhoantat
 					        , lsx.ngayketthuc as ngaytheolsx
 					        , lsx.ngaydkgiaotp
-					        , lsx.ngayhoanthanh as ngayxindc
+					        , (case when cast(lsx.ngayhoanthanh as date) != cast(lsx.ngaydkgiaotp as date) then lsx.ngayhoanthanh else null end) as ngayxindc
 					        , lsx.lydogiaosom_tre as lydo
 					        , substring(sp.ma_sanpham, 0, 3) as chungloai
 				        FROM md_lenhsanxuat lsx
