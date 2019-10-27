@@ -25,15 +25,18 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
     {
         string duongdan = Security.UrlBase();
         string userId = Security.id_taikhoan(Context);
-        try
+        //try
         {
             if (!txtTaiKhoan.Text.Equals("") & !txtMatKhau.Text.Equals(""))
             {
                 var db = new EntityContext();
-                db.Configuration.AutoDetectChangesEnabled = false;
-                db.Configuration.LazyLoadingEnabled = false;
+                var usss = db.ad_autoload.FirstOrDefault();
                 string pass = Security.EncodeMd5Hash(txtMatKhau.Text);
-                var us = db.ad_user.Where(s => s.ma_user == txtTaiKhoan.Text & s.matkhau == pass).Select(s => new { s.ad_user_id }).FirstOrDefault();
+                string taikhoan = txtTaiKhoan.Text;
+                var us = db.ad_user.Where(s => 
+                    s.ma_user == taikhoan
+                    & s.matkhau == pass
+                ).FirstOrDefault();
 
                 if (us != null)
                 {
@@ -54,9 +57,9 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
                 lblCaption.Text = "Bạn chưa nhập đầy đủ thông tin.";
             }
         }
-        catch (Exception ex)
+        //catch (Exception ex)
         {
-            lblCaption.Text = "false#" + ex.Message;
+            //lblCaption.Text = "false#" + ex.Message;
         }
     }
 }

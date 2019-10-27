@@ -17,8 +17,6 @@ public partial class MainPage : System.Web.UI.Page
         //{
         //    Response.Redirect(Security.UrlBase() + "Login.aspx");
         //}
-        db.Configuration.AutoDetectChangesEnabled = false;
-        db.Configuration.LazyLoadingEnabled = false;
         tk = VNN_Function.get_user(
             Security.id_taikhoan(Context),
             Security.id_vaitro(Context),

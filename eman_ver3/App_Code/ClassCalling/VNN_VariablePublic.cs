@@ -106,6 +106,7 @@ public class VNN_VariablePublic
 			msg += "	kq = '" + sct.mau_hienthi + "';";
 			msg += "\n}";
 		}
+        db.Dispose();
 		return msg;
 	}
 	
