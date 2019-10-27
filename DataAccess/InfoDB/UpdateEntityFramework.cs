@@ -43,10 +43,37 @@ namespace InfoDB
 
         public void RewriteModelsDB()
         {
+            string filepath = $"{System.AppDomain.CurrentDomain.BaseDirectory}";
+            filepath = filepath.Replace("\\GenerateModels\\", "");
+            filepath = filepath.Replace("\\Publish_GenerateModels\\", "");
+            string EntityContext00table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext00table.cs";
+            string EntityContext01table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext01table.cs";
+            string EntityContext02table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext02table.cs";
+            string EntityContext03table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext03table.cs";
+            string EntityContext04table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext04table.cs";
+            string EntityContext05table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext05table.cs";
+            string EntityContext06table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext06table.cs";
+            string EntityContext07table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext07table.cs";
+            string EntityContext08table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext08table.cs";
+            string EntityContext09table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext09table.cs";
+            string EntityContext10table = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext10table.cs";
+            WritelinqSep(EntityContext00table, "//code hiding");
+            WritelinqSep(EntityContext01table, "//code hiding");
+            WritelinqSep(EntityContext02table, "//code hiding");
+            WritelinqSep(EntityContext03table, "//code hiding");
+            WritelinqSep(EntityContext04table, "//code hiding");
+            WritelinqSep(EntityContext05table, "//code hiding");
+            WritelinqSep(EntityContext06table, "//code hiding");
+            WritelinqSep(EntityContext07table, "//code hiding");
+            WritelinqSep(EntityContext08table, "//code hiding");
+            WritelinqSep(EntityContext09table, "//code hiding");
+            WritelinqSep(EntityContext10table, "//code hiding");
             string DbSet = "", modelBuilder = "";
             DataTable tables = getAllTable(null);
+            int demTbl = 0, maxTbl = tables.Rows.Count;
             foreach (DataRow row_table in tables.Rows)
             {
+                demTbl++;
                 string tableName = row_table["value"].ToString();
                 string tableFix = fixTable(tableName);
 
@@ -78,46 +105,91 @@ namespace InfoDB
                             .HasColumnName(""{ten_column}"")
                             .HasColumnType(""{loai_column}"");";
                     }
-                    
-
-                    //if (!string.IsNullOrEmpty(length))
-                    //{
-                    //    entityModel += $@".HasMaxLength({length});";
-                    //}
-                    //else
-                    //{
-                    //    entityModel += $@";";
-                    //}
 
                     if (key.ToUpper().Contains("PK_"))
                     {
                         string systemType = getSystemTypes(loai_column, null_column);
-                        entityModel += $@"
-                            modelBuilder.Entity<{tableFix}>().HasKey<{systemType}>(p => p.{columnFix});";
+                        entityModel += $"\nmodelBuilder.Entity<{tableFix}>().HasKey<{systemType}>(p => p.{columnFix});";
                         keyModel = "Yes";
                     }
                 }
 
                 if (!string.IsNullOrEmpty(keyModel))
                 {
-                    modelBuilder += $@"
-                        modelBuilder.Entity<{tableFix}>().ToTable(""{tableName}"");
-                        {entityModel}
-                    ";
+                    if (modelBuilder.Length > 0)
+                        modelBuilder += "\n";
+                    modelBuilder += $@"modelBuilder.Entity<{tableFix}>().ToTable(""{tableName}"");";
+                    modelBuilder += $"{entityModel}";
 
-                    DbSet += $@"
-                            public virtual DbSet<{tableFix}> {tableFix} {{ get; set; }}
-                        ";
+                    if (DbSet.Length > 0)
+                        DbSet += "\n";
+                    DbSet += $@"public virtual DbSet<{tableFix}> {tableFix} {{ get; set; }}";
                 }
                 else
                 {
-                    modelBuilder += $@"
-                            //Unable to generate entity type for table 'dbo.{tableName}'. table have no primary key
-                        ";
+                    if (modelBuilder.Length > 0)
+                        modelBuilder += "\n";
+                    modelBuilder += $"//Unable to generate entity type for table 'dbo.{tableName}'. table have no primary key";
 
-                    DbSet += $@"
-                            //Unable to generate DBset for table 'dbo.{tableName}'. table have no primary key
-                        ";
+                    if (DbSet.Length > 0)
+                        DbSet += "\n";
+                    DbSet += $@"//Unable to generate DBset for table 'dbo.{tableName}'. table have no primary key";
+                }
+
+                if(demTbl == 20)
+                {
+                    WritelinqSep(EntityContext00table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 40)
+                {
+                    WritelinqSep(EntityContext01table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 60)
+                {
+                    WritelinqSep(EntityContext02table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 80)
+                {
+                    WritelinqSep(EntityContext03table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 100)
+                {
+                    WritelinqSep(EntityContext04table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 120)
+                {
+                    WritelinqSep(EntityContext05table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 140)
+                {
+                    WritelinqSep(EntityContext06table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 160)
+                {
+                    WritelinqSep(EntityContext07table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 180)
+                {
+                    WritelinqSep(EntityContext08table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == 200)
+                {
+                    WritelinqSep(EntityContext09table, modelBuilder);
+                    modelBuilder = "";
+                }
+                else if (demTbl == maxTbl)
+                {
+                    WritelinqSep(EntityContext10table, modelBuilder);
+                    modelBuilder = "";
                 }
                 lstModels.Add(tableFix);
             }
@@ -142,17 +214,35 @@ namespace InfoDB
                 
                     protected override void OnModelCreating(DbModelBuilder modelBuilder)
                     {{
-                        {modelBuilder}
+                        var lg00 = new EntityContext00table();
+                        lg00.exec(modelBuilder);
+                        var lg01 = new EntityContext01table();
+                        lg01.exec(modelBuilder);
+                        var lg02 = new EntityContext02table();
+                        lg02.exec(modelBuilder);
+                        var lg03 = new EntityContext03table();
+                        lg03.exec(modelBuilder);
+                        var lg04 = new EntityContext04table();
+                        lg04.exec(modelBuilder);
+                        var lg05 = new EntityContext05table();
+                        lg05.exec(modelBuilder);
+                        var lg06 = new EntityContext06table();
+                        lg06.exec(modelBuilder);
+                        var lg07 = new EntityContext07table();
+                        lg07.exec(modelBuilder);
+                        var lg08 = new EntityContext08table();
+                        lg08.exec(modelBuilder);
+                        var lg09 = new EntityContext09table();
+                        lg09.exec(modelBuilder);
+                        var lg10 = new EntityContext10table();
+                        lg10.exec(modelBuilder);
                     }}
                 }}
             }}
             ";
 
-            string filepath = $"{System.AppDomain.CurrentDomain.BaseDirectory}";
-            filepath = filepath.Replace("\\GenerateModels\\", "");
-            filepath = filepath.Replace("\\Publish_GenerateModels\\", "");
-            filepath += $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext.cs";
-            Writelinq(filepath, Parent, new List<string>());
+            string EntityContextFile = filepath + $"\\eman_ver3\\App_Code\\EntityFramework\\EntityContext.cs";
+            Writelinq(EntityContextFile, Parent, new List<string>());
         }
 
         public string fixColumn(string column)
@@ -265,6 +355,23 @@ namespace InfoDB
                     kq = kq.Replace($"//Code_{value}", save);
                 }
             }
+            File.WriteAllText(filepath, kq);
+        }
+
+        private void WritelinqSep(string filepath, string kq)
+        {
+            if (!File.Exists(filepath))
+            {
+                StreamWriter w = new StreamWriter(filepath, false, Encoding.UTF8);
+                w.Flush();
+                w.Close();
+            }
+
+            string oldContent = File.ReadAllText(filepath, Encoding.UTF8);
+            string start = $"#region Start Code";
+            string end = $"#endregion End Code";
+            string save = BetweenStrings(oldContent, start, end);
+            kq = oldContent.Replace(save, kq);
             File.WriteAllText(filepath, kq);
         }
 
