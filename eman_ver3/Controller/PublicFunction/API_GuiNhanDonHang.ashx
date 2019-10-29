@@ -82,7 +82,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.diachigiaohang = item["diachigiaohang"] + "";
                         c_dsdh.discount = Convert.ToDecimal(item["discount"]);
                         c_dsdh.grandtotal = Convert.ToDecimal(item["grandtotal"]);
-                        c_dsdh.hangiaohang_po = item["hangiaohang_po"].ToDateTime();
+                        c_dsdh.hangiaohang_po = Convert.ToDateTime(item["hangiaohang_po"]);
                         c_dsdh.hoatdong = true;
                         c_dsdh.huongdanlamhang = item["huongdanlamhang"] + "";
                         c_dsdh.huongdanlamhangchung = item["huongdanlamhangchung"] + "";
@@ -92,7 +92,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.md_trangthai_id = item["md_trangthai_id"] + "";
                         c_dsdh.mota = item["mota"] + "";
                         //c_dsdh.ngaycapnhat = item["ngaycapnhat"].ToDateTime();
-                        c_dsdh.ngaylap = item["ngaylap"].ToDateTime();
+                        c_dsdh.ngaylap = Convert.ToDateTime(item["ngaylap"]);
                         c_dsdh.ngaytao = DateTime.Now;
                         c_dsdh.ngay_tigia = null;
                         c_dsdh.nguoicapnhat = item["nguoicapnhat"] + "";
