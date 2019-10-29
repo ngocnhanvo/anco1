@@ -125,7 +125,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
                             
                             c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
-                            c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
+                            c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"] == null ? "0" : b["sl_dagiao"]);
                             c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
                             c_dongdsdh.sl_conlai = Convert.ToDecimal(b["sl_conlai"]);
                             c_dongdsdh.mota = b["mota"] + "";
