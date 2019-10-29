@@ -172,7 +172,8 @@ public class API_GuiNhanDonHang : IHttpHandler
                 msg += string.Format(@"
                     <div style='color:red'>Có lỗi xảy ra: {0}</div>
                     <div style='display:none'>{1}</div>
-                    ", ex.Message, strdata);
+					<div style='display:none'>{2}</div>
+                    ", ex.Message, strdata, ex + "");
             }
 
             if (msg.Length <= 0)
