@@ -268,7 +268,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             daidien = dtkd.daidien,
                             ma_sanpham = sp.ma_sanpham,
                             ma_dtkd = dtkd.ma_dtkd,
-                            md_banggia_id = db.md_banggia.Where(s=>s.lienket_bg == dtkd.ma_dtkd).Select(s=>s.md_banggia_id).ToList()
+                            md_banggia_id = db.md_banggia.Where(s=>s.lienket_bg == dtkd.ma_dtkd & s.tuychon == "BANVT").Select(s=>s.md_banggia_id).ToList()
                         };
                         lst.Add(khm);
                     }
