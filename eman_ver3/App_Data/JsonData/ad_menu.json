@@ -1626,7 +1626,7 @@
   {
     "ad_menu_id": "75c144a9669246f383abbe1960ee03fd",
     "ma_menu": "MN_01_DoiMauHangDoDang",
-    "ten_menu": "Đổi màu hàng dở dang",
+    "ten_menu": "Đổi màu SP",
     "url": "View/Menu/Content/Module/MD_00_DoiMauHangDoDang.aspx",
     "logo": "glyphicon glyphicon-cog",
     "loai_menu": "JQGS",
@@ -1648,7 +1648,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "27/10/2019 11:46:51",
-    "ngaycapnhat": "27/10/2019 12:22:13",
+    "ngaycapnhat": "28/10/2019 10:14:34",
     "mota": "",
     "hoatdong": "True"
   },
