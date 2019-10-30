@@ -2,7 +2,7 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
