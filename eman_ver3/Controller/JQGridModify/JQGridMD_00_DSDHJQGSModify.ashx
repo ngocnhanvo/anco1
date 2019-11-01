@@ -721,6 +721,10 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                     dh.sl_giamhanngach = 0;
                                     dh.sl_hanngach = 0;
                                     dh.sl_dagiao = 0;
+
+                                    dh.giadoichieu = (decimal?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar("select isnull([dbo].[GET_GiaBanSP](N'{0}', N'{1}'),0)", dh.md_sanpham_id, "ANCOTRADING");
+                                    dh.chenhlechgia = dh.gianhap.GetValueOrDefault(0) - dh.giadoichieu.GetValueOrDefault(0);
+
                                     var nnl = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).FirstOrDefault();
                                     if (nnl != null)
                                     {
