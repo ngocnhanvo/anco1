@@ -834,6 +834,37 @@ public static class VNN_Function
         return kq;
     }
 
+    public static void WriteSCTDaXoa(System.Web.HttpContext context, User_TK us, string sct, EntityContext db)
+    {
+        if(us == null)
+            us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+
+        var sctDaXoa = new md_sochungtudaxoa
+        {
+            md_sochungtudaxoa_id = Helper.getNewId(),
+            value = sct,
+            nguoitao = us.ad_user_id,
+            vaitrotao = us.ad_role_id,
+            bophantao = us.md_phongban_id,
+            value_nguoitao = us.ma_user,
+            value_vaitrotao = us.ten_role,
+            value_bophantao = us.ten_phongban,
+
+            nguoicapnhat = us.ad_user_id,
+            vaitrocapnhat = us.ad_role_id,
+            bophancapnhat = us.md_phongban_id,
+            value_nguoicapnhat = us.ma_user,
+            value_vaitrocapnhat = us.ten_role,
+            value_bophancapnhat = us.ten_phongban,
+
+            ngaytao = DateTime.Now,
+            ngaycapnhat = DateTime.Now,
+            mota = "",
+            hoatdong = true
+        };
+        db.md_sochungtudaxoa.Add(sctDaXoa);
+    }
+
     public static string BytesToString(long byteCount, int dec)
     {
         string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB

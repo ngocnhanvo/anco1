@@ -69,13 +69,6 @@ public virtual DbSet<c_nhucauvattu_ycmvt> c_nhucauvattu_ycmvt { get; set; }
 public virtual DbSet<c_phidathang> c_phidathang { get; set; }
 public virtual DbSet<c_yeucaumuavt> c_yeucaumuavt { get; set; }
 public virtual DbSet<c_yeucaumuavt_cdh> c_yeucaumuavt_cdh { get; set; }
-//Unable to generate DBset for table 'dbo.cpip_06092019055946620PM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_06092019061745548PM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_06092019065416209PM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_07092019101204693AM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_07092019101312959AM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_07092019101621275AM'. table have no primary key
-//Unable to generate DBset for table 'dbo.cpip_07092019102011932AM'. table have no primary key
 public virtual DbSet<md_banggia> md_banggia { get; set; }
 public virtual DbSet<md_baotrivthh> md_baotrivthh { get; set; }
 public virtual DbSet<md_baotrivthh_cdh> md_baotrivthh_cdh { get; set; }
@@ -157,6 +150,7 @@ public virtual DbSet<md_sanphamhinhdang> md_sanphamhinhdang { get; set; }
 public virtual DbSet<md_sanphammausac> md_sanphammausac { get; set; }
 public virtual DbSet<md_sanphammausac_phatron> md_sanphammausac_phatron { get; set; }
 public virtual DbSet<md_sochungtu> md_sochungtu { get; set; }
+public virtual DbSet<md_sochungtudaxoa> md_sochungtudaxoa { get; set; }
 public virtual DbSet<md_taphopgia> md_taphopgia { get; set; }
 public virtual DbSet<md_taphopgia_cdh> md_taphopgia_cdh { get; set; }
 public virtual DbSet<md_taptin> md_taptin { get; set; }
