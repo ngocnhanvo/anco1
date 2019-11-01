@@ -1888,7 +1888,68 @@ modelBuilder.Entity<c_yeucaumuavt_cdh>().HasKey<string>(p => p.c_yeucaumuavt_cdh
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
-//Unable to generate entity type for table 'dbo.cpip_06092019055946620PM'. table have no primary key
+modelBuilder.Entity<md_banggia>().ToTable("md_banggia");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.banggiaban)
+                            .HasColumnName("banggiaban")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.hoatdong)
+                            .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.isstandar)
+                            .HasColumnName("isstandar")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.lienket_bg)
+                            .HasColumnName("lienket_bg")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_banggia_id)
+                            .HasColumnName("md_banggia_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<md_banggia>().HasKey<string>(p => p.md_banggia_id);
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_dongtien_id)
+                            .HasColumnName("md_dongtien_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_phanxuong_id)
+                            .HasColumnName("md_phanxuong_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.mota)
+                            .HasColumnName("mota")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.ngaycapnhat)
+                            .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.ngaytao)
+                            .HasColumnName("ngaytao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.nguoicapnhat)
+                            .HasColumnName("nguoicapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.nguoitao)
+                            .HasColumnName("nguoitao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.ten_banggia)
+                            .HasColumnName("ten_banggia")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.tuychon)
+                            .HasColumnName("tuychon")
+                            .HasColumnType("nvarchar");
             #endregion End Code
         }
     }
