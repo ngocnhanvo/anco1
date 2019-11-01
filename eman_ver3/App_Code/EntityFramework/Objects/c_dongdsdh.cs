@@ -31,6 +31,12 @@
                         public string c_dongdsdh_id { get; set; }
                 
 						
+                        #region c_dongdsdh_chenhlechgia_wintaFN
+                        
+                        #endregion c_dongdsdh_chenhlechgia_wintaFN
+                        public Decimal? chenhlechgia { get; set; }
+                
+						
                         #region c_dongdsdh_dvt_inner_wintaFN
                         
                         #endregion c_dongdsdh_dvt_inner_wintaFN
@@ -47,6 +53,12 @@
                         
                         #endregion c_dongdsdh_ghichu_vachngan_wintaFN
                         public string ghichu_vachngan { get; set; }
+                
+						
+                        #region c_dongdsdh_giadoichieu_wintaFN
+                        
+                        #endregion c_dongdsdh_giadoichieu_wintaFN
+                        public Decimal? giadoichieu { get; set; }
                 
 						
                         #region c_dongdsdh_gianhap_wintaFN

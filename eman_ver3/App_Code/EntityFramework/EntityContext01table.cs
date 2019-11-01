@@ -1632,6 +1632,10 @@ modelBuilder.Entity<c_dongdsdh>().ToTable("c_dongdsdh");
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.chenhlechgia)
+                            .HasColumnName("chenhlechgia")
+                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.dvt_inner)
                             .HasColumnName("dvt_inner")
                             .HasColumnType("nvarchar");
@@ -1643,6 +1647,10 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             .Property(p => p.ghichu_vachngan)
                             .HasColumnName("ghichu_vachngan")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.giadoichieu)
+                            .HasColumnName("giadoichieu")
+                            .HasColumnType("numeric").HasPrecision(18, 4);
                             modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.gianhap)
                             .HasColumnName("gianhap")
