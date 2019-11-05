@@ -4,7 +4,7 @@ using System.Web;
 using System.Linq;
 using DataAcess;
 public class JQGridMD_01_DDSDHJQGSLoad : IHttpHandler , System.Web.SessionState.IRequiresSessionState {
-   public void ProcessRequest(HttpContext context){
+    public void ProcessRequest(HttpContext context){
         if(Security.id_taikhoan(context) != "") {
             EntityContext db = new EntityContext();
             //// filter
@@ -17,7 +17,7 @@ public class JQGridMD_01_DDSDHJQGSLoad : IHttpHandler , System.Web.SessionState.
             string where_ex = context.Request.QueryString["where_ex"];
             string where_module_select = " and 1 = " +  context.Request.QueryString["module_select"];
             Module_TK mod_ = VNN_Config.get_ModuleKeThua(null, 0, ma_module, "", "", db);
-string id_vaitro = Security.id_vaitro(context);            string where_vaitro = db.ad_role_where.Where(s => s.ad_role_id == id_vaitro & s.ad_module_id == mod_.ad_module_id).Select(s => s.where_sql).FirstOrDefault();
+            string id_vaitro = Security.id_vaitro(context);            string where_vaitro = db.ad_role_where.Where(s => s.ad_role_id == id_vaitro & s.ad_module_id == mod_.ad_module_id).Select(s => s.where_sql).FirstOrDefault();
             string select_sql = VNN_Config.Select_sql(mod_.ma_module, db);
             int page = Helper.getPage(context);
             int limit = int.Parse(context.Request.QueryString["rows"]);
@@ -52,12 +52,17 @@ string id_vaitro = Security.id_vaitro(context);            string where_vaitro =
             }
 
 
-            string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY "+ orderby +")";
-            string sql = string.Format(@"sELeCt * fRoM (
-            sELeCt " + select_sql + 
-            @" (case when {4} = '{5}' and (" + ROW_NUMBER +" <= " + start + " or " + ROW_NUMBER + " >= " + end + ")  then -1 else " + ROW_NUMBER + " end) as RowNum" +
-            @" fRoM {1}
-            WHeRe 1=1 {2} {3} {6} {7} {8} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " or (RowNum = -1) order by RowNum asc",
+            string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY "+ orderby.Replace("dsdh.", "A.") +")";
+            string sql = string.Format(@"
+            sELeCt P.* fRoM (
+                sELeCt A.*, (A.gianhap - A.giadoichieu) as chenhlechgia, " + ROW_NUMBER + @" as RowNum 
+                fRoM (
+                    select " + select_sql.Replace("dsdh.chenhlechgia", "") + @" null as vnn
+                    from {1}
+                    where 1 = 1 {2}
+                )A
+                WHeRe 1=1 {3} {6} {7} {8}
+            ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
             orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);
 
 
@@ -71,6 +76,7 @@ string id_vaitro = Security.id_vaitro(context);            string where_vaitro =
             System.Data.DataTable dt_select = Mbg.Data.SqlClient.SqlHelper.GetData(sql_select);
             Mbg.Web.JqGrid.JqGResult rs = new Mbg.Web.JqGrid.JqGResult(dt_select, count, page, limit);
             context.Response.Write(rs.WriteJson());
+            //context.Response.Write(sqlcount);
         }
     }
     public bool IsReusable {

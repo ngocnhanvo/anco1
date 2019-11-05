@@ -269,7 +269,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 }
                                 else
                                 {
-                                    kho_sp_nhapkho.soluong += vcnb_cdvc.soluong_dichchuyen.Value;
+                                    kho_sp_nhapkho.soluong = kho_sp_nhapkho.soluong.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.Value;
                                 }
                                 //Lich su kho
                                 md_kho_giaodich kho_gd_nhapkho = new md_kho_giaodich
