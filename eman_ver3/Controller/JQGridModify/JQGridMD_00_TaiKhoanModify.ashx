@@ -328,6 +328,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
             var vaitro = from a in db.ad_user_role
                          join b in db.ad_role on a.ad_role_id equals b.ad_role_id
                          where a.ad_user_id == cookie
+                         orderby b.ten_role ascending
                          select new { a.ad_role_id, b.ten_role };
             string option = "<select>";
             foreach (var tk_vtr in vaitro)
