@@ -66,7 +66,7 @@ public class JQGridMD_01_DDSDHJQGSLoad : IHttpHandler , System.Web.SessionState.
                 )A
                 WHeRe 1=1 {3} {6} {7} {8}
             ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
-            orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);
+            orderby, mod_.from_sql, mod_.where_sql, filter.Replace("dsdh.", "A."), id_count, id_sel, where_ex, where_vaitro, where_module_select);
 
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
