@@ -55,11 +55,14 @@ public class JQGridMD_01_DDSDHJQGSLoad : IHttpHandler , System.Web.SessionState.
             string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY "+ orderby.Replace("dsdh.", "A.") +")";
             string sql = string.Format(@"
             sELeCt P.* fRoM (
-                sELeCt A.*, (A.gianhap - A.giadoichieu) as chenhlechgia, " + ROW_NUMBER + @" as RowNum 
+                sELeCt A.*,  " + ROW_NUMBER + @" as RowNum 
                 fRoM (
-                    select " + select_sql.Replace("dsdh.chenhlechgia", "") + @" null as vnn
-                    from {1}
-                    where 1 = 1 {2}
+                    select B.*, (B.gianhap - B.giadoichieu) as chenhlechgia
+                    from (
+                        select " + select_sql.Replace("dsdh.chenhlechgia as chenhlechgia,", "") + @" null as vnn
+                        from {1}
+                        where 1 = 1 {2}
+                    )B
                 )A
                 WHeRe 1=1 {3} {6} {7} {8}
             ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
