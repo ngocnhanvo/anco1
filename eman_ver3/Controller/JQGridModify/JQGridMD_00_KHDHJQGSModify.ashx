@@ -61,7 +61,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     }
                     msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
                 }
-                else if(dsdh.trangthai != "KETTHUC")
+                else if (dsdh.trangthai != "KETTHUC")
                 {
                     dsdh.trangthai = "SOANTHAO";
                     msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
@@ -244,6 +244,27 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         {
             try
             {
+                var candat = from a in db.c_kehoachdathang_cdhcd
+                             join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
+                             join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
+                             join e in db.c_doichieuhangton on b.c_doichieuhangton_id equals e.c_doichieuhangton_id
+                             select new
+                             {
+                                 a.md_phanxuong_id,
+                                 a.md_sanpham_id,
+                                 a.macuoi,
+                                 a.noigiaohang,
+                                 a.sl_phanphoi,
+                                 a.sl_candat,
+                                 a.md_doitackinhdoanh_id,
+                                 b.c_kehoachdathang_id,
+                                 b.donhang_thamchieu,
+                                 b.sodonhang,
+                                 b.mota,
+                                 c.md_donvitinhsanpham_id,
+                                 e.ngayhoanthanh
+                             };
+
                 foreach (var khdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
                 {
                     if (khdh.trangthai != "SOANTHAO")
@@ -280,26 +301,6 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     if (msg.Length <= 0)
                     {
                         del_kehoachdathang(db, khdh.c_kehoachdathang_id);
-                        var candat = from a in db.c_kehoachdathang_cdhcd
-                                     join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
-                                     join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
-                                     join e in db.c_doichieuhangton on b.c_doichieuhangton_id equals e.c_doichieuhangton_id
-                                     select new
-                                     {
-                                         a.md_phanxuong_id,
-                                         a.md_sanpham_id,
-                                         a.macuoi,
-                                         a.noigiaohang,
-                                         a.sl_phanphoi,
-                                         a.sl_candat,
-                                         a.md_doitackinhdoanh_id,
-                                         b.c_kehoachdathang_id,
-                                         b.donhang_thamchieu,
-                                         b.sodonhang,
-                                         b.mota,
-                                         c.md_donvitinhsanpham_id,
-                                         e.ngayhoanthanh
-                                     };
                         //start
                         foreach (var item in candat.Where(s =>
                             s.c_kehoachdathang_id == khdh.c_kehoachdathang_id &

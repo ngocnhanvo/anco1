@@ -446,7 +446,7 @@ System.Web.SessionState.IRequiresSessionState
                                         md_sanpham_id = dkdh.md_sanpham_id,
                                         md_donvitinhsanpham_id = dkdh.md_donvitinhsanpham_id,
                                         macuoi = dkdh.macuoi,
-                                        sl_giamhanngach = dkdh.sl_giamhanngach,
+                                        sl_giamhanngach = 0,
                                         sl_candat = dkdh.sl_dat,
                                         sl_phanphoi = sl_phanphoi,
                                         md_doitackinhdoanh_id = nhacungung,
@@ -665,6 +665,27 @@ System.Web.SessionState.IRequiresSessionState
         string[] vnn = id.Split(',');
         try
         {
+            //San pham trong kho ton
+            var khohangton = from a in db.md_kho
+                                join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
+                                join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
+                                where a.hangton == true
+                                & string.IsNullOrEmpty(a.md_phanxuong_id)
+                                & string.IsNullOrEmpty(a.md_to_id)
+                                select new
+                                {
+                                    a.md_kho_id,
+                                    a.ten_kho,
+                                    c.ma_sanpham,
+                                    b.md_sanpham_id,
+                                    c.md_donvitinhsanpham_id,
+                                    c.mota_tiengviet,
+                                    c.mota_tienganh,
+                                    b.soluong,
+                                    c.mota,
+                                    c.sanpham
+                                };
+
             foreach (var dcht1 in db.c_doichieuhangton.Where(s => vnn.Contains(s.c_doichieuhangton_id)).ToList())
             {
                 if (dcht1.kehoach != " ")
@@ -677,26 +698,6 @@ System.Web.SessionState.IRequiresSessionState
                     dsdh.md_trangthai_id = "DOICHIEUHANGTON";
 
                     del_doichieuhangton(db, vnn);
-                    //San pham trong kho ton
-                    var khohangton = from a in db.md_kho
-                                     join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
-                                     join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
-                                     where a.hangton == true
-                                     & string.IsNullOrEmpty(a.md_phanxuong_id)
-                                     & string.IsNullOrEmpty(a.md_to_id)
-                                     select new
-                                     {
-                                         a.md_kho_id,
-                                         a.ten_kho,
-                                         c.ma_sanpham,
-                                         b.md_sanpham_id,
-                                         c.md_donvitinhsanpham_id,
-                                         c.mota_tiengviet,
-                                         c.mota_tienganh,
-                                         b.soluong,
-                                         c.mota,
-                                         c.sanpham
-                                     };
 
                     //Doi chieu hang ton
                     foreach (var cddh in db.c_doichieuhangton_cddh.Where(s => s.c_doichieuhangton_id == dcht1.c_doichieuhangton_id).ToList())
@@ -920,7 +921,7 @@ System.Web.SessionState.IRequiresSessionState
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = "false#" + ex;
         }
 
         context.Response.Write(msg);
@@ -943,10 +944,10 @@ System.Web.SessionState.IRequiresSessionState
     public string find_BOM(EntityContext db, c_doichieuhangton_cddh cddh, User_TK us, string md_sanpham_id, string spBomId)
     {
         //San pham trong bom 
-        var dong_bom = (from b in db.md_sanpham_bom_vattu
+        var dong_bom = (from b in db.md_sanpham_bom_vattu.Where(s=>s.md_sanpham_bom_id == spBomId)
                         join d in db.md_sanpham on b.md_sanpham_id equals d.md_sanpham_id
                         where b.md_sanpham_bom_id == spBomId
-                        & d.vattu != true
+                        & (d.vattu == null | d.vattu == false)
                         select new
                         {
                             id_sanpham = d.md_sanpham_id,
@@ -960,7 +961,7 @@ System.Web.SessionState.IRequiresSessionState
                             d.sanpham
                         }).ToList();
 
-        var khohangton = from a in db.md_kho
+        var khohangton = from a in db.md_kho.Where(s=>s.hangton == true & string.IsNullOrEmpty(s.md_phanxuong_id) & string.IsNullOrEmpty(s.md_to_id))
                          join b in db.md_kho_sanpham on a.md_kho_id equals b.md_kho_id
                          join c in db.md_sanpham on b.md_sanpham_id equals c.md_sanpham_id
                          where a.hangton == true
