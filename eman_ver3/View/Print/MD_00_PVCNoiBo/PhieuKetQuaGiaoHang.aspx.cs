@@ -87,6 +87,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
                 , kho2.ten_kho as kho
                 , xb.mota as diengiai
                 , nknb_cdh.soluong_muonchuyen as giao
+				, nknb_cdh.mota as ghichu
 		    from md_vanchuyennoibo xb
 		        left join md_vanchuyennoibo_cdvc nknb_cdh on xb.md_vanchuyennoibo_id = nknb_cdh.md_vanchuyennoibo_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
