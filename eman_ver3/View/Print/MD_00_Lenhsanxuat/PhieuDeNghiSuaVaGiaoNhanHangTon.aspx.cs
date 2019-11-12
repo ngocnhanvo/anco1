@@ -88,6 +88,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
             (
                 select 
 		            lsx.sochungtu
+                    , lsx_tsx.phieulayht as sct_khmvt
 		            , lsx.ngayketthuc as ngayyeucauhoanthanh
 		            , sp.ma_sanpham as ma_vthh
 		            , dvtsp.ten_dvt as dvt
