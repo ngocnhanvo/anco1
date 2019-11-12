@@ -52,7 +52,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
     {
         var db = new EntityContext();
         var pub = new Public();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        var json = new ADmin_JSON();
+        var ghinos = json.md_ghinotrunoJSON();
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -82,8 +84,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         //var check_ma = db.md_xuatkhonb_cdh.Where(s => s.md_sanpham_id != null & s.md_xuatkhonb_id == xk.md_xuatkhonb_id);
                         var md_xuatkhonb_cdhs = db.md_xuatkhonb_cdh.
                                 Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id).ToList();
-						
-						var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
+
+                        var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
                         foreach (var dh in md_xuatkhonb_cdhs)
                         {
                             var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
@@ -184,6 +186,19 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     {
                                                         add_kho_no(db, dh, xk, lsxTo, us, lsx.md_phanxuong_id, tentoLSX, dh.ghino);
                                                         ghino = false;
+                                                        ghinos.Add(new md_ghinotruno()
+                                                        {
+                                                            md_ghinotruno_id = Helper.getNewId()
+                                                            , md_to_id = xk.md_to_id
+                                                            , tosx = tentoLSX
+                                                            , md_sanpham_id = dh.md_sanpham_id
+                                                            , sanpham_dvt = dh.md_donvitinhsanpham_id
+                                                            , slno = dh.ghino.GetValueOrDefault()
+                                                            , ngaytao = DateTime.Now
+                                                            , nguoitao = us.ad_user_id
+                                                            , value_nguoitao = us.ma_user
+                                                            , mota = lsx.sochungtu
+                                                        });
                                                     }
 
                                                     var ck_dhs = db.md_xuatkhonb_cdh.Where(s =>
@@ -296,6 +311,19 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             {
                                                 add_kho_no(db, dh, xk, null, us, null, xk.xuatden, dh.ghino);
                                                 ghino = false;
+                                                ghinos.Add(new md_ghinotruno()
+                                                {
+                                                    md_ghinotruno_id = Helper.getNewId()
+                                                    , md_to_id = xk.md_to_id
+                                                    , tosx = ""
+                                                    , md_sanpham_id = dh.md_sanpham_id
+                                                    , sanpham_dvt = dh.md_donvitinhsanpham_id
+                                                    , slno = dh.ghino.GetValueOrDefault()
+                                                    , ngaytao = DateTime.Now
+                                                    , nguoitao = us.ad_user_id
+                                                    , value_nguoitao = us.ma_user
+                                                    , mota = ldg.sochungtu
+                                                });
                                             }
 
                                             var ck_dhs = db.md_xuatkhonb_cdh.Where(s =>
@@ -366,7 +394,13 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             }
 
             if (commit == true)
+            {
                 transaction.Commit();
+
+                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(ghinos);
+                json.urlData = typeof(md_ghinotruno).Name;
+                json.WriteJson(jsonData);
+            }
             else
                 transaction.Rollback();
         }

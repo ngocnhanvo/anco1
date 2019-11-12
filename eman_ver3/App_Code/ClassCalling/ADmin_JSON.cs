@@ -91,7 +91,7 @@ public class ADmin_JSON
                 item.ma_module = s["ma_module"].ToString();
                 item.mota = s["mota"].ToString();
                 item.ngaycapnhat = DateTime.Parse(s["ngaycapnhat"].ToString());
-                item.ngaytao = DateTime.Parse(s["ngaycapnhat"].ToString());
+                item.ngaytao = DateTime.Parse(s["ngaytao"].ToString());
                 item.nguoicapnhat = s["nguoicapnhat"].ToString();
                 item.nguoitao = s["nguoitao"].ToString();
                 item.reset_modify = s["reset_modify"].ToString().ToLower() == "true";
@@ -384,6 +384,33 @@ public class ADmin_JSON
             ad_menus = cache as List<ad_menu>;
         }
         return ad_menus;
+    }
+
+    public List<md_ghinotruno> md_ghinotrunoJSON()
+    {
+        urlData = typeof(md_ghinotruno).Name;
+        var md_ghinotrunos = new List<md_ghinotruno>();
+        var items = ReadJSON();
+        foreach (var s in items)
+        {
+            var item = new md_ghinotruno();
+            item.md_ghinotruno_id = s["md_ghinotruno_id"].ToString();
+            item.md_to_id = s["md_to_id"].ToString();
+            item.tosx = s["tosx"].ToString();
+            item.md_sanpham_id = s["md_sanpham_id"].ToString();
+            item.sanpham_val = s["sanpham_val"].ToString();
+            item.sanpham_dvt = s["sanpham_dvt"].ToString();
+            item.slno = !string.IsNullOrEmpty(s["slno"].ToString()) ? decimal.Parse(s["slno"].ToString()) : 0;
+            
+            item.hoatdong = s["hoatdong"].ToString().ToLower() == "true";
+            item.ngaytao = DateTime.Parse(s["ngaytao"].ToString());
+            item.nguoitao = s["nguoitao"].ToString();
+            item.value_nguoitao = s["value_nguoitao"].ToString();
+
+            if (item != null)
+                md_ghinotrunos.Add(item);
+        }
+        return md_ghinotrunos;
     }
 
     #region Modify
