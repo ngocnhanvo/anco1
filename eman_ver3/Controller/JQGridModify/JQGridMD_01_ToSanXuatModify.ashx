@@ -340,6 +340,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 cdvc.nguoicapnhat = us.ad_user_id;
                                 cdvc.value_nguoitao = us.ma_user;
                                 cdvc.value_nguoicapnhat = us.ma_user;
+                                cdvc.mota = lht.mota;
                                 db.md_vanchuyennoibo_cdvc.Add(cdvc);
                             }
                             tsx.phieulayht = sochungtu;
