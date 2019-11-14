@@ -398,11 +398,11 @@ public class ADmin_JSON
             item.md_to_id = s["md_to_id"].ToString();
             item.tosx = s["tosx"].ToString();
             item.md_sanpham_id = s["md_sanpham_id"].ToString();
-            item.sanpham_val = s["sanpham_val"].ToString();
-            item.sanpham_dvt = s["sanpham_dvt"].ToString();
+            item.sanpham_val = s["sanpham_val"] + "";
+            item.sanpham_dvt = s["sanpham_dvt"] + "";
             item.slno = !string.IsNullOrEmpty(s["slno"].ToString()) ? decimal.Parse(s["slno"].ToString()) : 0;
             
-            item.hoatdong = s["hoatdong"].ToString().ToLower() == "true";
+            item.hoatdong = true;
             item.ngaytao = DateTime.Parse(s["ngaytao"].ToString());
             item.nguoitao = s["nguoitao"].ToString();
             item.value_nguoitao = s["value_nguoitao"].ToString();
