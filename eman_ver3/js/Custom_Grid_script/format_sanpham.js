@@ -22,7 +22,6 @@ function timkiem_sanpham(id_elem, type) {
 
     var where_ex = 'and sp.hoatdong = 1', vattu = false, btp = false, tp = false;
     if ($('.module_spanselect').attr('id') == 'span_MD_00_DSDHTCJQGS') {
-        where_ex = '';
         vattu = true;
         tp = true;
     }
