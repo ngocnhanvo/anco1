@@ -20,7 +20,7 @@ function timkiem_sanpham(id_elem, type) {
         '<div id="pagergridMD_00_DSHangHoaVG_cp"></div>' +
         '</div>');
 
-    var where_ex = '', vattu = false, btp = false, tp = false;
+    var where_ex = 'and sp.hoatdong = 1', vattu = false, btp = false, tp = false;
     if ($('.module_spanselect').attr('id') == 'span_MD_00_DSDHTCJQGS') {
         where_ex = '';
         vattu = true;
