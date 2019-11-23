@@ -130,6 +130,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
             declare @tenkho nvarchar(MAX) = (select ten_kho from md_kho where md_kho_id = @kho);
             declare @tblKyHienTai table (
 	            md_sanpham_id nvarchar(32)
+	            , ma_sanpham nvarchar(MAX)
+	            , mota_tiengviet nvarchar(MAX)
                 , md_donvitinhsanpham_id nvarchar(32)
 	            , tondauky decimal(18, 4)
 	            , nhaptrongky decimal(18, 4)
