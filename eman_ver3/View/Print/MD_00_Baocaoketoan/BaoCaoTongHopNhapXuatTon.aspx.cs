@@ -220,7 +220,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 			                and nam = @namkytruoc 
 			                and soky = @thangkytruoc 
 			                and md_kho_id = @kho
-			                and md_donvitinhsanpham_id = a.md_donvitinhsanpham_id
+			                and md_donvitinhsanpham_id = isnull(a.md_donvitinhsanpham_id, sp.md_donvitinhsanpham_id)
 		                ), 0) tondauky
 	                , a.nhaptrongky
 	                , a.xuattrongky 
