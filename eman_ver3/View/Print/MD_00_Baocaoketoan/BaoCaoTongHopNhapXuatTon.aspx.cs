@@ -139,6 +139,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
             insert into @tblKyHienTai
             select 
 	            A.md_sanpham_id
+	            , A.ma_sanpham
+	            , A.mota_tiengviet
 	            , A.md_donvitinhsanpham_id
 	            , sum(A.tondauky) as tondauky
 	            , sum(A.nhaptrongky) as nhaptrongky
@@ -146,12 +148,15 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
             from (
 	            select
 		            ksp.md_sanpham_id
-                    , kgd.md_donvitinhsanpham_id
+		            , sp.ma_sanpham
+		            , sp.mota_tiengviet
+                    , isnull(kgd.md_donvitinhsanpham_id, sp.md_donvitinhsanpham_id) as md_donvitinhsanpham_id
 		            , 0 as tondauky
 		            , sum(isnull(kgd.soluong_dichchuyen, 0)) as nhaptrongky
 		            , 0 as xuattrongky
 	            FROM 
 		            md_kho_sanpham ksp (nolock)
+		            left join md_sanpham sp on ksp.md_sanpham_id = sp.md_sanpham_id
 		            left join (
 			            select 
 				            kgd.soluong_dichchuyen
@@ -169,16 +174,19 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	            WHERE 
 		            ksp.md_kho_id = @kho
 	            GROUP BY
-		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
+		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id, sp.ma_sanpham, sp.mota_tiengviet, sp.md_donvitinhsanpham_id
 	            union
 	            select
 		            ksp.md_sanpham_id
-		            , kgd.md_donvitinhsanpham_id
+		            , sp.ma_sanpham
+		            , sp.mota_tiengviet
+		            , isnull(kgd.md_donvitinhsanpham_id, sp.md_donvitinhsanpham_id) as md_donvitinhsanpham_id
 		            , 0 as tondauky
 		            , 0 as nhaptrongky
 		            , sum(isnull(kgd.soluong_dichchuyen, 0)) as xuattrongky
 	            FROM 
 		            md_kho_sanpham ksp
+		            left join md_sanpham sp on ksp.md_sanpham_id = sp.md_sanpham_id
 		            left join (
 			            select 
 				            kgd.soluong_dichchuyen
@@ -196,11 +204,13 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	            WHERE 
 		            ksp.md_kho_id = @kho
 	            GROUP BY
-		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
+		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id, sp.ma_sanpham, sp.mota_tiengviet, sp.md_donvitinhsanpham_id
             )A
             GROUP BY
 		            A.md_sanpham_id
 		            , A.md_donvitinhsanpham_id
+		            , A.ma_sanpham
+		            , A.mota_tiengviet
             
             select A.*
             , (A.tondauky + A.nhaptrongky - A.xuattrongky) as toncuoiky 
@@ -208,8 +218,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
             from 
             (
                 select 
-	                sp.ma_sanpham as ma_vthh
-	                , sp.mota_tiengviet as ten_vthh
+	                a.ma_sanpham as ma_vthh
+	                , a.mota_tiengviet as ten_vthh
 	                , dvtsp.ten_dvt as dvt
                     , @tenkho as kho
 	                , isnull(
@@ -220,13 +230,12 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 			                and nam = @namkytruoc 
 			                and soky = @thangkytruoc 
 			                and md_kho_id = @kho
-			                and md_donvitinhsanpham_id = isnull(a.md_donvitinhsanpham_id, sp.md_donvitinhsanpham_id)
+			                and md_donvitinhsanpham_id = a.md_donvitinhsanpham_id
 		                ), 0) tondauky
 	                , a.nhaptrongky
 	                , a.xuattrongky 
                 from 
 	                @tblKyHienTai a
-	                left join md_sanpham sp (nolock) on sp.md_sanpham_id = a.md_sanpham_id
 	                left join md_donvitinhsanpham dvtsp (nolock) on dvtsp.md_donvitinhsanpham_id = a.md_donvitinhsanpham_id
             ) A        
             where A.tondauky + A.nhaptrongky + A.xuattrongky != 0 
