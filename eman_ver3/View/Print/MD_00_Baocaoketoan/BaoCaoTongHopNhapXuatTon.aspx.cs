@@ -148,31 +148,53 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 		            ksp.md_sanpham_id
                     , kgd.md_donvitinhsanpham_id
 		            , 0 as tondauky
-		            , sum(kgd.soluong_dichchuyen) as nhaptrongky
+		            , sum(isnull(kgd.soluong_dichchuyen, 0)) as nhaptrongky
 		            , 0 as xuattrongky
 	            FROM 
-		            md_kho_sanpham ksp
-		            left join md_kho_giaodich kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
+		            md_kho_sanpham ksp (nolock)
+		            left join (
+			            select 
+				            kgd.soluong_dichchuyen
+				            , kgd.md_kho_id
+				            , kgd.md_sanpham_id
+				            , kgd.md_donvitinhsanpham_id
+			            from 
+				            md_kho_giaodich kgd (nolock)
+			            where
+				            1=1
+				            and kgd.md_kho_id = @kho
+				            and kgd.kieuchuyen = N'Nhập kho'
+				            and kgd.ngaychuyen between @tungay and @denngay
+		            ) kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
 	            WHERE 
-		            kgd.md_kho_id = @kho
-		            and kgd.kieuchuyen = N'Nhập kho'
-		            and kgd.ngaychuyen between @tungay and @denngay
+		            ksp.md_kho_id = @kho
 	            GROUP BY
 		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
 	            union
 	            select
 		            ksp.md_sanpham_id
-                    , kgd.md_donvitinhsanpham_id
+		            , kgd.md_donvitinhsanpham_id
 		            , 0 as tondauky
 		            , 0 as nhaptrongky
-		            , sum(kgd.soluong_dichchuyen) as xuattrongky
+		            , sum(isnull(kgd.soluong_dichchuyen, 0)) as xuattrongky
 	            FROM 
 		            md_kho_sanpham ksp
-		            left join md_kho_giaodich kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
+		            left join (
+			            select 
+				            kgd.soluong_dichchuyen
+				            , kgd.md_kho_id
+				            , kgd.md_sanpham_id
+				            , kgd.md_donvitinhsanpham_id
+			            from 
+				            md_kho_giaodich kgd (nolock)
+			            where
+				            1=1
+				            and kgd.md_kho_id = @kho
+				            and kgd.kieuchuyen = N'Xuất kho'
+				            and kgd.ngaychuyen between @tungay and @denngay
+		            ) kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
 	            WHERE 
-		            kgd.md_kho_id = @kho
-		            and kgd.kieuchuyen = N'Xuất kho'
-		            and kgd.ngaychuyen between @tungay and @denngay
+		            ksp.md_kho_id = @kho
 	            GROUP BY
 		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
             )A
@@ -193,7 +215,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	                , isnull(
 		                (
 			                select isnull(sl_cuoiky, 0) 
-			                from md_tonghopkho 
+			                from md_tonghopkho
 			                where md_sanpham_id = a.md_sanpham_id 
 			                and nam = @namkytruoc 
 			                and soky = @thangkytruoc 
@@ -204,9 +226,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	                , a.xuattrongky 
                 from 
 	                @tblKyHienTai a
-	                left join md_sanpham sp on sp.md_sanpham_id = a.md_sanpham_id
-	                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = a.md_donvitinhsanpham_id
-            ) A         
+	                left join md_sanpham sp (nolock) on sp.md_sanpham_id = a.md_sanpham_id
+	                left join md_donvitinhsanpham dvtsp (nolock) on dvtsp.md_donvitinhsanpham_id = a.md_donvitinhsanpham_id
+            ) A        
+            where A.tondauky + A.nhaptrongky + A.xuattrongky != 0 
             order by
 	            A.ma_vthh
 		"
