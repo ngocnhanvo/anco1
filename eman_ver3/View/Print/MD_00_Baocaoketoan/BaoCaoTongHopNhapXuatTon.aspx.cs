@@ -145,34 +145,36 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoTongHopNhapXuatTo
 	            , sum(A.xuattrongky) as xuattrongky
             from (
 	            select
-		            kgd.md_sanpham_id
+		            ksp.md_sanpham_id
                     , kgd.md_donvitinhsanpham_id
 		            , 0 as tondauky
 		            , sum(kgd.soluong_dichchuyen) as nhaptrongky
 		            , 0 as xuattrongky
 	            FROM 
-		            md_kho_giaodich kgd
+		            md_kho_sanpham ksp
+		            left join md_kho_giaodich kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
 	            WHERE 
 		            kgd.md_kho_id = @kho
 		            and kgd.kieuchuyen = N'Nhập kho'
 		            and kgd.ngaychuyen between @tungay and @denngay
 	            GROUP BY
-		            kgd.md_sanpham_id, kgd.md_donvitinhsanpham_id
+		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
 	            union
 	            select
-		            kgd.md_sanpham_id
+		            ksp.md_sanpham_id
                     , kgd.md_donvitinhsanpham_id
 		            , 0 as tondauky
 		            , 0 as nhaptrongky
 		            , sum(kgd.soluong_dichchuyen) as xuattrongky
 	            FROM 
-		            md_kho_giaodich kgd
+		            md_kho_sanpham ksp
+		            left join md_kho_giaodich kgd on kgd.md_kho_id = ksp.md_kho_id and ksp.md_sanpham_id = kgd.md_sanpham_id
 	            WHERE 
 		            kgd.md_kho_id = @kho
 		            and kgd.kieuchuyen = N'Xuất kho'
 		            and kgd.ngaychuyen between @tungay and @denngay
 	            GROUP BY
-		            kgd.md_sanpham_id, kgd.md_donvitinhsanpham_id
+		            ksp.md_sanpham_id, kgd.md_donvitinhsanpham_id
             )A
             GROUP BY
 		            A.md_sanpham_id
