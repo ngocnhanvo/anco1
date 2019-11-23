@@ -145,7 +145,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 				and a.md_kho_id = b.md_kho_id
 				group by a.md_kho_id, a.md_sanpham_id, c.md_donvitinhsanpham_id, c.ma_sanpham
 			)A
-		", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), kmo.md_namtaichinh_ky_id);
+		", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), kdong.md_namtaichinh_ky_id);
         var dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
         foreach (DataRow row in dt_dtkd.Rows)
         {
