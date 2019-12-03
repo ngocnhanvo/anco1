@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Gennerate Models from Database</h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" align="center">
+            <h3>For all tables</h3>
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject000()">Action All</button>
+            </p>
+        </div>
+        <div class="col-md-6" align="center">
+            <h3>For all columns in table</h3>
+            <p>
+                @Html.DropDownList("TableAllColumn", null, "-- Select 1 Table --", new { @class = "form-control" })
+            </p>
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject001(this)">Action 1 Table</button>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="resultGenerate hide">
+            <span class="msg"></span>
+            <a href="javascript:void(0)" onclick="$(this).parent().addClass('hide');" class="msg">Close</a>
+        </label>
+    </div>
+</div>
+<script type="text/javascript">
+    var buttons = $('button.btn.blue');
+    var resultGenerate = $('.resultGenerate');
+
+    var WriteObject000 = function () {
+        $('.loadingPage').removeClass('hide');
+        $(buttons).prop('disabled', true);
+        $.ajax({
+            url: '/Home/WriteObject000',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                resultGenerate.find('span.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+            }
+        });
+    };
+
+    var WriteObject001 = function (btnA) {
+        var tableVal = $('#TableAllColumn').val();
+        if (!tableVal.length) {
+            $(btnA).notify(
+                "Please select 1 table!!!",
+                { position: "bottom center" }
+            );
+            return;
+        }
+
+
+        $('.loadingPage').removeClass('hide');
+        var model = {
+            Table: tableVal
+        };
+
+        $(buttons).prop('disabled', true);
+        $.ajax({
+            url: '/Home/WriteObject001',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                resultGenerate.find('span.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+            }
+        });
+    };
+
+</script>
