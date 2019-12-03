@@ -295,11 +295,11 @@ function modify_code(url){reload_page="no";window.location.href=url;setTimeout(f
 
 var winconfigGV = null;
 function click_configGV_link(tengrid) {
-    var ma_module = tengrid.replace('grid', '');
-    var sord = $('#' + tengrid).jqGrid('getGridParam', 'postData').sord;
-    var sidx = $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx;
-    var filters = $('#' + tengrid).jqGrid('getGridParam', 'postData').filters;
-    var id_parent = $('#' + tengrid).jqGrid('getGridParam', 'postData').id;
+    let ma_module = tengrid.replace('grid', '');
+    let sord = $('#' + tengrid).jqGrid('getGridParam', 'postData').sord;
+    let sidx = $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx;
+    let filters = $('#' + tengrid).jqGrid('getGridParam', 'postData').filters;
+    let id_parent = $('#' + tengrid).jqGrid('getGridParam', 'postData').id;
     if (filters) {
         filters = filters.replace(/'/g, "\\'");
     }
@@ -312,7 +312,8 @@ function click_configGV_link(tengrid) {
     if (!sidx) {
         sidx = "";
     }
-    var link_export = 'View/Print/MD_01_Export/XuatDSTK.aspx?ma_module=' + ma_module + '&sord=' + sord + '&sidx=' + sidx + '&filters=' + filters + '&_search=true&id=' + id_parent;
+    filters = filters.replace(/&/g, '%26');
+    let link_export = 'View/Print/MD_01_Export/XuatDSTK.aspx?ma_module=' + ma_module + '&sord=' + sord + '&sidx=' + sidx + '&filters=' + filters + '&_search=true&id=' + id_parent;
 
     try { winconfigGV.close(); } catch (r) { console.error(r); }
     winconfigGV = window.open(link_export, 'Chiết Xuất Dữ Liệu', 'width = 500px, height = 500px');
