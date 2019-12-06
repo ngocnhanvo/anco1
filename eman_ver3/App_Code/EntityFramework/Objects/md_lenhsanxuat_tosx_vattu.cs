@@ -85,6 +85,12 @@
                         public string sapxep { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_vattu_sl_backup_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_sl_backup_wintaFN
+                        public Decimal? sl_backup { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_vattu_sl_giamhanngach_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_vattu_sl_giamhanngach_wintaFN

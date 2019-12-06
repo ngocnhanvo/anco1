@@ -119,6 +119,7 @@ public virtual DbSet<md_lenhsanxuat_tosx_cdh> md_lenhsanxuat_tosx_cdh { get; set
 public virtual DbSet<md_lenhsanxuat_tosx_dklht> md_lenhsanxuat_tosx_dklht { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_tonkho> md_lenhsanxuat_tosx_tonkho { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_vattu> md_lenhsanxuat_tosx_vattu { get; set; }
+public virtual DbSet<md_lenhsanxuat_tosx_vattuBackup> md_lenhsanxuat_tosx_vattuBackup { get; set; }
 public virtual DbSet<md_lenhsanxuat_vattu> md_lenhsanxuat_vattu { get; set; }
 public virtual DbSet<md_loaicont> md_loaicont { get; set; }
 public virtual DbSet<md_loaidtkd> md_loaidtkd { get; set; }

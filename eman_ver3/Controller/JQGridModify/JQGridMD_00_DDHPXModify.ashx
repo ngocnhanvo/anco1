@@ -666,6 +666,15 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                                         if (addVTLSX == null)
                                             db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
+
+                                        var vtbk = new md_lenhsanxuat_tosx_vattuBackup();
+                                        vtbk.md_lenhsanxuat_tosx_vattuBackup_id = Helper.getNewId();
+                                        vtbk.md_lenhsanxuat_tosx_id = item2.md_lenhsanxuat_tosx_id;
+                                        vtbk.sp = item2.md_sanpham_id;
+                                        vtbk.vt = vattusp.md_sanpham_id;
+                                        vtbk.soluong = (decimal)vattusp.soluong.GetValueOrDefault(0);
+                                        vtbk.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
+                                        db.md_lenhsanxuat_tosx_vattuBackup.Add(vtbk);
                                         db.SaveChanges();
                                     }
                                 }
