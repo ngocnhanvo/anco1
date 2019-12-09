@@ -109,6 +109,10 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
 
     public void edit(HttpContext context, string cookie)
     {
+        var us = VNN_Function.get_user(
+            Security.id_taikhoan(context),
+            Security.id_vaitro(context),
+            Security.id_phongban(context));
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
@@ -116,26 +120,33 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
         {
             string id = context.Request.Form["id"];
             ad_user tk = db.ad_user.Where(p => p.ad_user_id == id).FirstOrDefault();
-            if (tk != null)
+            if (tk == null)
             {
-                tk.ma_user = context.Request.Form["ma_user"];
-                tk.matkhau = context.Request.Form["matkhau"] == "" ? tk.matkhau : Security.EncodeMd5Hash(context.Request.Form["matkhau"]);
-                tk.hoten = context.Request.Form["hoten"];
-                tk.phone = context.Request.Form["phone"];
-                tk.fax = context.Request.Form["fax"];
-                tk.email = context.Request.Form["email"];
-                tk.duyet_sms = bool.Parse(context.Request.Form["duyet_sms"]);
-                tk.diachi = context.Request.Form["diachi"];
-                tk.ngaycapnhat = null;
-                tk.hoatdong = bool.Parse(context.Request.Form["hoatdong"]);
-                tk.nguoicapnhat = cookie;
-                tk.mota = context.Request.Form["mota"];
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công";
+                msg = "false#Không tìm thấy tài khoản này";
             }
             else
             {
-                msg = "false#Không tìm thấy tài khoản này";
+                if (tk.nguoitao != us.ad_user_id)
+                {
+                    msg = "false#Không phải chủ sở hửu";
+                }
+                else
+                {
+                    tk.ma_user = context.Request.Form["ma_user"];
+                    tk.matkhau = context.Request.Form["matkhau"] == "" ? tk.matkhau : Security.EncodeMd5Hash(context.Request.Form["matkhau"]);
+                    tk.hoten = context.Request.Form["hoten"];
+                    tk.phone = context.Request.Form["phone"];
+                    tk.fax = context.Request.Form["fax"];
+                    tk.email = context.Request.Form["email"];
+                    tk.duyet_sms = bool.Parse(context.Request.Form["duyet_sms"]);
+                    tk.diachi = context.Request.Form["diachi"];
+                    tk.ngaycapnhat = null;
+                    tk.hoatdong = bool.Parse(context.Request.Form["hoatdong"]);
+                    tk.nguoicapnhat = cookie;
+                    tk.mota = context.Request.Form["mota"];
+                    VNN_Function.loaddulieu_Auto(db, ma_module);
+                    msg = "true#Cập nhật thành công";
+                }
             }
         }
         catch (Exception ex)
@@ -147,7 +158,11 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var us = VNN_Function.get_user(
+            Security.id_taikhoan(context),
+            Security.id_vaitro(context),
+            Security.id_phongban(context));
+        var db = new EntityContext();
         string msg = "", msg_del = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -161,6 +176,11 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                 if (object_ == null)
                 {
                     msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
+                    msg += msg_del + "\n";
+                }
+                else if (object_.nguoitao != us.ad_user_id)
+                {
+                    msg_del = "Lỗi:Không phải chủ sở hửu";
                     msg += msg_del + "\n";
                 }
 
@@ -235,7 +255,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                                 else
                                 {
                                     msg = "Mật khẩu mới không thể để trống";
-                                    error = false; 
+                                    error = false;
                                 }
                             }
                             else
