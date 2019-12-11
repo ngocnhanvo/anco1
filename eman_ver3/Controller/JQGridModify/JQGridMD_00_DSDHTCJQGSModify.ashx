@@ -664,7 +664,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         string trangthai = context.Request.Form["trangthai"];
         try
         {
-
+            int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
             string id = context.Request.Form["id"];
             c_danhsachdathang object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id).FirstOrDefault();
             int count = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count();
@@ -679,15 +679,12 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             }
             else if (object_.trangthai == "HIEULUC")
             {
-                msg = "false#Lỗi:Đơn hàng đã hiệu lực không thể sửa.";
+                object_.khachhang = dtk_id;
+                object_.thoigiansx = thoigiansx;
             }
             else if (object_.trangthai == "HUYBO")
             {
                 msg += "false#Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.";
-            }
-            else if (object_.trangthai == "KETTHUC")
-            {
-                msg += "false#Lỗi:Đơn hàng " + object_.sochungtu + " đã kết thúc.";
             }
             else if (count <= 0 & trangthai == "HIEULUC")
             {
@@ -697,7 +694,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = string.Format(@"false#Lỗi:Số đơn hàng không thể để trống.");
             }
-            int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
             int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
             DateTime ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);
             DateTime hangiaohang_po = VNN_Config.setDateTime(context.Request.Form["hangiaohang_po"]);
@@ -711,19 +707,22 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { "md_trangthai_id", "sochungtu", "thoigiansx", "ngaybatdau", "ngayhoanthanh", "anco_check" };
-                VNN_Function.SetFormValue("ngaybatdau", ngaybatdau.ToString(VNN_Config.get_FormatDate()));
-                VNN_Function.SetFormValue("ngayhoanthanh", ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
-                VNN_Function.SetFormValue("md_trangthai_id", "HIEULUC");
-                VNN_Function.SetFormValue("anco_check", "false");
-                VNN_Function.SetFormValue("thoigiansx", thoigiansx.ToString());
-                VNN_Function.SetFormValue("md_doitackinhdoanh_id", "VNN_notpost");
-                VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
-                VNN_Function.SetFormValue("so_po", so_po);
-                string ten_table = "c_danhsachdathang";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                if (object_.trangthai != "HIEULUC")
+                {
+                    string action = "edit";
+                    string[] column_ex = { "md_trangthai_id", "sochungtu", "thoigiansx", "ngaybatdau", "ngayhoanthanh", "anco_check" };
+                    VNN_Function.SetFormValue("ngaybatdau", ngaybatdau.ToString(VNN_Config.get_FormatDate()));
+                    VNN_Function.SetFormValue("ngayhoanthanh", ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
+                    VNN_Function.SetFormValue("md_trangthai_id", "HIEULUC");
+                    VNN_Function.SetFormValue("anco_check", "false");
+                    VNN_Function.SetFormValue("thoigiansx", thoigiansx.ToString());
+                    VNN_Function.SetFormValue("md_doitackinhdoanh_id", "VNN_notpost");
+                    VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
+                    VNN_Function.SetFormValue("so_po", so_po);
+                    string ten_table = "c_danhsachdathang";
+                    VNN_Function.Set_DefaultvalueColumn(context, action);
+                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                }
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
             }
