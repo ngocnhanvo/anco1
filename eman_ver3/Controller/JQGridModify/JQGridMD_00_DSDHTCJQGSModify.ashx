@@ -673,10 +673,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa.";
             }
-            else if (trangthai == "HIEULUC")
-            {
-                msg = "false#Lỗi:Không thể hiệu lực tại đây.";
-            }
             else if (object_.trangthai == "HIEULUC")
             {
                 object_.khachhang = dtk_id;
@@ -685,10 +681,6 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             else if (object_.trangthai == "HUYBO")
             {
                 msg += "false#Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.";
-            }
-            else if (count <= 0 & trangthai == "HIEULUC")
-            {
-                msg = "false#Lỗi:Đơn hàng chưa có dòng đơn hàng không thể hiệu lực.";
             }
             else if (string.IsNullOrEmpty(so_po.Trim()))
             {
@@ -713,6 +705,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     string[] column_ex = { "md_trangthai_id", "sochungtu", "thoigiansx", "ngaybatdau", "ngayhoanthanh", "anco_check" };
                     VNN_Function.SetFormValue("ngaybatdau", ngaybatdau.ToString(VNN_Config.get_FormatDate()));
                     VNN_Function.SetFormValue("ngayhoanthanh", ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
+                    VNN_Function.SetFormValue("trangthai", "VNN_notpost");
                     VNN_Function.SetFormValue("md_trangthai_id", "HIEULUC");
                     VNN_Function.SetFormValue("anco_check", "false");
                     VNN_Function.SetFormValue("thoigiansx", thoigiansx.ToString());
