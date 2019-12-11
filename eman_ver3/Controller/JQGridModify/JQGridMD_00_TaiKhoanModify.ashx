@@ -70,6 +70,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                 {
                     ad_user_id = id_new,
                     ma_user = context.Request.Form["ma_user"],
+                    ma_nhanvien = context.Request.Form["ma_nhanvien"],
                     matkhau = context.Request.Form["matkhau"] == "" ? matkhau : Security.EncodeMd5Hash(context.Request.Form["matkhau"]),
                     hoten = context.Request.Form["hoten"],
                     phone = context.Request.Form["phone"],
@@ -133,6 +134,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                 else
                 {
                     tk.ma_user = context.Request.Form["ma_user"];
+                    tk.ma_nhanvien = context.Request.Form["ma_nhanvien"];
                     tk.matkhau = context.Request.Form["matkhau"] == "" ? tk.matkhau : Security.EncodeMd5Hash(context.Request.Form["matkhau"]);
                     tk.hoten = context.Request.Form["hoten"];
                     tk.phone = context.Request.Form["phone"];
