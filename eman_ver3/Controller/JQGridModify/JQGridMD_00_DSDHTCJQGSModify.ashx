@@ -677,6 +677,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             {
                 object_.khachhang = context.Request.Form["khachhang"];
                 object_.thoigiansx = thoigiansx;
+                object_.diachigiaohang = context.Request.Form["diachigiaohang"];
             }
             else if (object_.trangthai == "HUYBO")
             {
