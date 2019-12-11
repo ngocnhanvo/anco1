@@ -67,6 +67,12 @@
                         public string hoten { get; set; }
                 
 						
+                        #region ad_user_ma_nhanvien_wintaFN
+                        
+                        #endregion ad_user_ma_nhanvien_wintaFN
+                        public string ma_nhanvien { get; set; }
+                
+						
                         #region ad_user_ma_user_wintaFN
                         
                         #endregion ad_user_ma_user_wintaFN

@@ -478,6 +478,10 @@ modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
                             .HasColumnName("hoten")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_user>()
+                            .Property(p => p.ma_nhanvien)
+                            .HasColumnName("ma_nhanvien")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_user>()
                             .Property(p => p.ma_user)
                             .HasColumnName("ma_user")
                             .HasColumnType("nvarchar");
