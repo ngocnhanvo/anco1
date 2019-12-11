@@ -45,6 +45,10 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
 
     public void add(HttpContext context, string cookie)
     {
+        var us = VNN_Function.get_user(
+            Security.id_taikhoan(context),
+            Security.id_vaitro(context),
+            Security.id_phongban(context));
         EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
@@ -81,6 +85,12 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                     md_phongban_id = null,
                     ad_role_id = null,
                     hoatdong = true,
+                    nguoitao = us.ad_user_id,
+                    value_nguoitao = us.ma_user,
+                    nguoicapnhat = us.ad_user_id,
+                    value_nguoicapnhat = us.ma_user,
+                    bophantao = us.md_phongban_id,
+                    value_bophantao = us.ten_phongban,
                     mota = context.Request.Form["mota"]
                 };
                 db.ad_user.Add(tk);
@@ -127,7 +137,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
             }
             else
             {
-                if (tk.nguoitao != us.ad_user_id)
+                if (tk.value_nguoitao != us.ma_user)
                 {
                     msg = "false#Không phải chủ sở hửu";
                 }
@@ -144,7 +154,10 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                     tk.diachi = context.Request.Form["diachi"];
                     tk.ngaycapnhat = null;
                     tk.hoatdong = bool.Parse(context.Request.Form["hoatdong"]);
-                    tk.nguoicapnhat = cookie;
+                    tk.nguoicapnhat = us.ad_user_id;
+                    tk.value_nguoicapnhat = us.ma_user;
+                    tk.bophantao = us.md_phongban_id;
+                    tk.value_bophantao = us.ten_phongban;
                     tk.mota = context.Request.Form["mota"];
                     VNN_Function.loaddulieu_Auto(db, ma_module);
                     msg = "true#Cập nhật thành công";
