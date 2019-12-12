@@ -8405,8 +8405,8 @@
     "ma_menu": "MN_01_Lenhsanxuat",
     "ma_module": "MD_01_ToSanXuat",
     "ma_case": "CA_01_CapnhatToSX",
-    "ten_case": "Cập nhật tổ sản xuất",
-    "logo": "glyphicon glyphicon-plus-sign",
+    "ten_case": "Xóa phiếu lấy tồn",
+    "logo": "fa fa-eraser",
     "hamxuly": "CA_01_CapnhatToSX(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)",
     "tieude": "",
     "isview": "False",
@@ -8421,7 +8421,7 @@
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
     "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
-    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "bophancapnhat": "52D3D6A1A2054A37B8F7258AFCECD63A",
     "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
     "value_nguoitao": "",
     "value_vaitrotao": "",
@@ -8430,9 +8430,9 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "07/01/2016 08:42:16",
-    "ngaycapnhat": "11/06/2019 22:07:26",
+    "ngaycapnhat": "04/12/2019 09:50:26",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "240085BD6B0D41AF97E27743FDEDF3F6",

@@ -80,8 +80,16 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
 		DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
 		DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
 		string kho = context.Request.QueryString["kho"];
-		
-		string sql = string.Format(@"	 
+        string mavt = context.Request.QueryString["mavt"].Trim();
+        string tenvt = context.Request.QueryString["tenvt"].Trim();
+        string madtkd = context.Request.QueryString["madtkd"].Trim();
+        string tendtkd = context.Request.QueryString["tendtkd"].Trim();
+
+        mavt = mavt.Length > 0 ? string.Format(" AND sp.ma_sanpham = N'{0}'", mavt) : "";
+        tenvt = tenvt.Length > 0 ? string.Format(" AND sp.mota_tiengviet like N'%{0}%'", tenvt) : "";
+        madtkd = madtkd.Length > 0 ? string.Format(" AND nkncc.md_doitackinhdoanh_id = (select top 1 md_doitackinhdoanh_id from md_doitackinhdoanh where ma_dtkd = N'{0}')", madtkd) : "";
+        tendtkd = tendtkd.Length > 0 ? string.Format(" AND nkncc.ten_dtkd like N'%{0}%'", tendtkd) : "";
+        string sql = string.Format(@"
         declare @tungay datetime = convert(datetime,N'{1} 00:00',103);
         declare @denngay datetime = convert(datetime,N'{2} 23:59',103);
 		select
@@ -108,11 +116,20 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
 		    AND nkncc.ngaychuyen >= @tungay
 		    AND nkncc.ngaychuyen <= @denngay
             AND isnull(sp.vattu, 0) = 1
+            AND isnull(sp.vattu, 0) = 1
+            {3}
+            {4}
+            {5}
+            {6}
 		ORDER BY nkncc.ngaychuyen desc, nkncc.sochungtu asc, sp.ma_sanpham asc
 		"
         , kho
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
+        , mavt
+        , tenvt
+        , madtkd
+        , tendtkd
         );
 		return sql;
     }
