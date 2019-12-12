@@ -44,6 +44,7 @@ function timkiem_dtkdth(id_elem, type) {
                         cell = $('#gridMD_00_DTKD_cp').getRowData(ids);
                         if ($('#' + id_elem).prop('disabled') != true) {
                             $('#' + id_elem).val(cell['ma_dtkd']);
+                            $('#ten_dtkd').val(cell['ten_dtkd']);
                         }
                     }
                 },
