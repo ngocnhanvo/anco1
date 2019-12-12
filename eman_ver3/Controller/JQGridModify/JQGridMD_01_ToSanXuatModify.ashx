@@ -86,7 +86,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         lht.macuoi = cdh.macuoi;
                         lht.md_donvitinhsanpham_id = cdh.md_donvitinhsanpham_id;
                         var kspSLT = ksp.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_to_id == tsx.md_phanxuong_to_id).FirstOrDefault();
-                        lht.sl_lsx = cdh.sl_dat;
+                        lht.sl_lsx = cdh.sl_chiato;
                         lht.sl_tonkho = kspSLT == null ? 0 : kspSLT.soluong.GetValueOrDefault(0);
                         lht.sl_layton = lht.sl_tonkho > lht.sl_lsx ? lht.sl_lsx : lht.sl_tonkho;
                         lht.ngaytao = DateTime.Now;
@@ -106,7 +106,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                     kieudangs.Distinct().Contains(b.ma_sanpham.Substring(0, 11))
                                     & a.md_to_id == tsx.md_phanxuong_to_id
                                   select a;
-                    foreach(var tksp in tonkhos)
+                    foreach (var tksp in tonkhos)
                     {
                         var tk = new md_lenhsanxuat_tosx_tonkho();
                         tk.md_lenhsanxuat_tosx_tonkho_id = Helper.getNewId();
@@ -150,7 +150,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         string id = context.Request.Form["id"];
         string msg = "";
         var ids = new List<string>();
-
+        var idsTHTon = new List<string>();
         using (var transaction = db.Database.BeginTransaction())
         {
             try
@@ -171,7 +171,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                     ).Take(1).FirstOrDefault();
 
                 md_kho kho2 = null;
-                if(tsx2 != null)
+                if (tsx2 != null)
                 {
                     kho2 = Helper.layKhoCuaTo(tsx2.md_phanxuong_id, tsx2.md_phanxuong_to_id, db);
                     toLayHTId = tsx2.md_phanxuong_to_id;
@@ -196,18 +196,18 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 {
                     msg = @"LSX đã lấy hàng tồn cho tổ.";
                 }
-                else if(tsx.stt != 9999)
+                else if (tsx.stt != 9999)
                 {
-                    if(tsxHT != null)
+                    if (tsxHT != null)
                     {
-                        if(string.IsNullOrEmpty(tsxHT.phieulayht))
+                        if (string.IsNullOrEmpty(tsxHT.phieulayht))
                         {
                             msg = @"LSX chưa lấy hàng tồn ở tổ Hoàn tất, nếu không có tồn bạn vẫn phải thực hiện chức năng lấy hàng tồn.";
                         }
                     }
                 }
 
-                if(msg.Length <= 0)
+                if (msg.Length <= 0)
                 {
                     var listLHT = new List<md_lenhsanxuat_tosx_dklht>();
                     foreach (var tsx_ in db.md_lenhsanxuat_tosx.Where(s =>
@@ -215,6 +215,11 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
                     ).OrderByDescending(s => s.stt).ToList())
                     {
+                        if (tsx.md_lenhsanxuat_tosx_id != tsx_.md_lenhsanxuat_tosx_id)
+                        {
+                            if (string.IsNullOrEmpty(tsx_.phieulayht) & tsx_.tinhhangton == true)
+                                idsTHTon.Add(tsx_.md_lenhsanxuat_tosx_id);
+                        }
                         foreach (var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx_.md_lenhsanxuat_tosx_id).ToList())
                         {
                             var lht = db.md_lenhsanxuat_tosx_dklht.Where(s =>
@@ -240,7 +245,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                         cdh.sl_laytondu += cdh.sl_laytondu.GetValueOrDefault(0) + sltdHT;
                                         cdh.sl_chiato = 0;
 
-                                        if(lht.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id)
+                                        if (lht.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id)
                                             cdh.sl_layton = lht.sl_layton.GetValueOrDefault(0);
 
                                         if (cdh.sl_layton.GetValueOrDefault(0) <= cdh.sl_laytondu.GetValueOrDefault(0))
@@ -255,7 +260,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
                                     if (bomSP.Count > 0)
                                     {
-                                        foreach (var vattusp in bomSP.Where(s=>s.soluong > 0))
+                                        foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
                                         {
                                             var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
                                                s.md_sanpham_id == vattusp.md_sanpham_id &
@@ -373,6 +378,14 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                     formData += string.Format(@"oper=CA_01_XuLyVanChuyen");
                     formData += string.Format(@"&id={0}", string.Join(",", ids));
                     VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx", formData);
+
+                    foreach (var idTHT in idsTHTon)
+                    {
+                        formData = "";
+                        formData += string.Format(@"oper=CA_01_TinhHangTonKhoLSX");
+                        formData += string.Format(@"&id={0}", idTHT);
+                        VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_01_ToSanXuatModify.ashx", formData);
+                    }
                 }
             }
             else
@@ -533,11 +546,11 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             {
                 var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == id).FirstOrDefault();
                 var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).FirstOrDefault();
-                if(tsx == null)
+                if (tsx == null)
                 {
                     msg = @"Không tìm thấy dòng đã chọn";
                 }
-                else if(string.IsNullOrEmpty(tsx.phieulayht) | tsx.phieulayht == "-")
+                else if (string.IsNullOrEmpty(tsx.phieulayht) | tsx.phieulayht == "-")
                 {
                     msg = @"Không tìm thấy phiếu lấy hàng tồn";
                 }
@@ -572,7 +585,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
                                 if (bomSP.Count > 0)
                                 {
-                                    foreach (var vattusp in bomSP.Where(s=>s.soluong > 0))
+                                    foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
                                     {
                                         var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
                                            s.md_sanpham_id == vattusp.md_sanpham_id &
@@ -592,7 +605,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         }
                     }
 
-                    var tblNhapXuat = db.md_vanchuyennoibo.Where(s=>
+                    var tblNhapXuat = db.md_vanchuyennoibo.Where(s =>
                         s.sochungtu == tsx.phieulayht
                             & s.loaichuyen == "VANCNBTC"
                             & s.md_trangthai_id == "HIEULUC"
@@ -610,8 +623,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         msg = "Không tìn thấy kho nhập (từ kho)";
                     else
                     {
-                        foreach(var dhvc in db.md_vanchuyennoibo_cdvc.Where(s=>
-                            s.md_vanchuyennoibo_id == sctId).ToList())
+                        foreach (var dhvc in db.md_vanchuyennoibo_cdvc.Where(s =>
+                             s.md_vanchuyennoibo_id == sctId).ToList())
                         {
                             var khoSPNhap = db.md_kho_sanpham.Where(s =>
                             s.md_kho_id == khoIdNhap.md_kho_id
@@ -624,10 +637,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                             khoSPNhap.soluong = khoSPNhap.soluong - dhvc.soluong_dachuyen;
                             khoSPXuat.soluong = khoSPNhap.soluong + dhvc.soluong_dachuyen;
 
-                            if(khoSPNhap.soluong < 0)
+                            if (khoSPNhap.soluong < 0)
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhvc.md_sanpham_id).FirstOrDefault();
-                                msg = "Số lượng sp " + sp.ma_sanpham + " trong kho " + khoIdNhap.ten_kho + " nhỏ hơn số lượng đã từng được chuyển ("+ dhvc.soluong_dachuyen.GetValueOrDefault(0).DropTrailingZeros() +")";
+                                msg = "Số lượng sp " + sp.ma_sanpham + " trong kho " + khoIdNhap.ten_kho + " nhỏ hơn số lượng đã từng được chuyển (" + dhvc.soluong_dachuyen.GetValueOrDefault(0).DropTrailingZeros() + ")";
                                 break;
                             }
                         }
