@@ -117,6 +117,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
 		    AND nkncc.ngaychuyen <= @denngay
             AND isnull(sp.vattu, 0) = 1
             AND isnull(sp.vattu, 0) = 1
+`           AND isnull(dh.sl_danhap, 0) > 0 
             {3}
             {4}
             {5}
