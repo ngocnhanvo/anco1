@@ -19,10 +19,22 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_hanngachPXTo_lsxtsxId_wintaFN
+                        
+                        #endregion md_hanngachPXTo_lsxtsxId_wintaFN
+                        public string lsxtsxId { get; set; }
+                
+						
                         #region md_hanngachPXTo_md_dondathangphanxuong_id_wintaFN
                         
                         #endregion md_hanngachPXTo_md_dondathangphanxuong_id_wintaFN
                         public string md_dondathangphanxuong_id { get; set; }
+                
+						
+                        #region md_hanngachPXTo_md_hanngach_id_wintaFN
+                        
+                        #endregion md_hanngachPXTo_md_hanngach_id_wintaFN
+                        public string md_hanngach_id { get; set; }
                 
 						
                         #region md_hanngachPXTo_md_hanngachPXTo_id_wintaFN
@@ -71,6 +83,12 @@
                         
                         #endregion md_hanngachPXTo_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region md_hanngachPXTo_pxtoId_wintaFN
+                        
+                        #endregion md_hanngachPXTo_pxtoId_wintaFN
+                        public string pxtoId { get; set; }
                 
 						
                         #region md_hanngachPXTo_sctdathang_wintaFN

@@ -167,22 +167,19 @@ public void CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, System.
             {
                 //Lay ra tat ca don dat hang px da tao yeu cau mua vat tu
                 var dondhpxs_got = from a in db.c_nhucauvattu_dhpx
-                                   join b in db.c_kehoachdathang_dhcpx on a.md_dondathangphanxuong_id equals b.c_kehoachdathang_dhcpx_id
-                                   where b.tinh_ncvt == true
+                                   join b in db.c_kehoachdathang_dhcpx.Where(s=>s.tinh_ncvt == true) on a.md_dondathangphanxuong_id equals b.c_kehoachdathang_dhcpx_id
                                    select new { a.md_dondathangphanxuong_id };
 
-                var dondhpxs_got_arr = dondhpxs_got.Distinct();
-                var arr_got = new List<string>();
-                foreach (var a in dondhpxs_got_arr)
-                {
-                    arr_got.Add(a.md_dondathangphanxuong_id);
-                }
-
+                var arr_got = dondhpxs_got.Select(s=>s.md_dondathangphanxuong_id).Distinct().ToList();
                 //--Xoa du lieu
                 var dondhpxs = from a in db.c_kehoachdathang_dhcpx
-                               join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
-                               where b.ngaybatdausx >= ncvt.tungay & b.ngaybatdausx <= ncvt.denngay
-                               & b.xulykehoach == true
+                               join b in db.c_kehoachdathang.Where(s=>
+                                   s.ngaybatdausx >= ncvt.tungay 
+                                   & s.ngaybatdausx <= ncvt.denngay
+                                   & s.xulykehoach == true
+                                   ) on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
+                               where 
+                               1==1
                                & (
                                    !arr_got.Contains(a.c_kehoachdathang_dhcpx_id)
                                    | db.c_kehoachdathang_dhcpx_vattu.
@@ -197,8 +194,6 @@ public void CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, System.
                                select new { a.c_kehoachdathang_dhcpx_id };
 
                 int count_dondhpxs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count();
-                if (count_dondhpxs <= 0)
-                    db.c_nhucauvattu_dhpx.RemoveRange(db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
 
                 db.c_nhucauvattu_ddhpx.RemoveRange(db.c_nhucauvattu_ddhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
                 db.c_nhucauvattu_ycmvt.RemoveRange(db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
