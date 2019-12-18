@@ -25,8 +25,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             case "load_to":
                 this.load_to(context);
                 break;
-            case "CA_01_CapnhatToSX":
-                this.CA_01_CapnhatToSX(context);
+            case "CA_01_TinhHangTonKhoLSX":
+                this.CA_01_TinhHangTonKhoLSX(context);
                 break;
             case "CA_01_TinhVatTuCanSX":
                 this.CA_01_TinhVatTuCanSX(context);
@@ -34,12 +34,124 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             case "CA_01_LapPhieuLayHangTonLSX":
                 this.CA_01_LapPhieuLayHangTonLSX(context);
                 break;
-            case "CA_01_TinhHangTonKhoLSX":
-                this.CA_01_TinhHangTonKhoLSX(context);
+            case "CA_01_CapnhatToSX":
+                this.CA_01_CapnhatToSX(context);
                 break;
+            case "CA_01_LapPhieuDoiMau":
+                this.CA_01_LapPhieuDoiMau(context);
+                break;
+            case "CA_01_XoaPhieuDoiMau":
+                this.CA_01_XoaPhieuDoiMau(context);
+                break;
+
             default:
                 break;
         }
+    }
+
+    public void CA_01_LapPhieuDoiMau(HttpContext context)
+    {
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        var db = new EntityContext();
+        string id = context.Request.Form["id"];
+        string idnew = Helper.getNewId();
+        string msg = "";
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                string sochungtu = VNN_VariablePublic.sochungtu(db, "DMDD", 1);
+                var lsxto = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == id).FirstOrDefault();
+                if (!string.IsNullOrEmpty(lsxto.phieudoimau))
+                {
+                    msg = "Đã lập phiếu đổi màu cho dòng đã chọn";
+                }
+                else
+                {
+                    var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == lsxto.md_lenhsanxuat_id).FirstOrDefault();
+                    var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).FirstOrDefault();
+                    var khopxto = Helper.layKhoCuaTo(lsxto.md_phanxuong_id, lsxto.md_phanxuong_to_id, db);
+                    var dmdd = new md_doimaudodang();
+                    dmdd.md_doimaudodang_id = idnew;
+                    dmdd.sochungtu = sochungtu;
+                    dmdd.trangthai = "DANHAN";
+                    dmdd.ketoan = false;
+                    dmdd.mota = "";
+                    dmdd.ngaychuyen = DateTime.Now;
+                    dmdd.ngaytao = DateTime.Now;
+                    dmdd.ngaycapnhat = DateTime.Now;
+                    dmdd.sctdathang = dhpx.sctdathang;
+                    dmdd.donhang_thamchieu = dhpx.donhang_thamchieu;
+                    dmdd.tukho = khopxto.md_kho_id;
+                    dmdd.denkho = khopxto.md_kho_id;
+                    dmdd.nguoitao = us.ad_user_id;
+                    dmdd.value_nguoitao = us.ma_user;
+                    dmdd.nguoicapnhat = us.ad_user_id;
+                    dmdd.value_nguoicapnhat = us.ma_user;
+                    dmdd.bophantao = us.md_phongban_id;
+                    dmdd.value_bophantao = us.ten_phongban;
+                    dmdd.bophancapnhat = us.md_phongban_id;
+                    dmdd.value_bophancapnhat = us.ten_phongban;
+                    db.md_doimaudodang.Add(dmdd);
+                    lsxto.phieudoimau = dmdd.sochungtu;
+                    db.SaveChanges();
+
+                    foreach (var item in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                         s.md_lenhsanxuat_tosx_id == id
+                         & !string.IsNullOrEmpty(s.mathaydoi)).ToList())
+                    {
+                        var dmddDH = new md_doimaudodang_dh();
+                        dmddDH.md_doimaudodang_dh_id = Helper.getNewId();
+                        dmddDH.md_doimaudodang_id = dmdd.md_doimaudodang_id;
+                        dmddDH.spcandoi = db.md_sanpham.Where(s => s.md_sanpham_id == item.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault();
+                        dmddDH.spsedoi = item.mathaydoi;
+                        dmddDH.md_donvitinhsanpham_id = item.md_donvitinhsanpham_id;
+                        dmddDH.soluong_toida = item.sl_chiato;
+                        dmddDH.soluong_dachuyen = 0;
+                        dmddDH.soluong_dichchuyen = item.sl_chiato;
+                        dmddDH.soluong_muonchuyen = item.sl_chiato;
+                        dmddDH.mota = "";
+                        dmddDH.ngaytao = DateTime.Now;
+                        dmddDH.ngaycapnhat = DateTime.Now;
+                        dmddDH.nguoitao = us.ad_user_id;
+                        dmddDH.value_nguoitao = us.ma_user;
+                        dmddDH.nguoicapnhat = us.ad_user_id;
+                        dmddDH.value_nguoicapnhat = us.ma_user;
+                        dmddDH.bophantao = us.md_phongban_id;
+                        dmddDH.value_bophantao = us.ten_phongban;
+                        dmddDH.bophancapnhat = us.md_phongban_id;
+                        dmddDH.value_bophancapnhat = us.ten_phongban;
+                        db.md_doimaudodang_dh.Add(dmddDH);
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"<div style='color:blue'>Lập phiếu đổi màu thành công</div>");
+                transaction.Commit();
+                string formData = "";
+                formData += string.Format(@"oper=CA_01_XuLyDoiMauSanPham");
+                formData += string.Format(@"&id={0}", idnew);
+                msg += VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_00_DoiMauHangDoDangModify.ashx", formData);
+            }
+            else
+            {
+                msg = string.Format(@"<div  class='error' style='color:red'>{0}</div>", msg);
+                transaction.Rollback();
+            }
+        }
+        context.Response.Write(msg);
+    }
+
+    public void CA_01_XoaPhieuDoiMau(HttpContext context)
+    {
+
     }
 
     public void CA_01_TinhHangTonKhoLSX(HttpContext context)
