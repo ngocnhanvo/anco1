@@ -673,6 +673,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                 {
                     msg = @"Không tìm thấy phiếu lấy hàng tồn";
                 }
+                else if (tsx.ngaytao <= new DateTime(2019, 12, 17))
+                {
+                    msg = @"Chỉ hỗ trợ các LSX lập từ ngày 17/12/2019 trở đi.";
+                }
                 else
                 {
                     foreach (var tsx_ in db.md_lenhsanxuat_tosx.Where(s =>
@@ -693,21 +697,17 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) + lht.sl_layton.GetValueOrDefault(0);
                                 decimal? sltdHT = 0;
 
-                                //var bomSP = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
-                                //    s.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id
-                                //    & s.sp == cdh.md_sanpham_id
-                                //    ).ToList();
-                                var bomSP = db.md_sanpham_bom_vattu.Where(s =>
-                                        s.md_sanpham_bom_id == cdh.noigiaohang
-                                        & s.sanphamId == cdh.md_sanpham_id
-                                        ).ToList();
+                                var bomSP = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == cdh.md_lenhsanxuat_tosx_id
+                                    & s.sp == cdh.md_sanpham_id
+                                    ).ToList();
 
                                 if (bomSP.Count > 0)
                                 {
                                     foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
                                     {
                                         var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
-                                           s.md_sanpham_id == vattusp.md_sanpham_id &
+                                           s.md_sanpham_id == vattusp.vt &
                                            s.md_lenhsanxuat_tosx_id == tsx_.md_lenhsanxuat_tosx_id).FirstOrDefault();
                                         var addVTLSX = vtlsxto;
                                         if (vtlsxto != null)
