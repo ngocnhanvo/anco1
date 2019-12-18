@@ -298,6 +298,10 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
                 {
                     msg = "false#Không tìm thấy mã sản phẩm cần thay đổi";
                 }
+                else if(object_.md_donvitinhsanpham_id != spmoi.md_donvitinhsanpham_id)
+                {
+                    msg = "false#Không cùng đơn vị tính";
+                }
             }
 
             if (msg.Length <= 0)

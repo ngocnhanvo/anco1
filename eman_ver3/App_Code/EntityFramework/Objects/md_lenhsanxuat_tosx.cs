@@ -109,6 +109,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_phieudoimau_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_phieudoimau_wintaFN
+                        public string phieudoimau { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_phieulayht_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_phieulayht_wintaFN

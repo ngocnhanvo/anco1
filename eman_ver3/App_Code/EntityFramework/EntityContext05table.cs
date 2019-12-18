@@ -584,6 +584,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx>().HasKey<string>(p => p.md_lenhsanxuat_
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.phieudoimau)
+                            .HasColumnName("phieudoimau")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
                             .Property(p => p.phieulayht)
                             .HasColumnName("phieulayht")
                             .HasColumnType("nvarchar");
