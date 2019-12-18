@@ -7293,7 +7293,7 @@
     "canhgiua": "True",
     "id_parent": "True",
     "dodaiForm": "300",
-    "docaoForm": "140",
+    "docaoForm": "",
     "thuake": "",
     "hidden_modify": "False",
     "sapxep": "0000000004",
@@ -7301,7 +7301,7 @@
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
     "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
-    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "bophancapnhat": "52D3D6A1A2054A37B8F7258AFCECD63A",
     "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
     "value_nguoitao": "",
     "value_vaitrotao": "",
@@ -7310,7 +7310,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "02/06/2019 23:48:51",
-    "ngaycapnhat": "02/06/2019 23:48:51",
+    "ngaycapnhat": "25/11/2019 15:59:01",
     "mota": "",
     "hoatdong": "True"
   },
@@ -8430,7 +8430,7 @@
     "value_vaitrocapnhat": "",
     "value_bophancapnhat": "",
     "ngaytao": "07/01/2016 08:42:16",
-    "ngaycapnhat": "04/12/2019 09:50:26",
+    "ngaycapnhat": "03/12/2019 14:55:23",
     "mota": "",
     "hoatdong": "True"
   },
@@ -24941,7 +24941,7 @@
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
     "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
-    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "bophancapnhat": "52D3D6A1A2054A37B8F7258AFCECD63A",
     "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
     "value_nguoitao": "admin",
     "value_vaitrotao": "ADMIN eMan",
@@ -24950,9 +24950,9 @@
     "value_vaitrocapnhat": "ADMIN eMan",
     "value_bophancapnhat": "PHÒNG IT",
     "ngaytao": "13/05/2019 01:31:28",
-    "ngaycapnhat": "13/05/2019 01:40:24",
+    "ngaycapnhat": "16/11/2019 10:40:53",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "A75ECAF6D03E49A99D88DCC3D0176BC4",
@@ -35266,7 +35266,7 @@
     "vaitrotao": "B9767466FF154D26B42627BCF303EE18",
     "bophantao": "8B82E40773764BFB86F105041599C913",
     "vaitrocapnhat": "B9767466FF154D26B42627BCF303EE18",
-    "bophancapnhat": "8B82E40773764BFB86F105041599C913",
+    "bophancapnhat": "52D3D6A1A2054A37B8F7258AFCECD63A",
     "nguoicapnhat": "AA0A67E297F94079831FA05B5BD87EA3",
     "value_nguoitao": "admin",
     "value_vaitrotao": "Admin Anco",
@@ -35275,9 +35275,9 @@
     "value_vaitrocapnhat": "Admin Anco",
     "value_bophancapnhat": "Phòng IT",
     "ngaytao": "06/01/2016 14:17:51",
-    "ngaycapnhat": "08/04/2019 15:22:54",
+    "ngaycapnhat": "18/12/2019 12:54:34",
     "mota": "",
-    "hoatdong": "False"
+    "hoatdong": "True"
   },
   {
     "ad_case_id": "f5041b952bd143a085e3df0026fd07cf",
