@@ -277,87 +277,34 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
     {
         EntityContext db = new EntityContext();
         User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", nht = "1";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        //decimal sl_hoanthanh = decimal.Parse(context.Request.Form["sl_hoanthanh"]);
-        decimal sl_dahoanthanh = decimal.Parse(context.Request.Form["sl_dahoanthanh"]);
-        decimal sl_nhapkho = decimal.Parse(context.Request.Form["sl_nhapkho"]);
-        decimal sl_danhapkho = decimal.Parse(context.Request.Form["sl_danhapkho"]);
-        md_lenhsanxuat lsx = null;
-        md_lenhsanxuat_tosx lsx_tosx = null;
+        string mathaydoi = context.Request.Form["mathaydoi"];
+        string mota = context.Request.Form["mota"];
+        string id = context.Request.Form["id"];
+        md_sanpham spmoi = null;
         try
         {
-            //decimal sl_hoanthanh = decimal.Parse(context.Request.Form["sl_hoanthanh"]);
-            string id = context.Request.Form["id"];
-            md_lenhsanxuat_tosx_cdh object_ = db.md_lenhsanxuat_tosx_cdh.Where(p => p.md_lenhsanxuat_tosx_cdh_id == id).Take(1).FirstOrDefault();
-            /*var vattus = (from a in db.md_lenhsanxuat_vattu
-						   join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-						   where b.ban_thanhpham == true
-						   select new {a.sl_daxuat, a.md_lenhsanxuat_tosx_id });
+            var object_ = db.md_lenhsanxuat_tosx_cdh.Where(p => p.md_lenhsanxuat_tosx_cdh_id == id).Take(1).FirstOrDefault();
 
-			foreach(var dklht in vattu.Where(s => s.md_lenhsanxuat_tosx_id == object_.md_lenhsanxuat_tosx_id))
-			{
-				if(dklht.sl_daxuat < sl_nhapkho)
-				{
-					nht = "2";
-					break;
-				}
-			}*/
-
-            md_dondathangphanxuong_cdh dhpx_cdh = null;
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if(nht == "2")
-            {
-                msg = "false#Lỗi:SL vừa hoàn thành phải nhỏ hơn hoặc bằng SL đã xuất BTP";
-            }
-            else if(nht == "2")
-            {
-                msg = "false#Lỗi:SL vừa hoàn thành phải nhỏ hơn hoặc bằng SL đã xuất BTP";
-            }
             else
             {
-                lsx_tosx = db.md_lenhsanxuat_tosx.Where(p => p.md_lenhsanxuat_tosx_id == object_.md_lenhsanxuat_tosx_id).Take(1).FirstOrDefault();
-                lsx = db.md_lenhsanxuat.Where(p => p.md_lenhsanxuat_id.Equals(lsx_tosx.md_lenhsanxuat_id)).Take(1).FirstOrDefault();
-                dhpx_cdh = db.md_dondathangphanxuong_cdh.Where(s => s.md_sanpham_id == object_.md_sanpham_id & s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
-
-                decimal sl_toida = object_.sl_chiato.Value - sl_danhapkho;
-                if (lsx.md_trangthai_id == "HOANTHANH")
+                spmoi = db.md_sanpham.Where(s => s.ma_sanpham == mathaydoi).FirstOrDefault();
+                if(!string.IsNullOrEmpty(mathaydoi) & spmoi == null)
                 {
-                    msg = "false#Lỗi: lệnh sản xuất \"" + lsx.sochungtu + "\" đã hoàn thành, không thể chỉnh sửa.";
-                }
-                else if (lsx.md_trangthai_id == "KETTHUC")
-                {
-                    msg = "false#Lỗi: lệnh sản xuất \"" + lsx.sochungtu + "\" đã kết thúc, không thể chỉnh sửa.";
-                }
-                else if (sl_nhapkho > sl_toida)
-                {
-                    msg = "false#Lỗi: Số lượng nhập kho tối đa là: \"" + VNN_VariablePublic.autoRound(sl_toida, 4) + "\".";
-                }
-                else if(lsx_tosx.check_hoanthanh == true)
-                {
-                    md_phanxuong_to to = db.md_phanxuong_to.Where(s => s.md_to_id == lsx_tosx.md_phanxuong_to_id).Take(1).FirstOrDefault();
-                    msg = "false#Lỗi: Tổ \"" + to.ten_to + "\" đã hoàn thành, không thể chỉnh sửa.";
-                }
-                else if(sl_nhapkho + sl_dahoanthanh > object_.sl_chiato.Value)
-                {
-                    msg = "false#Lỗi: Số lượng SL vừa hoàn thành tối đa là: \"" + VNN_VariablePublic.autoRound(object_.sl_chiato.Value, 4) + "\".";
+                    msg = "false#Không tìm thấy mã sản phẩm cần thay đổi";
                 }
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_lenhsanxuat_tosx_cdh";
-                VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
-                VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
-                VNN_Function.SetFormValue("sl_nhapkho", "0");
-                VNN_Function.SetFormValue("sl_dahoanthanh", (sl_nhapkho + sl_dahoanthanh).ToString());
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                object_.mota = mota;
+                object_.mathaydoi = mathaydoi;
+                db.SaveChanges();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
             }
         }
