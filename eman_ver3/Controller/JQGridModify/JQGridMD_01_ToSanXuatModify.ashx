@@ -96,6 +96,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                     lsxto.phieudoimau = dmdd.sochungtu;
                     db.SaveChanges();
 
+                    var count = 0;
                     foreach (var item in db.md_lenhsanxuat_tosx_cdh.Where(s =>
                          s.md_lenhsanxuat_tosx_id == id
                          & !string.IsNullOrEmpty(s.mathaydoi)).ToList())
@@ -123,6 +124,12 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         dmddDH.value_bophancapnhat = us.ten_phongban;
                         db.md_doimaudodang_dh.Add(dmddDH);
                         db.SaveChanges();
+                        count++;
+                    }
+
+                    if(count <= 0)
+                    {
+                        msg = "Không có dòng hàng nào cần đổi màu";
                     }
                 }
             }
