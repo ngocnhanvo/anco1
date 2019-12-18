@@ -302,6 +302,10 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
                 {
                     msg = "false#Không cùng đơn vị tính";
                 }
+                 else if(object_.md_sanpham_id == spmoi.md_sanpham_id)
+                {
+                    msg = "false#Mã mới và mã cũ không được giống nhau";
+                }
             }
 
             if (msg.Length <= 0)
