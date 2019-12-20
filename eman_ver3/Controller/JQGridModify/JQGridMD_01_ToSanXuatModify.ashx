@@ -56,12 +56,13 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
         string id = context.Request.Form["id"];
         string idnew = Helper.getNewId();
         string msg = "";
+        md_lenhsanxuat_tosx lsxto = null;
         using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
                 string sochungtu = VNN_VariablePublic.sochungtu(db, "DMDD", 1);
-                var lsxto = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == id).FirstOrDefault();
+                lsxto = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == id).FirstOrDefault();
                 if (!string.IsNullOrEmpty(lsxto.phieudoimau))
                 {
                     msg = "Đã lập phiếu đổi màu cho dòng đã chọn";
@@ -127,7 +128,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                         count++;
                     }
 
-                    if(count <= 0)
+                    if (count <= 0)
                     {
                         msg = "Không có dòng hàng nào cần đổi màu";
                     }
@@ -140,16 +141,31 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
 
             if (msg.Length <= 0)
             {
-                msg = string.Format(@"<div style='color:blue'>Lập phiếu đổi màu thành công</div>");
                 transaction.Commit();
                 string formData = "";
                 formData += string.Format(@"oper=CA_01_XuLyDoiMauSanPham");
                 formData += string.Format(@"&id={0}", idnew);
                 msg += VNN_VariablePublic.GetModule("/Controller/JQGridModify/JQGridMD_00_DoiMauHangDoDangModify.ashx", formData);
+
+                if (msg.Contains("error"))
+                {
+                    var dmdd = db.md_doimaudodang.Where(s => s.md_doimaudodang_id == idnew).FirstOrDefault();
+                    if (dmdd != null)
+                    {
+                        if (lsxto != null)
+                            lsxto.phieudoimau = "";
+                        db.md_doimaudodang.Remove(dmdd);
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
+                    msg = string.Format(@"<div style='color:blue'>Lập phiếu đổi màu thành công</div>");
+                }
             }
             else
             {
-                msg = string.Format(@"<div  class='error' style='color:red'>{0}</div>", msg);
+                msg = string.Format(@"<div class='error' style='color:red'>{0}</div>", msg);
                 transaction.Rollback();
             }
         }
