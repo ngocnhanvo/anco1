@@ -46,7 +46,7 @@ public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
 		, px.ten_phanxuong as xuong
 		, ddhpx.sochungtu as so, ddhpx.sctdathang as dhso, ddhpx.donhang_thamchieu as dhtc
 		, sp.ma_sanpham as ma , sp.mota_tiengviet as ten, dvt.ten_dvt as dvt
-		, cdh.tong_sl_dat as SL, cdh.noigiaohang as noigiaohang
+		, (cdh.tong_sl_dat - isnull(cdh.sl_giamhanngach, 0)) as SL, cdh.noigiaohang as noigiaohang
 		, ddhpx.ngayhoanthanh as ngaycham
 		, dsdh.huongdanlamhang as hdlhRieng
 		, dsdh.huongdanlamhangchung as hdlhchung
