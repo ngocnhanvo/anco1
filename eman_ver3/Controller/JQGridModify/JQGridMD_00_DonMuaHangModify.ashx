@@ -141,7 +141,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             sochungtu = sochungtu,
                             donhang_thamchieu = dmhdhtcs,
                             so_donmuahang = dmhsdmhs,
-                            ngaydenghi = DateTime.Now,
+                            ngaydenghi = ngh,
                             ngaygiaohang = ngh,
                             kho = khoNH,
                             trangthai = "SOANTHAO",
