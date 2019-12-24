@@ -78,6 +78,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
 
             select 
+                C.thegiaoviecsx
 	            C.px
 	            , C.tsx
 	            , C.ma_hhvt
@@ -92,7 +93,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 		            , (B.slxuat * B.dongia) as thanhtien
 	            from (
 		            select
-			            A.sochungtu
+			            A.thegiaoviecsx
 			            , px.ten_phanxuong as px
 			            , tsx.ten_to as tsx
 			            , sp.ma_sanpham as ma_hhvt
@@ -101,7 +102,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 			            , A.dongia
 		            from (
 			            select
-				            xnb.sochungtu
+				            dh.tenhang as thegiaoviecsx
 				            , kho.md_to_id
 				            , dh.sl_daxuat as slxuat
 				            , xnb.phienbangiaNC
@@ -143,7 +144,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            )B
             )C
             where C.slxuat > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx
+            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx
             order by C.ma_hhvt
 		"
         , thang
