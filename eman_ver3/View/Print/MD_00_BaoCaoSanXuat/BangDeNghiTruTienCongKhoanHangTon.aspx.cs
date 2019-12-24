@@ -31,7 +31,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
         {
             var infoPrint = PrintAnco2.GetInfoPrint();
 
-            tbl.Columns.Add("sum_slxuat", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_sltru", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
@@ -45,13 +45,13 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
             tbl.Rows[lastRow]["MM"] = infoPrint.MM;
             tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
             tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
-            tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
+            tbl.Rows[lastRow]["sum_sltru"] = tbl.Compute("sum(sltru)", string.Empty);
 
-            var slxuat_cell = report.Report.FindControl("slxuat", true);
-            slxuat_cell.DataBindings[0].FormatString = sothapphan;
+            var sltru_cell = report.Report.FindControl("sltru", true);
+            sltru_cell.DataBindings[0].FormatString = sothapphan;
 
-            var sum_slxuat_cell = report.Report.FindControl("slxuat", true);
-            sum_slxuat_cell.DataBindings[0].FormatString = sothapphan;
+            var sum_sltru_cell = report.Report.FindControl("sum_sltru", true);
+            sum_sltru_cell.DataBindings[0].FormatString = sothapphan;
 
             report.DataSource = ds;
             report.DataAdapter = da;
