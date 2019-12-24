@@ -84,7 +84,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
                 , C.ten_hhvt
 	            , C.dvt
 	            , C.dongia
-	            , sum(C.sltru) as sltru
+	            , sum(C.sltru) as slxuat
 	            , sum(C.thanhtien) as thanhtien
                 
             from (
