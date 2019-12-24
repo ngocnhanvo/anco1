@@ -120,7 +120,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            and dh.sl_daxuat is not null
 			            union all
 			            select
-				            xnb.sochungtu
+				            dh.tenhang as thegiaoviecsx
 				            , kho.md_to_id
 				            , dh.soluong_dachuyen as slxuat
 				            , xnb.phienbangiaNC
@@ -128,14 +128,14 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            , dh.md_donvitinhsanpham_id
                             , dh.gianhancong as dongia
 			            FROM 
-				            md_vanchuyennoibo xnb (nolock)
-				            left join md_vanchuyennoibo_cdvc dh (nolock) on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				            md_vanchuyennoibo (nolock) xnb
+				            left join md_vanchuyennoibo_cdvc (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
 				            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
 			            where 
 				            xnb.loaichuyen = 'VANCNBCTKGH' 
 				            and kho.md_to_id = @tosx
 				            and xnb.ngaychuyen between @tungay and @denngay
-				            and dh.soluong_dachuyen is not null
+				            and isnull(dh.soluong_dachuyen, 0) > 0
 		            )A
 		            left join md_sanpham sp on sp.md_sanpham_id = A.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id
