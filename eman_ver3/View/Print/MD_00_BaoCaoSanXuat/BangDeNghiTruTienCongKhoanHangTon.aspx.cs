@@ -86,12 +86,11 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 	            , C.dongia
 	            , sum(C.sltru) as sltru
 	            , sum(C.thanhtien) as thanhtien
-                
+                , N'Tháng {0}/năm {1}' as thang_nam
             from (
 	            select 
 		            B.*
 		            , (B.sltru * B.dongia) as thanhtien
-                    , N'Tháng {0}/năm {1}' as thang_nam
 	            from (
 		            select
 			            px.ten_phanxuong as px
