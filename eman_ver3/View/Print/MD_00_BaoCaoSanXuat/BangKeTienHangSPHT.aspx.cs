@@ -79,7 +79,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 
             select 
                 C.thegiaoviecsx
-	            C.px
+	            , C.px
 	            , C.tsx
 	            , C.ma_hhvt
 	            , C.dvt
