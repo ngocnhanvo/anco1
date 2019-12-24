@@ -181,7 +181,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        ) as dhmai
 					        --hoan tat
 					        , (
-						        select isnull(sl_dagiao - sl_layton, 0)
+						        select isnull(sl_dagiao - isnull(sl_layton, 0), 0)
 						        where tsx.stt = 9999
 					        ) as giaohoantat
 					        , (
