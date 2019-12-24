@@ -139,6 +139,11 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 {
                                     cai.sl_danhapkho += vcnb_cdvc.soluong_dichchuyen;
                                     cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen;
+                                    if (cai.sl_chiato < cai.sl_dagiao)
+                                        cai.sl_layton = cai.sl_dagiao - cai.sl_chiato;
+                                    else
+                                        cai.sl_layton = 0;
+
                                     lstSPId.Add(cai.md_sanpham_id);
                                 }
                                 db.SaveChanges();
