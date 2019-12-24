@@ -94,8 +94,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
                     , N'Tháng {0}/năm {1}' as thang_nam
 	            from (
 		            select
-			            A.sochungtu
-			            , px.ten_phanxuong as px
+			            px.ten_phanxuong as px
 			            , tsx.ten_to as tsx
 			            , sp.ma_sanpham as ma_hhvt
                         , sp.mota_tiengviet as ten_hhvt
@@ -103,22 +102,22 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 			            , A.sltru
 			            , A.dongia
 		            from (
-			            select
-				            xnb.sochungtu
-				            , kho.md_to_id
-				            , dh.soluong_dachuyen as sltru
+			            select distinct
+				            kho.md_to_id
+				            , dh.soluong_layton as sltru
                             , dh.gianhancong as dongia
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
+                            , dh.lsx
 			            FROM 
-				            md_vanchuyennoibo xnb (nolock)
-				            left join md_vanchuyennoibo_cdvc dh (nolock) on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
-				            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
+				            md_vanchuyennoibo (nolock) xnb
+				            left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				            left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
 			            where 
 				            xnb.loaichuyen = 'VANCNBCTKGH' 
 				            and kho.md_to_id = @tosx
 				            and xnb.ngaychuyen between @tungay and @denngay
-				            and dh.soluong_dachuyen is not null
+				            and isnull(dh.soluong_layton, 0) > 0
 		            )A
 		            left join md_sanpham sp on sp.md_sanpham_id = A.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id
