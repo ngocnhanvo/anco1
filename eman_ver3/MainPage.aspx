@@ -253,7 +253,7 @@
 		let thoigianhoanthanh_md = '<%=ttc.email_hotro %>';
 		let date_import = '<%=date_ip %>';
         var monthDF = (new Date()).getMonth() + 1;
-        var yearDF = (new Date()).getFullYear() + 1;
+        var yearDF = (new Date()).getFullYear();
 		let dec = vnn_formatnumber()[0], thous = vnn_formatnumber()[1];
 		//cookie tai khoan
 		let cookie = '<%=tk.ad_user_id %>';
