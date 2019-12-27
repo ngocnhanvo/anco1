@@ -252,8 +252,8 @@
 		let thoigiansanxuat_md = '<%=ttc.domain %>';
 		let thoigianhoanthanh_md = '<%=ttc.email_hotro %>';
 		let date_import = '<%=date_ip %>';
-        let monthDF = now.getMonth() + 1;
-        let yearDF = now.getFullYear() + 1;
+        var monthDF = now.getMonth() + 1;
+        var yearDF = now.getFullYear() + 1;
 		let dec = vnn_formatnumber()[0], thous = vnn_formatnumber()[1];
 		//cookie tai khoan
 		let cookie = '<%=tk.ad_user_id %>';
