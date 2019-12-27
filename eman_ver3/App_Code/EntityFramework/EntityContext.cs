@@ -163,6 +163,7 @@ public virtual DbSet<md_tygia> md_tygia { get; set; }
 public virtual DbSet<md_vanchuyennoibo> md_vanchuyennoibo { get; set; }
 public virtual DbSet<md_vanchuyennoibo_cdvc> md_vanchuyennoibo_cdvc { get; set; }
 public virtual DbSet<md_vanchuyennoibo_dalayton> md_vanchuyennoibo_dalayton { get; set; }
+public virtual DbSet<md_vattukhoan> md_vattukhoan { get; set; }
 public virtual DbSet<md_vattutrongtinhbom> md_vattutrongtinhbom { get; set; }
 public virtual DbSet<md_xuatban> md_xuatban { get; set; }
 public virtual DbSet<md_xuatban_cdh> md_xuatban_cdh { get; set; }
