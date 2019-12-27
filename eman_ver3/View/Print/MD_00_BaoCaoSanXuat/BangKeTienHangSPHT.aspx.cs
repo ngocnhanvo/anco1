@@ -33,6 +33,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 
             tbl.Columns.Add("sum_slxuat", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+            tbl.Columns.Add("tongtientt", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
@@ -44,8 +45,18 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             tbl.Rows[lastRow]["dd"] = infoPrint.dd;
             tbl.Rows[lastRow]["MM"] = infoPrint.MM;
             tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
+            var tongtt = tbl.Compute("sum(thanhtien)", string.Empty).ToString();
+            var tienvtkhoan = tbl.Rows[lastRow]["tienvtkhoan"].ToString();
+            var tienvtvipham = tbl.Rows[lastRow]["tienvtvipham"].ToString();
+
+            tbl.Rows[lastRow]["sum_thanhtien"] = tongtt;
             tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
+
+
+            tbl.Rows[lastRow]["tongtientt"] =
+                Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
+                - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
+                - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham);
 
             var slxuat_cell = report.Report.FindControl("slxuat", true);
             slxuat_cell.DataBindings[0].FormatString = sothapphan;
@@ -68,15 +79,18 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
         var infoPrint = PrintAnco2.GetInfoPrint();
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
-		string nam = context.Request.QueryString["nam"];
-		string tosx = context.Request.QueryString["tosx"];
-		
-		string sql = string.Format(@"	 
+        string nam = context.Request.QueryString["nam"];
+        string tosx = context.Request.QueryString["tosx"];
+
+        string sql = string.Format(@"	 
             declare @tosx nvarchar(32) = '{2}';
             declare @tungay datetime = convert(datetime,N'01/{0}/{1} 00:00:00',103);
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
-
+            declare @tienvtkhoan decimal(18, 2), @tienvtvipham decimal(18, 2)
+            select top 1 @tienvtkhoan = tienvtkhoan, @tienvtvipham = tienvtvipham 
+            from md_vattukhoan where md_to_id = @tosx and nam = cast('{1}' as int) and thang = cast('{0}' as int)
+            
             select 
                 C.thegiaoviecsx
 	            , C.px
@@ -87,6 +101,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            , sum(C.slxuat) as slxuat
 	            , sum(C.thanhtien) as thanhtien
                 , N'Tháng {0}/năm {1}' as thang_nam
+                , @tienvtkhoan as tienvtkhoan
+                , @tienvtvipham as tienvtvipham
             from (
 	            select 
 		            B.*
@@ -151,7 +167,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
         , nam
         , tosx
         );
-		return sql;
+        return sql;
     }
 }
 
