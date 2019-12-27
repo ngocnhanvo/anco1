@@ -57,7 +57,9 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
                 - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
                 - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham);
             tbl.Rows[lastRow]["tongtientt"] = tongtientt;
-            tbl.Rows[lastRow]["sotienbangchu"] = VNN_ConvertMoney.convert(tongtientt, "VND");
+
+            var kqDic = VNN_ConvertMoney.convert(tongtientt, "VND").FirstOrDefault();
+            tbl.Rows[lastRow]["sotienbangchu"] = kqDic.Key;
 
             var slxuat_cell = report.Report.FindControl("slxuat", true);
             slxuat_cell.DataBindings[0].FormatString = sothapphan;
