@@ -34,6 +34,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             tbl.Columns.Add("sum_slxuat", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
             tbl.Columns.Add("tongtientt", Type.GetType("System.Double"));
+            tbl.Columns.Add("sotienbangchu", Type.GetType("System.String"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
@@ -52,11 +53,11 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             tbl.Rows[lastRow]["sum_thanhtien"] = tongtt;
             tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
 
-
-            tbl.Rows[lastRow]["tongtientt"] =
-                Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
+            var tongtientt = Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
                 - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
                 - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham);
+            tbl.Rows[lastRow]["tongtientt"] = tongtientt;
+            tbl.Rows[lastRow]["sotienbangchu"] = VNN_ConvertMoney.convert(tongtientt, "VND");
 
             var slxuat_cell = report.Report.FindControl("slxuat", true);
             slxuat_cell.DataBindings[0].FormatString = sothapphan;
