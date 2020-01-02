@@ -69,12 +69,8 @@ public class VNN_VariablePublic
 	public static string sochungtu(EntityContext db, string ma_sochungtu, int congthem){
 		md_sochungtu sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
         // get Year from md_modongky
-        md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
-        string nam = "";
-        if (mdk != null)
-            nam = mdk.nam.ToString().Substring(2, 2);
-        else
-            nam = DateTime.Now.Year.ToString().Substring(2, 2);
+        //md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
+        string nam = DateTime.Now.Year.ToString().Substring(2, 2);
 
         string gttd = sct.giatri_thaydoi;
 		int count_gttd = gttd.Length;
