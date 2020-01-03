@@ -133,7 +133,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 				        , Sum(isnull(A.giaohoantat, 0)) as giaohoantat
 				        , Sum(isnull(A.dhhoantat, 0)) as dhhoantat
 				        , (
-					        select sum(tong_sl_dat) 
+					        select sum(tong_sl_dat - isnull(sl_giamhanngach, 0))
 					        from md_dondathangphanxuong_cdh cdh, md_sanpham sp
 					        where cdh.md_sanpham_id = sp.md_sanpham_id
 						        and substring(sp.ma_sanpham, 0, 3) = A.chungloai
