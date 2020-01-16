@@ -68,6 +68,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 //Xu Ly xuat kho
                 foreach (var xk in db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == id).ToList())
                 {
+                    var lsxtsx = new List<md_lenhsanxuat_tosx>();
                     if (xk.trangthai == "HIEULUC")
                     {
                         msg = "<div style='color:red'>Lỗi: dòng \"" + xk.sochungtu + "\" đã hiệu lực.</div>";
@@ -189,15 +190,24 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         ghinos.Add(new md_ghinotruno()
                                                         {
                                                             md_ghinotruno_id = Helper.getNewId()
-                                                            , md_to_id = xk.md_to_id
-                                                            , tosx = tentoLSX
-                                                            , md_sanpham_id = dh.md_sanpham_id
-                                                            , sanpham_dvt = dh.md_donvitinhsanpham_id
-                                                            , slno = dh.ghino.GetValueOrDefault()
-                                                            , ngaytao = DateTime.Now
-                                                            , nguoitao = us.ad_user_id
-                                                            , value_nguoitao = us.ma_user
-                                                            , mota = lsx.sochungtu
+                                                            ,
+                                                            md_to_id = xk.md_to_id
+                                                            ,
+                                                            tosx = tentoLSX
+                                                            ,
+                                                            md_sanpham_id = dh.md_sanpham_id
+                                                            ,
+                                                            sanpham_dvt = dh.md_donvitinhsanpham_id
+                                                            ,
+                                                            slno = dh.ghino.GetValueOrDefault()
+                                                            ,
+                                                            ngaytao = DateTime.Now
+                                                            ,
+                                                            nguoitao = us.ad_user_id
+                                                            ,
+                                                            value_nguoitao = us.ma_user
+                                                            ,
+                                                            mota = lsx.sochungtu
                                                         });
                                                     }
 
@@ -279,7 +289,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                 {
                                                     ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
                                                 }
+
                                                 db.SaveChanges();
+                                                lsxtsx.Add(lsxTSX);
                                             }
                                         }
 
@@ -314,15 +326,24 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                 ghinos.Add(new md_ghinotruno()
                                                 {
                                                     md_ghinotruno_id = Helper.getNewId()
-                                                    , md_to_id = xk.md_to_id
-                                                    , tosx = ""
-                                                    , md_sanpham_id = dh.md_sanpham_id
-                                                    , sanpham_dvt = dh.md_donvitinhsanpham_id
-                                                    , slno = dh.ghino.GetValueOrDefault()
-                                                    , ngaytao = DateTime.Now
-                                                    , nguoitao = us.ad_user_id
-                                                    , value_nguoitao = us.ma_user
-                                                    , mota = ldg.sochungtu
+                                                    ,
+                                                    md_to_id = xk.md_to_id
+                                                    ,
+                                                    tosx = ""
+                                                    ,
+                                                    md_sanpham_id = dh.md_sanpham_id
+                                                    ,
+                                                    sanpham_dvt = dh.md_donvitinhsanpham_id
+                                                    ,
+                                                    slno = dh.ghino.GetValueOrDefault()
+                                                    ,
+                                                    ngaytao = DateTime.Now
+                                                    ,
+                                                    nguoitao = us.ad_user_id
+                                                    ,
+                                                    value_nguoitao = us.ma_user
+                                                    ,
+                                                    mota = ldg.sochungtu
                                                 });
                                             }
 
@@ -338,7 +359,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             foreach (var ck_dh in ck_dhs)
                                             {
                                                 var xnbLDG = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == ck_dh.md_xuatkhonb_id).FirstOrDefault();
-                                                if(xnbLDG.lenhdonggoi == xk.lenhdonggoi)
+                                                if (xnbLDG.lenhdonggoi == xk.lenhdonggoi)
                                                 {
                                                     ck_dh.tong_sl_xuat = (ck_dh.tong_sl_xuat - dh.sl_daxuat).GetValueOrDefault(0).Set0WhenlessThan0();
                                                 }
@@ -366,6 +387,26 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         if (count_slxuat <= 0 & msg == "")
                         {
                             msg += "<div style='color:red'>Lỗi: Dòng \"" + xk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
+                        }
+                        else
+                        {
+                            foreach (var item in lsxtsx.Distinct())
+                            {
+                                int countSLHT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == item.md_lenhsanxuat_tosx_id
+                                ).Where(s =>
+                                    s.sl_chiato != s.sl_dahoanthanh
+                                    | s.sl_chiato != s.sl_dagiao
+                                ).Count();
+
+                                if (countSLHT <= 0)
+                                {
+                                    if (item.ngayhoanthanh == null)
+                                        item.ngayhoanthanh = xk.ngaychuyen;
+                                    item.check_hoanthanh = true;
+                                    db.SaveChanges();
+                                }
+                            }
                         }
                     }
 

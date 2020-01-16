@@ -78,6 +78,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
 
+
         if (vnn.Count() <= 0)
         {
             msg = "<div style='color:red'>Lỗi:Không tìm được phiếu vận chuyển nào.</div>";
@@ -90,24 +91,25 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 {
                     foreach (var vcnb in db.md_vanchuyennoibo.Where(s => vnn.Contains(s.md_vanchuyennoibo_id)).ToList())
                     {
+                        var lsxtsx = new List<LSX_TSX>();
                         if (vcnb.md_trangthai_id != "DANHAN")
                         {
                             msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", vcnb.sochungtu);
                             break;
                         }
-                        else if(string.IsNullOrEmpty(vcnb.tukho))
+                        else if (string.IsNullOrEmpty(vcnb.tukho))
                         {
                             msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" chưa chọn ""Từ kho"".</div>", vcnb.sochungtu);
                             break;
                         }
-                        else if(string.IsNullOrEmpty(vcnb.denkho))
+                        else if (string.IsNullOrEmpty(vcnb.denkho))
                         {
                             msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" chưa chọn ""Đến kho"".</div>", vcnb.sochungtu);
                             break;
                         }
 
                         var slChuyen = db.md_vanchuyennoibo_cdvc
-                                   .Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).Sum(s=>s.soluong_dichchuyen);
+                                   .Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).Sum(s => s.soluong_dichchuyen);
                         if (slChuyen <= 0)
                         {
                             msg = string.Format(@"<div style='color:red'>Phiếu ""{0}"" phải có ít nhất 1 dòng hàng có SL thực chuyển lớn hơn 0.</div>", vcnb.sochungtu);
@@ -157,22 +159,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     db.SaveChanges();
                                 }
 
-                                int countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
-                                    s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id
-                                    ).ToList().Where(s => s.tong_sl_dat - s.sl_giamhanngach.GetValueOrDefault(0) - s.sl_hoanthanh.GetValueOrDefault(0) > 0).Count();
-
-                                if(countSLHT <= 0)
-                                {
-                                    var dhpx = db.md_dondathangphanxuong.Where(s =>
-                                        s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id).FirstOrDefault();
-                                    if(dhpx != null)
-                                    {
-                                        dhpx.md_trangthai_id = "KETTHUC";
-                                        lsxto.lsx.md_trangthai_id = "HOANTHANH";
-                                        lsxto.lsx.ngayhoanthanh = vcnb.ngaychuyen;
-                                    }
-                                    db.SaveChanges();
-                                }
+                                lsxtsx.Add(lsxto);
                             }
                             else
                             {
@@ -186,7 +173,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 decimal sl_xuatkho = sl_dichchuyen_thucte;
 
                                 var itemSP = khoSPDic.Where(s => s.Key == sp.md_sanpham_id).FirstOrDefault();
-                                if(itemSP.Key == null)
+                                if (itemSP.Key == null)
                                 {
                                     khoSPDic.Add(sp.md_sanpham_id, sl_kho_sp);
                                 }
@@ -317,6 +304,35 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 db.SaveChanges();
                             }
                         }
+
+                        foreach (var item in lsxtsx.Distinct())
+                        {
+                            int countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
+                                s.md_dondathangphanxuong_id == item.lsx.md_dondathangphanxuong_id
+                            ).ToList().Where(s =>
+                                s.tong_sl_dat -
+                                s.sl_giamhanngach.GetValueOrDefault(0) -
+                                s.sl_hoanthanh.GetValueOrDefault(0) > 0
+                            ).Count();
+
+                            if (countSLHT <= 0)
+                            {
+                                var dhpx = db.md_dondathangphanxuong.Where(s =>
+                                    s.md_dondathangphanxuong_id == item.lsx.md_dondathangphanxuong_id).FirstOrDefault();
+                                if (dhpx != null)
+                                {
+                                    //var tSX = db.md_lenhsanxuat_tosx.Where(s=>s.)
+                                    //var cdhsInLSX = db.md_lenhsanxuat_tosx_cdh.Where(
+                                    //    s=>s.md_lenhsanxuat_tosx_id 
+                                    //    )
+                                    dhpx.md_trangthai_id = "KETTHUC";
+                                    item.lsx.md_trangthai_id = "HOANTHANH";
+                                    item.lsx.ngayhoanthanh = vcnb.ngaychuyen;
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+
                         //-----
                         if (vcnb.loaichuyen == "VANCNB")
                         {

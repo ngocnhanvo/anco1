@@ -93,7 +93,11 @@ function timkiem_lenhsx(id_elem, type) {
                         else if (tengrid0 == 'gridMD_00_PVCNoiBo')
                             return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
                         else
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
+                            return `
+                                and  dsdh.trangthai != 'KETTHUC'
+                                and dsdh.trangthai != 'HUYBO'
+                                and lsx.md_trangthai_id = 'DAXL'
+                            `;
                     }
                 },
                 beforeRequest: function () {
