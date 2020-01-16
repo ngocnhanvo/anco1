@@ -622,13 +622,13 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                         {
                             foreach (var item2 in db.md_lenhsanxuat_tosx_cdh.Where(s => item1.Key == s.md_lenhsanxuat_tosx_id).ToList())
                             {
-                                var slgiamhn = db.c_kehoachdathang_dhcpx_hanngach.Where(s =>
-                                            s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id
-                                            & s.md_sanpham_id == item2.md_sanpham_id
-                                            & s.md_to_id == item1.Value).Sum(s => s.soluong);
+                                //var slgiamhn = db.c_kehoachdathang_dhcpx_hanngach.Where(s =>
+                                //            s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id
+                                //            & s.md_sanpham_id == item2.md_sanpham_id
+                                //            & s.md_to_id == item1.Value).Sum(s => s.soluong);
 
-                                item2.sl_chiato = (item2.sl_chiato.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
-                                item2.sl_tinhvattu = (item2.sl_tinhvattu.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
+                                //item2.sl_chiato = (item2.sl_chiato.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
+                                //item2.sl_tinhvattu = (item2.sl_tinhvattu.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
 
                                 var spBom = db.md_sanpham_bom.
                                             Where(s => s.md_sanpham_id == item2.md_sanpham_id &
