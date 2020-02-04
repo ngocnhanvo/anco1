@@ -481,10 +481,21 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
             {
                 msg = @"false#Lỗi:Đơn đặt hàng phân xưởng " + ddhpx.sochungtu + " đã 'Hủy'.";
             }
-            else if (
-                    md_trangthai_id != object_.md_trangthai_id & md_trangthai_id != "KETTHUC")
+            else if (md_trangthai_id != object_.md_trangthai_id)
             {
-                msg = @"false#Lỗi:Chỉ có thể thay đổi trạng thái thành ""Kết Thúc""";
+                if (object_.md_trangthai_id == "HOANTHANH") {
+                    if (!new string[] { "DAXL", "KETTHUC" }.Contains(md_trangthai_id))
+                        msg = @"false#Lỗi:Chỉ có thể đổi trạng thái từ ""Hoàn Thành"" sang ""Đã xử lý"" hoặc ""Kết Thúc"".";
+                }
+                else if(object_.md_trangthai_id == "DAXL")
+                {
+                    if (!new string[] { "HOANTHANH", "KETTHUC" }.Contains(md_trangthai_id))
+                        msg = @"false#Lỗi:Chỉ có thể thay đổi trạng thái từ ""Đã xử lý"" sang ""Hoàn Thành"" hoặc ""Kết Thúc"".";
+                }
+                else
+                {
+                    msg = @"false#Lỗi: Không thể đổi trạng thái khi LSX ở trạng thái ""Đang xử lý"" hoặc ""KH đã xử lý"".";
+                }
             }
 
             if (nht.Value.IsDate() == false)
