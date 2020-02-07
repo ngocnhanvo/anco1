@@ -96,6 +96,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             
             select 
                 C.thegiaoviecsx
+                , C.ngaychungtu
 	            , C.px
 	            , C.tsx
 	            , C.ma_hhvt
@@ -113,6 +114,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            from (
 		            select
 			            A.thegiaoviecsx
+                        , A.ngaychungtu
 			            , px.ten_phanxuong as px
 			            , tsx.ten_to as tsx
 			            , sp.ma_sanpham as ma_hhvt
@@ -122,6 +124,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 		            from (
 			            select
 				            dh.tenhang as thegiaoviecsx
+                            , xnb.ngaychuyen as ngaychungtu
 				            , kho.md_to_id
 				            , dh.sl_daxuat as slxuat
 				            , xnb.phienbangiaNC
@@ -140,6 +143,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 			            union all
 			            select
 				            dh.tenhang as thegiaoviecsx
+                            , xnb.ngaychuyen as ngaychungtu
 				            , kho.md_to_id
 				            , dh.soluong_dachuyen as slxuat
 				            , xnb.phienbangiaNC
@@ -163,7 +167,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            )B
             )C
             where C.slxuat > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx
+            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu
             order by C.ma_hhvt
 		"
         , thang
