@@ -64,13 +64,15 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
     {
         var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
-		string denngay = context.Request.QueryString["den"];
+        string denngay = context.Request.QueryString["den"];
         string px = context.Request.QueryString["px"];
         string msp = context.Request.QueryString["msp"];
+        string trangthai = context.Request.QueryString["trangthai"];
+
         DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
-		DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
-		
-		string sql = string.Format(@"	       
+        DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
+
+        string sql = string.Format(@"	       
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59',103);
             declare @px nvarchar(MAX) = '{2}'
@@ -157,45 +159,50 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 		            and lsx.md_phanxuong_id = @px
                     and sp.ma_sanpham like @msp
             )Q
-
-            select C.*
-            , (case when C.hoantat >= 1 then 'OK' else '-' end) as trangthai
-            , (
-	            select top 1 ngaybatdausx 
-	            from @tbl 
-	            where donhang = C.donhang and ma_sanpham = C.mahang and sldh = C.sldh
-	            order by ngaybatdausx asc
-            ) as ngaytrienkhai
-            from (    
-	            select B.*
-	            , (case when B.dhhoantat > 0 then B.giaohoantat / B.dhhoantat else 1 end) as hoantat
-	            from ( 
-		            select 
-			            A.donhang
-			            , A.ma_sanpham as mahang
-			            , A.sldh
-			            , sum(isnull(A.giaoduc, 0)) as giaoduc 
-			            , sum(isnull(A.dhduc, 0)) as dhduc
-			            , sum(isnull(A.giaobancat, 0)) as giaobancat
-			            , sum(isnull(A.dhbancat, 0)) as dhbancat
-			            , sum(isnull(A.giaomai, 0)) as giaomai
-			            , sum(isnull(A.dhmai, 0)) as dhmai
-			            , sum(isnull(A.giaohoantat, 0)) as giaohoantat
-			            , sum(isnull(A.dhhoantat, 0)) as dhhoantat
-		            from @tbl A
-		            group by A.donhang
-			            , A.ma_sanpham
-			            , A.sldh
-	            )B
-            )C
-            order by C.donhang, C.mahang
+            
+            select D.* 
+            from (
+                select C.*
+                , (case when C.hoantat >= 1 then 'OK' else '-' end) as trangthai
+                , (
+	                select top 1 ngaybatdausx 
+	                from @tbl 
+	                where donhang = C.donhang and ma_sanpham = C.mahang and sldh = C.sldh
+	                order by ngaybatdausx asc
+                ) as ngaytrienkhai
+                from (    
+	                select B.*
+	                , (case when B.dhhoantat > 0 then B.giaohoantat / B.dhhoantat else 1 end) as hoantat
+	                from ( 
+		                select 
+			                A.donhang
+			                , A.ma_sanpham as mahang
+			                , A.sldh
+			                , sum(isnull(A.giaoduc, 0)) as giaoduc 
+			                , sum(isnull(A.dhduc, 0)) as dhduc
+			                , sum(isnull(A.giaobancat, 0)) as giaobancat
+			                , sum(isnull(A.dhbancat, 0)) as dhbancat
+			                , sum(isnull(A.giaomai, 0)) as giaomai
+			                , sum(isnull(A.dhmai, 0)) as dhmai
+			                , sum(isnull(A.giaohoantat, 0)) as giaohoantat
+			                , sum(isnull(A.dhhoantat, 0)) as dhhoantat
+		                from @tbl A
+		                group by A.donhang
+			                , A.ma_sanpham
+			                , A.sldh
+	                )B
+                )C
+            )D
+            where {4}
+            order by D.donhang, D.mahang
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
         , px
         , string.IsNullOrEmpty(msp) ? "-" : msp
+        , string.IsNullOrEmpty(trangthai) ? "1=1" : string.Format("D.trangthai = N'{0}'", trangthai)
         );
-		return sql;
+        return sql;
     }
 }
 
