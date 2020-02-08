@@ -589,6 +589,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                         lsx_tosx_cdh.ngaycapnhat = DateTime.Now;
                                         lsx_tosx_cdh.mota = "";
                                         lsx_tosx_cdh.hoatdong = true;
+                                        lsx_tosx_cdh.nhanphoisoi = true;
                                     }
 
                                     decimal? sltd = dhpx_cdh.tong_sl_dat - dhpx_cdh.sl_hoanthanh.GetValueOrDefault(0) - dhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);

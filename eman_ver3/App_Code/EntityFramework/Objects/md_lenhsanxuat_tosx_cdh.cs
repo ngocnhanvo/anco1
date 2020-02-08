@@ -91,6 +91,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_nhanphoisoi_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_nhanphoisoi_wintaFN
+                        public bool? nhanphoisoi { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_noigiaohang_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_noigiaohang_wintaFN

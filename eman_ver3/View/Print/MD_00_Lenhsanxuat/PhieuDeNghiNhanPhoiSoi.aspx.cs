@@ -110,6 +110,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 	            and lsx.md_lenhsanxuat_id in ('{0}')
                 and tsx.stt = 0
                 and cdh.sl_chiato > 0
+                and cdh.nhanphoisoi = 1
             order by dhpx.donhang_thamchieu asc, sp.ma_sanpham asc
 		"
         , md_lenhsanxuat_id

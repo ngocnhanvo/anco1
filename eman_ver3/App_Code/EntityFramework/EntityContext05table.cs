@@ -702,6 +702,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.nhanphoisoi)
+                            .HasColumnName("nhanphoisoi")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.noigiaohang)
                             .HasColumnName("noigiaohang")
                             .HasColumnType("nvarchar");

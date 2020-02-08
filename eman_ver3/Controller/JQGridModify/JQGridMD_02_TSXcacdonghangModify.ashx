@@ -283,7 +283,7 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
         string mota = context.Request.Form["mota"];
         string id = context.Request.Form["id"];
         md_sanpham spmoi = null;
-        try
+        //try
         {
             var object_ = db.md_lenhsanxuat_tosx_cdh.Where(p => p.md_lenhsanxuat_tosx_cdh_id == id).Take(1).FirstOrDefault();
 
@@ -294,31 +294,35 @@ public class JQGridMD_02_TSXcacdonghangModify : IHttpHandler, System.Web.Session
             else
             {
                 spmoi = db.md_sanpham.Where(s => s.ma_sanpham == mathaydoi).FirstOrDefault();
-                if(!string.IsNullOrEmpty(mathaydoi) & spmoi == null)
+                if (spmoi != null)
                 {
-                    msg = "false#Không tìm thấy mã sản phẩm cần thay đổi";
-                }
-                else if(object_.md_donvitinhsanpham_id != spmoi.md_donvitinhsanpham_id)
-                {
-                    msg = "false#Không cùng đơn vị tính";
-                }
-                 else if(object_.md_sanpham_id == spmoi.md_sanpham_id)
-                {
-                    msg = "false#Mã mới và mã cũ không được giống nhau";
+                    if (!string.IsNullOrEmpty(mathaydoi))
+                    {
+                        msg = "false#Không tìm thấy mã sản phẩm cần thay đổi";
+                    }
+                    else if (object_.md_donvitinhsanpham_id != spmoi.md_donvitinhsanpham_id)
+                    {
+                        msg = "false#Không cùng đơn vị tính";
+                    }
+                    else if (object_.md_sanpham_id == spmoi.md_sanpham_id)
+                    {
+                        msg = "false#Mã mới và mã cũ không được giống nhau";
+                    }
                 }
             }
 
             if (msg.Length <= 0)
             {
+                object_.nhanphoisoi = context.Request.Form["nhanphoisoi"].ToLower() == "true";
                 object_.mota = mota;
                 object_.mathaydoi = mathaydoi;
                 db.SaveChanges();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
             }
         }
-        catch (Exception ex)
+        //catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            //msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }
