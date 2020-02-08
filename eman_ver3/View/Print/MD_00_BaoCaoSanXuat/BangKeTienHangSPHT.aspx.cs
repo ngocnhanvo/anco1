@@ -168,7 +168,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             )C
             where C.slxuat > 0
             group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu
-            order by C.ma_hhvt
+            order by C.ngaychungtu, C.ma_hhvt, C.thegiaoviecsx
 		"
         , thang
         , nam
