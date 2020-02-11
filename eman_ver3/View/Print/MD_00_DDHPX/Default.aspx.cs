@@ -48,8 +48,8 @@ public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
 		, sp.ma_sanpham as ma , sp.mota_tiengviet as ten, dvt.ten_dvt as dvt
 		, (cdh.tong_sl_dat - isnull(cdh.sl_giamhanngach, 0)) as SL, cdh.noigiaohang as noigiaohang
 		, ddhpx.ngayhoanthanh as ngaycham
-		, dsdh.huongdanlamhang as hdlhRieng
-		, dsdh.huongdanlamhangchung as hdlhchung
+		, ddhpx.hdlh as hdlhRieng
+		, ddhpx.hdlhchung as hdlhchung
 		, dhcpx.mota as hdlh
 		from md_dondathangphanxuong ddhpx with (nolock)
 		left join md_dondathangphanxuong_cdh cdh with (nolock) on cdh.md_dondathangphanxuong_id = ddhpx.md_dondathangphanxuong_id
