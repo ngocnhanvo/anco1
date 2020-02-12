@@ -95,7 +95,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             from md_vattukhoan where md_to_id = @tosx and nam = cast('{1}' as int) and thang = cast('{0}' as int)
             
             select 
-                C.thegiaoviecsx
+                C.sctPXK
+                , C.thegiaoviecsx
                 , C.ngaychungtu
 	            , C.px
 	            , C.tsx
@@ -113,7 +114,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 		            , (B.slxuat * B.dongia) as thanhtien
 	            from (
 		            select
-			            A.thegiaoviecsx
+                        A.sctPXK
+			            , A.thegiaoviecsx
                         , A.ngaychungtu
 			            , px.ten_phanxuong as px
 			            , tsx.ten_to as tsx
@@ -123,7 +125,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 			            , A.dongia
 		            from (
 			            select
-				            dh.tenhang as thegiaoviecsx
+                            xnb.sochungtu as sctPXK
+				            , dh.tenhang as thegiaoviecsx
                             , xnb.ngaychuyen as ngaychungtu
 				            , kho.md_to_id
 				            , dh.sl_daxuat as slxuat
@@ -142,7 +145,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            and dh.sl_daxuat is not null
 			            union all
 			            select
-				            dh.tenhang as thegiaoviecsx
+                            xnb.sochungtu as sctPXK
+				            , dh.tenhang as thegiaoviecsx
                             , xnb.ngaychuyen as ngaychungtu
 				            , kho.md_to_id
 				            , dh.soluong_dachuyen as slxuat
@@ -167,7 +171,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            )B
             )C
             where C.slxuat > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu
+            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK
             order by C.ngaychungtu, C.ma_hhvt, C.thegiaoviecsx
 		"
         , thang
