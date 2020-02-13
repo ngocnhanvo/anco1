@@ -103,6 +103,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            , C.ma_hhvt
 	            , C.dvt
 	            , C.dongia
+                , C.ghichu
 	            , sum(C.slxuat) as slxuat
 	            , sum(C.thanhtien) as thanhtien
                 , N'Tháng {0}/năm {1}' as thang_nam
@@ -123,6 +124,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 			            , dvtsp.ten_dvt as dvt
 			            , A.slxuat
 			            , A.dongia
+                        , A.ghichu
 		            from (
 			            select
                             xnb.sochungtu as sctPXK
@@ -134,6 +136,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
                             , dh.gianhancong as dongia
+                            , substring(dh.lsx_to,0, 13) as ghichu
 			            FROM 
 				            md_xuatkhonb xnb (nolock)
 				            left join md_xuatkhonb_cdh dh (nolock) on xnb.md_xuatkhonb_id = dh.md_xuatkhonb_id
@@ -154,6 +157,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
                             , dh.gianhancong as dongia
+                            , substring(dh.lsx_to,0, 13) as ghichu
 			            FROM 
 				            md_vanchuyennoibo (nolock) xnb
 				            left join md_vanchuyennoibo_cdvc (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
@@ -171,7 +175,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            )B
             )C
             where C.slxuat > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK
+            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK, C.ghichu
             order by C.ngaychungtu, C.ma_hhvt, C.thegiaoviecsx
 		"
         , thang
