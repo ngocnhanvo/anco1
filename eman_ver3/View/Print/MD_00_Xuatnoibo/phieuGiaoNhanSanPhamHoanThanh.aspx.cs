@@ -69,7 +69,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
 	            , null as nguoinhan
 	            , (select ten_to from md_phanxuong_to where md_to_id = xb.md_to_id) as tsx_nhan
 	            , (select ten_phanxuong from md_phanxuong where md_phanxuong_id = xb.md_phanxuong_id) as px_nhan
-	            , xb.donhang_thamchieu as thegiaoviec
+	            , nknb_cdh.tenhang as thegiaoviec
                 , substring(nknb_cdh.lsx_to, 0, 13) as ghichu
                 , sp.ma_sanpham as ma_vthh
 	            , dvtsp.ten_dvt as dvt
