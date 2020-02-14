@@ -107,7 +107,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                Q.sldalam,
 	                (Q.sldh - Q.sldalam) as slconlai,
 	                (case when Q.sldh <= Q.sldalam then 'OK' else '-' end) as trangthai,
-	                Q.ngaybatdausx 
+	                Q.ngaybatdausx as ngaytrienkhai
                 from
                 (
 	                select
