@@ -150,18 +150,18 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 				            left join md_xuatkhonb_cdh dh (nolock) on xnb.md_xuatkhonb_id = dh.md_xuatkhonb_id
 				            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
 				            left join md_giasanpham (nolock) gsp on gsp.md_sanpham_id = dh.md_sanpham_id
+                                and gsp.md_phienbangia_id = (
+					                select top 1 md_phienbangia_id 
+					                from md_phienbangia
+					                where 
+						                ten_phienbangia like N'%BG CAT SOI ANCO 2%'
+						                and ngay_hieuluc <= xnb.ngaytao	
+				                ) 
 			            where 
 				            xnb.bosung = 4 
 				            and (kho.md_to_id = @tosx1 or kho.md_to_id = @tosx2)
 				            and xnb.ngaychuyen between @tungay and @denngay
 				            and dh.sl_daxuat is not null
-				            and gsp.md_phienbangia_id = (
-					            select top 1 md_phienbangia_id 
-					            from md_phienbangia
-					            where 
-						            ten_phienbangia like N'%BG CAT SOI ANCO 2%'
-						            and ngay_hieuluc <= xnb.ngaytao	
-				            )
 		            )A
 		            left join md_sanpham sp on sp.md_sanpham_id = A.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id
