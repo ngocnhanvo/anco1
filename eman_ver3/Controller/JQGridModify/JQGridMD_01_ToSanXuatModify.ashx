@@ -856,10 +856,6 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            else if (object_.ngayhoanthanh != null)
-            {
-                msg = "false#Lỗi: Đã hoàn thành, không thể chỉnh sửa.";
-            }
             else if (ngaybdsx.IsDate() == false)
             {
                 msg = "false#Lỗi: Ngày bắt đầu sản xuất không đúng định dạng.";
