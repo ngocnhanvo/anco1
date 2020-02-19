@@ -120,10 +120,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 						(
                             cdh.sl_chiato + 
                             isnull(
-                                select top 1 isnull(lht.sl_layton, 0) from md_lenhsanxuat_tosx_dklht lht
-                                where lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
-                                and lht.md_sanpham_id = cdh.md_sanpham_id
-                                and isnull(tsx.phieulayht,'') != ''
+                                (
+                                    select top 1 isnull(lht.sl_layton, 0) 
+                                    from md_lenhsanxuat_tosx_dklht lht
+                                    where lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
+                                    and lht.md_sanpham_id = cdh.md_sanpham_id
+                                    and isnull(tsx.phieulayht,'') != ''
+                                )
                             , 0)
                         ) as sldh2,
 						(
