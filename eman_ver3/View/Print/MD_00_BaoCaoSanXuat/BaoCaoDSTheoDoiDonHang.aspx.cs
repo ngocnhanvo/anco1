@@ -63,6 +63,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             slconlai_cell.DataBindings[0].FormatString = sothapphan;
             var sum_slconlai_cell = report.Report.FindControl("sum_slconlai", true);
             sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
+            //SLDH
+            var xrTableCell2 = report.Report.FindControl("xrTableCell2", true);
+            if(tbl.Rows[lastRow]["stt"].ToString() == "9999")
+                xrTableCell2.Text = "SL (chia tổ + lấy tồn)";
+            else
+                xrTableCell2.Text = "SL chia tổ";
+
             report.DataSource = ds;
             report.DataAdapter = da;
             ReportViewer1.Report = report;
@@ -106,6 +113,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                Q.donhang,
 	                Q.mahang,
 	                (case when Q.stt = Q.sttHT then Q.sldh2 else Q.sldh end) as sldh,
+                    Q.stt,
 	                Q.sldalam,
 	                Q.ngaytrienkhai,
                     Q.ngaygiaohang 
