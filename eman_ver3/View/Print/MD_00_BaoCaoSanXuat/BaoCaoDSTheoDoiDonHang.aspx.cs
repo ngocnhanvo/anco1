@@ -105,7 +105,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
                 select
 	                Q.donhang,
 	                Q.mahang,
-	                (case when tsx.stt == sttHT then Q.sldh2 else Q.sldh end) as sldh,
+	                (case when Q.stt = Q.sttHT then Q.sldh2 else Q.sldh end) as sldh,
 	                Q.sldalam,
 	                Q.ngaybatdausx as ngaytrienkhai
                 from
