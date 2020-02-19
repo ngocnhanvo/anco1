@@ -107,7 +107,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                Q.mahang,
 	                (case when Q.stt = Q.sttHT then Q.sldh2 else Q.sldh end) as sldh,
 	                Q.sldalam,
-	                Q.ngaybatdausx as ngaytrienkhai
+	                Q.ngaybatdausx as ngaytrienkhai,
                     Q.ngayhoanthanh as ngaygiaohang
                 from
                 (
