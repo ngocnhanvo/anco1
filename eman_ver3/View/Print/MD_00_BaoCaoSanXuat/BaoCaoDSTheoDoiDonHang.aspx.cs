@@ -117,7 +117,15 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 						tsx.ngaybatdausx as ngaytrienkhai,
                         lsx.ngayketthuc as ngaygiaohang,
 						cdh.sl_chiato as sldh,
-						cdh.sl_dat as sldh2,
+						(
+                            cdh.sl_chiato + 
+                            (
+                                select isnull(lht.sl_layton, 0) from md_lenhsanxuat_tosx_dklht lht
+                                where lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
+                                and lht.md_sanpham_id = cdh.md_sanpham_id
+                                and isnull(tsx.phieulayht,'') != ''
+                            )
+                        ) as sldh2,
 						(
 							select top 1 stt
 							from md_lenhsanxuat_tosx
