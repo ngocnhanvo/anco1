@@ -279,11 +279,14 @@
 
         function changeTypeNumberDecToIntOrElse(elem, type, dec) {
             let valSav = elem.val();
+            let id = elem.attr('id');
+            elem.parent().html( elem.parent().html());
+            elem = $('#'+id);
+            elem.val(valSav);
             if(type == 1)
                 format_number(elem, 1);
             else
                 format_number(elem, 0, !dec ? 4 : dec);
-            elem.val(valSav);
         }
 
 		history.pushState(null,null,""),window.addEventListener("popstate",function(){history.pushState(null,null,"")}),"Firefox"!=Browser&&$(window).bind("beforeunload",function(n){return null==reload_page?'BẠN MUỐN LÀM MỚI LẠI GIAO DIỆN?\n\n >> Nhấn "Reload This Page" để làm mới\n >> Nhấn "Don\'t Reload" để hủy thao tác.':void 0});

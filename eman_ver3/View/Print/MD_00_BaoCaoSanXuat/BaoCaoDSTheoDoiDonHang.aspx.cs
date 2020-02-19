@@ -97,25 +97,34 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             declare @tento nvarchar(MAX) = (select ten_to from md_phanxuong_to where md_to_id = @tosx)
             select
                 QQ.*,
+				(QQ.sldh - QQ.sldalam) as slconlai,
+				(case when QQ.sldh <= QQ.sldalam then 'OK' else '-' end) as trangthai,
                 @tenpx as px,
                 @tento as tsx
             from (
                 select
 	                Q.donhang,
 	                Q.mahang,
-	                Q.sldh,
+	                (case when tsx.stt == sttHT then Q.sldh2 else Q.sldh end) as sldh,
 	                Q.sldalam,
-	                (Q.sldh - Q.sldalam) as slconlai,
-	                (case when Q.sldh <= Q.sldalam then 'OK' else '-' end) as trangthai,
 	                Q.ngaybatdausx as ngaytrienkhai
                 from
                 (
 	                select
-	                dhpx.donhang_thamchieu as donhang,
-	                sp.ma_sanpham as mahang,
-	                tsx.ngaybatdausx,
-	                cdh.sl_chiato as sldh,
-	                (case when tsx.stt = 0 then isnull(sl_dahoanthanh, 0) else isnull(sl_dagiao, 0) end) as sldalam
+						dhpx.donhang_thamchieu as donhang,
+						sp.ma_sanpham as mahang,
+						tsx.ngaybatdausx,
+						cdh.sl_chiato as sldh,
+						cdh.sl_dat as sldh2,
+						(
+							select top 1 stt
+							from md_lenhsanxuat_tosx
+							where md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
+							and hoatdong = 1
+							order by stt desc
+						) as sttHT,
+						tsx.stt,
+						(case when tsx.stt = 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_dagiao, 0) end) as sldalam
 	                FROM
 	                md_lenhsanxuat (nolock) lsx 
 	                left join
