@@ -119,7 +119,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 						(
 							select top 1 stt
 							from md_lenhsanxuat_tosx
-							where md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
+							where md_lenhsanxuat_id = tsx.md_lenhsanxuat_id
 							and hoatdong = 1
 							order by stt desc
 						) as sttHT,
