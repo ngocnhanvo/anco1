@@ -108,12 +108,14 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                (case when Q.stt = Q.sttHT then Q.sldh2 else Q.sldh end) as sldh,
 	                Q.sldalam,
 	                Q.ngaybatdausx as ngaytrienkhai
+                    Q.ngayhoanthanh as ngaygiaohang
                 from
                 (
 	                select
 						dhpx.donhang_thamchieu as donhang,
 						sp.ma_sanpham as mahang,
 						tsx.ngaybatdausx,
+                        lsx.ngayhoanthanh,
 						cdh.sl_chiato as sldh,
 						cdh.sl_dat as sldh2,
 						(
@@ -151,7 +153,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             where
                 {4} {6}
             order by
-	             QQ.donhang, QQ.mahang
+	             QQ.ngaygiaohang, QQ.donhang, QQ.mahang
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
