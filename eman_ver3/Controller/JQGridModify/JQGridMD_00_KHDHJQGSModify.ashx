@@ -397,7 +397,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
             }
             catch (Exception ex)
             {
-                msg += string.Format(@"<div style='color:red'>Lỗi: {0}</div>", ex.Message);
+                msg += string.Format(@"<div style='color:red'>Lỗi: {0}</div>", ex + "");
             }
 
             if (msg.Length <= 0)

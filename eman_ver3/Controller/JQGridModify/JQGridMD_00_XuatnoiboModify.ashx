@@ -255,6 +255,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id
                                                         & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                                                 {
+
                                                     decimal tslhn = ddhpx_cdh.sl_chiato.Value - ddhpx_cdh.sl_dahoanthanh.Value;
                                                     //xuat thieu du
                                                     if (tslhn >= sl_xuat_cuoi)
@@ -281,13 +282,30 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         ck_dh.sl_xuat2 = 0;
                                                     }
                                                     db.SaveChanges();
+
                                                 }
 
                                                 foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                                         s.md_lenhsanxuat_tosx_id == lsxKho.md_lenhsanxuat_tosx_id
                                                         & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                                                 {
-                                                    ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
+                                                    var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
+                                                    if (sltdChuyen < sl_xuat_cuoi2)
+                                                    {
+                                                        msg += string.Format(@"<div style='color:red'>
+                                                            Lỗi: <b>""{0}""</b> có SL xuất lớn hơn (SL đã nhập - SL đã giao).
+                                                            <br>- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
+                                                        </div>",
+                                                        sp.ma_sanpham
+                                                        , sl_xuat_cuoi2.DropTrailingZeros()
+                                                        , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                                                        , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                                                        );
+                                                    }
+                                                    else
+                                                    {
+                                                        ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
+                                                    }
                                                 }
 
                                                 db.SaveChanges();

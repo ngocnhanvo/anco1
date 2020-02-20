@@ -921,7 +921,7 @@ System.Web.SessionState.IRequiresSessionState
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex;
+            msg = string.Format(@"<div style='color:red'>Lỗi: {0}</div>", ex + "");
         }
 
         context.Response.Write(msg);
