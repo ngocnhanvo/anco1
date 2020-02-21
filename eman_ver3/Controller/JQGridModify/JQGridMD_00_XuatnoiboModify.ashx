@@ -293,13 +293,15 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     if (sltdChuyen < sl_xuat_cuoi2)
                                                     {
                                                         msg += string.Format(@"<div style='color:red'>
-                                                            Lỗi: <b>""{0}""</b> có SL xuất lớn hơn (SL đã nhập - SL đã giao).
-                                                            <br>- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
+                                                            Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
+															<br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
+                                                            <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
                                                         </div>",
                                                         sp.ma_sanpham
                                                         , sl_xuat_cuoi2.DropTrailingZeros()
                                                         , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
                                                         , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+														, dh.tenhang
                                                         );
                                                     }
                                                     else
