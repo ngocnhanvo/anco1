@@ -76,6 +76,14 @@ function timkiem_donhang(id_elem, type) {
                             whereSQL += " and (sl_dathang - isnull(sl_giamhanngach,0) - isnull(sl_donggoi, 0)) > 0";
                             whereSQL += " ) > 0";
                         }
+
+                        if (tengrid0 == 'gridMD_00_BaoCaoSanXuat') {
+                            whereSQL += " and (";
+                            whereSQL += " select count(1)";
+                            whereSQL += " from md_dondathangphanxuong";
+                            whereSQL += " where donhang_thamchieu = dsdh.so_po and md_trangthai_id = 'HIEULUC'";
+                            whereSQL += " ) > 0";
+                        }
                         return whereSQL;
                     }
                 },
