@@ -81,7 +81,9 @@ function timkiem_donhang(id_elem, type) {
                             whereSQL += " and (";
                             whereSQL += " select count(1)";
                             whereSQL += " from md_dondathangphanxuong";
-                            whereSQL += " where donhang_thamchieu = dsdh.so_po and md_trangthai_id = 'HIEULUC'";
+                            whereSQL += " where donhang_thamchieu = dsdh.so_po";
+                            whereSQL += "   and md_trangthai_id = 'HIEULUC'";
+                            whereSQL += "   and md_phanxuong_id = '" + $('#selPhanXuong').val() + "'";
                             whereSQL += " ) > 0";
                         }
                         return whereSQL;

@@ -73,6 +73,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             report.DataSource = ds;
             report.DataAdapter = da;
             ReportViewer1.Report = report;
+            
         }
         else
         {
