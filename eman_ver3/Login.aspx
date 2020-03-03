@@ -81,12 +81,12 @@
 						    <form name="form1" style="float:left" method="post" runat="server" action="Login.aspx" id="form1">
 							    <table id="tb_from">
 								    <tr>
-									    <td colspan="3" style="font-weight: 800;font-size: 15px;padding: 17px 16px 3px 16px;">Vui lòng đăng nhập để vào hệ thống<td>
+									    <td colspan="3" style="font-weight: 800;font-size: 15px;padding: 17px 16px 3px 16px;">Vui lòng đăng nhập để vào hệ thống</td>
 								    </tr>
 								    <tr>
 									    <td>
 										    <div style="height:10px"></div>
-									    <td>
+									    </td>
 								    </tr>
 								    <tr>
 									    <td>
@@ -96,7 +96,7 @@
 								    <tr>
 									    <td>
 										    <div style="height:1px"></div>
-									    <td>
+									    </td>
 								    </tr>
 								    <tr>
 									    <td>
@@ -106,7 +106,7 @@
 								    <tr>
 									    <td>
 										    <div style="height:1px"></div>
-									    <td>
+									    </td>
 								    </tr>
 								    <tr>
 									    <td>
