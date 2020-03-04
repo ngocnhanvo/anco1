@@ -100,7 +100,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
             declare @tienvtkhoan decimal(18, 2), @tienvtvipham decimal(18, 2)
             select top 1 @tienvtkhoan = tienvtkhoan, @tienvtvipham = tienvtvipham 
-            from md_vattukhoan where md_to_id = '' and nam = cast('{1}' as int) and thang = cast('{0}' as int)
+            from md_vattukhoan where md_to_id = 'ToCatSoi' and nam = cast('{1}' as int) and thang = cast('{0}' as int)
             
             select 
                 C.sctPXK
