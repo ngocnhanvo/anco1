@@ -49,13 +49,16 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             var tongtt = tbl.Compute("sum(thanhtien)", string.Empty).ToString();
             var tienvtkhoan = tbl.Rows[lastRow]["tienvtkhoan"].ToString();
             var tienvtvipham = tbl.Rows[lastRow]["tienvtvipham"].ToString();
+            var tienhangton = tbl.Rows[lastRow]["tienhangton"].ToString();
 
             tbl.Rows[lastRow]["sum_thanhtien"] = tongtt;
             tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
 
             var tongtientt = Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
                 - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
-                - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham);
+                - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham)
+                - Convert.ToDouble(string.IsNullOrEmpty(tienhangton) ? "0" : tienhangton);
+
             tbl.Rows[lastRow]["tongtientt"] = tongtientt;
 
             var kqDic = VNN_ConvertMoney.convert(tongtientt, "VND").FirstOrDefault();
