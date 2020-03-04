@@ -8,11 +8,26 @@ using System.Linq;
 public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "";
+    public EntityContext db = new EntityContext();
+    md_xuatkhonb xk = null;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Phiếu Xuất Kho.repx");
+
+        string md_xuatkhonb_id = context.Request.QueryString["id"];
+        xk = db.md_xuatkhonb.FirstOrDefault(s => s.md_xuatkhonb_id == md_xuatkhonb_id);
+
+        string file = Server.MapPath(Security.UrlBase());
+        if (new int[] { 0, 4 }.Contains(xk.bosung.GetValueOrDefault(9999)))
+        {
+            file += "/ReportsStorage/[SX] Phiếu Xuất Kho.repx";
+        }
+        else
+        {
+            file += "/ReportsStorage/[KT] Phiếu Xuất Kho.repx";
+        }
+
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
         viewReport(report, sql);
@@ -90,10 +105,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
 
     public String CreateSql(HttpContext context)
     {
-        var db = new EntityContext();
-        string md_xuatkhonb_id = context.Request.QueryString["id"];
         string oper = context.Request.QueryString["oper"];
-        var xk = db.md_xuatkhonb.FirstOrDefault(s => s.md_xuatkhonb_id == md_xuatkhonb_id);
         string khonhap = "null";
         if(xk.bosung == 4)
         {
@@ -119,6 +131,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 , null as thanhtien
                 , {1} as khonhap
                 , xb.sochungtu as yeucau
+                , nknb_cdh.tenhang as donhang
 		    from md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
@@ -129,7 +142,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 and nknb_cdh.sl_thucxuat > 0
             order by sp.ma_sanpham asc
 		"
-        , md_xuatkhonb_id
+        , xk.md_xuatkhonb_id
         , khonhap
         );
         return sql;
