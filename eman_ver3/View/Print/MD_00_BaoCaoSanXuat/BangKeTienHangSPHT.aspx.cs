@@ -70,6 +70,18 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             var sum_slxuat_cell = report.Report.FindControl("slxuat", true);
             sum_slxuat_cell.DataBindings[0].FormatString = sothapphan;
 
+            var ma_to = tbl.Rows[lastRow]["ma_to"].ToString();
+            if (ma_to != "HT1" & ma_to != "HTS1")
+            {
+                var cellTTHT = report.Report.FindControl("cellTTHT", true);
+                cellTTHT.Text = "";
+
+                //var celltienhangton = report.Report.FindControl("tienhangton", true);
+                //celltienhangton.Dispose();
+
+                //var xrTableCell65 = report.Report.FindControl("xrTableCell65", true);
+                //xrTableCell65.Dispose();
+            }
             report.DataSource = ds;
             report.DataAdapter = da;
             ReportViewer1.Report = report;
@@ -126,6 +138,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
                 , C.ngaychungtu
 	            , C.px
 	            , C.tsx
+                , C.ma_to
 	            , C.ma_hhvt
 	            , C.dvt
 	            , C.dongia
@@ -147,6 +160,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
                         , A.ngaychungtu
 			            , px.ten_phanxuong as px
 			            , tsx.ten_to as tsx
+                        , tsx.ma_to
 			            , sp.ma_sanpham as ma_hhvt
 			            , dvtsp.ten_dvt as dvt
 			            , A.slxuat
@@ -202,7 +216,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 	            )B
             )C
             where C.slxuat > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK, C.ghichu
+            group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.ma_to, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK, C.ghichu
             order by C.ngaychungtu, C.ma_hhvt, C.thegiaoviecsx
 		"
         , thang
