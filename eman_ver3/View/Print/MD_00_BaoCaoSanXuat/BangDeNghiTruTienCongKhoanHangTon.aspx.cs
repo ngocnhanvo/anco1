@@ -80,6 +80,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
             select 
 	            C.px
 	            , C.tsx
+                , C.sochungtu
+                , C.ngaychungtu
 	            , C.ma_hhvt
                 , C.ten_hhvt
 	            , C.dvt
@@ -100,9 +102,13 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 			            , dvtsp.ten_dvt as dvt
 			            , A.sltru
 			            , A.dongia
+                        , A.sochungtu
+                        , A.ngaychungtu
 		            from (
 			            select distinct
 				            kho.md_to_id
+                            , xnb.sochungtu
+                            , xnb.ngaychuyen as ngaychungtu
 				            , dh.soluong_layton as sltru
                             , dh.gianhancong as dongia
 				            , dh.md_sanpham_id
@@ -125,8 +131,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 	            )B
             )C
             where C.sltru > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.ten_hhvt, C.px, C.tsx
-            order by C.ma_hhvt
+            group by C.dongia, C.dvt, C.ma_hhvt, C.ten_hhvt, C.px, C.tsx, C.ngaychungtu, C.sochungtu
+            order by C.ngaychungtu, C.ma_hhvt
 		"
         , thang
         , nam
