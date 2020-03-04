@@ -93,7 +93,29 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             declare @tienvtkhoan decimal(18, 2), @tienvtvipham decimal(18, 2)
             select top 1 @tienvtkhoan = tienvtkhoan, @tienvtvipham = tienvtvipham 
             from md_vattukhoan where md_to_id = @tosx and nam = cast('{1}' as int) and thang = cast('{0}' as int)
-            
+            declare @truhangton decimal(18, 0) = (
+                select 
+                    sum(A.soluong_layton * A.gianhancong)
+                from (
+                    select 
+                        dh.gianhancong
+                        , dh.soluong_layton
+                        , dh.lsx
+                        , dh.md_sanpham_id
+                        , ROW_NUMBER() OVER(PARTITION BY dh.lsx, dh.md_sanpham_id ORDER BY xnb.ngaychuyen ASC) as row
+			        FROM 
+				        md_vanchuyennoibo (nolock) xnb
+				        left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				        left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
+			        where 
+				        xnb.loaichuyen = 'VANCNBCTKGH' 
+				        and kho.md_to_id = @tosx
+				        and xnb.ngaychuyen between @tungay and @denngay
+                )A
+                where A.row = 1
+                group by A.lsx, A.md_sanpham_id
+            )
+
             select 
                 C.sctPXK
                 , C.thegiaoviecsx
@@ -109,6 +131,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
                 , N'Tháng {0}/năm {1}' as thang_nam
                 , @tienvtkhoan as tienvtkhoan
                 , @tienvtvipham as tienvtvipham
+                , @truhangton as tienhangton
             from (
 	            select 
 		            B.*

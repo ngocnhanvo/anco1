@@ -105,7 +105,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
                         , A.sochungtu
                         , A.ngaychungtu
 		            from (
-			            select distinct
+			            select
 				            kho.md_to_id
                             , xnb.sochungtu
                             , xnb.ngaychuyen as ngaychungtu
@@ -114,6 +114,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
                             , dh.lsx
+                            , ROW_NUMBER() OVER(PARTITION BY dh.lsx, dh.md_sanpham_id ORDER BY xnb.ngaychuyen ASC) as row
 			            FROM 
 				            md_vanchuyennoibo (nolock) xnb
 				            left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
@@ -123,11 +124,13 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 				            and kho.md_to_id = @tosx
 				            and xnb.ngaychuyen between @tungay and @denngay
 				            and isnull(dh.soluong_layton, 0) > 0
+                            and xnb.md_trangthai_id = 'HIEULUC'
 		            )A
 		            left join md_sanpham sp on sp.md_sanpham_id = A.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id
 		            left join md_phanxuong_to tsx on tsx.md_to_id = A.md_to_id
 		            left join md_phanxuong px on px.md_phanxuong_id = tsx.md_phanxuong_id
+                    where A.row = 1
 	            )B
             )C
             where C.sltru > 0
