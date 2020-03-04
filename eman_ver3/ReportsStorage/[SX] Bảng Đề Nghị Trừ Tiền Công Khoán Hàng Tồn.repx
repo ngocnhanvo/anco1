@@ -419,7 +419,7 @@ namespace XtraReportSerialization
             // 
             this.ngaychungtu.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ngaychungtu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaychungtu")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaychungtu", "{0:đ/MM/yyyy}")});
             this.ngaychungtu.Dpi = 100F;
             this.ngaychungtu.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ngaychungtu.Name = "ngaychungtu";
