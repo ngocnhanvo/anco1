@@ -111,9 +111,10 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
 				        xnb.loaichuyen = 'VANCNBCTKGH' 
 				        and kho.md_to_id = @tosx
 				        and xnb.ngaychuyen between @tungay and @denngay
+                        and isnull(dh.soluong_layton, 0) > 0
+                        and xnb.md_trangthai_id = 'HIEULUC'
                 )A
                 where A.row = 1
-                group by A.lsx, A.md_sanpham_id
             )
 
             select 
