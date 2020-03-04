@@ -180,7 +180,6 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell sum_thanhtien;
         private DevExpress.XtraReports.UI.XRTableRow xrTableRow1;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell51;
-        private DevExpress.XtraReports.UI.XRTableCell xrTableCell53;
         private DevExpress.XtraReports.UI.XRLabel xrLabel7;
         private DevExpress.XtraReports.UI.XRLabel xrLabel8;
         private DevExpress.XtraReports.UI.XRLabel xrLabel10;
@@ -323,7 +322,6 @@ namespace XtraReportSerialization
             this.sum_thanhtien1 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableRow1 = new DevExpress.XtraReports.UI.XRTableRow();
             this.xrTableCell51 = new DevExpress.XtraReports.UI.XRTableCell();
-            this.xrTableCell53 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrLabel29 = new DevExpress.XtraReports.UI.XRLabel();
             this.PageFooter = new DevExpress.XtraReports.UI.PageFooterBand();
             this.xrPageInfo1 = new DevExpress.XtraReports.UI.XRPageInfo();
@@ -419,7 +417,7 @@ namespace XtraReportSerialization
             // 
             this.ngaychungtu.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ngaychungtu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaychungtu", "{0:đ/MM/yyyy}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaychungtu", "{0:dd/MM/yyyy}")});
             this.ngaychungtu.Dpi = 100F;
             this.ngaychungtu.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ngaychungtu.Name = "ngaychungtu";
@@ -446,7 +444,7 @@ namespace XtraReportSerialization
             this.ma_hhvt.StylePriority.UsePadding = false;
             this.ma_hhvt.StylePriority.UseTextAlignment = false;
             this.ma_hhvt.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.ma_hhvt.Weight = 0.57499258644397944D;
+            this.ma_hhvt.Weight = 0.47374263887601376D;
             // 
             // dvt
             // 
@@ -462,7 +460,7 @@ namespace XtraReportSerialization
             this.dvt.StylePriority.UsePadding = false;
             this.dvt.StylePriority.UseTextAlignment = false;
             this.dvt.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.dvt.Weight = 0.22436670307543777D;
+            this.dvt.Weight = 0.22394563309567067D;
             // 
             // sltru
             // 
@@ -478,7 +476,7 @@ namespace XtraReportSerialization
             this.sltru.StylePriority.UsePadding = false;
             this.sltru.StylePriority.UseTextAlignment = false;
             this.sltru.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sltru.Weight = 0.25217424187334114D;
+            this.sltru.Weight = 0.30350854532362981D;
             // 
             // dongia
             // 
@@ -494,7 +492,7 @@ namespace XtraReportSerialization
             this.dongia.StylePriority.UsePadding = false;
             this.dongia.StylePriority.UseTextAlignment = false;
             this.dongia.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.dongia.Weight = 0.3240432824394387D;
+            this.dongia.Weight = 0.31145928393336708D;
             // 
             // thanhtien
             // 
@@ -510,7 +508,7 @@ namespace XtraReportSerialization
             this.thanhtien.StylePriority.UsePadding = false;
             this.thanhtien.StylePriority.UseTextAlignment = false;
             this.thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.thanhtien.Weight = 0.3428198275106239D;
+            this.thanhtien.Weight = 0.40574054011413963D;
             // 
             // ghichu
             // 
@@ -978,7 +976,7 @@ namespace XtraReportSerialization
             this.xrTableCell9.StylePriority.UseTextAlignment = false;
             this.xrTableCell9.Text = "Mã VT/HH";
             this.xrTableCell9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell9.Weight = 0.57499242172079557D;
+            this.xrTableCell9.Weight = 0.473742645466859D;
             // 
             // xrTableCell1
             // 
@@ -994,7 +992,7 @@ namespace XtraReportSerialization
             this.xrTableCell1.StylePriority.UseTextAlignment = false;
             this.xrTableCell1.Text = "ĐVT";
             this.xrTableCell1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell1.Weight = 0.22436637013956728D;
+            this.xrTableCell1.Weight = 0.22394553057696132D;
             // 
             // xrTableCell2
             // 
@@ -1010,7 +1008,7 @@ namespace XtraReportSerialization
             this.xrTableCell2.StylePriority.UseTextAlignment = false;
             this.xrTableCell2.Text = "Số lượng";
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell2.Weight = 0.25217468858492786D;
+            this.xrTableCell2.Weight = 0.30350853195068772D;
             // 
             // xrTableCell5
             // 
@@ -1026,7 +1024,7 @@ namespace XtraReportSerialization
             this.xrTableCell5.StylePriority.UseTextAlignment = false;
             this.xrTableCell5.Text = "Đơn giá";
             this.xrTableCell5.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell5.Weight = 0.32404354976742616D;
+            this.xrTableCell5.Weight = 0.3114592918481453D;
             // 
             // xrTableCell8
             // 
@@ -1042,7 +1040,7 @@ namespace XtraReportSerialization
             this.xrTableCell8.StylePriority.UseTextAlignment = false;
             this.xrTableCell8.Text = "Thành tiền";
             this.xrTableCell8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell8.Weight = 0.34281934727619562D;
+            this.xrTableCell8.Weight = 0.40574037764625914D;
             // 
             // xrTableCell17
             // 
@@ -1744,7 +1742,7 @@ namespace XtraReportSerialization
             this.xrTableCell4.StylePriority.UsePadding = false;
             this.xrTableCell4.StylePriority.UseTextAlignment = false;
             this.xrTableCell4.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.xrTableCell4.Weight = 0.56911013437583147D;
+            this.xrTableCell4.Weight = 0.46889621063290643D;
             // 
             // xrTableCell49
             // 
@@ -1758,7 +1756,7 @@ namespace XtraReportSerialization
             this.xrTableCell49.StylePriority.UsePadding = false;
             this.xrTableCell49.StylePriority.UseTextAlignment = false;
             this.xrTableCell49.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.xrTableCell49.Weight = 0.22207109690956889D;
+            this.xrTableCell49.Weight = 0.22165453407016095D;
             // 
             // sum_sltru
             // 
@@ -1775,7 +1773,7 @@ namespace XtraReportSerialization
             this.sum_sltru.StylePriority.UsePadding = false;
             this.sum_sltru.StylePriority.UseTextAlignment = false;
             this.sum_sltru.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_sltru.Weight = 0.24959491621207455D;
+            this.sum_sltru.Weight = 0.30040360914650083D;
             // 
             // xrTableCell50
             // 
@@ -1789,7 +1787,7 @@ namespace XtraReportSerialization
             this.xrTableCell50.StylePriority.UsePadding = false;
             this.xrTableCell50.StylePriority.UseTextAlignment = false;
             this.xrTableCell50.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.xrTableCell50.Weight = 0.32072889742090649D;
+            this.xrTableCell50.Weight = 0.30827334922998528D;
             // 
             // sum_thanhtien
             // 
@@ -1805,7 +1803,7 @@ namespace XtraReportSerialization
             this.sum_thanhtien.StylePriority.UsePadding = false;
             this.sum_thanhtien.StylePriority.UseTextAlignment = false;
             this.sum_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.sum_thanhtien.Weight = 0.33931249793897506D;
+            this.sum_thanhtien.Weight = 0.40158983977780294D;
             // 
             // sum_thanhtien1
             // 
@@ -1826,8 +1824,7 @@ namespace XtraReportSerialization
             // xrTableRow1
             // 
             this.xrTableRow1.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
-            this.xrTableCell51,
-            this.xrTableCell53});
+            this.xrTableCell51});
             this.xrTableRow1.Dpi = 100F;
             this.xrTableRow1.Name = "xrTableRow1";
             this.xrTableRow1.Weight = 1D;
@@ -1846,21 +1843,7 @@ namespace XtraReportSerialization
             this.xrTableCell51.Text = "Ghi chú: Bảng đề nghị trừ tiền công khoán hàng tồn này là cơ sở để tính trừ lại t" +
     "iền khoán cho khâu hoàn tất";
             this.xrTableCell51.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-            this.xrTableCell51.Weight = 2.4721997324883165D;
-            // 
-            // xrTableCell53
-            // 
-            this.xrTableCell53.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrTableCell53.Dpi = 100F;
-            this.xrTableCell53.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrTableCell53.Name = "xrTableCell53";
-            this.xrTableCell53.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
-            this.xrTableCell53.StylePriority.UseBorders = false;
-            this.xrTableCell53.StylePriority.UseFont = false;
-            this.xrTableCell53.StylePriority.UsePadding = false;
-            this.xrTableCell53.StylePriority.UseTextAlignment = false;
-            this.xrTableCell53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.xrTableCell53.Weight = 0.5357922064619105D;
+            this.xrTableCell51.Weight = 3.007991938950227D;
             // 
             // xrLabel29
             // 
