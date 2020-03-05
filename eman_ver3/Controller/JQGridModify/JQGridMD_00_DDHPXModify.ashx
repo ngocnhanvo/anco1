@@ -473,7 +473,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             lsx.ngaylap = DateTime.Now;
                             lsx.ngayketthuc = ddh.ngayketthuc;
                             lsx.ngaydkgiaotp = ddh.ngayketthuc;
-                            lsx.phieuXK = " ";
+                            lsx.phieuXK = "CHUAHOANTHANH";
 
                             lsx.nguoitao = us.ad_user_id;
                             lsx.vaitrotao = us.ad_role_id;
