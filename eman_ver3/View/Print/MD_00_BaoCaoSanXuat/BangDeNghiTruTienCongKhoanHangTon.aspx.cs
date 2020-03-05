@@ -86,6 +86,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
                 , C.ten_hhvt
 	            , C.dvt
 	            , C.dongia
+                , C.ghichu
 	            , sum(C.sltru) as sltru
 	            , sum(C.thanhtien) as thanhtien
                 , N'Tháng {0}/năm {1}' as thang_nam
@@ -104,6 +105,16 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 			            , A.dongia
                         , A.sochungtu
                         , A.ngaychungtu
+                        , (
+                            select donhang_thamchieu 
+                            from md_dondathangphanxuong
+                            where md_dondathangphanxuong_id = 
+                            (
+	                            select md_dondathangphanxuong_id 
+	                            from md_lenhsanxuat
+	                            where sochungtu = A.lsx
+                            )
+                        ) as ghichu
 		            from (
 			            select
 				            kho.md_to_id
@@ -134,7 +145,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 	            )B
             )C
             where C.sltru > 0
-            group by C.dongia, C.dvt, C.ma_hhvt, C.ten_hhvt, C.px, C.tsx, C.ngaychungtu, C.sochungtu
+            group by C.dongia, C.dvt, C.ma_hhvt, C.ten_hhvt, C.px, C.tsx, C.ngaychungtu, C.sochungtu, C.ghichu
             order by C.ngaychungtu, C.ma_hhvt
 		"
         , thang
