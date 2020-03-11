@@ -12,7 +12,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuNhapKhoKiemChuyenKho :
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Phiếu Nhập Kho Kiêm Phiếu Chuyển Kho Nội Bộ.repx");
+        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Phiếu Nhập Kho.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
         viewReport(report, sql);
@@ -44,11 +44,11 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuNhapKhoKiemChuyenKho :
             tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            DateTime? ngaychuyen = tbl.Rows[0]["ngaychuyen"] as DateTime?;
-            tbl.Rows[0]["dd"] = ngaychuyen.Value.ToString("dd");
-            tbl.Rows[0]["MM"] = ngaychuyen.Value.ToString("MM");
-            tbl.Rows[0]["yyyy"] = ngaychuyen.Value.ToString("yyyy");
-            DateTime? ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+            var ngaychuyen = tbl.Rows[0]["ngaychuyen"] as DateTime?;
+            tbl.Rows[0]["dd"] = DateTime.Now.ToString("dd");
+            tbl.Rows[0]["MM"] = DateTime.Now.ToString("MM");
+            tbl.Rows[0]["yyyy"] = DateTime.Now.ToString("yyyy");
+            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
             tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
             tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
             tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
@@ -61,13 +61,35 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuNhapKhoKiemChuyenKho :
                 tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
 
             var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
-            if(string.IsNullOrEmpty(sumTT))
-                tbl.Rows[lastRow]["sum_thanhtien"] =  DBNull.Value;
+            if (string.IsNullOrEmpty(sumTT))
+                tbl.Rows[lastRow]["sum_thanhtien"] = DBNull.Value;
             else
                 tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sumTT);
 
             var sum_soluong = report.Report.FindControl("sum_soluong", true);
             sum_soluong.DataBindings[0].FormatString = sothapphan;
+
+            var cancuTheo = report.Report.FindControl("xrLabel51", true);
+            cancuTheo.Text = "Căn cứ theo phiếu kết quả giao hàng:";
+
+            var kho_cell = report.Report.FindControl("khoxuat", true);
+            var withF = kho_cell.WidthF;
+            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["khoxuat"].ToString(), "Tahoma", (float)9.5, true);
+            var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
+            theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
+
+            var yeucau = report.Report.FindControl("yeucau", true);
+            withF = yeucau.WidthF;
+            yeucau.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["yeucau"].ToString(), "Tahoma", (float)10, true);
+            var pnNgayThangNam_cell = report.Report.FindControl("pnNgayThangNam", true);
+            pnNgayThangNam_cell.LeftF = pnNgayThangNam_cell.LeftF + yeucau.WidthF - withF;
+
+            var xrLabel43_cell = report.Report.FindControl("xrLabel43", true);
+            xrLabel43_cell.Visible = false;
+            var bophan_cell = report.Report.FindControl("bophan", true);
+            bophan_cell.Visible = false;
+            var xuatcho_cell = report.Report.FindControl("xuatcho", true);
+            xuatcho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["xuatcho"].ToString(), "Tahoma", (float)10, true);
             this.ReportViewer1.Report = report;
         }
         else
@@ -97,13 +119,12 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuNhapKhoKiemChuyenKho :
                     (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
                 ) as xuatcho
                 , (select top 1 ten_phanxuong from md_phanxuong where kho.md_phanxuong_id = md_phanxuong_id) as bophan
-                , kho.ten_kho as khoxuat
-                , kho2.ten_kho as khonhap
+                , kho2.ten_kho as khoxuat
                 , xb.mota as diengiai
                 , nknb_cdh.soluong_dichchuyen as soluong
                 , null as dongia
                 , null as thanhtien
-                , xb.sochungtu as yeucau
+                , xb.donhang_thamchieu as yeucau
 		    from md_vanchuyennoibo xb
 		        left join md_vanchuyennoibo_cdvc nknb_cdh on xb.md_vanchuyennoibo_id = nknb_cdh.md_vanchuyennoibo_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
