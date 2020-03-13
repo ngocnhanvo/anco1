@@ -91,7 +91,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 {
                     foreach (var vcnb in db.md_vanchuyennoibo.Where(s => vnn.Contains(s.md_vanchuyennoibo_id)).ToList())
                     {
-                        var lsxtsx = new List<LSX_TSX>();
+                        var lsxtsx = new List<md_lenhsanxuat>();
                         if (vcnb.md_trangthai_id != "DANHAN")
                         {
                             msg = string.Format(@"<div style='color:red'>Lỗi: dòng ""{0}"" cần ở trạng thái ""Đã Xác Nhận"".</div>", vcnb.sochungtu);
@@ -159,7 +159,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     db.SaveChanges();
                                 }
 
-                                lsxtsx.Add(lsxto);
+                                lsxtsx.Add(lsxto.lsx);
                             }
                             else
                             {
@@ -308,7 +308,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         foreach (var item in lsxtsx.Distinct())
                         {
                             int countSLHT = db.md_dondathangphanxuong_cdh.Where(s =>
-                                s.md_dondathangphanxuong_id == item.lsx.md_dondathangphanxuong_id
+                                s.md_dondathangphanxuong_id == item.md_dondathangphanxuong_id
                             ).ToList().Where(s =>
                                 s.tong_sl_dat -
                                 s.sl_giamhanngach.GetValueOrDefault(0) -
@@ -318,16 +318,29 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             if (countSLHT <= 0)
                             {
                                 var dhpx = db.md_dondathangphanxuong.Where(s =>
-                                    s.md_dondathangphanxuong_id == item.lsx.md_dondathangphanxuong_id).FirstOrDefault();
+                                    s.md_dondathangphanxuong_id == item.md_dondathangphanxuong_id).FirstOrDefault();
                                 if (dhpx != null)
                                 {
-                                    //var tSX = db.md_lenhsanxuat_tosx.Where(s=>s.)
-                                    //var cdhsInLSX = db.md_lenhsanxuat_tosx_cdh.Where(
-                                    //    s=>s.md_lenhsanxuat_tosx_id 
-                                    //    )
-                                    dhpx.md_trangthai_id = "KETTHUC";
-                                    item.lsx.md_trangthai_id = "HOANTHANH";
-                                    item.lsx.ngayhoanthanh = vcnb.ngaychuyen;
+                                    var tsxs = db.md_lenhsanxuat_tosx.Where(s =>
+                                        s.md_lenhsanxuat_id == item.md_lenhsanxuat_id)
+                                        .Select(s => s.md_lenhsanxuat_tosx_id).ToList();
+
+                                    var LHTTSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        tsxs.Contains(s.md_lenhsanxuat_tosx_id)
+                                    )
+                                    .Where(s => s.sl_dagiao != s.sl_dahoanthanh)
+                                    .ToList();
+
+                                    if (LHTTSX.Count <= 0)
+                                    {
+                                        var countLHTTSX = LHTTSX.Where(s => s.sl_chiato - s.sl_dagiao.GetValueOrDefault(0) > 0).Count();
+                                        if (countLHTTSX <= 0)
+                                        {
+                                            dhpx.md_trangthai_id = "KETTHUC";
+                                            item.md_trangthai_id = "HOANTHANH";
+                                            item.ngayhoanthanh = vcnb.ngaychuyen;
+                                        }
+                                    }
                                 }
                                 db.SaveChanges();
                             }
