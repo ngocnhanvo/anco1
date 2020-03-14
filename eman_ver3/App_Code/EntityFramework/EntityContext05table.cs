@@ -360,6 +360,10 @@ modelBuilder.Entity<md_lenhsanxuat>().HasKey<string>(p => p.md_lenhsanxuat_id);
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_lenhsanxuat>()
+                            .Property(p => p.ngayxlhangton)
+                            .HasColumnName("ngayxlhangton")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");

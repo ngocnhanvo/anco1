@@ -64,15 +64,15 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                             moky_Kho(db, us, mdk, kmo, kdong);
                         }
 
-                        if (type == "CNKH" | type == "")
-                        {
-                            moky_congnoKH(db, us, mdk, kmo, kdong);
-                        }
+                        //if (type == "CNKH" | type == "")
+                        //{
+                        //    moky_congnoKH(db, us, mdk, kmo, kdong);
+                        //}
 
-                        if (type == "CNNCC" | type == "")
-                        {
-                            moky_congnoNCC(db, us, mdk, kmo, kdong);
-                        }
+                        //if (type == "CNNCC" | type == "")
+                        //{
+                        //    moky_congnoNCC(db, us, mdk, kmo, kdong);
+                        //}
                         msg_success = string.Format(@"<div style=""color:blue"">Mở kỳ thành công</div>");
                     }
                     else
@@ -80,18 +80,18 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                         var kdong = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
                         if (type == "KHO" | type == "")
                         {
-                            msg = dongky_Kho(db, us, mdk, kdong);
+                            dongky_Kho(db, us, mdk, kdong);
                         }
 
-                        if (type == "CNKH" | type == "")
-                        {
-                            msg = dongky_CNKH(db, us, mdk, kdong);
-                        }
+                        //if (type == "CNKH" | type == "")
+                        //{
+                        //    msg = dongky_CNKH(db, us, mdk, kdong);
+                        //}
 
-                        if (type == "CNNCC" | type == "")
-                        {
-                            msg = dongky_CNNCC(db, us, mdk, kdong);
-                        }
+                        //if (type == "CNNCC" | type == "")
+                        //{
+                        //    msg = dongky_CNNCC(db, us, mdk, kdong);
+                        //}
                         msg_success = string.Format(@"<div style=""color:blue"">Đóng kỳ thành công</div>");
                     }
                     mdk.hieuluc = true;
@@ -106,7 +106,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             if (msg.Length <= 0)
             {
                 transaction.Commit();
-                msg = msg_success;
+                msg = msg_success + "123";
             }
             else
                 transaction.Rollback();

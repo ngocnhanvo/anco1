@@ -401,7 +401,10 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                         if (msg.Length > 0)
                             break;
                         else
+                        {
                             lsx.md_trangthai_id = "KHDXL";
+                            lsx.ngayxlhangton = DateTime.Now;
+                        }
                     }
                     else
                     {

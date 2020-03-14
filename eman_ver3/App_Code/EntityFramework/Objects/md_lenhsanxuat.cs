@@ -103,6 +103,12 @@
                         public DateTime? ngaytao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_ngayxlhangton_wintaFN
+                        
+                        #endregion md_lenhsanxuat_ngayxlhangton_wintaFN
+                        public DateTime? ngayxlhangton { get; set; }
+                
+						
                         #region md_lenhsanxuat_nguoicapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_nguoicapnhat_wintaFN
