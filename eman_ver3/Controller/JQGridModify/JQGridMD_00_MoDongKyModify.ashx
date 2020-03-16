@@ -106,7 +106,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
             if (msg.Length <= 0)
             {
                 transaction.Commit();
-                msg = msg_success + "123";
+                msg = msg_success;
             }
             else
                 transaction.Rollback();

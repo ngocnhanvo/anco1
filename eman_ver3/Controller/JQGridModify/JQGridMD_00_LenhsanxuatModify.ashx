@@ -467,7 +467,7 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         DateTime? nht = VNN_Config.setDateTime(context.Request.Form["ngayhoanthanh"]);
         DateTime? ndkgtp = VNN_Config.setDateTime(context.Request.Form["ngaydkgiaotp"]);
-        try
+        //try
         {
             string id = context.Request.Form["id"];
             md_lenhsanxuat object_ = db.md_lenhsanxuat.Where(p => p.md_lenhsanxuat_id == id).FirstOrDefault();
@@ -517,9 +517,9 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                 msg = "true#Cập nhật thành công.";
             }
         }
-        catch (Exception ex)
+        //catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            //msg = "false#" + ex.Message;
         }
         context.Response.Write(msg);
     }
