@@ -8,20 +8,20 @@ using DevExpress.XtraReports.UI;
 using System.Data.SqlClient;
 using System.Data;
 using DataAcess;
-using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using DevExpress.XtraReports.UI;
 
 public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
 {
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
-        EntityContext db = new EntityContext();
-        datHangTheoDon report = new datHangTheoDon();
-        String sql = this.CreateSql();
-        this.viewReport(report, sql);
+        var context = HttpContext.Current;
+        sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
+        string c_danhsachdathang_id = context.Request.QueryString["id"];
+        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Đơn đặt hàng phân xưởng.repx");
+        var report = XtraReport.FromFile(file, true);
+        string sql = CreateSql(context);
+        viewReport(report, sql);
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
@@ -31,14 +31,35 @@ public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
         da.Fill(ds);
         report.DataSource = ds;
         report.DataAdapter = da;
-        ReportViewer1.Report = report;
-        //Response.Write(SqlQuery);
+        var tbl = ds.Tables[0];
+        if (tbl.Rows.Count > 0)
+        {
+            var infoPrint = PrintAnco2.GetInfoPrint();
+            tbl.Columns.Add("logo", Type.GetType("System.String"));
+            tbl.Columns.Add("dd", Type.GetType("System.String"));
+            tbl.Columns.Add("MM", Type.GetType("System.String"));
+            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
+            //Header
+            tbl.Rows[0]["logo"] = infoPrint.logo;
+            tbl.Rows[0]["dd"] = infoPrint.dd;
+            tbl.Rows[0]["MM"] = infoPrint.MM;
+            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = tbl.Rows[0]["dhtc"] + "-RP017";
+            //Footer
+            int lastRow = tbl.Rows.Count - 1;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
+        }
+        else
+        {
+            Response.Write("<h1>Không có dữ liệu</h1>");
+        }
     }
 
-    public String CreateSql()
+    public string CreateSql(HttpContext context)
     {
-        HttpContext context = HttpContext.Current;
-        EntityContext db = new EntityContext();
         string md_dondathangphanxuong_id = context.Request.QueryString["id"];
         string sql = string.Format(@"
 		select getdate() as ngay
@@ -48,8 +69,8 @@ public partial class PrintControllers_MD_00_DDHPX_Default : System.Web.UI.Page
 		, sp.ma_sanpham as ma , sp.mota_tiengviet as ten, dvt.ten_dvt as dvt
 		, (cdh.tong_sl_dat - isnull(cdh.sl_giamhanngach, 0)) as SL, cdh.noigiaohang as noigiaohang
 		, ddhpx.ngayhoanthanh as ngaycham
-		, ddhpx.hdlh as hdlhRieng
-		, ddhpx.hdlhchung as hdlhchung
+		, ddhpx.hdlh as huongdanlamhang
+		, ddhpx.hdlhchung as hdlhChung
 		, dhcpx.mota as hdlh
 		from md_dondathangphanxuong ddhpx with (nolock)
 		left join md_dondathangphanxuong_cdh cdh with (nolock) on cdh.md_dondathangphanxuong_id = ddhpx.md_dondathangphanxuong_id

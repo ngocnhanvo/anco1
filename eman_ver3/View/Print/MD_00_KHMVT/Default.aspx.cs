@@ -7,11 +7,12 @@ using System.Data;
 using DataAcess;
 public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Phiếu yêu cầu mua vật tư.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -51,6 +52,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = "Phiếu yêu cầu mua VT";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["sum_tonkho"] = double.Parse(tbl.Compute("Sum(sl_tonkho)", string.Empty).ToString());
@@ -65,7 +67,10 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
             sum_dutru.DataBindings[0].FormatString = sothapphan;
             var sum_yeucau = report.Report.FindControl("sum_yeucau", true);
             sum_yeucau.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

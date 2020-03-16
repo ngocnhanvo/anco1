@@ -9,11 +9,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVatTu : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Báo Cáo So Sanh Đơn Giá Mua Vật Tư.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -39,6 +40,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
+            report.DisplayName = "Báo cáo so sánh đơn giá mua VT";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["dd"] = infoPrint.dd;
@@ -64,7 +66,10 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoSoSanhDonGiaMuaVat
 
             report.DataSource = ds;
             report.DataAdapter = da;
-            ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

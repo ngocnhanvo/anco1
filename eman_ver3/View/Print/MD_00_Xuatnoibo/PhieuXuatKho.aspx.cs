@@ -7,13 +7,14 @@ using DataAcess;
 using System.Linq;
 public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     public EntityContext db = new EntityContext();
     md_xuatkhonb xk = null;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
 
         string md_xuatkhonb_id = context.Request.QueryString["id"];
         xk = db.md_xuatkhonb.FirstOrDefault(s => s.md_xuatkhonb_id == md_xuatkhonb_id);
@@ -63,6 +64,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
             tbl.Rows[0]["dd"] = ngaychuyen.Value.ToString("dd");
             tbl.Rows[0]["MM"] = ngaychuyen.Value.ToString("MM");
             tbl.Rows[0]["yyyy"] = ngaychuyen.Value.ToString("yyyy");
+            report.DisplayName = tbl.Rows[0]["sct_lsx"] + "-RP002";
             var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
             tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
             tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
@@ -95,7 +97,10 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
             yeucau.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["yeucau"].ToString(), "Tahoma", (float)9.5, true);
             var pnNgayThangNam_cell = report.Report.FindControl("pnNgayThangNam", true);
             pnNgayThangNam_cell.LeftF = pnNgayThangNam_cell.LeftF + yeucau.WidthF - withF;
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

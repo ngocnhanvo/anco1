@@ -9,11 +9,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDonHang : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Báo Cáo Tình Hình Sản Xuất Đơn Hàng.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -42,6 +43,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = "Báo cáo tình hình SX đơn hàng";
 
             var sltungdonhang_cell = report.Report.FindControl("sltungdonhang", true);
             sltungdonhang_cell.DataBindings[0].FormatString = sothapphan;
@@ -91,7 +93,10 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 
             report.DataSource = ds;
             report.DataAdapter = da;
-            ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

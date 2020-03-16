@@ -8,11 +8,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Phiếu Nhập Kho.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -53,6 +54,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.W
             tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
             tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
             tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
+            report.DisplayName = tbl.Rows[0]["sct_lsx"] + "-RP010";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
@@ -88,7 +90,10 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PhieuNhapKho : System.W
             bophan_cell.Visible = false;
             var xuatcho_cell = report.Report.FindControl("xuatcho", true);
             xuatcho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["xuatcho"].ToString(), "Tahoma", (float)10, true);
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

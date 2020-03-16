@@ -9,11 +9,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTienHangSPHT : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -38,6 +39,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
+            report.DisplayName = "Tổng hợp tiền hàng SPHT - " + tbl.Rows[0]["thang_nam"];
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["dd"] = infoPrint.dd;
@@ -46,7 +48,10 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
             tbl.Rows[lastRow]["sum_tienhang"] = tbl.Compute("sum(tienhang)", string.Empty);
             report.DataSource = ds;
             report.DataAdapter = da;
-            ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

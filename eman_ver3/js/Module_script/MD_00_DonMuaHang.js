@@ -264,6 +264,15 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
                             </select>
                         </td>
                     </tr>
+
+                    <tr style="height: 30px;">
+                        <td>
+                            <input id="inPDF" type="checkbox" style="outline:none;transform: scale(1.5);" value="1">
+                        </td>
+                        <td>
+                            <label for="inPDF" style="font-size: 13px;font-weight: bold;">In trực tiếp PDF</label>
+                        </td>
+                    </tr>
 				</table>
 			<div>
         </div>`);
@@ -282,9 +291,13 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
                     id: 'btn-ok',
                     text: 'Đồng ý',
                     click: function () {
+                        let inPDF = $("#inPDF").prop('checked') ? "1" : "";
                         let sothapphan = $('#sothapphan').val();
-                        let url = url_org_sys + 'View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho&ma_module=' +
-                            ma_module + '&md_nhapkho_ncc_id=' + masterId.toString() + '&stp=' + sothapphan;
+                        let url = url_org_sys + "View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho"+
+                            "&ma_module=" + ma_module +
+                            "&md_nhapkho_ncc_id=" + masterId.toString() +
+                            "&inPDF=" + inPDF +
+                            "&stp=" + sothapphan;
                         let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
                         let left = (window.innerWidth - 1024) / 2 - 10;
                         window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
@@ -397,6 +410,15 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                             </select>
                         </td>
                     </tr>
+
+                    <tr style="height: 30px;">
+                        <td>
+                            <input id="inPDF" type="checkbox" style="outline:none;transform: scale(1.5);" value="1">
+                        </td>
+                        <td>
+                            <label for="inPDF" style="font-size: 13px;font-weight: bold;">In trực tiếp PDF</label>
+                        </td>
+                    </tr>
 				</table>
 			<div>
         </div>`);
@@ -420,16 +442,23 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                         let sel_val = $("input:radio[name=rdo_SLVC]:checked").val();
                         let CLform_infor = new get_Forminfor(ma_case, Form_infor);
                         let ma_module = tengrid.replace('grid', '');
+                        let inPDF = $("#inPDF").prop('checked') ? "1" : "";
                         if (sel_val == 1) {
-                            let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
-                                ma_module + "&id=" + masterId + "&stp=" + sothapphan;
+                            let url = url_org_sys + "View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu"+
+                                "&ma_module=" + ma_module +
+                                "&id=" + masterId +
+                                "&inPDF=" + inPDF +
+                                "&stp=" + sothapphan;
                             let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
                             let left = (window.innerWidth - 1024) / 2 - 10;
                             window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
                         }
                         else {
-                            let url = url_org_sys + 'View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu&ma_module=' +
-                                ma_module + "&id=" + masterId + "&stp=" + sothapphan;
+                            let url = url_org_sys + "View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu"+
+                                "&ma_module=" + ma_module +
+                                "&id=" + masterId +
+                                "&inPDF=" + inPDF +
+                                "&stp=" + sothapphan;
                             let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
                             let left = (window.innerWidth - 1024) / 2 - 10;
                             window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");

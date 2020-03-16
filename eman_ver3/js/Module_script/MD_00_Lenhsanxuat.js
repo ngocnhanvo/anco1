@@ -16,10 +16,6 @@ function CA_01_InPhieuVatTu(tengrid, id_parent, ma_case, Form_infor, Model_infor
                             <td><input id="inPXK1" type="radio" name="rdo_SLVC" class ="rdo_SLVC" style="outline:none" checked value="1"/></td>
                             <td><label for="inPXK1">In yêu cầu cấp vật tư</label></td>
                         </tr>
-                        <tr>
-                            <td><input id="inPXK3" type="radio" name="rdo_SLVC" class ="rdo_SLVC" style="outline:none" value="3"/></td>
-                            <td><label for="inPXK3">In phiếu đề nghị nhận phôi sợi</label></td>
-                        </tr>
                     </table>
                 </div>
             </div>`);

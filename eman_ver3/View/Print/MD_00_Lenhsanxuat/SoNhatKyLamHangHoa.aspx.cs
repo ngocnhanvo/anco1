@@ -7,11 +7,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Lenhsanxuat_SoNhatKyLamHangHoa : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Sổ Nhật Ký Làm Hàng Hóa.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -40,6 +41,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_SoNhatKyLamHangHoa : Sys
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = tbl.Rows[0]["ddh"] + "";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
@@ -59,7 +61,10 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_SoNhatKyLamHangHoa : Sys
             var phanxuongText_cell = report.Report.FindControl("phanxuongText", true);
             phanxuongText_cell.LeftF = phanxuongText_cell.LeftF + tsx_cell.WidthF - withF;
 
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

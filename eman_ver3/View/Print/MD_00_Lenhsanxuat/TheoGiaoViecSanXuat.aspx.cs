@@ -8,11 +8,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Thẻ Giao Việc Sản Xuất.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -48,6 +49,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = tbl.Rows[0]["donhang"] + "";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
@@ -58,7 +60,10 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
 
             var sum_soluong = report.Report.FindControl("sum_soluong", true);
             sum_soluong.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

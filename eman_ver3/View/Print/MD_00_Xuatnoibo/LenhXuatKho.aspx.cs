@@ -6,11 +6,12 @@ using System.Data;
 
 public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Lệnh Xuất Kho.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -52,6 +53,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
             tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
             tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+            report.DisplayName = tbl.Rows[0]["sct_lsx"] + "-RP001";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["sum_soluong"] = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
@@ -60,7 +62,11 @@ public partial class PrintControllers_MD_00_Xuatnoibo_LenhXuatKho : System.Web.U
             sum_soluong.DataBindings[0].FormatString = sothapphan;
             var sum_tongcong = report.Report.FindControl("sum_tongcong", true);
             sum_tongcong.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
+
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

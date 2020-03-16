@@ -9,11 +9,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Danh Sách Theo Dõi Đơn Hàng.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -40,6 +41,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
+            report.DisplayName = "Báo cáo theo dõi đơn hàng";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["sum_sldh"] = tbl.Compute("sum(sldh)", string.Empty);
@@ -72,8 +74,11 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 
             report.DataSource = ds;
             report.DataAdapter = da;
-            ReportViewer1.Report = report;
-            
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
+
         }
         else
         {

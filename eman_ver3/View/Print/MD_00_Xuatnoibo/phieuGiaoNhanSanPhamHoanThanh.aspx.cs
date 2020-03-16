@@ -6,11 +6,12 @@ using System.Data;
 
 public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanThanh : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
@@ -40,6 +41,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
             tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
             tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
             tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+            report.DisplayName = tbl.Rows[0]["sochungtu"] + "-RP000";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Rows[lastRow]["sum_giao"] = double.Parse(tbl.Compute("Sum(giao)", string.Empty).ToString());
@@ -48,7 +50,10 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
             giao.DataBindings[0].FormatString = sothapphan;
             var sum_giao = report.Report.FindControl("sum_giao", true);
             sum_giao.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

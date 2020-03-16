@@ -13,6 +13,16 @@ public static class Helper
         return Guid.NewGuid().ToString().Replace("-", "");
     }
 
+    public static System.Collections.Generic.Dictionary<string, string> pathReport(string name)
+    {
+        name = name.Replace("/", "-");
+        var obj = new System.Collections.Generic.Dictionary<string, string>();
+        obj["name"] = name;
+        obj["link"] = HttpContext.Current.Server.MapPath("~/DEV_REPORT/pdfs/" + name);
+        obj["linkView"] = Security.UrlBase() + "DEV_REPORT/pdfs/" + name;
+        return obj;
+    }
+
     public static string getConnectStrings(string ten_connectstring)
     {
         return System.Web.Configuration.WebConfigurationManager.ConnectionStrings[ten_connectstring].ConnectionString;
@@ -80,5 +90,26 @@ public static class Helper
                                 s.md_phanxuong_id == pxId
                                 & s.md_to_id == toId
                                 & s.hangton == false).FirstOrDefault();
+    }
+
+    public static void downloadFiles(HttpContext context, string name, string link, int type)
+    {
+        string contentType = type == 0 ? "application/pdf" : "application/vnd.ms-excel";
+        context.Response.Buffer = true;
+        context.Response.Clear();
+        context.Response.AddHeader("Content-Disposition", "attachment;filename=" + name);
+        context.Response.AddHeader("content-length", new System.IO.FileInfo(link).Length.ToString());
+        context.Response.ContentType = contentType;
+        context.Response.Charset = "";
+        context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        context.Response.WriteFile(link);
+        context.Response.End();
+    }
+
+    public static void viewFile(DevExpress.XtraReports.UI.XtraReport report)
+    {
+        var pathRp = pathReport(report.DisplayName + ".pdf");
+        report.ExportToPdf(pathRp["link"]);
+        HttpContext.Current.Response.Redirect(pathRp["linkView"] + "?" + Guid.NewGuid());
     }
 }

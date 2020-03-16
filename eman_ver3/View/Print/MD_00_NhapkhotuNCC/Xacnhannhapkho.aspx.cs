@@ -9,11 +9,12 @@ using DataAcess;
 
 public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string c_danhsachdathang_id = context.Request.QueryString["id"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Phiếu xác nhận nhập kho vật tư.repx");
         var report = XtraReport.FromFile(file, true);
@@ -56,6 +57,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
                 tbl.Rows[0]["MM_yeucau"] = ngaygiaohang.Value.ToString("MM");
                 tbl.Rows[0]["yyyy_yeucau"] = ngaygiaohang.Value.ToString("yyyy");
             }
+            report.DisplayName = tbl.Rows[0]["sochungtu"] + "-RP009";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
@@ -87,7 +89,10 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
             kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)10.5, true);
             var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
             theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
-            ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {
@@ -118,6 +123,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
                 , nk_ncc.phieugiaohang
                 , nk_ncc.ngaygiaohang
                 , nk_ncc.ngaydenghi
+                , nk_ncc.sochungtu
             from md_nhapkho_ncc_dh nk_ncc_dh
                 inner join md_nhapkho_ncc nk_ncc on nk_ncc.md_nhapkho_ncc_id = nk_ncc_dh.md_nhapkho_ncc_id
 	            left join md_sanpham sp on nk_ncc_dh.md_sanpham_id = sp.md_sanpham_id
@@ -140,6 +146,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
                 , nk_ncc.phieugiaohang
                 , nk_ncc.ngaygiaohang
                 , nk_ncc.ngaydenghi
+                , nk_ncc.sochungtu
             order by 
                 sp.ma_sanpham asc
             "

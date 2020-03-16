@@ -9,11 +9,12 @@ using DevExpress.XtraReports.UI;
 
 public partial class PrintControllers_MD_00_DSDHJQGS_LenhDongGoi : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        inPDF = context.Request.QueryString["inPDF"];
         string c_danhsachdathang_id = context.Request.QueryString["id"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Lệnh đóng gói.repx");
         var report = XtraReport.FromFile(file, true);
@@ -53,6 +54,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_LenhDongGoi : System.Web.UI
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = tbl.Rows[0]["sochungtu"] + "-RP019";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             tbl.Columns.Add("sumSLDH", Type.GetType("System.Double"));
@@ -63,7 +65,10 @@ public partial class PrintControllers_MD_00_DSDHJQGS_LenhDongGoi : System.Web.UI
             tbl.Rows[lastRow]["sumSLTPSX"] = sumSLTPSX;
             //tbl.Columns.Add("sumSLTPDG", Type.GetType("System.String"));
             //tbl.Rows[lastRow]["sumSLTPDG"] = sumSLTPDG;
-            ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {

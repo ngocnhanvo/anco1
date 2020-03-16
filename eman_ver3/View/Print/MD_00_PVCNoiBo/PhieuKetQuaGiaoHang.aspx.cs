@@ -7,10 +7,11 @@ using DataAcess;
 using System.Linq;
 public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
+        inPDF = context.Request.QueryString["inPDF"];
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Phiếu Kết Quả Giao Hàng.repx");
         var report = XtraReport.FromFile(file, true);
@@ -41,6 +42,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
+            report.DisplayName = tbl.Rows[0]["sct_donhang"] + "-RP003";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
             DateTime? ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
@@ -58,7 +60,10 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
             sum_giao_cell.DataBindings[0].FormatString = sothapphan;
             var giao_cell = report.Report.FindControl("giao", true);
             giao_cell.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
+            if (string.IsNullOrEmpty(inPDF))
+                ReportViewer1.Report = report;
+            else
+                Helper.viewFile(report);
         }
         else
         {
