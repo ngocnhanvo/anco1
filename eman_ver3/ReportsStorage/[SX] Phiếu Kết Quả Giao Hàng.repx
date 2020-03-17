@@ -1,84 +1,84 @@
 /// <XRTypeInfo>
-///   <AssemblyFullName>App_Code.mgkfqtkn, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</AssemblyFullName>
-///   <AssemblyLocation>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\App_Code.mgkfqtkn.dll</AssemblyLocation>
+///   <AssemblyFullName>App_Code.2a6qiqwl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</AssemblyFullName>
+///   <AssemblyLocation>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\App_Code.2a6qiqwl.dll</AssemblyLocation>
 ///   <TypeName>VNN_report</TypeName>
 ///   <Localization>en-GB</Localization>
 ///   <Version>16.1</Version>
 ///   <References>
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\App_Code.mgkfqtkn.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\62283e44\7c3307ff_df1cd501\EntityFramework.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Data.SqlXml\v4.0_4.0.0.0__b77a5c561934e089\System.Data.SqlXml.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Security\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Security.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Numerics\v4.0_4.0.0.0__b77a5c561934e089\System.Numerics.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\System.Data\v4.0_4.0.0.0__b77a5c561934e089\System.Data.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\System.Transactions\v4.0_4.0.0.0__b77a5c561934e089\System.Transactions.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\System.EnterpriseServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.EnterpriseServices.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.DirectoryServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.DirectoryServices.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Remoting\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Remoting.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\System.Web\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Web.RegularExpressions\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.RegularExpressions.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Design\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Design.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Accessibility\v4.0_4.0.0.0__b03f5f7f11d50a3a\Accessibility.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Deployment\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Deployment.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization.Formatters.Soap\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.Serialization.Formatters.Soap.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\System.Data.OracleClient\v4.0_4.0.0.0__b77a5c561934e089\System.Data.OracleClient.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Drawing.Design\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.Design.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Web.ApplicationServices\v4.0_4.0.0.0__31bf3856ad364e35\System.Web.ApplicationServices.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ComponentModel.DataAnnotations\v4.0_4.0.0.0__31bf3856ad364e35\System.ComponentModel.DataAnnotations.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.DirectoryServices.Protocols\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.DirectoryServices.Protocols.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ServiceProcess\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.ServiceProcess.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Configuration.Install\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.Install.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Serialization.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Internals\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Internals.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\SMDiagnostics\v4.0_4.0.0.0__b77a5c561934e089\SMDiagnostics.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Web.Services\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.Services.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Utilities.v4.0\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Utilities.v4.0.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Framework\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Framework.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Caching\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.Caching.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Tasks.v4.0\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Tasks.v4.0.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Xml.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.Linq.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.CSharp\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.CSharp.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Dynamic\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Dynamic.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\17ad2269\82c16537_3051d501\DevExpress.XtraReports.v16.1.Web.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\68506d83\fdd63a37_3051d501\DevExpress.Web.v16.1.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Web.Extensions\v4.0_4.0.0.0__31bf3856ad364e35\System.Web.Extensions.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Data.Services.Design\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Services.Design.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Data.Entity\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Entity.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Data.Services.Client\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Services.Client.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.IdentityModel\v4.0_4.0.0.0__b77a5c561934e089\System.IdentityModel.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Transactions.Bridge\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Transactions.Bridge.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.IdentityModel.Selectors\v4.0_4.0.0.0__b77a5c561934e089\System.IdentityModel.Selectors.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Messaging\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Messaging.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.DurableInstancing\v4.0_4.0.0.0__31bf3856ad364e35\System.Runtime.DurableInstancing.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Net.Http\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Net.Http.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Activation\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Activation.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Activities\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Activities.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Activities\v4.0_4.0.0.0__31bf3856ad364e35\System.Activities.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.VisualBasic.Activities.Compiler\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.Activities.Compiler.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.VisualBasic\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Management\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Management.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\Microsoft.JScript\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.JScript.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Activities.DurableInstancing\v4.0_4.0.0.0__31bf3856ad364e35\System.Activities.DurableInstancing.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Xaml.Hosting\v4.0_4.0.0.0__31bf3856ad364e35\System.Xaml.Hosting.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Data.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Linq.dll" />
-///     <Reference Path="C:\Windows\Microsoft.Net\assembly\GAC_MSIL\System.Web.Entity\v4.0_4.0.0.0__b77a5c561934e089\System.Web.Entity.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\f05651b3\f593685d_fe4fd501\DevExpress.Web.Resources.v16.1.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\9be4c57a\f8b729ff_df1cd501\NPOI.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\0b2e925e\47cb14ff_df1cd501\ICSharpCode.SharpZipLib.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\76a34c50\64bc1cff_df1cd501\NPOI.OOXML.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\f0273918\793824ff_df1cd501\NPOI.OpenXmlFormats.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\16caa991\796a1eff_df1cd501\NPOI.OpenXml4Net.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\a15f9019\94b913ff_df1cd501\ExcelLibrary.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\0a71b370\c45e2fff_df1cd501\NetServ.Net.Json.dll" />
-///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\d4870524\d94134ff_df1cd501\Newtonsoft.Json.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\App_Code.2a6qiqwl.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\DevExpress.XtraReports.v16.1.Web\v4.0_16.1.2.0__b88d1754d700e49a\DevExpress.XtraReports.v16.1.Web.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\DevExpress.Web.v16.1\v4.0_16.1.2.0__b88d1754d700e49a\DevExpress.Web.v16.1.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\System.Web\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Data.SqlXml\v4.0_4.0.0.0__b77a5c561934e089\System.Data.SqlXml.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Security\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Security.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Numerics\v4.0_4.0.0.0__b77a5c561934e089\System.Numerics.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\System.Data\v4.0_4.0.0.0__b77a5c561934e089\System.Data.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\System.Transactions\v4.0_4.0.0.0__b77a5c561934e089\System.Transactions.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\System.EnterpriseServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.EnterpriseServices.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.DirectoryServices\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.DirectoryServices.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Remoting\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Remoting.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization.Formatters.Soap\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.Serialization.Formatters.Soap.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Caching\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Runtime.Caching.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Web.RegularExpressions\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.RegularExpressions.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Design\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Design.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Accessibility\v4.0_4.0.0.0__b03f5f7f11d50a3a\Accessibility.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Deployment\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Deployment.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\System.Data.OracleClient\v4.0_4.0.0.0__b77a5c561934e089\System.Data.OracleClient.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing.Design\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.Design.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Web.ApplicationServices\v4.0_4.0.0.0__31bf3856ad364e35\System.Web.ApplicationServices.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ComponentModel.DataAnnotations\v4.0_4.0.0.0__31bf3856ad364e35\System.ComponentModel.DataAnnotations.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.DirectoryServices.Protocols\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.DirectoryServices.Protocols.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceProcess\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.ServiceProcess.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration.Install\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.Install.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.Serialization\v4.0_4.0.0.0__b77a5c561934e089\System.Runtime.Serialization.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Internals\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Internals.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\SMDiagnostics\v4.0_4.0.0.0__b77a5c561934e089\SMDiagnostics.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Web.Services\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.Services.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Utilities.v4.0\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Utilities.v4.0.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Framework\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Framework.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Build.Tasks.v4.0\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Build.Tasks.v4.0.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.Linq.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Web.Extensions\v4.0_4.0.0.0__31bf3856ad364e35\System.Web.Extensions.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Data.Services.Design\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Services.Design.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Data.Entity\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Entity.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Data.Services.Client\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Services.Client.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.IdentityModel\v4.0_4.0.0.0__b77a5c561934e089\System.IdentityModel.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.Transactions.Bridge\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.Transactions.Bridge.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.IdentityModel.Selectors\v4.0_4.0.0.0__b77a5c561934e089\System.IdentityModel.Selectors.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Messaging\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Messaging.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Runtime.DurableInstancing\v4.0_4.0.0.0__31bf3856ad364e35\System.Runtime.DurableInstancing.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Net.Http\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Net.Http.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Activation\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Activation.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel.Activities\v4.0_4.0.0.0__31bf3856ad364e35\System.ServiceModel.Activities.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Activities\v4.0_4.0.0.0__31bf3856ad364e35\System.Activities.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_64\Microsoft.VisualBasic.Activities.Compiler\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.Activities.Compiler.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.VisualBasic\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualBasic.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Management\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Management.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.JScript\v4.0_10.0.0.0__b03f5f7f11d50a3a\Microsoft.JScript.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Activities.DurableInstancing\v4.0_4.0.0.0__31bf3856ad364e35\System.Activities.DurableInstancing.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xaml.Hosting\v4.0_4.0.0.0__31bf3856ad364e35\System.Xaml.Hosting.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Data.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Data.Linq.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Web.Entity\v4.0_4.0.0.0__b77a5c561934e089\System.Web.Entity.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\DevExpress.Web.Resources.v16.1\v4.0_16.1.2.0__b88d1754d700e49a\DevExpress.Web.Resources.v16.1.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\d17f3fb1\001f534c_c64bd301\EntityFramework.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Microsoft.CSharp\v4.0_4.0.0.0__b03f5f7f11d50a3a\Microsoft.CSharp.dll" />
+///     <Reference Path="C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Dynamic\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Dynamic.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\e48d35b2\fa3b3735_c782d401\NPOI.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\f78fd911\60e1e536_c782d401\ICSharpCode.SharpZipLib.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\00c0e0d7\6e40a634_c782d401\NetServ.Net.Json.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\a2f176df\29773534_c782d401\NPOI.OOXML.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\194b6ee3\1fd61233_c782d401\NPOI.OpenXmlFormats.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\3a4ce15d\2b5f8933_c782d401\NPOI.OpenXml4Net.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\7f1c269f\bbf97836_c782d401\ExcelLibrary.dll" />
+///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\9ace238c\4f271d33_fed2d401\newtonsoft.json.dll" />
 ///   </References>
 ///   <Resources>
 ///     <Resource Name="XtraReportSerialization.VNN_report">
@@ -88,7 +88,6 @@
 namespace XtraReportSerialization {
     
     public class VNN_report : DevExpress.XtraReports.UI.XtraReport {
-        private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
         private DevExpress.XtraReports.UI.DetailBand Detail;
         private DevExpress.XtraReports.UI.XRTable xrTable2;
         private DevExpress.XtraReports.UI.XRTableRow xrTableRow2;
@@ -100,6 +99,7 @@ namespace XtraReportSerialization {
         private DevExpress.XtraReports.UI.XRTableCell datcl;
         private DevExpress.XtraReports.UI.XRTableCell thucnhan;
         private DevExpress.XtraReports.UI.XRTableCell ghichu;
+        private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
         private DevExpress.XtraReports.UI.BottomMarginBand BottomMargin;
         private DevExpress.XtraReports.UI.ReportHeaderBand ReportHeader;
         private DevExpress.XtraReports.UI.XRTable xrTable1;
@@ -148,6 +148,9 @@ namespace XtraReportSerialization {
         private DevExpress.XtraReports.UI.XRLabel xrLabel19;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell17;
         private DevExpress.XtraReports.UI.ReportFooterBand ReportFooter;
+        private DevExpress.XtraReports.UI.XRTable xrTable9;
+        private DevExpress.XtraReports.UI.XRTableRow xrTableRow1;
+        private DevExpress.XtraReports.UI.XRTableCell chuy;
         private DevExpress.XtraReports.UI.XRLabel xrLabel4;
         private DevExpress.XtraReports.UI.XRLabel yyyy;
         private DevExpress.XtraReports.UI.XRLabel xrLabel47;
@@ -222,8 +225,8 @@ namespace XtraReportSerialization {
         private void InitializeComponent() {
             DevExpress.XtraReports.UI.XRSummary summary2 = new DevExpress.XtraReports.UI.XRSummary();
             DevExpress.XtraReports.UI.XRSummary summary1 = new DevExpress.XtraReports.UI.XRSummary();
-            this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
             this.Detail = new DevExpress.XtraReports.UI.DetailBand();
+            this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
             this.BottomMargin = new DevExpress.XtraReports.UI.BottomMarginBand();
             this.ReportHeader = new DevExpress.XtraReports.UI.ReportHeaderBand();
             this.PageHeader = new DevExpress.XtraReports.UI.PageHeaderBand();
@@ -282,6 +285,7 @@ namespace XtraReportSerialization {
             this.datcl = new DevExpress.XtraReports.UI.XRTableCell();
             this.thucnhan = new DevExpress.XtraReports.UI.XRTableCell();
             this.ghichu = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTable9 = new DevExpress.XtraReports.UI.XRTable();
             this.xrLabel4 = new DevExpress.XtraReports.UI.XRLabel();
             this.yyyy = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel47 = new DevExpress.XtraReports.UI.XRLabel();
@@ -295,6 +299,8 @@ namespace XtraReportSerialization {
             this.xrLabel30 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrTable3 = new DevExpress.XtraReports.UI.XRTable();
             this.xrLabel29 = new DevExpress.XtraReports.UI.XRLabel();
+            this.xrTableRow1 = new DevExpress.XtraReports.UI.XRTableRow();
+            this.chuy = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableRow8 = new DevExpress.XtraReports.UI.XRTableRow();
             this.xrTableCell38 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell39 = new DevExpress.XtraReports.UI.XRTableCell();
@@ -343,19 +349,12 @@ namespace XtraReportSerialization {
             ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xrTable9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
-            // 
-            // TopMargin
-            // 
-            this.TopMargin.Dpi = 100F;
-            this.TopMargin.HeightF = 8F;
-            this.TopMargin.Name = "TopMargin";
-            this.TopMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
-            this.TopMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
             // 
             // Detail
             // 
@@ -367,6 +366,14 @@ namespace XtraReportSerialization {
             this.Detail.Name = "Detail";
             this.Detail.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.Detail.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
+            // 
+            // TopMargin
+            // 
+            this.TopMargin.Dpi = 100F;
+            this.TopMargin.HeightF = 8F;
+            this.TopMargin.Name = "TopMargin";
+            this.TopMargin.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
+            this.TopMargin.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
             // 
             // BottomMargin
             // 
@@ -417,6 +424,7 @@ namespace XtraReportSerialization {
             // ReportFooter
             // 
             this.ReportFooter.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+                        this.xrTable9,
                         this.xrLabel4,
                         this.yyyy,
                         this.xrLabel47,
@@ -971,7 +979,7 @@ namespace XtraReportSerialization {
             this.xrTableCell2.StylePriority.UsePadding = false;
             this.xrTableCell2.StylePriority.UseTextAlignment = false;
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell2.Weight = 1.0344205298258185D;
+            this.xrTableCell2.Weight = 1.0344205298258184D;
             // 
             // xrTableCell17
             // 
@@ -1213,6 +1221,17 @@ namespace XtraReportSerialization {
             this.ghichu.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             this.ghichu.Weight = 0.47882848408559714D;
             // 
+            // xrTable9
+            // 
+            this.xrTable9.Dpi = 100F;
+            this.xrTable9.Font = new System.Drawing.Font("Times New Roman", 11F);
+            this.xrTable9.LocationFloat = new DevExpress.Utils.PointFloat(29.43146F, 32.99672F);
+            this.xrTable9.Name = "xrTable9";
+            this.xrTable9.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
+                        this.xrTableRow1});
+            this.xrTable9.SizeF = new System.Drawing.SizeF(498.1661F, 25F);
+            this.xrTable9.StylePriority.UseFont = false;
+            // 
             // xrLabel4
             // 
             this.xrLabel4.Dpi = 100F;
@@ -1392,6 +1411,27 @@ namespace XtraReportSerialization {
             this.xrLabel29.StylePriority.UseTextAlignment = false;
             this.xrLabel29.Text = "Lưu trình";
             this.xrLabel29.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            // 
+            // xrTableRow1
+            // 
+            this.xrTableRow1.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
+                        this.chuy});
+            this.xrTableRow1.Dpi = 100F;
+            this.xrTableRow1.Name = "xrTableRow1";
+            this.xrTableRow1.Weight = 1D;
+            // 
+            // chuy
+            // 
+            this.chuy.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+                        new DevExpress.XtraReports.UI.XRBinding("Text", null, "chuy")});
+            this.chuy.Dpi = 100F;
+            this.chuy.Font = new System.Drawing.Font("Tahoma", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.chuy.Multiline = true;
+            this.chuy.Name = "chuy";
+            this.chuy.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 5, 2, 100F);
+            this.chuy.StylePriority.UseFont = false;
+            this.chuy.StylePriority.UsePadding = false;
+            this.chuy.Weight = 7.7758521043543887D;
             // 
             // xrTableRow8
             // 
@@ -2077,6 +2117,7 @@ namespace XtraReportSerialization {
             ((System.ComponentModel.ISupportInitialize)(this.xrTable4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xrTable9)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable6)).EndInit();

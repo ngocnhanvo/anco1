@@ -75,7 +75,9 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
     {
         string md_vanchuyennoibo_id = context.Request.QueryString["id"];
         string oper = context.Request.QueryString["oper"];
-
+        var db = new EntityContext();
+        var countLHT = db.md_vanchuyennoibo_dalayton.Where(s => s.md_vanchuyennoibo_id == md_vanchuyennoibo_id).Sum(s=>s.soluong_layton);
+        string chuy = countLHT > 0 ? "N'*** Đơn hàng có lấy hàng tồn'" : "''";
         string sql = string.Format(@"
 		    select 
                 sp.ma_sanpham as ma_hhvt 
@@ -93,6 +95,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
                 , xb.mota as diengiai
                 , nknb_cdh.soluong_muonchuyen as giao
 				, nknb_cdh.mota as ghichu
+                , {1} as chuy
 		    from md_vanchuyennoibo xb
 		        left join md_vanchuyennoibo_cdvc nknb_cdh on xb.md_vanchuyennoibo_id = nknb_cdh.md_vanchuyennoibo_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id
@@ -105,6 +108,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
             order by sp.ma_sanpham asc
 		"
         , md_vanchuyennoibo_id
+        , chuy
         );
         return sql;
     }
