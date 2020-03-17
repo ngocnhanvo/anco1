@@ -39,12 +39,51 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
             case "update_config":
                 this.update_config(context);
                 break;
-			case "loadData":
+            case "loadData":
                 this.loadData(context);
+                break;
+            case "clean":
+                this.cleanData(context);
                 break;
             default:
                 break;
         }
+    }
+
+    public void cleanData(HttpContext context)
+    {
+        string msg = "";
+        try
+        {
+            var d = new DirectoryInfo(Helper.pathReport("")["link"]);
+            var files = d.GetFiles("*.*");
+            foreach (var file in files)
+            {
+                file.Delete();
+            }
+            msg += "Đã xóa rác report thành công\n";
+        }
+        catch (Exception ex)
+        {
+            msg = "Lỗi xóa rác report:" + ex.Message + "\n";
+        }
+
+        try
+        {
+            var d = new DirectoryInfo(Helper.pathImport("")["link"]);
+            var files = d.GetFiles("*.*");
+            foreach (var file in files)
+            {
+                file.Delete();
+            }
+            msg += "Đã xóa rác import thành công\n";
+        }
+        catch (Exception ex)
+        {
+            msg = "Lỗi xóa rác import:" + ex.Message + "\n";
+        }
+
+        context.Response.Write(msg);
     }
 
     public void update_config(HttpContext context)
@@ -144,7 +183,7 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
 
         string sql_count = string.Format(@"select count(1) from {0} where 1=1 {1}", mod0.from_sql, mod0.where_sql);
         sql_count = ADmin_ConvertStringToCode.Avariable(context, sql_count, "", id, null, db);
-        System.Data.DataTable dt_count =  Mbg.Data.SqlClient.SqlHelper.GetData(sql_count);
+        System.Data.DataTable dt_count = Mbg.Data.SqlClient.SqlHelper.GetData(sql_count);
 
         if (dt_count.Rows.Count > 0)
         {
@@ -313,8 +352,8 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
 
         context.Response.Write(VNN_VariablePublic.view_origination);
     }
-	
-	public void loadData(HttpContext context)
+
+    public void loadData(HttpContext context)
     {
         var db = new EntityContext();
         var ttc = db.ad_systemconfig.FirstOrDefault();
@@ -339,12 +378,12 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
             ttc.ten_connectstring + "#" +
             ttc.format_ngay + "#" +
             ttc.format_so + "#" +
-			ttc.connectstring_anco + "#" +
-			ttc.domain + "#" +
-			ttc.email_hotro
+            ttc.connectstring_anco + "#" +
+            ttc.domain + "#" +
+            ttc.email_hotro
         );
     }
-	
+
     public bool IsReusable
     {
         get

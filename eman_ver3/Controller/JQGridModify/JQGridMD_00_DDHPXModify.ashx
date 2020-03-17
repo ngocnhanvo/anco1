@@ -399,16 +399,17 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        var db = new EntityContext();
+        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         string ngay_hieuluc = context.Request.Form["ngay_hieuluc"];
+        bool kiemtragia = (context.Request.Form["kiemtragia"] + "").ToLower() == "true";
         string sctdathang = "", donhang_thamchieu = "";
         using (var transaction = db.Database.BeginTransaction())
         {
-            //try
+            try
             {
                 var lsxTsxIds = new Dictionary<string, string>();
                 string sochungtu = VNN_VariablePublic.sochungtu(db, "LSX", 1);
@@ -621,15 +622,36 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     {
                         foreach (var item1 in lsxTsxIds)
                         {
+                            string pbgId = "";
+                            if (kiemtragia == true)
+                            {
+                                var bgIds = db.md_banggia
+                                        .Where(s => s.md_to_id == item1.Value & s.tuychon == "NHANCONG" & s.hoatdong == true)
+                                        .Select(s => s.md_banggia_id).ToList();
+                                pbgId = db.md_phienbangia
+                                        .Where(s => bgIds.Contains(s.md_banggia_id) & s.hoatdong == true)
+                                        .OrderByDescending(s => s.ngay_hieuluc).Select(s => s.md_phienbangia_id)
+                                        .FirstOrDefault();
+                            }
+
                             foreach (var item2 in db.md_lenhsanxuat_tosx_cdh.Where(s => item1.Key == s.md_lenhsanxuat_tosx_id).ToList())
                             {
-                                //var slgiamhn = db.c_kehoachdathang_dhcpx_hanngach.Where(s =>
-                                //            s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id
-                                //            & s.md_sanpham_id == item2.md_sanpham_id
-                                //            & s.md_to_id == item1.Value).Sum(s => s.soluong);
-
-                                //item2.sl_chiato = (item2.sl_chiato.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
-                                //item2.sl_tinhvattu = (item2.sl_tinhvattu.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
+                                if (kiemtragia == true)
+                                {
+                                    var giasp = db.md_giasanpham.Where(s =>
+                                        s.md_sanpham_id == item2.md_sanpham_id
+                                        & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
+                                        & s.md_phienbangia_id == pbgId
+                                        ).FirstOrDefault();
+                                    if (giasp == null)
+                                    {
+                                        string err = string.Format(@"<br>HHVT ""{0}"" chưa có giá cho tổ ""{2} - {1}""",
+                                            db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
+                                            db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).Select(s => s.ten_phanxuong).FirstOrDefault(),
+                                            db.md_phanxuong_to.Where(s => s.md_to_id == item1.Value).Select(s => s.ten_to).FirstOrDefault());
+                                        msg += err;
+                                    }
+                                }
 
                                 var spBom = db.md_sanpham_bom.
                                             Where(s => s.md_sanpham_id == item2.md_sanpham_id &
@@ -645,7 +667,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                                 if (bomSP.Count > 0)
                                 {
-                                    foreach (var vattusp in bomSP.Where(s=>s.soluong > 0))
+                                    foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
                                     {
                                         var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
                                            s.md_sanpham_id == vattusp.md_sanpham_id &
@@ -703,9 +725,9 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     }
                 }
             }
-            //catch (Exception ex)
+            catch (Exception ex)
             {
-                //msg = ex.Message;
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)

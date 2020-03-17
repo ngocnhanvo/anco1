@@ -23,6 +23,16 @@ public static class Helper
         return obj;
     }
 
+    public static System.Collections.Generic.Dictionary<string, string> pathImport(string name)
+    {
+        name = name.Replace("/", "-");
+        var obj = new System.Collections.Generic.Dictionary<string, string>();
+        obj["name"] = name;
+        obj["link"] = HttpContext.Current.Server.MapPath("~/file_import/" + name);
+        obj["linkView"] = Security.UrlBase() + "~/file_import/" + name;
+        return obj;
+    }
+
     public static string getConnectStrings(string ten_connectstring)
     {
         return System.Web.Configuration.WebConfigurationManager.ConnectionStrings[ten_connectstring].ConnectionString;
