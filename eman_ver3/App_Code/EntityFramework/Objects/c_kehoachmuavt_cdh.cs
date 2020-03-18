@@ -127,6 +127,12 @@
                         public Decimal? sl_duyet { get; set; }
                 
 						
+                        #region c_kehoachmuavt_cdh_sl_duyet2_wintaFN
+                        
+                        #endregion c_kehoachmuavt_cdh_sl_duyet2_wintaFN
+                        public Decimal? sl_duyet2 { get; set; }
+                
+						
                         #region c_kehoachmuavt_cdh_sl_layton_wintaFN
                         
                         #endregion c_kehoachmuavt_cdh_sl_layton_wintaFN

@@ -1113,6 +1113,10 @@ modelBuilder.Entity<c_kehoachmuavt_cdh>().HasKey<string>(p => p.c_kehoachmuavt_c
                             .HasColumnName("sl_duyet")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_kehoachmuavt_cdh>()
+                            .Property(p => p.sl_duyet2)
+                            .HasColumnName("sl_duyet2")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_kehoachmuavt_cdh>()
                             .Property(p => p.sl_layton)
                             .HasColumnName("sl_layton")
                             .HasColumnType("decimal").HasPrecision(18, 4);
