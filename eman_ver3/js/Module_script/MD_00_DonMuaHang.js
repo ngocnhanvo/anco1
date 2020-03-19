@@ -97,7 +97,7 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                     ],
                     beforeRequest: function () {
                         $('#gridMD_00_KHMHHVT_cp').jqGrid('getGridParam', 'postData').id = $('.sel_loadkhmvt').val();
-                        $('#gridMD_00_KHMHHVT_cp').jqGrid('getGridParam', 'postData').where_ex = " and (khmvt_cdh.sl_duyet - khmvt_cdh.sl_conlai) > 0 ";
+                        $('#gridMD_00_KHMHHVT_cp').jqGrid('getGridParam', 'postData').where_ex = " and (khmvt_cdh.sl_duyet2 - khmvt_cdh.sl_conlai) > 0 ";
                         //$('#gridMD_00_KHMHHVT_cp').jqGrid('getGridParam', 'postData').where_ex = " and ('@ad_user_id' in (select ad_user_id from md_chungloai_ql where md_chungloai_id = sp.md_chungloai_id) or sp.md_chungloai_id is null) ";
                         input_focus = $('input:focus').attr('class');
                     },

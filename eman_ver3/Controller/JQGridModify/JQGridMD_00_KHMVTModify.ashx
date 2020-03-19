@@ -125,7 +125,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
         string str = "<option value=''></option>";
         foreach (c_kehoachmuavt khmvt in db.c_kehoachmuavt.Where(s => s.hoatdong == true & s.md_trangthai_id == "HIEULUC" & s.sochungtu.Contains("DTMVT")).ToList())
         {
-            var dongMuaHang = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).Sum(s => s.sl_duyet - s.sl_conlai);
+            var dongMuaHang = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).Sum(s => s.sl_duyet2 - s.sl_conlai);
             if (dongMuaHang > 0)
             {
                 str += "<option value='" + khmvt.c_kehoachmuavt_id + "'>" + khmvt.ten_kehoach + "</option>";
@@ -170,7 +170,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
 
             foreach (c_kehoachmuavt_cdh dongdsdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == dsdh.c_kehoachmuavt_id))
             {
-                if (dongdsdh.sl_duyet == 0)
+                if (dongdsdh.sl_duyet2 == 0)
                 {
                     c_kehoachmuavt_cdh dongdsdh_new = Clone(dongdsdh);
                     dongdsdh_new.c_kehoachmuavt_cdh_id = Helper.getNewId();
@@ -247,7 +247,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         tendvt);
                 }
 
-                if (sl_semua > -1 & (sl_thaythe - saiso) <= (khmvt_cdh.sl_duyet.Value - khmvt_cdh.sl_conlai.Value))
+                if (sl_semua > -1 & (sl_thaythe - saiso) <= (khmvt_cdh.sl_duyet2.Value - khmvt_cdh.sl_conlai.Value))
                 {
                     string arr_ncc_ = arr_ncc[i];
                     var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == arr_ncc_).FirstOrDefault();
@@ -259,7 +259,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id,
                             md_donvitinhsanpham_id = arr_dvt_,
                             md_sanpham_id = sp.md_sanpham_id,
-                            sl_duyet = khmvt_cdh.sl_duyet.Value,
+                            sl_duyet = khmvt_cdh.sl_duyet2.Value,
                             sl_conlai = khmvt_cdh.sl_conlai.Value,
                             sl_semua = sl_semua,
                             sl_semua2 = sl_thaythe,
@@ -284,8 +284,11 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     msgDT += @"chỉ có thể nhập số lượng tối đa là: ""{0}""";
                     msgDT += @"<br> + Số lượng đang muốn nhập: ""{1}"" ({2})";
                     msgDT += @"<br> + Độ sai lệch cho phép: ""{3}""";
-                    msgDT = string.Format(msgDT, khmvt_cdh.sl_duyet.Value.DropTrailingZeros(),
-                        sl_thaythe.DropTrailingZeros(), ten_dvt, saiso.DropTrailingZeros());
+                    msgDT = string.Format(msgDT, 
+                        (khmvt_cdh.sl_duyet2.Value - khmvt_cdh.sl_conlai.GetValueOrDefault(0)).DropTrailingZeros(),
+                        sl_thaythe.DropTrailingZeros(), 
+                        ten_dvt, 
+                        saiso.DropTrailingZeros());
                     msg += string.Format(@"
                         <div style='color:red'>
                             Lỗi:Mặt hàng ""{0}"" {1}
@@ -735,7 +738,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         if (msg.Length <= 0)
                         {
                             int count = db.c_kehoachmuavt_cdh.
-                                    Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.sl_duyet == null).Count();
+                                    Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.sl_duyet2 == null).Count();
                             if (count > 0)
                                 msg = @"Lỗi:Bạn chưa điều chỉnh số lượng duyệt (Nếu không mua hãy cho số lượng duyệt = 0).";
                         }
