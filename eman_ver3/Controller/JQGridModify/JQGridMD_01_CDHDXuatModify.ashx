@@ -243,157 +243,121 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_CapnhatSLXNB(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string sel_val = context.Request.Form["sel_val"];
-        decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
-        string[] vnn = context.Request.Form["id"].Split(',');
+        var db = new EntityContext();
         string msg = "";
-        foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
+        using (var transaction = db.Database.BeginTransaction())
         {
-            var vcnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
-            if (vcnb.trangthai == "HIEULUC")
+            try
             {
-                msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
-                break;
-            }
-            else
-            {
-                decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
-                if (sel_val == "0")
+                string sel_val = context.Request.Form["sel_val"];
+                decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
+                string[] vnn = context.Request.Form["id"].Split(',');
+
+                md_xuatkhonb xnb = null;
+                foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
                 {
-                    xb_cdh.sl_xuat = xb_cdh.sl_muonxuat;
-                    xb_cdh.sl_xuat2 = xb_cdh.sl_muonxuat;
-                    xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                    //xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd).Set0WhenlessThan0();
-                    xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
-                }
-                else
-                {
-                    if (vcnb.bosung == 0 | vcnb.bosung == 3)
+                    if (xnb == null)
+                        xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
+
+                    if (xnb.trangthai == "HIEULUC")
                     {
-                        xb_cdh.sl_xuat = slvc_case;
-                        xb_cdh.sl_xuat2 = slvc_case;
-                        xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                        xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
-                    }
-                    else if(slvc_case <= sltd)
-                    {
-                        xb_cdh.sl_xuat = slvc_case;
-                        xb_cdh.sl_xuat2 = slvc_case;
-                        xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                        xb_cdh.ghino = 0;
+                        msg = "<div style='margin: 2px 0 2px 0;'>Lỗi:Dòng " + xnb.sochungtu + " đã Hiệu lực.</div>";
+                        break;
                     }
                     else
                     {
                         var sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + sltd.DropTrailingZeros() + "</div>";
-                        break;
+
+                        decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
+                        if (sel_val == "0")
+                        {
+                            slvc_case = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
+                        }
+
+                        var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, xb_cdh.md_sanpham_id, db);
+                        if (sltkTT < slvc_case)
+                        {
+                            msg += string.Format(
+                               @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL tồn kho thực tế: <b>{2}</b></div>",
+                               sp.ma_sanpham,
+                               xb_cdh.tenhang,
+                               sltkTT.DropTrailingZeros());
+                        }
+                        else if (xnb.bosung == 4)
+                        {
+                            //var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
+                            //var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                            //var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                            //    s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                            //    & s.md_sanpham_id == xb_cdh.md_sanpham_id
+                            //    ).FirstOrDefault();
+
+                            //if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case)
+                            //{
+                            //    msg += string.Format(
+                            //        @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
+                            //        sp.ma_sanpham,
+                            //        xb_cdh.tenhang,
+                            //        spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros());
+                            //}
+                        }
+
+                        if (msg.Length <= 0)
+                        {
+                            if (xnb.bosung == 0 | xnb.bosung == 3)
+                            {
+                                xb_cdh.sl_xuat = slvc_case;
+                                xb_cdh.sl_xuat2 = slvc_case;
+                                xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                                xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                            }
+                            else if (slvc_case <= sltd)
+                            {
+                                xb_cdh.sl_xuat = slvc_case;
+                                xb_cdh.sl_xuat2 = slvc_case;
+                                xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                                xb_cdh.ghino = 0;
+                            }
+                            else
+                            {
+                                msg += string.Format(
+                                    @"<div style='margin: 2px 0 2px 0;'>Lỗi: Dòng <b>{0}</b> ({1}) SL tối đa là: <b>{1}</b></div>",
+                                    sp.ma_sanpham,
+                                    xb_cdh.tenhang,
+                                    sltd.DropTrailingZeros()
+                                    );
+                            }
+                        }
                     }
                 }
+                if (msg.Length <= 0)
+                {
+
+                    db.SaveChanges();
+                }
             }
-        }
-        if (msg.Length <= 0)
-        {
-            msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
-            db.SaveChanges();
+            catch (Exception ex)
+            {
+                msg += ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format("<div style='color:red'>Lỗi {0}</div>", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        string ma_sanpham = context.Request.Form["md_sanpham_id"];
-        string md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
 
-        decimal nhanvoi = 1, saiso = 0;
-        try
-        {
-            string ghichu_donvi2 = "";
-            string id = context.Request.Form["id_parent"];
-            decimal sl_xuat = decimal.Parse(context.Request.Form["sl_xuat"]);
-            var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
-            var nb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == id).FirstOrDefault();
-
-            var nht = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == id & s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
-            var kho_sp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
-            if (nb.trangthai == "HIEULUC")
-            {
-                msg = "false#Lỗi: Số chứng từ : " + nb.sochungtu + " đã hiệu lực,";
-            }
-            else if (sp == null)
-            {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
-            }
-            else if (nht != null)
-            {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" đã tồn tại.";
-            }
-            else if (kho_sp == null)
-            {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không có trong kho.";
-            }
-            else if (kho_sp.soluong < sl_xuat)
-            {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" số lượng trong kho không đủ.";
-            }
-            else if (sl_xuat < 0)
-            {
-                msg = "false#Lỗi: Số lượng xuất phải lớn hơn 0";
-            }
-            else if (sp.md_donvitinhsanpham_id != md_donvitinhsanpham_id)
-            {
-                var dvtsp_cddv = db.md_donvitinhsanpham_cddv.Where(s => s.md_donvitinhsanpham_id == md_donvitinhsanpham_id
-                & s.md_dvtsp_id == sp.md_donvitinhsanpham_id & s.md_sanpham_id == sp.ma_sanpham).Take(1).FirstOrDefault();
-                if (dvtsp_cddv != null)
-                {
-                    string ten_dvt = db.md_donvitinhsanpham.Where(s => s.md_donvitinhsanpham_id == md_donvitinhsanpham_id).Select(s => s.ten_dvt).FirstOrDefault();
-                    string ten_dvt2 = db.md_donvitinhsanpham.Where(s => s.md_donvitinhsanpham_id == sp.md_donvitinhsanpham_id).Select(s => s.ten_dvt).FirstOrDefault();
-                    nhanvoi = dvtsp_cddv.nhanvoi.Value;
-                    saiso = dvtsp_cddv.chiacho.Value * sl_xuat;
-                    if (saiso > dvtsp_cddv.saiso_toida.Value | saiso < 0)
-                        saiso = dvtsp_cddv.saiso_toida.Value;
-                    ghichu_donvi2 += "Xuất " + sl_xuat + " " + ten_dvt;
-                    ghichu_donvi2 += "\n => 1 " + ten_dvt + " = " + nhanvoi.DropTrailingZeros() + " " + ten_dvt2;
-                    ghichu_donvi2 += " (Sai số cho phép: " + dvtsp_cddv.chiacho.Value.DropTrailingZeros() + " " + ten_dvt2 + ")";
-                    ghichu_donvi2 += "\n => " + sl_xuat + " " + ten_dvt + " = " + (sl_xuat * nhanvoi).DropTrailingZeros() + " " + ten_dvt2;
-                    ghichu_donvi2 += " (Sai số cho phép: " + saiso.DropTrailingZeros() + " " + ten_dvt2 + ")";
-                }
-                else
-                {
-                    msg = "false#Đơn vị tính đã chọn không thể quy đổi.";
-                }
-            }
-
-            sl_xuat = sl_xuat * nhanvoi;
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { "md_xuatkhonb_id", "md_donvitinhsanpham_id2", "sl_xuat2", "saiso" };
-                string ten_table = "md_xuatkhonb_cdh";
-                VNN_Function.SetFormValue("md_xuatkhonb_id", id);
-                VNN_Function.SetFormValue("ghichu_donvi2", ghichu_donvi2);
-                VNN_Function.SetFormValue("tong_sl_xuat", sl_xuat.ToString());
-                VNN_Function.SetFormValue("sl_xuat", sl_xuat.ToString());
-                VNN_Function.SetFormValue("sl_xuat2", (sl_xuat * nhanvoi).ToString());
-                VNN_Function.SetFormValue("saiso", saiso.ToString());
-                VNN_Function.SetFormValue("md_donvitinhsanpham_id", sp.md_donvitinhsanpham_id);
-                VNN_Function.SetFormValue("md_donvitinhsanpham_id2", sp.md_donvitinhsanpham_id);
-                VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
-                VNN_Function.SetFormValue("tenhang", sp.mota_tiengviet);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
-        context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
@@ -418,16 +382,30 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             {
                 msg = "false#Số lượng xuất phải lớn hớn 0";
             }
-            else if(sl_xuat > object_.sl_muonxuat)
+            else if (sl_xuat > object_.sl_muonxuat)
             {
                 msg = "false#Số lượng xuất tối đa là " + object_.sl_muonxuat.GetValueOrDefault(0).DropTrailingZeros();
             }
-
-            foreach (var ncc in db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id).ToList())
+            else if (xnb.trangthai == "HIEULUC")
             {
-                if (ncc.trangthai == "HIEULUC")
+                msg = @"false#Phiếu xuất kho đã ""Hiệu Lực""!";
+            }
+            else
+            {
+                var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, sp.md_sanpham_id, db);
+                if (sltkTT < sl_xuat)
+                    msg = @"false#Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
+                else if (xnb.bosung == 4)
                 {
-                    msg = "false#Đơn hàng đã hiệu lực !";
+                    //var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
+                    //var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                    //var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                    //    s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                    //    & s.md_sanpham_id == object_.md_sanpham_id
+                    //    ).FirstOrDefault();
+
+                    //if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
+                    //    msg = @"false#Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
                 }
             }
 

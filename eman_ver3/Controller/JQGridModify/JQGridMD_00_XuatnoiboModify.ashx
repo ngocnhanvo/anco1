@@ -292,21 +292,21 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     // var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
                                                     // if (sltdChuyen < sl_xuat_cuoi2)
                                                     // {
-                                                        // msg += string.Format(@"<div style='color:red'>
-                                                            // Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
-															// <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
-                                                            // <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
-                                                        // </div>",
-                                                        // sp.ma_sanpham
-                                                        // , sl_xuat_cuoi2.DropTrailingZeros()
-                                                        // , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
-                                                        // , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
-														// , dh.tenhang
-                                                        // );
+                                                    // msg += string.Format(@"<div style='color:red'>
+                                                    // Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
+                                                    // <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
+                                                    // <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
+                                                    // </div>",
+                                                    // sp.ma_sanpham
+                                                    // , sl_xuat_cuoi2.DropTrailingZeros()
+                                                    // , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                                                    // , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                                                    // , dh.tenhang
+                                                    // );
                                                     // }
                                                     // else
                                                     // {
-                                                        ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
+                                                    ddhpx_cdh.sl_dagiao = ddhpx_cdh.sl_dagiao.GetValueOrDefault(0) + sl_xuat_cuoi2;
                                                     //}
                                                 }
 
@@ -404,30 +404,30 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                             }
                         }
 
-                        if (count_slxuat <= 0 & msg == "")
+                        //if (count_slxuat <= 0 & msg == "")
+                        //{
+                        //    msg += "<div style='color:red'>Lỗi: Dòng \"" + xk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
+                        //}
+                        //else
+                        //{
+                        foreach (var item in lsxtsx.Distinct())
                         {
-                            msg += "<div style='color:red'>Lỗi: Dòng \"" + xk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
-                        }
-                        else
-                        {
-                            foreach (var item in lsxtsx.Distinct())
-                            {
-                                int countSLHT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    s.md_lenhsanxuat_tosx_id == item.md_lenhsanxuat_tosx_id
-                                ).Where(s =>
-                                    s.sl_chiato != s.sl_dahoanthanh
-                                    | s.sl_chiato != s.sl_dagiao
-                                ).Count();
+                            int countSLHT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                s.md_lenhsanxuat_tosx_id == item.md_lenhsanxuat_tosx_id
+                            ).Where(s =>
+                                s.sl_chiato != s.sl_dahoanthanh
+                                | s.sl_chiato != s.sl_dagiao
+                            ).Count();
 
-                                if (countSLHT <= 0)
-                                {
-                                    if (item.ngayhoanthanh == null)
-                                        item.ngayhoanthanh = xk.ngaychuyen;
-                                    item.check_hoanthanh = true;
-                                    db.SaveChanges();
-                                }
+                            if (countSLHT <= 0)
+                            {
+                                if (item.ngayhoanthanh == null)
+                                    item.ngayhoanthanh = xk.ngaychuyen;
+                                item.check_hoanthanh = true;
+                                db.SaveChanges();
                             }
                         }
+                        //}
                     }
 
                     //Kiem tra de chuyen thanh Hieu Luc

@@ -102,6 +102,16 @@ public static class Helper
                                 & s.hangton == false).FirstOrDefault();
     }
 
+    public static decimal soLuongTonKhoThucTe(string khoId, string spId, EntityContext db)
+    {
+        var khosp = db.md_kho_sanpham.Where(s =>
+            s.md_kho_id == khoId &
+            s.md_sanpham_id == spId
+        ).FirstOrDefault();
+
+        return khosp == null ? 0 : khosp.soluong.GetValueOrDefault();
+    }
+
     public static void downloadFiles(HttpContext context, string name, string link, int type)
     {
         string contentType = type == 0 ? "application/pdf" : "application/vnd.ms-excel";

@@ -189,7 +189,11 @@ public static class Extension
 
     public static md_lenhsanxuat_tosx getLSXToId_Prev(md_lenhsanxuat_tosx lsxTo, EntityContext db)
     {
-        var prev = db.md_lenhsanxuat_tosx.Where(s => s.stt < lsxTo.stt & s.md_lenhsanxuat_id == lsxTo.md_lenhsanxuat_id)
+        var prev = db.md_lenhsanxuat_tosx.Where(s => 
+            s.stt < lsxTo.stt 
+            & s.md_lenhsanxuat_id == lsxTo.md_lenhsanxuat_id
+            & s.hoatdong == true
+            )
             .OrderByDescending(s=>s.stt).FirstOrDefault();
         return prev;
     }

@@ -154,7 +154,7 @@ public class JQGridMD_01_DHDNhapModify : IHttpHandler, System.Web.SessionState.I
             }
             else
             {
-                decimal sltd = nknb_cdh.tong_sl_dat.Value - nknb_cdh.sl_danhap.Value;
+                decimal sltd = nknb_cdh.sl_muonnhap.Value - nknb_cdh.sl_danhap.GetValueOrDefault(0);
                 if (sel_val == "0")
                 {
                     nknb_cdh.sl_nhap = sltd;
