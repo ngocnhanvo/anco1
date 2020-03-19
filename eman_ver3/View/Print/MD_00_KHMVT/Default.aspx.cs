@@ -38,11 +38,14 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
             sl_dutru.DataBindings[0].FormatString = sothapphan;
             var sl_yeucau = report.Report.FindControl("sl_yeucau", true);
             sl_yeucau.DataBindings[0].FormatString = sothapphan;
+            var sl_duyet = report.Report.FindControl("sl_duyet", true);
+            sl_duyet.DataBindings[0].FormatString = sothapphan;
 
             tbl.Columns.Add("sum_tonkho", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_theobom", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_dutru", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_yeucau", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_duyet", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
@@ -59,6 +62,8 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
             tbl.Rows[lastRow]["sum_theobom"] = double.Parse(tbl.Compute("Sum(sl_theobom)", string.Empty).ToString());
             tbl.Rows[lastRow]["sum_dutru"] = double.Parse(tbl.Compute("Sum(sl_dutru)", string.Empty).ToString());
             tbl.Rows[lastRow]["sum_yeucau"] = double.Parse(tbl.Compute("Sum(sl_yeucau)", string.Empty).ToString());
+            tbl.Rows[lastRow]["sum_duyet"] = double.Parse(tbl.Compute("Sum(sl_duyet)", string.Empty).ToString());
+
             var sum_tonkho = report.Report.FindControl("sum_tonkho", true);
             sum_tonkho.DataBindings[0].FormatString = sothapphan;
             var sum_theobom = report.Report.FindControl("sum_theobom", true);
@@ -67,6 +72,8 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
             sum_dutru.DataBindings[0].FormatString = sothapphan;
             var sum_yeucau = report.Report.FindControl("sum_yeucau", true);
             sum_yeucau.DataBindings[0].FormatString = sothapphan;
+            var sum_duyet = report.Report.FindControl("sum_duyet", true);
+            sum_duyet.DataBindings[0].FormatString = sothapphan;
             if (string.IsNullOrEmpty(inPDF))
                 ReportViewer1.Report = report;
             else
@@ -109,7 +116,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
 		        , cdh.sl_tonkho 
 		        , isnull(cdh.sl_canthem, 0) as sl_dutru 
 		        , (cdh.sl_can + isnull(cdh.sl_canthem, 0)) as sl_yeucau
-		        , cdh.sl_duyet
+		        , cdh.sl_duyet2 as sl_duyet
 		        , cdh.ngayphaico as ngay_dkgiao
                 , khmvt.ten_kehoach as sct_khmvt
                 , N'{1}' as diengiai

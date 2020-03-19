@@ -2,7 +2,8 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -23,7 +24,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                 this.del(context);
                 break;
             case "CA_01_DuyetSoluongKHMVT":
-                this.CA_01_DuyetSoluongKHMVT(context);
+                this.CA_01_YeuCauSoluongKHMVT(context);
                 break;
             case "CA_01_khmvt_DOINCC":
                 this.CA_01_khmvt_DOINCC(context);
@@ -31,9 +32,77 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             case "CA_01_LamMoiHangTonKho":
                 this.CA_01_LamMoiHangTonKho(context);
                 break;
+            case "CA_01_DuýetLMuaVT":
+                this.CA_01_DuýetLMuaVT(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_DuýetLMuaVT(HttpContext context)
+    {
+
+        var db = new EntityContext();
+        string data = context.Request.Form["data"];
+        string msg = "";
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                var datas = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data);
+                int count = 0;
+                foreach(var row in datas)
+                {
+                    string id = row["id"].ToString();
+                    string slDuyet = row["slDuyet"] + "";
+                    var dkhmvt = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_cdh_id == id).FirstOrDefault();
+
+                    if (dkhmvt != null) {
+                        if (count == 0)
+                        {
+                            var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == dkhmvt.c_kehoachmuavt_id).FirstOrDefault();
+                            if (khmvt == null)
+                            {
+                                msg = @"KHMVT không được tìm thấy";
+                                break;
+                            }
+                            else if (khmvt.md_trangthai_id != "SOANTHAO")
+                            {
+                                msg = @"KHMVT không ở trạng thái ""Soạn Thảo""";
+                                break;
+                            }
+                            count = 1;
+                        }
+
+                        if(msg.Length <= 0)
+                        {
+                            decimal? slduyet = null;
+                            if (!string.IsNullOrEmpty(slDuyet))
+                                slduyet = decimal.Parse(slDuyet);
+                            dkhmvt.sl_duyet2 = slduyet;
+                        }
+                    }
+                }
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = string.Format(@"<div style='color:blue'>Điều chỉnh SL duyệt thành công</div>");
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"<div style='color:red' class='error'>Lỗi: {0}</div>", msg);
+                transaction.Rollback();
+            }
+        }
+        context.Response.Write(msg);
     }
 
     public void CA_01_LamMoiHangTonKho(HttpContext context)
@@ -140,7 +209,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
         context.Response.Write(msg);
     }
 
-    public void CA_01_DuyetSoluongKHMVT(HttpContext context)
+    public void CA_01_YeuCauSoluongKHMVT(HttpContext context)
     {
         EntityContext db = new EntityContext();
         string sel_val = context.Request.Form["sel_val"];
@@ -158,27 +227,12 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             else if (sel_val == "0")
             {
                 khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.Value + khmvt_cdh.sl_canthem.GetValueOrDefault(0);
-                //var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
-                //khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_tonkho ? khmvt_cdh.sl_tonkho : sllt;
             }
             else
             {
                 khmvt_cdh.sl_duyet = slvc_case;
                 khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet - khmvt_cdh.sl_denghi).GetValueOrDefault(0).Set0WhenlessThan0();
-                //var sllt = khmvt_cdh.sl_can + khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_duyet;
-                //khmvt_cdh.sl_layton = sllt > khmvt_cdh.sl_layton ? khmvt_cdh.sl_layton : sllt;
             }
-
-            //var dklhts = db.c_kehoachmuavt_dklht.Where(s =>
-            //    s.md_sanpham_id == khmvt_cdh.md_sanpham_id &
-            //    s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id);
-
-            //var slltTong = khmvt_cdh.sl_layton.GetValueOrDefault(0);
-            //foreach (var dklht in dklhts.ToList())
-            //{
-            //    dklht.sl_layton = slltTong > dklht.sl_tonkho ? dklht.sl_tonkho : slltTong;
-            //    slltTong = slltTong - dklht.sl_layton.GetValueOrDefault(0);
-            //}
         }
         if (msg == "")
         {
@@ -231,7 +285,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"]);
             string id = context.Request.Form["id"];
             var object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id).Take(1).FirstOrDefault();
-			decimal? sldn = 0;
+            decimal? sldn = 0;
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -242,26 +296,26 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             }
             else
             {
-				sldn = (object_.sl_can - sl_layton).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0)  + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                sldn = (object_.sl_can - sl_layton).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0) + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
                 var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).Take(1).FirstOrDefault();
                 if (khmvt.c_donmuavattu_id != " ")
                     msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>", khmvt.sochungtu);
-				else if(khmvt.md_trangthai_id == "HIEULUC")
-					msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
+                else if (khmvt.md_trangthai_id == "HIEULUC")
+                    msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
                 else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
                     msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
                 else if (sl_duyet != sldn + sl_canthem)
                     msg = string.Format(@"false#""Số lượng duyệt"" phải bằng ""SL đề nghị + SL cần thêm""");
-				else if (sldn + sl_layton > object_.sl_can + object_.sl_tonkho_toithieu)
+                else if (sldn + sl_layton > object_.sl_can + object_.sl_tonkho_toithieu)
                     msg = string.Format(@"false#""Số lượng đề nghị + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần + SL tồn kho tối thiểu""");
             }
-			
+
             if (msg.Length <= 0)
             {
                 object_.sl_duyet = sl_duyet;
                 object_.sl_layton = sl_layton;
                 object_.sl_canthem = sl_canthem;
-                
+
                 object_.sl_denghi = sldn;
                 object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
                 object_.ngayphaico = ngayPhaiCo;
