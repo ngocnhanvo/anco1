@@ -18,19 +18,8 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Danh Sách Theo Dõi Đơn Hàng.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
-        //viewReport(report, sql);
+        viewReport(report, sql);
         //Response.Write(sql);
-
-        var db = new EntityContext();
-        using (var transaction = db.Database.BeginTransaction())
-        {
-            var object_ = Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(
-                string.Format(@"
-                select top 1 nhanphoisoi from md_nhanphoisoi
-                where N'{0}' like ma_sp
-                ", "81-00100-L2-02"));
-            Response.Write(object_);
-        }  
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
