@@ -128,6 +128,7 @@ public virtual DbSet<md_modongky> md_modongky { get; set; }
 public virtual DbSet<md_namtaichinh> md_namtaichinh { get; set; }
 public virtual DbSet<md_namtaichinh_ky> md_namtaichinh_ky { get; set; }
 public virtual DbSet<md_nangluc> md_nangluc { get; set; }
+public virtual DbSet<md_nhanphoisoi> md_nhanphoisoi { get; set; }
 public virtual DbSet<md_nhapkho_ncc> md_nhapkho_ncc { get; set; }
 public virtual DbSet<md_nhapkho_ncc_dh> md_nhapkho_ncc_dh { get; set; }
 public virtual DbSet<md_nhapkho_px> md_nhapkho_px { get; set; }

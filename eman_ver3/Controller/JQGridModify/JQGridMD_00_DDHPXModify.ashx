@@ -562,6 +562,14 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                     var addLSX = lsx_tosx_cdh;
                                     if (lsx_tosx_cdh == null)
                                     {
+                                        var nhanPS = (bool?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(
+                                        string.Format(@"
+                                            select top 1 nhanphoisoi 
+                                            from md_nhanphoisoi
+                                            where N'{0}' like ma_sp
+                                                and md_to_id = N'{1}'
+                                        ", ma_cai, px_to.md_phanxuong_to_id));
+
                                         lsx_tosx_cdh = new md_lenhsanxuat_tosx_cdh();
                                         lsx_tosx_cdh.md_lenhsanxuat_tosx_cdh_id = Helper.getNewId();
                                         lsx_tosx_cdh.md_lenhsanxuat_tosx_id = px_to.md_lenhsanxuat_tosx_id;
@@ -590,7 +598,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                         lsx_tosx_cdh.ngaycapnhat = DateTime.Now;
                                         lsx_tosx_cdh.mota = "";
                                         lsx_tosx_cdh.hoatdong = true;
-                                        lsx_tosx_cdh.nhanphoisoi = true;
+                                        lsx_tosx_cdh.nhanphoisoi = nhanPS.GetValueOrDefault(true);
                                     }
 
                                     decimal? sltd = dhpx_cdh.tong_sl_dat - dhpx_cdh.sl_hoanthanh.GetValueOrDefault(0) - dhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
@@ -622,28 +630,25 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     {
                         foreach (var item1 in lsxTsxIds)
                         {
-                            string pbgId = "";
-                            if (kiemtragia == true)
-                            {
-                                var bgIds = db.md_banggia
-                                        .Where(s => s.md_to_id == item1.Value & s.tuychon == "NHANCONG" & s.hoatdong == true)
-                                        .Select(s => s.md_banggia_id).ToList();
-                                pbgId = db.md_phienbangia
-                                        .Where(s => bgIds.Contains(s.md_banggia_id) & s.hoatdong == true)
-                                        .OrderByDescending(s => s.ngay_hieuluc).Select(s => s.md_phienbangia_id)
-                                        .FirstOrDefault();
-                            }
+                            var bgIds = db.md_banggia
+                                    .Where(s => s.md_to_id == item1.Value & s.tuychon == "NHANCONG" & s.hoatdong == true)
+                                    .Select(s => s.md_banggia_id).ToList();
+                            string pbgId = db.md_phienbangia
+                                       .Where(s => bgIds.Contains(s.md_banggia_id) & s.hoatdong == true)
+                                       .OrderByDescending(s => s.ngay_hieuluc).Select(s => s.md_phienbangia_id)
+                                       .FirstOrDefault();
 
                             foreach (var item2 in db.md_lenhsanxuat_tosx_cdh.Where(s => item1.Key == s.md_lenhsanxuat_tosx_id).ToList())
                             {
-                                if (kiemtragia == true)
+
+                                var giasp = db.md_giasanpham.Where(s =>
+                                    s.md_sanpham_id == item2.md_sanpham_id
+                                    & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
+                                    & s.md_phienbangia_id == pbgId
+                                    ).FirstOrDefault();
+                                if (giasp == null)
                                 {
-                                    var giasp = db.md_giasanpham.Where(s =>
-                                        s.md_sanpham_id == item2.md_sanpham_id
-                                        & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
-                                        & s.md_phienbangia_id == pbgId
-                                        ).FirstOrDefault();
-                                    if (giasp == null)
+                                    if (kiemtragia == true)
                                     {
                                         string err = string.Format(@"<br>HHVT ""{0}"" chưa có giá cho tổ ""{2} - {1}""",
                                             db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
@@ -652,6 +657,11 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                         msg += err;
                                     }
                                 }
+                                else
+                                {
+                                    item2.gianhancong = giasp.gia;
+                                }
+
 
                                 var spBom = db.md_sanpham_bom.
                                             Where(s => s.md_sanpham_id == item2.md_sanpham_id &
