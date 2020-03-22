@@ -116,8 +116,8 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 
             select
                 (Q.sldalam * Q.dongia) as thanhtien,
-				(Q.slchiato + Q.sllayton - Q.sldalam) as slconlai,
-                (case when Q.slchiato + Q.sllayton <= Q.sldalam then 'OK' else '-' end) as trangthai,
+				(Q.slchiato - Q.sldalam) as slconlai,
+                (case when Q.slchiato <= Q.sldalam then 'OK' else '-' end) as trangthai,
 	            Q.loaihang,
                 Q.donhang,
 	            Q.mahang,
