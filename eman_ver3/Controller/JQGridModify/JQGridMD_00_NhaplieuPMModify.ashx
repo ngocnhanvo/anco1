@@ -142,11 +142,12 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string NewFromCellCollection(HttpContext context, CellCollection cellCollection, ad_import ip, string file_path, EntityContext db)
     {
+        string type = context.Request.Form["type"];
         string ten_table = ip.ten_table;
         int count_column = db.ad_import_column.Where(s => s.ad_import_id == ip.ad_import_id & s.imported == "true").Count();
         string sql_del = "";
         context.Session["sql_del"] = "";
-        if (ip.column_del != null)
+        if (ip.column_del != null & type == "fast")
         {
             if (ip.column_del.Replace(" ", "") != "")
             {
@@ -184,7 +185,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 sql_sets += col.ma_import_column + "=" + sql_select + ",";
             }
             //del
-            if (ip.column_del == col.ma_import_column)
+            if (ip.column_del == col.ma_import_column & type == "fast")
             {
                 sql_del = sql_del.Replace("{0}", sql_select);
             }
