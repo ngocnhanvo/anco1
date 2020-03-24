@@ -95,6 +95,16 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuatCoBo 
 	            , (select ten_phanxuong from md_phanxuong where lsx_tsx.md_phanxuong_id = md_phanxuong_id) as px
 	            , lsx_tsx.mota as diengiai
 	            , sp.ma_sanpham as ma_vthh
+                , (
+                    SELECT 
+                        isnull(spBo.ma_sanpham + ' (' + cast(cast(dhpxDH.tong_sl_dat as decimal(18, 0)) as nvarchar(MAX)) + ')' + char(10), '')
+	                from md_dondathangphanxuong_cdh dhpxDH
+	                    left join md_sanpham spBo on spBo.md_sanpham_id = dhpxDH.md_sanpham_id
+	                WHERE 
+                        dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+			            and spBo.ma_sanpham in (select [Data] from dbo.Split(lsx_tsx_cdh.macuoi, ','))
+	                FOR XML PATH(''),type
+                ).value('.','nvarchar(max)') as mabo
 	            , sp.mota_tiengviet as ten_vthh
 	            , dvtsp.ten_dvt as dvt
 	            , lsx_tsx_cdh.{1} as soluong
