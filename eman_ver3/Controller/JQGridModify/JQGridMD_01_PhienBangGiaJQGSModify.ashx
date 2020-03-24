@@ -63,7 +63,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     msg = "Phiên bản giá không thuộc bảng giá nhân công";
                 else
                 {
-                    var ngaygoihan = DateTime.Now.AddDays(-30);
+                    var ngaygoihan = DateTime.Now.AddDays(-120);
                     var xnbIds = db.md_xuatkhonb
                             .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan)
                             .Select(s => s.md_xuatkhonb_id).ToList();
