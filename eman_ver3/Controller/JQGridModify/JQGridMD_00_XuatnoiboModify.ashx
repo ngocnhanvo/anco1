@@ -584,6 +584,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         giao.kieuchuyen = "Xuất kho";
         giao.dongnhapxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
+        giao.mota = dh.tenhang;
 
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;

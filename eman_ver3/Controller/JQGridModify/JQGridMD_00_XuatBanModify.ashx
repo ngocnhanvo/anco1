@@ -319,6 +319,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         giao.kieuchuyen = "Xuất kho";
         giao.dongnhapxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
+        giao.mota = px.donhang_thamchieu;
 
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;
