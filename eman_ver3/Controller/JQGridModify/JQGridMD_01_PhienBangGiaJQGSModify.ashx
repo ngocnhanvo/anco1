@@ -56,7 +56,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                 else if (pbg.hoatdong == false)
                     msg = "Phiên bản giá không hoạt động";
                 else if (
-                    db.md_banggia.Where(s=>
+                    db.md_banggia.Where(s =>
                         s.md_banggia_id == pbg.md_banggia_id
                         & s.tuychon == "NHANCONG"
                         & !string.IsNullOrEmpty(s.md_to_id)).Count() <= 0)
@@ -67,10 +67,10 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     var xnbIds = db.md_xuatkhonb
                             .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan)
                             .Select(s => s.md_xuatkhonb_id).ToList();
-                    foreach (var cdh in db.md_xuatkhonb_cdh.Where(s => 
+                    foreach (var cdh in db.md_xuatkhonb_cdh.Where(s =>
                         xnbIds.Contains(s.md_xuatkhonb_id)
-                        & db.c_danhsachdathang.Where(t=>t.so_po == s.tenhang & t.trangthai != "KETTHUC").Count() > 0
-                        & s.sl_daxuat > 0).ToList())
+                        & db.c_danhsachdathang.Where(t => t.so_po == s.tenhang & t.trangthai != "KETTHUC").Count() > 0
+                    ).ToList())
                     {
                         var gsp = db.md_giasanpham
                                 .Where(s =>
@@ -105,9 +105,9 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     var vcnbIds = db.md_vanchuyennoibo
                             .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan)
                             .Select(s => s.md_vanchuyennoibo_id).ToList();
-                    foreach (var cdh in db.md_vanchuyennoibo_cdvc.Where(s => 
+                    foreach (var cdh in db.md_vanchuyennoibo_cdvc.Where(s =>
                         vcnbIds.Contains(s.md_vanchuyennoibo_id)
-                        & s.soluong_dachuyen > 0).ToList())
+                    ).ToList())
                     {
                         var gsp = db.md_giasanpham
                                 .Where(s =>

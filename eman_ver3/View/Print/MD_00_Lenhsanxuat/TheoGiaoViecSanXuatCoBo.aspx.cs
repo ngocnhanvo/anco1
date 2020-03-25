@@ -121,7 +121,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuatCoBo 
             where 1=1
                 and lsx_tsx.md_lenhsanxuat_tosx_id in ('{0}')
                 and lsx_tsx_cdh.{1} > 0
-            order by substring(sp.ma_sanpham, 0, 11) asc, sp.ma_sanpham asc
+            order by sp.ma_sanpham asc
 		"
         , md_nhapkho_ncc_id
         , slchiato
