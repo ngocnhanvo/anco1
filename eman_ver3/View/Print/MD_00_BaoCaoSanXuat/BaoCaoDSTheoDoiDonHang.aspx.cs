@@ -113,81 +113,110 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             declare @msp nvarchar(MAX) = '%{3}%'
             declare @tenpx nvarchar(MAX) = (select ten_phanxuong from md_phanxuong where md_phanxuong_id = @px)
             declare @tento nvarchar(MAX) = (select ten_to from md_phanxuong_to where md_to_id = @tosx)
-
-            select
-                (Q.sldalam * Q.dongia) as thanhtien,
-				(Q.slchiato - Q.sldalam) as slconlai,
-                (case when Q.slchiato <= Q.sldalam then 'OK' else '-' end) as trangthai,
-	            Q.loaihang,
-                Q.donhang,
-	            Q.mahang,
-	            Q.slchiato,
-                Q.sllayton,
-                Q.stt,
-	            Q.sldalam,
-	            Q.ngaytrienkhai,
-                Q.ngaygiaohang,
-                Q.dongia,
-                @tenpx as px,
-                @tento as tsx
-            from
-            (
-	            select
-					dhpx.donhang_thamchieu as donhang,
-					sp.ma_sanpham as mahang,
-					tsx.ngaybatdausx as ngaytrienkhai,
-                    lsx.ngayketthuc as ngaygiaohang,
-					cdh.sl_chiato as slchiato,
-                    nnl.code_cl as loaihang,
-                    isnull(
+            select 
+                QQ.*,
+                (QQ.sldalam * QQ.dongia) as thanhtien,
+                (QQ.slchiato - QQ.sldalam) as slconlai,
+                (case when QQ.slchiato <= QQ.sldalam then 'OK' else '-' end) as trangthai
+            from (
+                select
+	                Q.loaihang,
+                    Q.donhang,
+	                Q.mahang,
+	                Q.slchiato,
+                    Q.sllayton,
+	                (
+                        case
+                            when Q.sttHT = Q.stt
+                            then 
+                                (
+                                    case 
+                                        when Q.sldalam > Q.sllayton
+                                        then Q.sldalam - Q.sllayton
+                                        else 0
+                                    end
+                                )
+                            else Q.sldalam
+                        end
+                    ) as sldalam,
+	                Q.ngaytrienkhai,
+                    Q.ngaygiaohang,
+                    Q.dongia,
+                    @tenpx as px,
+                    @tento as tsx
+                from
+                (
+	                select
+					    dhpx.donhang_thamchieu as donhang,
+					    sp.ma_sanpham as mahang,
+					    tsx.ngaybatdausx as ngaytrienkhai,
+                        lsx.ngayketthuc as ngaygiaohang,
+					    cdh.sl_chiato as slchiato,
+                        nnl.code_cl as loaihang,
+                        isnull(
+                            (
+                                select top 1 isnull(lht.sl_layton, 0) 
+                                from md_lenhsanxuat_tosx_dklht (nolock) lht
+                                where 
+                                    lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
+                                    and lht.md_sanpham_id = cdh.md_sanpham_id
+                                    and isnull(tsx.phieulayht,'') != ''
+                            )
+                        , 0) as sllayton,
+					    tsx.stt,
                         (
-                            select top 1 isnull(lht.sl_layton, 0) 
-                            from md_lenhsanxuat_tosx_dklht (nolock) lht
-                            where 
-                                lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
-                                and lht.md_sanpham_id = cdh.md_sanpham_id
-                                and isnull(tsx.phieulayht,'') != ''
-                        )
-                    , 0) as sllayton,
-					tsx.stt,
-					(case when tsx.stt = 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_dagiao, 0) end) as sldalam,
-                    cdh.gianhancong as dongia
-	            FROM
-	                md_lenhsanxuat (nolock) lsx 
-	                left join
-		                md_lenhsanxuat_tosx (nolock) tsx 
-		                on tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id 
-	                left join
-		                md_lenhsanxuat_tosx_cdh (nolock) cdh 
-		                on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id 
-	                left join
-		                md_sanpham (nolock) sp 
-		                on sp.md_sanpham_id = cdh.md_sanpham_id
-                    left join
-		                md_chungloai (nolock) nnl 
-		                on nnl.md_chungloai_id = sp.md_nhomnangluc_id 
-	                left join
-		                md_dondathangphanxuong (nolock) dhpx 
-		                on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id 
-	            WHERE
-	                1 = 1 
-	                and cdh.md_sanpham_id = sp.md_sanpham_id 
-	                and lsx.ngayketthuc between @tungay and @denngay 
-	                and lsx.md_phanxuong_id = @px 
-	                and tsx.md_phanxuong_to_id = @tosx 
-	                and sp.ma_sanpham like @msp 
-                    {6} {7}
-            ) Q
+                            select top 1 tsx2.stt
+                            from md_lenhsanxuat_tosx (nolock) tsx2
+		                    where 
+                                tsx2.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                                and tsx2.hoatdong = 1
+                            order by tsx2.stt desc
+                        ) as sttHT,
+					    (
+                            case 
+                                when tsx.stt = 0 
+                                then isnull(cdh.sl_dahoanthanh, 0) 
+                                else isnull(cdh.sl_dagiao, 0) 
+                            end
+                        ) as sldalam,
+                        cdh.gianhancong as dongia
+	                FROM
+	                    md_lenhsanxuat (nolock) lsx 
+	                    left join
+		                    md_lenhsanxuat_tosx (nolock) tsx 
+		                    on tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id 
+	                    left join
+		                    md_lenhsanxuat_tosx_cdh (nolock) cdh 
+		                    on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id 
+	                    left join
+		                    md_sanpham (nolock) sp 
+		                    on sp.md_sanpham_id = cdh.md_sanpham_id
+                        left join
+		                    md_chungloai (nolock) nnl 
+		                    on nnl.md_chungloai_id = sp.md_nhomnangluc_id 
+	                    left join
+		                    md_dondathangphanxuong (nolock) dhpx 
+		                    on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id 
+	                WHERE
+	                    1 = 1 
+	                    and cdh.md_sanpham_id = sp.md_sanpham_id 
+	                    and lsx.ngayketthuc between @tungay and @denngay 
+	                    and lsx.md_phanxuong_id = @px 
+	                    and tsx.md_phanxuong_to_id = @tosx 
+	                    and sp.ma_sanpham like @msp 
+                        {6} {7}
+                )Q
+            )QQ
             where
                 1=1 {4}
             order by
-	             Q.ngaygiaohang, Q.donhang, Q.mahang
+	            QQ.ngaygiaohang, QQ.donhang, QQ.mahang
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
         , px
         , string.IsNullOrEmpty(msp) ? "-" : msp
-        , string.IsNullOrEmpty(trangthai) ? "" : trangthai == "OK" ? "and Q.slchiato + Q.sllayton <= Q.sldalam" : "and Q.slchiato + Q.sllayton > Q.sldalam"
+        , string.IsNullOrEmpty(trangthai) ? "" : trangthai == "OK" ? "and QQ.slchiato <= QQ.sldalam" : "and QQ.slchiato > QQ.sldalam"
         , tosx
         , string.IsNullOrEmpty(donhang) ? "" : string.Format("and dhpx.donhang_thamchieu = N'{0}'", donhang)
         , string.IsNullOrEmpty(loaihang) ? "" : string.Format("and nnl.code_cl = N'{0}'", loaihang)
