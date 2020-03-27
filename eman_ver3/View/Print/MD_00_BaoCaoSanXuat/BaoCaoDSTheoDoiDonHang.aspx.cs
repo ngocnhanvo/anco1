@@ -115,9 +115,26 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             declare @tento nvarchar(MAX) = (select ten_to from md_phanxuong_to where md_to_id = @tosx)
             select 
                 QQ.*,
-                (QQ.sldalam * QQ.dongia) as thanhtien,
-                (QQ.slchiato - QQ.sldalam) as slconlai,
-                (case when QQ.slchiato <= QQ.sldalam then 'OK' else '-' end) as trangthai
+                (
+                    case
+                        when
+                            QQ.slconlai <= 0
+                        then
+                            'OK'
+                        else
+                            '-'
+                    end
+                ) as trangthai,
+                (
+                    case
+                        when
+                            QQ.thanhtienCP < 0
+                        then
+                            0
+                        else
+                            QQ.thanhtienCP
+                    end
+                ) as thanhtien
             from (
                 select
 	                Q.loaihang,
@@ -125,20 +142,27 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                Q.mahang,
 	                Q.slchiato,
                     Q.sllayton,
+                    Q.sldalam,
 	                (
                         case
-                            when Q.sttHT = Q.stt
+                            when 
+                                Q.sttHT = Q.stt
                             then 
-                                (
-                                    case 
-                                        when Q.sldalam > Q.sllayton
-                                        then Q.sldalam - Q.sllayton
-                                        else 0
-                                    end
-                                )
-                            else Q.sldalam
+                                Q.slchiato + Q.sllayton - Q.sldalam
+                            else 
+                                Q.slchiato - Q.sldalam
                         end
-                    ) as sldalam,
+                    ) as slconlai,
+                    (
+                        case
+                            when 
+                                Q.sttHT = Q.stt
+                            then 
+                                (Q.sldalam - Q.sllayton) * Q.dongia
+                            else 
+                                Q.sldalam * Q.dongia
+                        end
+                    ) as thanhtienCP,
 	                Q.ngaytrienkhai,
                     Q.ngaygiaohang,
                     Q.dongia,
@@ -216,7 +240,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
         , den.ToString("dd/MM/yyyy")
         , px
         , string.IsNullOrEmpty(msp) ? "-" : msp
-        , string.IsNullOrEmpty(trangthai) ? "" : trangthai == "OK" ? "and QQ.slchiato <= QQ.sldalam" : "and QQ.slchiato > QQ.sldalam"
+        , string.IsNullOrEmpty(trangthai) ? "" : trangthai == "OK" ? "and QQ.slconlai <= 0" : "and QQ.slconlai > 0"
         , tosx
         , string.IsNullOrEmpty(donhang) ? "" : string.Format("and dhpx.donhang_thamchieu = N'{0}'", donhang)
         , string.IsNullOrEmpty(loaihang) ? "" : string.Format("and nnl.code_cl = N'{0}'", loaihang)
