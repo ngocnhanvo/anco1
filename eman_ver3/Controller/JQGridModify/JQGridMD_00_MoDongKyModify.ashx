@@ -118,33 +118,36 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
     {
         string md_namtaichinh_id = kdong != null ? kdong.md_namtaichinh_ky_id : "";
         string sql = string.Format(@"
-			select
-			A.md_kho_id as md_kho_id,
-			A.md_sanpham_id as md_sanpham_id, 
-			A.md_donvitinhsanpham_id as md_donvitinhsanpham_id, 
-			A.ma_sanpham as ma_sanpham,
-			A.sl_cuoiky as sl_dauky,
-			0 as sl_nhaptrongky,
-			0 as sl_xuattrongky,
-			A.sl_cuoiky as sl_cuoiky
-			from (
-				select 
-				a.md_sanpham_id, a.md_kho_id, c.md_donvitinhsanpham_id, c.ma_sanpham,
-				isnull((
-					select top 1 sl_cuoiky as sl_cuoiky from md_tonghopkho with (NOLOCK)
-					where md_kho_id = a.md_kho_id 
-					and	md_sanpham_id = a.md_sanpham_id
-					and	md_namtaichinh_ky_id = N'{1}'
-					order by ngaytao desc 
-				),0) as sl_cuoiky
-				from md_kho_giaodich a with (NOLOCK)
-				inner join md_kho_sanpham b with (NOLOCK) on a.md_sanpham_id = b.md_sanpham_id
-				inner join md_sanpham c with (NOLOCK) on a.md_sanpham_id = c.md_sanpham_id
-				where 
-				a.ngaychuyen <= convert(datetime,N'{0} 23:59',103)
-				and a.md_kho_id = b.md_kho_id
-				group by a.md_kho_id, a.md_sanpham_id, c.md_donvitinhsanpham_id, c.ma_sanpham
-			)A
+			declare @ntcKy nvarchar(32) = N'{1}'
+            declare @ngayMoKy datetime = convert(datetime,N'{0} 23:59',103)
+            select
+	            A.md_kho_id as md_kho_id,
+	            A.md_sanpham_id as md_sanpham_id,
+	            A.md_donvitinhsanpham_id as md_donvitinhsanpham_id, 
+	            A.ma_sanpham as ma_sanpham,
+	            A.sl_cuoiky as sl_dauky,
+	            0 as sl_nhaptrongky,
+	            0 as sl_xuattrongky,
+	            A.sl_cuoiky as sl_cuoiky
+	            from (
+		            select 
+		            a.md_sanpham_id, a.md_kho_id, c.md_donvitinhsanpham_id, c.ma_sanpham,
+		            isnull((
+			            select top 1 sl_cuoiky as sl_cuoiky 
+                        from md_tonghopkho with (NOLOCK)
+			            where md_kho_id = a.md_kho_id 
+			            and	md_sanpham_id = a.md_sanpham_id
+			            and	md_namtaichinh_ky_id = @ntcKy
+			            order by ngaytao desc 
+		            ), 0) as sl_cuoiky
+		            from md_kho_giaodich a with (NOLOCK)
+		            inner join md_kho_sanpham b with (NOLOCK) on a.md_sanpham_id = b.md_sanpham_id
+		            inner join md_sanpham c with (NOLOCK) on a.md_sanpham_id = c.md_sanpham_id
+		            where 
+		            a.ngaychuyen <= @ngayMoKy
+		            and a.md_kho_id = b.md_kho_id
+		            group by a.md_kho_id, a.md_sanpham_id, c.md_donvitinhsanpham_id, c.ma_sanpham
+	            )A
 		", kmo.ngayketthuc.Value.ToString("dd/MM/yyyy"), md_namtaichinh_id);
         var dt_dtkd = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
         foreach (DataRow row in dt_dtkd.Rows)
