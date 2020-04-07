@@ -15,7 +15,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Danh Sách Theo Dõi Đơn Hàng.repx");
+        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tình Hinh Khối Lượng Theo ĐĐH.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
         viewReport(report, sql);
@@ -33,48 +33,145 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
         {
             var infoPrint = PrintAnco2.GetInfoPrint();
 
-            tbl.Columns.Add("sum_slchiato", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_sllayton", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_sldalam", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_slconlai", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh51", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl51", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl51", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh52", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl52", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl52", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh53", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl53", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl53", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh81ch", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl81ch", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl81ch", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh81bg", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl81bg", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl81bg", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dh99", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dl99", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_cl99", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dhTongcong", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_dlTongcong", Type.GetType("System.Double"));
+            tbl.Columns.Add("sum_clTongcong", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Báo cáo theo dõi đơn hàng";
+            report.DisplayName = "Báo cáo tình hình khối lượng theo DĐH";
             //Footer
             int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_slchiato"] = tbl.Compute("sum(slchiato)", string.Empty);
-            tbl.Rows[lastRow]["sum_sllayton"] = tbl.Compute("sum(sllayton)", string.Empty);
-            tbl.Rows[lastRow]["sum_sldalam"] = tbl.Compute("sum(sldalam)", string.Empty);
-            tbl.Rows[lastRow]["sum_slconlai"] = tbl.Compute("sum(slconlai)", string.Empty);
-            tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh51"] = tbl.Compute("sum(dh51)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl51"] = tbl.Compute("sum(dl51)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl51"] = tbl.Compute("sum(cl51)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh52"] = tbl.Compute("sum(dh52)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl52"] = tbl.Compute("sum(dl52)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl52"] = tbl.Compute("sum(cl52)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh53"] = tbl.Compute("sum(dh53)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl53"] = tbl.Compute("sum(dl53)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl53"] = tbl.Compute("sum(cl53)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh81ch"] = tbl.Compute("sum(dh81ch)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl81ch"] = tbl.Compute("sum(dl81ch)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl81ch"] = tbl.Compute("sum(cl81ch)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh81bg"] = tbl.Compute("sum(dh81bg)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl81bg"] = tbl.Compute("sum(dl81bg)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl81bg"] = tbl.Compute("sum(cl81bg)", string.Empty);
+            tbl.Rows[lastRow]["sum_dh99"] = tbl.Compute("sum(dh99)", string.Empty);
+            tbl.Rows[lastRow]["sum_dl99"] = tbl.Compute("sum(dl99)", string.Empty);
+            tbl.Rows[lastRow]["sum_cl99"] = tbl.Compute("sum(cl99)", string.Empty);
+            tbl.Rows[lastRow]["sum_dhTongcong"] = tbl.Compute("sum(dhTongcong)", string.Empty);
+            tbl.Rows[lastRow]["sum_dlTongcong"] = tbl.Compute("sum(dlTongcong)", string.Empty);
+            tbl.Rows[lastRow]["sum_clTongcong"] = tbl.Compute("sum(clTongcong)", string.Empty);
             tbl.Rows[lastRow]["dd"] = infoPrint.dd;
             tbl.Rows[lastRow]["MM"] = infoPrint.MM;
             tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            //slchiato
-            var slchiato_cell = report.Report.FindControl("slchiato", true);
-            slchiato_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slchiato_cell = report.Report.FindControl("sum_slchiato", true);
-            sum_slchiato_cell.DataBindings[0].FormatString = sothapphan;
-            //sllayton
-            var sllayton_cell = report.Report.FindControl("sllayton", true);
-            sllayton_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sllayton_cell = report.Report.FindControl("sum_sllayton", true);
-            sum_sllayton_cell.DataBindings[0].FormatString = sothapphan;
-            //sldalam
-            var sldalam_cell = report.Report.FindControl("sldalam", true);
-            sldalam_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sldalam_cell = report.Report.FindControl("sum_sldalam", true);
-            sum_sldalam_cell.DataBindings[0].FormatString = sothapphan;
-            //slconlai
-            var slconlai_cell = report.Report.FindControl("slconlai", true);
-            slconlai_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slconlai_cell = report.Report.FindControl("sum_slconlai", true);
-            sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
+            //
+            var dh51_cell = report.Report.FindControl("dh51", true);
+            var dl51_cell = report.Report.FindControl("dl51", true);
+            var cl51_cell = report.Report.FindControl("cl51", true);
+            var dh52_cell = report.Report.FindControl("dh52", true);
+            var dl52_cell = report.Report.FindControl("dl52", true);
+            var cl52_cell = report.Report.FindControl("cl52", true);
+            var dh53_cell = report.Report.FindControl("dh53", true);
+            var dl53_cell = report.Report.FindControl("dl53", true);
+            var cl53_cell = report.Report.FindControl("cl53", true);
+            var dh81ch_cell = report.Report.FindControl("dh81ch", true);
+            var dl81ch_cell = report.Report.FindControl("dl81ch", true);
+            var cl81ch_cell = report.Report.FindControl("cl81ch", true);
+            var dh81bg_cell = report.Report.FindControl("dh81bg", true);
+            var dl81bg_cell = report.Report.FindControl("dl81bg", true);
+            var cl81bg_cell = report.Report.FindControl("cl81bg", true);
+            var dh99_cell = report.Report.FindControl("dh99", true);
+            var dl99_cell = report.Report.FindControl("dl99", true);
+            var cl99_cell = report.Report.FindControl("cl99", true);
+            var dhTongcong_cell = report.Report.FindControl("dhTongcong", true);
+            var dlTongcong_cell = report.Report.FindControl("dlTongcong", true);
+            var clTongcong_cell = report.Report.FindControl("clTongcong", true);
+            var sum_dh51_cell = report.Report.FindControl("sum_dh51", true);
+            var sum_dl51_cell = report.Report.FindControl("sum_dl51", true);
+            var sum_cl51_cell = report.Report.FindControl("sum_cl51", true);
+            var sum_dh52_cell = report.Report.FindControl("sum_dh52", true);
+            var sum_dl52_cell = report.Report.FindControl("sum_dl52", true);
+            var sum_cl52_cell = report.Report.FindControl("sum_cl52", true);
+            var sum_dh53_cell = report.Report.FindControl("sum_dh53", true);
+            var sum_dl53_cell = report.Report.FindControl("sum_dl53", true);
+            var sum_cl53_cell = report.Report.FindControl("sum_cl53", true);
+            var sum_dh81ch_cell = report.Report.FindControl("sum_dh81ch", true);
+            var sum_dl81ch_cell = report.Report.FindControl("sum_dl81ch", true);
+            var sum_cl81ch_cell = report.Report.FindControl("sum_cl81ch", true);
+            var sum_dh81bg_cell = report.Report.FindControl("sum_dh81bg", true);
+            var sum_dl81bg_cell = report.Report.FindControl("sum_dl81bg", true);
+            var sum_cl81bg_cell = report.Report.FindControl("sum_cl81bg", true);
+            var sum_dh99_cell = report.Report.FindControl("sum_dh99", true);
+            var sum_dl99_cell = report.Report.FindControl("sum_dl99", true);
+            var sum_cl99_cell = report.Report.FindControl("sum_cl99", true);
+            var sum_dhTongcong_cell = report.Report.FindControl("sum_dhTongcong", true);
+            var sum_dlTongcong_cell = report.Report.FindControl("sum_dlTongcong", true);
+            var sum_clTongcong_cell = report.Report.FindControl("sum_clTongcong", true);
+            dh51_cell.DataBindings[0].FormatString =
+            dl51_cell.DataBindings[0].FormatString =
+            cl51_cell.DataBindings[0].FormatString =
+            dh52_cell.DataBindings[0].FormatString =
+            dl52_cell.DataBindings[0].FormatString =
+            cl52_cell.DataBindings[0].FormatString =
+            dh53_cell.DataBindings[0].FormatString =
+            dl53_cell.DataBindings[0].FormatString =
+            cl53_cell.DataBindings[0].FormatString =
+            dh81ch_cell.DataBindings[0].FormatString =
+            dl81ch_cell.DataBindings[0].FormatString =
+            cl81ch_cell.DataBindings[0].FormatString =
+            dh81bg_cell.DataBindings[0].FormatString =
+            dl81bg_cell.DataBindings[0].FormatString =
+            cl81bg_cell.DataBindings[0].FormatString =
+            dh99_cell.DataBindings[0].FormatString =
+            dl99_cell.DataBindings[0].FormatString =
+            cl99_cell.DataBindings[0].FormatString =
+            dhTongcong_cell.DataBindings[0].FormatString =
+            dlTongcong_cell.DataBindings[0].FormatString =
+            clTongcong_cell.DataBindings[0].FormatString =
+            sum_dh51_cell.DataBindings[0].FormatString =
+            sum_dl51_cell.DataBindings[0].FormatString =
+            sum_cl51_cell.DataBindings[0].FormatString =
+            sum_dh52_cell.DataBindings[0].FormatString =
+            sum_dl52_cell.DataBindings[0].FormatString =
+            sum_cl52_cell.DataBindings[0].FormatString =
+            sum_dh53_cell.DataBindings[0].FormatString =
+            sum_dl53_cell.DataBindings[0].FormatString =
+            sum_cl53_cell.DataBindings[0].FormatString =
+            sum_dh81ch_cell.DataBindings[0].FormatString =
+            sum_dl81ch_cell.DataBindings[0].FormatString =
+            sum_cl81ch_cell.DataBindings[0].FormatString =
+            sum_dh81bg_cell.DataBindings[0].FormatString =
+            sum_dl81bg_cell.DataBindings[0].FormatString =
+            sum_cl81bg_cell.DataBindings[0].FormatString =
+            sum_dh99_cell.DataBindings[0].FormatString =
+            sum_dl99_cell.DataBindings[0].FormatString =
+            sum_cl99_cell.DataBindings[0].FormatString =
+            sum_dhTongcong_cell.DataBindings[0].FormatString =
+            sum_dlTongcong_cell.DataBindings[0].FormatString =
+            sum_clTongcong_cell.DataBindings[0].FormatString = sothapphan;
 
             report.DataSource = ds;
             report.DataAdapter = da;
@@ -108,133 +205,148 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
         string sql = string.Format(@"	       
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59',103);
-            declare @px nvarchar(MAX) = '{2}'
-            declare @tosx nvarchar(MAX) = '{5}'
-            declare @msp nvarchar(MAX) = '%{3}%'
-            declare @tenpx nvarchar(MAX) = (select ten_phanxuong from md_phanxuong where md_phanxuong_id = @px)
-            declare @tento nvarchar(MAX) = (select ten_to from md_phanxuong_to where md_to_id = @tosx)
+
+            declare @tbl table (
+	            donhang nvarchar(MAX)
+	            , ngayxonghang datetime
+	            , ma_sanpham nvarchar(MAX)
+	            , v2 decimal(18,3)
+	            , dh decimal(18,3)
+	            , dl decimal(18,3)
+	            , cl decimal(18,3)
+	            , loaisp nvarchar(MAX)
+            )
+
+            insert into @tbl
             select 
-                QQ.*,
-                (
-                    case
-                        when
-                            QQ.slconlai <= 0
-                        then
-                            'OK'
-                        else
-                            '-'
-                    end
-                ) as trangthai,
-                (
-                    case
-                        when
-                            QQ.thanhtienCP < 0
-                        then
-                            0
-                        else
-                            QQ.thanhtienCP
-                    end
-                ) as thanhtien
-            from (
-                select
-	                Q.loaihang,
-                    Q.donhang,
-	                Q.mahang,
-	                Q.slchiato,
-                    Q.sllayton,
-                    Q.sldalam,
-	                (
-                        case
-                            when 
-                                Q.sttHT = Q.stt
-                            then 
-                                Q.slchiato + Q.sllayton - Q.sldalam
-                            else 
-                                Q.slchiato - Q.sldalam
-                        end
-                    ) as slconlai,
-                    (
-                        case
-                            when 
-                                Q.sttHT = Q.stt
-                            then 
-                                (Q.sldalam - Q.sllayton) * Q.dongia
-                            else 
-                                Q.sldalam * Q.dongia
-                        end
-                    ) as thanhtienCP,
-	                Q.ngaytrienkhai,
-                    Q.ngaygiaohang,
-                    Q.dongia,
-                    @tenpx as px,
-                    @tento as tsx
-                from
-                (
-	                select
-					    dhpx.donhang_thamchieu as donhang,
-					    sp.ma_sanpham as mahang,
-					    tsx.ngaybatdausx as ngaytrienkhai,
-                        lsx.ngayketthuc as ngaygiaohang,
-					    cdh.sl_chiato as slchiato,
-                        nnl.code_cl as loaihang,
-                        isnull(
-                            (
-                                select top 1 isnull(lht.sl_layton, 0) 
-                                from md_lenhsanxuat_tosx_dklht (nolock) lht
-                                where 
-                                    lht.md_lenhsanxuat_tosx_id = cdh.md_lenhsanxuat_tosx_id
-                                    and lht.md_sanpham_id = cdh.md_sanpham_id
-                                    and isnull(tsx.phieulayht,'') != ''
-                            )
-                        , 0) as sllayton,
-					    tsx.stt,
-                        (
-                            select top 1 tsx2.stt
-                            from md_lenhsanxuat_tosx (nolock) tsx2
-		                    where 
-                                tsx2.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
-                                and tsx2.hoatdong = 1
-                            order by tsx2.stt desc
-                        ) as sttHT,
-					    (
-                            case 
-                                when tsx.stt = 0 
-                                then isnull(cdh.sl_dahoanthanh, 0) 
-                                else isnull(cdh.sl_dagiao, 0) 
-                            end
-                        ) as sldalam,
-                        cdh.gianhancong as dongia
-	                FROM
-	                    md_lenhsanxuat (nolock) lsx 
-	                    left join
-		                    md_lenhsanxuat_tosx (nolock) tsx 
-		                    on tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id 
-	                    left join
-		                    md_lenhsanxuat_tosx_cdh (nolock) cdh 
-		                    on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id 
-	                    left join
-		                    md_sanpham (nolock) sp 
-		                    on sp.md_sanpham_id = cdh.md_sanpham_id
-                        left join
-		                    md_chungloai (nolock) nnl 
-		                    on nnl.md_chungloai_id = sp.md_nhomnangluc_id 
-	                    left join
-		                    md_dondathangphanxuong (nolock) dhpx 
-		                    on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id 
-	                WHERE
-	                    1 = 1 
-	                    and cdh.md_sanpham_id = sp.md_sanpham_id 
-	                    and lsx.ngayketthuc between @tungay and @denngay 
-	                    and lsx.md_phanxuong_id = @px 
-	                    and tsx.md_phanxuong_to_id = @tosx 
-	                    and sp.ma_sanpham like @msp 
-                        {6} {7}
-                )Q
-            )QQ
+	            dsdh.so_po as donhang
+	            , dsdh.hangiaohang_po as ngayxonghang
+	            , sp.ma_sanpham
+	            , (case when dh.anco_check = 1 then dh.v2/dh.sl_dathang else dh.v2 end) as v2
+	            , (isnull(dh.sl_dathang, 0) - isnull(dh.sl_giamhanngach, 0)) as dh
+	            , isnull(dh.sl_dagiao, 0) as dl
+	            , isnull(dh.sl_conlai, 0) as cl
+	            , substring(sp.ma_sanpham, 0, 3) as loaisp
+            from
+	            c_danhsachdathang dsdh
+	            left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
             where
-                1=1 {4}
-            order by
-	            QQ.ngaygiaohang, QQ.donhang, QQ.mahang
+	            dsdh.md_trangthai_id = 'DAXULY'
+	            and dsdh.hangiaohang_po between @tungay and @denngay
+
+            select
+	            A.*,
+	            (A.dh51 + A.dh52 + A.dh53 + A.dh81ch + A.dh81bg + A.dh99) as dhTongcong,
+	            (A.dl51 + A.dl52 + A.dl53 + A.dl81ch + A.dl81bg + A.dl99) as dlTongcong,
+	            (A.cl51 + A.cl52 + A.cl53 + A.cl81ch + A.cl81bg + A.cl99) as clTongcong,
+                N'Từ {0} đến {1}' as thang_nam
+            from ( 
+	            select 
+		            A.donhang,
+                    A.ngayxonghang,
+		            sum(isnull(A.dh51, 0)) as dh51,
+		            sum(isnull(A.dl51, 0)) as dl51,
+		            sum(isnull(A.cl51, 0)) as cl51,
+		            sum(isnull(A.dh52, 0)) as dh52,
+		            sum(isnull(A.dl52, 0)) as dl52,
+		            sum(isnull(A.cl52, 0)) as cl52,
+		            sum(isnull(A.dh53, 0)) as dh53,
+		            sum(isnull(A.dl53, 0)) as dl53,
+		            sum(isnull(A.cl53, 0)) as cl53,
+		            sum(isnull(A.dh81ch, 0)) as dh81ch,
+		            sum(isnull(A.dl81ch, 0)) as dl81ch,
+		            sum(isnull(A.cl81ch, 0)) as cl81ch,
+		            sum(isnull(A.dh81bg, 0)) as dh81bg,
+		            sum(isnull(A.dl81bg, 0)) as dl81bg,
+		            sum(isnull(A.cl81bg, 0)) as cl81bg,
+		            sum(isnull(A.dh99, 0)) as dh99,
+		            sum(isnull(A.dl99, 0)) as dl99,
+		            sum(isnull(A.cl99, 0)) as cl99
+	            from (
+		            select 
+			            a.donhang,
+                        a.ngayxonghang,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '51'
+			            ) as dh51,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '51'
+			            )  as dl51,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '51'
+			            )  as cl51,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '52'
+			            ) as dh52,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '52'
+			            )  as dl52,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '52'
+			            )  as cl52,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '53'
+			            ) as dh53,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '53'
+			            )  as dl53,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '53'
+			            )  as cl53,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '81' and a.ma_sanpham not like N'%F%'
+			            ) as dh81ch,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '81' and a.ma_sanpham not like N'%F%'
+			            )  as dl81ch,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '81' and a.ma_sanpham not like N'%F%'
+			            )  as cl81ch,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '81' and a.ma_sanpham like N'%F%'
+			            ) as dh81bg,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '81' and a.ma_sanpham like N'%F%'
+			            )  as dl81bg,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '81' and a.ma_sanpham like N'%F%'
+			            )  as cl81bg,
+			            (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '99'
+			            ) as dh99,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '99'
+			            )  as dl99,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '99'
+			            )  as cl99
+		            from
+			            @tbl a
+		            group by
+			            a.loaisp, a.donhang, a.ma_sanpham, a.ngayxonghang
+	            ) A
+	            group by
+		            A.donhang, A.ngayxonghang
+            )A
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
