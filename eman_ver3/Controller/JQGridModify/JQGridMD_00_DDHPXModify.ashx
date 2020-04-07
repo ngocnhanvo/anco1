@@ -437,6 +437,10 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi: Dòng " + object_.sochungtu + " đã Hủy không thể Hiệu lực lại.";
                 }
+                else if(object_.md_trangthai_id == "KETTHUC")
+                {
+                    msg = "Lỗi: Dòng " + object_.sochungtu + " đã kết thúc.";
+                }
                 else if (string.IsNullOrEmpty(ngay_hieuluc))
                 {
                     msg = "Lỗi: Hãy chọn ngày bắt đầu sản xuất.";
