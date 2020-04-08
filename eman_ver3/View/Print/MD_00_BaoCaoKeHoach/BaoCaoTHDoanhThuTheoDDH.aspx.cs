@@ -18,8 +18,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tổng Hợp Doanh Thu Theo ĐĐH.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
-        //viewReport(report, sql);
-        Response.Write(sql);
+        viewReport(report, sql);
+        //Response.Write(sql);
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
