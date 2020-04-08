@@ -94,58 +94,52 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 			            dsdh.so_po as donhang
 			            , dsdh.hangiaohang_po as ngayxonghang
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '51'
 			            ) as c51
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '52'
 			            ) as c52
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '53'
 			            ) as c53
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
 					            and sp.ma_sanpham not like N'%F%'
 			            ) as c81CH
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
 					            and sp.ma_sanpham like N'%F%'
 			            ) as c81BG
 			            , (
-				            select sum(cdh.sl_dagiao * cdh.gianhap)
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
-					            cdh.sl_dagiao > 0
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '99'
 			            ) as c99
@@ -153,7 +147,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 		            from
 			            c_danhsachdathang dsdh
 		            where
-			            dsdh.md_trangthai_id = 'DAXULY'
+			            dsdh.trangthai = 'HIEULUC'
 			            and dsdh.hangiaohang_po between @tungay and @denngay
             )A
             order by
