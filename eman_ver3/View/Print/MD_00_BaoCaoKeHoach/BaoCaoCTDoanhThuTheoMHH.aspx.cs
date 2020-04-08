@@ -69,6 +69,11 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
 
         var tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
         var den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
+        string donhang = context.Request.QueryString["donhang"];
+        string masp = context.Request.QueryString["masp"];
+
+        donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dsdh.so_po like N'{0}'", donhang);
+        masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
 
         string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
@@ -91,6 +96,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
 	            where 
 		            dsdh.sl_dagiao > 0
                     and dsdh.han_giaohang between @tungay and @denngay
+                    {3}
 	            group by
 		            sp.ma_sanpham
 		            , sp.mota_tiengviet
@@ -102,6 +108,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
+        , donhang
+        , masp
         );
 		return sql;
     }

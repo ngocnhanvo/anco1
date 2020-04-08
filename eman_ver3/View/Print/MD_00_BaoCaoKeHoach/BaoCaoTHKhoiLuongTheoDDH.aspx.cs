@@ -192,13 +192,11 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
         var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
         string denngay = context.Request.QueryString["den"];
-        string px = context.Request.QueryString["px"];
-        string tosx = context.Request.QueryString["tosx"];
-        string msp = context.Request.QueryString["msp"];
-        string trangthai = context.Request.QueryString["trangthai"];
         string donhang = context.Request.QueryString["donhang"];
-        string loaihang = context.Request.QueryString["loaihang"];
+        string masp = context.Request.QueryString["masp"];
 
+        donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dsdh.so_po like N'{0}'", donhang);
+        masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
         DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
         DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
 
@@ -234,6 +232,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
             where
 	            dsdh.md_trangthai_id = 'DAXULY'
 	            and dsdh.hangiaohang_po between @tungay and @denngay
+                {2}
 
             select
 	            A.*,
@@ -350,12 +349,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
-        , px
-        , string.IsNullOrEmpty(msp) ? "-" : msp
-        , string.IsNullOrEmpty(trangthai) ? "" : trangthai == "OK" ? "and QQ.slconlai <= 0" : "and QQ.slconlai > 0"
-        , tosx
-        , string.IsNullOrEmpty(donhang) ? "" : string.Format("and dhpx.donhang_thamchieu = N'{0}'", donhang)
-        , string.IsNullOrEmpty(loaihang) ? "" : string.Format("and nnl.code_cl = N'{0}'", loaihang)
+        , donhang
+        , masp
         );
         return sql;
     }

@@ -83,8 +83,11 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTinhHinhXuatHang
         var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
         string denngay = context.Request.QueryString["den"];
-        string tosx = context.Request.QueryString["tosx"];
+        string donhang = context.Request.QueryString["donhang"];
+        string masp = context.Request.QueryString["masp"];
 
+        donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dsdh.so_po like N'{0}'", donhang);
+        masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
         var tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
         var den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
 
@@ -119,12 +122,14 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTinhHinhXuatHang
             where
 	            dsdh.md_trangthai_id = 'DAXULY'
 	            and dh.han_giaohang between @tungay and @denngay
+                {2} {3}
             order by
                 dh.han_giaohang, dsdh.so_po
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
-        , tosx
+        , donhang
+        , masp
         );
         return sql;
     }
