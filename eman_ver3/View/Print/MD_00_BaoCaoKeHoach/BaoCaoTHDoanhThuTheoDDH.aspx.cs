@@ -18,8 +18,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tổng Hợp Doanh Thu Theo ĐĐH.repx");
         var report = XtraReport.FromFile(file, true);
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+        //viewReport(report, sql);
+        Response.Write(sql);
     }
 
     public void viewReport(XtraReport report, String SqlQuery)
@@ -98,6 +98,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '51'
 			            ) as c51
@@ -106,6 +107,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '52'
 			            ) as c52
@@ -114,6 +116,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '53'
 			            ) as c53
@@ -122,6 +125,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
 					            and sp.ma_sanpham not like N'%F%'
@@ -131,6 +135,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
 					            and sp.ma_sanpham like N'%F%'
@@ -140,6 +145,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 				            from c_dongdsdh cdh
 				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 				            where
+                                1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '99'
 			            ) as c99
