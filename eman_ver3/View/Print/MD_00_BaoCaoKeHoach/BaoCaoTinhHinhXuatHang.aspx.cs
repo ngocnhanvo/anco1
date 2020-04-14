@@ -122,6 +122,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTinhHinhXuatHang
             where
 	            dsdh.md_trangthai_id = 'DAXULY'
 	            and dh.han_giaohang between @tungay and @denngay
+                dh.sl_dagiao > 0
                 {2} {3}
             order by
                 dh.han_giaohang, dsdh.so_po
