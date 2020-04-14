@@ -48,6 +48,13 @@ public class PrintAnco2
         }
         return sothapphan;
     }
+
+    public static string Replace0ToHyphen(string sothapphan) 
+    {
+        sothapphan = sothapphan.Substring(1, sothapphan.Length - 2);
+        //return "{0:#,#.####;-0;-}";
+        return string.Format("{{{0};-0;-}}", sothapphan);
+    }
 }
 public class InfoPrint
 {

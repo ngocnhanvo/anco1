@@ -14,6 +14,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTinhHinhXuatHang
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tình Hình Xuất Hàng.repx");
         var report = XtraReport.FromFile(file, true);
@@ -94,38 +95,42 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTinhHinhXuatHang
         string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'{0} 00:00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59:59',103);
-
+            
             select 
-	            dsdh.so_po as donhang
-	            , sp.ma_sanpham as mahang
-	            , sp.mota_tiengviet as tensp
-	            , dvtsp.ten_dvt as dvt
-	            , (dh.sl_dathang - isnull(dh.sl_giamhanngach, 0)) as dh
-	            , dh.sl_dagiao as daxuat
-	            , dh.sl_conlai as conlai
-	            , (
-		            select top 1 xb.ngaychuyen
-		            from md_xuatban xb
-		            inner join md_xuatban_cdh cdh on cdh.md_xuatban_id = xb.md_xuatban_id
-		            where cdh.md_sanpham_id = sp.md_sanpham_id
-			            and cdh.sl_daxuat > 0
-			            and cdh.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-			            and xb.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-		            order by xb.ngaychuyen desc
-	            ) as ngayxuat
-                , N'Từ {0} đến {1}' as thang_nam
-            from
-	            c_danhsachdathang dsdh
-	            left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
-	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-            where
-	            dsdh.md_trangthai_id = 'DAXULY'
-	            and dh.han_giaohang between @tungay and @denngay
-                and dh.sl_dagiao > 0
-                {2} {3}
+                A.*
+            from (
+                select 
+	                dsdh.so_po as donhang
+	                , sp.ma_sanpham as mahang
+	                , sp.mota_tiengviet as tensp
+	                , dvtsp.ten_dvt as dvt
+	                , (isnull(dh.sl_dathang, 0) - isnull(dh.sl_giamhanngach, 0)) as dh
+	                , dh.sl_dagiao as daxuat
+	                , dh.sl_conlai as conlai
+	                , (
+		                select top 1 xb.ngaychuyen
+		                from md_xuatban xb
+		                inner join md_xuatban_cdh cdh on cdh.md_xuatban_id = xb.md_xuatban_id
+		                where cdh.md_sanpham_id = sp.md_sanpham_id
+			                and cdh.sl_daxuat > 0
+			                and cdh.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+			                and xb.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+		                order by xb.ngaychuyen desc
+	                ) as ngayxuat
+                    , N'Từ {0} đến {1}' as thang_nam
+                from
+	                c_danhsachdathang dsdh
+	                left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+	                left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
+	                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                where
+	                dsdh.md_trangthai_id = 'DAXULY'
+	                and dh.han_giaohang between @tungay and @denngay
+                    and dh.sl_dagiao > 0
+                    {2} {3}
+            )A
             order by
-                dh.han_giaohang, dsdh.so_po
+                A.ngayxuat, A.donhang
 		"
         , tu.ToString("dd/MM/yyyy")
         , den.ToString("dd/MM/yyyy")
