@@ -211,28 +211,42 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
 	            , v2 decimal(18,3)
 	            , dh decimal(18,3)
 	            , dl decimal(18,3)
-	            , cl decimal(18,3)
 	            , loaisp nvarchar(MAX)
+                , cl decimal(18,3)
             )
 
             insert into @tbl
             select 
-	            dsdh.so_po as donhang
-	            , dsdh.hangiaohang_po as ngayxonghang
-	            , sp.ma_sanpham
-	            , (case when dh.anco_check = 1 then dh.v2/dh.sl_dathang else dh.v2 end) as v2
-	            , (isnull(dh.sl_dathang, 0) - isnull(dh.sl_giamhanngach, 0)) as dh
-	            , isnull(dh.sl_dagiao, 0) as dl
-	            , isnull(dh.sl_conlai, 0) as cl
-	            , substring(sp.ma_sanpham, 0, 3) as loaisp
-            from
-	            c_danhsachdathang dsdh
-	            left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
-            where
-	            dsdh.md_trangthai_id = 'DAXULY'
-	            and dsdh.hangiaohang_po between @tungay and @denngay
-                {2}
+                A.*
+                , A.dh - isnull(A.dl, 0) as cl
+            from (
+                select 
+	                dsdh.so_po as donhang
+	                , dsdh.hangiaohang_po as ngayxonghang
+	                , sp.ma_sanpham
+	                , (case when dh.anco_check = 1 then dh.v2/dh.sl_dathang else dh.v2 end) as v2
+	                , (isnull(dh.sl_dathang, 0) - isnull(dh.sl_giamhanngach, 0)) as dh
+	                , (
+		                select sum(isnull(soluong_dachuyen, 0)) 
+		                from md_vanchuyennoibo_cdvc cdvc
+		                inner join md_vanchuyennoibo vcnb on vcnb.md_vanchuyennoibo_id = cdvc.md_vanchuyennoibo_id
+		                where 
+			                cdvc.md_sanpham_id = dh.md_sanpham_id
+			                and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+			                and cdvc.tenhang = dsdh.so_po
+			                and vcnb.loaichuyen = 'VANCNBCTKGH'
+			                and cdvc.soluong_dachuyen > 0
+	                ) as dl
+	                , substring(sp.ma_sanpham, 0, 3) as loaisp
+                from
+	                c_danhsachdathang dsdh
+	                left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+	                left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
+                where
+	                dsdh.trangthai in ('SOANTHAO','HIEULUC')
+	                and dsdh.hangiaohang_po between @tungay and @denngay
+                    {2}
+            )A
 
             select
 	            A.*,

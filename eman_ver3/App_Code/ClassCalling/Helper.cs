@@ -130,6 +130,8 @@ public static class Helper
     {
         var pathRp = pathReport(report.DisplayName + ".pdf");
         report.ExportToPdf(pathRp["link"]);
-        HttpContext.Current.Response.Redirect(pathRp["linkView"] + "?" + Guid.NewGuid());
+
+        string url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + pathRp["linkView"] + "?" + Guid.NewGuid();
+        HttpContext.Current.Response.Redirect(url);
     }
 }
