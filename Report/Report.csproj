@@ -140,6 +140,9 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Compile Include="Report\[SX] Phiếu Xuất Kho.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,6 +150,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\[SX] Vật tư theo đơn đặt hàng PX.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\[SX] Thẻ Giao Việc Sản Xuất.cs">
@@ -327,6 +333,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>lenhXuatKho.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Phiếu Xuất Kho.resx">
+      <DependentUpon>[SX] Phiếu Xuất Kho.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.resx">
       <DependentUpon>[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs</DependentUpon>
     </EmbeddedResource>
@@ -335,6 +344,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.resx">
       <DependentUpon>[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\[SX] Vật tư theo đơn đặt hàng PX.resx">
+      <DependentUpon>[SX] Vật tư theo đơn đặt hàng PX.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\[SX] Thẻ Giao Việc Sản Xuất.resx">
       <DependentUpon>[SX] Thẻ Giao Việc Sản Xuất.cs</DependentUpon>
