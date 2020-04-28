@@ -397,15 +397,15 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                     msg = @"false#Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
                 else if (xnb.bosung == 4)
                 {
-                    //var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
-                    //var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
-                    //var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
-                    //    s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
-                    //    & s.md_sanpham_id == object_.md_sanpham_id
-                    //    ).FirstOrDefault();
+                    var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
+                    var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                    var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                        s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                        & s.md_sanpham_id == object_.md_sanpham_id
+                        ).FirstOrDefault();
 
-                    //if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
-                    //    msg = @"false#Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
+                    if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
+                        msg = @"false#Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
                 }
             }
 
