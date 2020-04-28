@@ -94,7 +94,8 @@ namespace jqGridHelper
                             str += String.Format("{0} CONVERT(nvarchar, {1}, 103) >= N'{2}' ", groupOp, item.Field, item.Data);
                             break;
                         case "bw":
-                            str += String.Format("{0} {1} LIKE N'%{2}%' ", groupOp, item.Field, item.Data.Replace("[","[[]"));
+                            item.Data = item.Data.Contains("%") ? item.Data : "%" + item.Data + "%";
+                            str += String.Format("{0} {1} LIKE N'{2}' ", groupOp, item.Field, item.Data.Replace("[","[[]"));
                             break;
                         case "bn":
                             str += String.Format("{0} CONVERT(nvarchar, {1}, 103) LIKE N'%{2}' ", groupOp, item.Field, item.Data);
