@@ -124,6 +124,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 	            1=1
 	            and lsx.ngayketthuc between @tungay and @denngay
 	            and px.ma_phanxuong in ('PX1', 'PX2')
+                {2}                
 
             select 
 	            A.*,
