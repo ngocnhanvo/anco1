@@ -11,6 +11,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tiến Độ Sản Xuất.repx");
         var report = XtraReport.FromFile(file, true);
@@ -55,6 +56,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
             tbl.Rows[lastRow]["sumSlmai"] = tbl.Compute("sum(slmai)", string.Empty);
             tbl.Rows[lastRow]["sumSlhoantat"] = tbl.Compute("sum(slhoantat)", string.Empty);
 
+            var sldhpx_cell = report.Report.FindControl("sldhpx", true);
+            var sllayton_cell = report.Report.FindControl("sllayton", true);
             var slduc_cell = report.Report.FindControl("slduc", true);
             var slbancat_cell = report.Report.FindControl("slbancat", true);
             var slmai_cell = report.Report.FindControl("slmai", true);
@@ -66,6 +69,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
             var sumSlmai_cell = report.Report.FindControl("sumSlmai", true);
             var sumSlhoantat_cell = report.Report.FindControl("sumSlhoantat", true);
 
+            sldhpx_cell.DataBindings[0].FormatString =
+            sllayton_cell.DataBindings[0].FormatString =
             slduc_cell.DataBindings[0].FormatString =
             slbancat_cell.DataBindings[0].FormatString =
             slmai_cell.DataBindings[0].FormatString =
@@ -192,7 +197,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 			            A.mspMS, 
 			            A.mspBT,
 			            (
-				            select sum(B.sllayton)
+				            select sum(isnull(B.sllayton, 0))
 				            from @tbl B
 				            where 
 					            B.mahang = A.mahang
@@ -200,7 +205,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					            and B.px = A.px
 			            ) as sllayton,
 			            (
-				            select sum(B.sldaHT)
+				            select sum(isnull(B.sldaHT, 0))
 				            from @tbl B
 				            where 
 					            B.mahang = A.mahang
@@ -209,7 +214,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					            and B.stt = 0
 			            ) as slduc,
 			            (
-				            select sum(B.sldaG)
+				            select sum(isnull(B.sldaG, 0))
 				            from @tbl B
 				            where 
 					            B.mahang = A.mahang
@@ -218,7 +223,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					            and B.stt = 1
 			            ) as slbancat,
 			            (
-				            select sum(B.sldaG)
+				            select sum(isnull(B.sldaG, 0))
 				            from @tbl B
 				            where 
 					            B.mahang = A.mahang

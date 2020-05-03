@@ -559,7 +559,7 @@ namespace XtraReportSerialization
             // 
             this.ptduc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ptduc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptduc", "{0:#,#}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptduc", "{0:#,#;-0;-}")});
             this.ptduc.Dpi = 100F;
             this.ptduc.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ptduc.Name = "ptduc";
@@ -593,7 +593,7 @@ namespace XtraReportSerialization
             // 
             this.ptbancat.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ptbancat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptbancat", "{0:#,#}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptbancat", "{0:#,#;-0;-}")});
             this.ptbancat.Dpi = 100F;
             this.ptbancat.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ptbancat.Name = "ptbancat";
@@ -627,7 +627,7 @@ namespace XtraReportSerialization
             // 
             this.ptmai.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ptmai.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptmai", "{0:#,#}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "ptmai", "{0:#,#;-0;-}")});
             this.ptmai.Dpi = 100F;
             this.ptmai.Font = new System.Drawing.Font("Tahoma", 9F);
             this.ptmai.Name = "ptmai";
@@ -661,7 +661,7 @@ namespace XtraReportSerialization
             // 
             this.pthoantat.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.pthoantat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "pthoantat", "{0:#,#}")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "pthoantat", "{0:#,#;-0;-}")});
             this.pthoantat.Dpi = 100F;
             this.pthoantat.Font = new System.Drawing.Font("Tahoma", 9F);
             this.pthoantat.Name = "pthoantat";
