@@ -171,10 +171,10 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 
             select 
 	            A.*,
-	            A.slduc / slpl * 100 as ptduc,
-	            A.slbancat / slpl * 100 as ptbancat,
-	            A.slmai / slpl * 100 as ptmai,
-	            A.slhoantat / slpl * 100 as pthoantat,
+	            (case when A.slpl > 0 then A.slduc / A.slpl * 100 else 0 end) as ptduc,
+	            (case when A.slpl > 0 then A.slbancat / A.slpl * 100 else 0 end) as ptbancat,
+	            (case when A.slpl > 0 then A.slmai / A.slpl * 100 else 0 end) as ptmai,
+	            (case when A.slpl > 0 then A.slhoantat / A.slpl * 100 else 0 end) as pthoantat,
                 N'Từ {0} đến {1}' as thang_nam
             from (
 	            select
