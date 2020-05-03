@@ -128,10 +128,10 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 
             select 
 	            A.*,
-	            A.cbmDuc/A.cbmAll as duc,
-	            A.cbmBancat/A.cbmAll as bancat,
-	            A.cbmMai/A.cbmAll as mai,
-	            A.cbmHoantat/A.cbmAll as hoantat,
+	            (case when A.cbmAll > 0 then A.cbmDuc/A.cbmAll else 0 end) as duc,
+	            (case when A.cbmAll > 0 then A.cbmBancat/A.cbmAll else 0 end) as bancat,
+	            (case when A.cbmAll > 0 then A.cbmMai/A.cbmAll else 0 end) as mai,
+	            (case when A.cbmAll > 0 then A.cbmHoantat/A.cbmAll else 0 end) as hoantat,
                  N'Từ {0} đến {1}' as thang_nam
             from (
 	            select 
