@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành</title>
+    <title>[eMan] Báo Cáo Chi Tiết Doanh Thu Theo Mã Hàng Hóa</title>
     <style type="text/css">
         .reportDEX > .dxmLite.dxm-ltr{
             display:table;
