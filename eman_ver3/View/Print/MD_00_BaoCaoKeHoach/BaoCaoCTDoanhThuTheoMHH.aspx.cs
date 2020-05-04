@@ -14,6 +14,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Chi Tiết Doanh Thu Theo MHH.repx");
         var report = XtraReport.FromFile(file, true);
@@ -48,6 +49,11 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
             tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
             tbl.Rows[lastRow]["sum_soluong"] = tbl.Compute("sum(soluong)", string.Empty);
             tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
+
+            var soluong_cell = report.Report.FindControl("soluong", true);
+            var sum_soluong_cell = report.Report.FindControl("sum_soluong", true);
+            soluong_cell.DataBindings[0].FormatString =
+            sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
             report.DataSource = ds;
             report.DataAdapter = da;
             if (string.IsNullOrEmpty(inPDF))
@@ -78,31 +84,60 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
         string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 00:00',103);
-            select 
-	            A.*
-	            , (A.dongia * A.soluong) as thanhtien
+            
+            select
+                A.*
+                , (A.dongia * A.soluong) as thanhtien
                 , N'Từ {0} đến {1}' as thang_nam
             from (
-	            select
-		            sp.ma_sanpham as mahang
-		            , sp.mota_tiengviet as tensp
-		            , dvtsp.ten_dvt as dvt
-		            , sum(isnull(dsdh.sl_dagiao, 0)) as soluong
-		            , isnull(dsdh.gianhap, 0) as dongia
-	            from 
-		            c_dongdsdh dsdh
-		            left join md_sanpham sp on sp.md_sanpham_id = dsdh.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            where 
-		            dsdh.sl_dagiao > 0
-                    and dsdh.han_giaohang between @tungay and @denngay
-                    {3}
-	            group by
-		            sp.ma_sanpham
-		            , sp.mota_tiengviet
-		            , dvtsp.ten_dvt
-		            , dsdh.gianhap
+                select 
+	                A.mahang,
+		            A.tensp,
+		            A.dvt,
+                    sum(A.soluong2) as soluong,
+                    A.dongia
+                from (
+	                select
+		                sp.ma_sanpham as mahang
+		                , sp.mota_tiengviet as tensp
+		                , dvtsp.ten_dvt as dvt
+                        , isnull((
+		                    select sum(isnull(soluong_dachuyen, 0)) 
+		                    from md_vanchuyennoibo_cdvc cdvc
+		                    inner join md_vanchuyennoibo vcnb on vcnb.md_vanchuyennoibo_id = cdvc.md_vanchuyennoibo_id
+		                    where 
+			                    cdvc.md_sanpham_id = sp.md_sanpham_id
+			                    and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+			                    and vcnb.loaichuyen = 'VANCNBCTKGH'
+			                    and cdvc.soluong_dachuyen > 0
+                                and cdvc.tenhang = dsdh.so_po
+	                    ), 0) as soluong2
+		                , isnull(dh.gianhap, 0) as dongia
+	                from 
+		                c_dongdsdh dh
+                        left join c_danhsachdathang dsdh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+		                left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
+		                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+	                where 
+		                dsdh.trangthai in ('HIEULUC','KETTHUC')
+                        and dsdh.hangiaohang_po between @tungay and @denngay
+                        {3}
+	                group by
+		                sp.ma_sanpham
+                        , sp.md_donvitinhsanpham_id
+                        , sp.md_sanpham_id
+		                , sp.mota_tiengviet
+		                , dvtsp.ten_dvt
+		                , dh.gianhap
+                        , dsdh.so_po
+                )A
+                group by
+                    A.mahang,
+                    A.tensp,
+                    A.dvt,
+                    A.dongia
             )A
+            where A.soluong > 0
             order by
 	            A.mahang
 		"

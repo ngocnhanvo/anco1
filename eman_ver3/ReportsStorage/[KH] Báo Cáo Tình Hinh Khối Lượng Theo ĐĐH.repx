@@ -631,7 +631,7 @@ namespace XtraReportSerialization
             this.dh52.StylePriority.UsePadding = false;
             this.dh52.StylePriority.UseTextAlignment = false;
             this.dh52.Text = "dh52";
-            this.dh52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dh52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dh52.Weight = 0.15992963261784585D;
             // 
             // dl52
@@ -648,7 +648,7 @@ namespace XtraReportSerialization
             this.dl52.StylePriority.UsePadding = false;
             this.dl52.StylePriority.UseTextAlignment = false;
             this.dl52.Text = "dl52";
-            this.dl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dl52.Weight = 0.15992940493207958D;
             // 
             // cl52
@@ -667,7 +667,7 @@ namespace XtraReportSerialization
             this.cl52.StylePriority.UseTextAlignment = false;
             xrSummary2.FormatString = "sothapphan";
             this.cl52.Summary = xrSummary2;
-            this.cl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.cl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.cl52.Weight = 0.15992998099060582D;
             // 
             // dh53
@@ -684,7 +684,7 @@ namespace XtraReportSerialization
             this.dh53.StylePriority.UsePadding = false;
             this.dh53.StylePriority.UseTextAlignment = false;
             this.dh53.Text = "dh53";
-            this.dh53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dh53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dh53.Weight = 0.15992940188397756D;
             // 
             // dl53
@@ -701,7 +701,7 @@ namespace XtraReportSerialization
             this.dl53.StylePriority.UsePadding = false;
             this.dl53.StylePriority.UseTextAlignment = false;
             this.dl53.Text = "dl53";
-            this.dl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dl53.Weight = 0.15992951638819014D;
             // 
             // cl53
@@ -718,7 +718,7 @@ namespace XtraReportSerialization
             this.cl53.StylePriority.UseFont = false;
             this.cl53.StylePriority.UsePadding = false;
             this.cl53.StylePriority.UseTextAlignment = false;
-            this.cl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.cl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.cl53.Weight = 0.15993020765842167D;
             // 
             // dh81ch
@@ -735,7 +735,7 @@ namespace XtraReportSerialization
             this.dh81ch.StylePriority.UsePadding = false;
             this.dh81ch.StylePriority.UseTextAlignment = false;
             this.dh81ch.Text = "dh81ch";
-            this.dh81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dh81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dh81ch.Weight = 0.159929288937343D;
             // 
             // dl81ch
@@ -752,7 +752,7 @@ namespace XtraReportSerialization
             this.dl81ch.StylePriority.UsePadding = false;
             this.dl81ch.StylePriority.UseTextAlignment = false;
             this.dl81ch.Text = "dl81ch";
-            this.dl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dl81ch.Weight = 0.15992974794413598D;
             // 
             // cl81ch
@@ -769,7 +769,7 @@ namespace XtraReportSerialization
             this.cl81ch.StylePriority.UsePadding = false;
             this.cl81ch.StylePriority.UseTextAlignment = false;
             this.cl81ch.Text = "cl81ch";
-            this.cl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.cl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.cl81ch.Weight = 0.15992997024680086D;
             // 
             // dh81bg
@@ -786,7 +786,7 @@ namespace XtraReportSerialization
             this.dh81bg.StylePriority.UsePadding = false;
             this.dh81bg.StylePriority.UseTextAlignment = false;
             this.dh81bg.Text = "dh81bg";
-            this.dh81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dh81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dh81bg.Weight = 0.15992974296374918D;
             // 
             // dl81bg
@@ -803,7 +803,7 @@ namespace XtraReportSerialization
             this.dl81bg.StylePriority.UsePadding = false;
             this.dl81bg.StylePriority.UseTextAlignment = false;
             this.dl81bg.Text = "dl81bg";
-            this.dl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dl81bg.Weight = 0.15992951411051803D;
             // 
             // cl81bg
@@ -820,7 +820,7 @@ namespace XtraReportSerialization
             this.cl81bg.StylePriority.UsePadding = false;
             this.cl81bg.StylePriority.UseTextAlignment = false;
             this.cl81bg.Text = "cl81bg";
-            this.cl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.cl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.cl81bg.Weight = 0.15992997574242865D;
             // 
             // dh99
@@ -837,7 +837,7 @@ namespace XtraReportSerialization
             this.dh99.StylePriority.UsePadding = false;
             this.dh99.StylePriority.UseTextAlignment = false;
             this.dh99.Text = "dh99";
-            this.dh99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dh99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dh99.Weight = 0.15992951528815258D;
             // 
             // dl99
@@ -854,7 +854,7 @@ namespace XtraReportSerialization
             this.dl99.StylePriority.UsePadding = false;
             this.dl99.StylePriority.UseTextAlignment = false;
             this.dl99.Text = "dl99";
-            this.dl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dl99.Weight = 0.15992997633124606D;
             // 
             // cl99
@@ -871,7 +871,7 @@ namespace XtraReportSerialization
             this.cl99.StylePriority.UsePadding = false;
             this.cl99.StylePriority.UseTextAlignment = false;
             this.cl99.Text = "cl99";
-            this.cl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.cl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.cl99.Weight = 0.15992974600597165D;
             // 
             // dhTongcong
@@ -888,7 +888,7 @@ namespace XtraReportSerialization
             this.dhTongcong.StylePriority.UsePadding = false;
             this.dhTongcong.StylePriority.UseTextAlignment = false;
             this.dhTongcong.Text = "dhTongcong";
-            this.dhTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dhTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dhTongcong.Weight = 0.15992974605503979D;
             // 
             // dlTongcong
@@ -905,7 +905,7 @@ namespace XtraReportSerialization
             this.dlTongcong.StylePriority.UsePadding = false;
             this.dlTongcong.StylePriority.UseTextAlignment = false;
             this.dlTongcong.Text = "dlTongcong";
-            this.dlTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.dlTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.dlTongcong.Weight = 0.15992882438593187D;
             // 
             // clTongcong
@@ -922,7 +922,7 @@ namespace XtraReportSerialization
             this.clTongcong.StylePriority.UsePadding = false;
             this.clTongcong.StylePriority.UseTextAlignment = false;
             this.clTongcong.Text = "clTongcong";
-            this.clTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.clTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.clTongcong.Weight = 0.1599299765029843D;
             // 
             // ghichu
@@ -2435,7 +2435,7 @@ namespace XtraReportSerialization
             this.sum_dh52.StylePriority.UsePadding = false;
             this.sum_dh52.StylePriority.UseTextAlignment = false;
             this.sum_dh52.Text = "xrTableCell74";
-            this.sum_dh52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dh52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dh52.Weight = 0.15992974062881957D;
             // 
             // sum_dl52
@@ -2452,7 +2452,7 @@ namespace XtraReportSerialization
             this.sum_dl52.StylePriority.UsePadding = false;
             this.sum_dl52.StylePriority.UseTextAlignment = false;
             this.sum_dl52.Text = "xrTableCell75";
-            this.sum_dl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dl52.Weight = 0.159929174508669D;
             // 
             // sum_cl52
@@ -2471,7 +2471,7 @@ namespace XtraReportSerialization
             this.sum_cl52.StylePriority.UseTextAlignment = false;
             xrSummary6.FormatString = "sothapphan";
             this.sum_cl52.Summary = xrSummary6;
-            this.sum_cl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_cl52.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_cl52.Weight = 0.15993009620231108D;
             // 
             // sum_dh53
@@ -2488,7 +2488,7 @@ namespace XtraReportSerialization
             this.sum_dh53.StylePriority.UsePadding = false;
             this.sum_dh53.StylePriority.UseTextAlignment = false;
             this.sum_dh53.Text = "xrTableCell76";
-            this.sum_dh53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dh53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dh53.Weight = 0.15992940188397756D;
             // 
             // sum_dl53
@@ -2505,7 +2505,7 @@ namespace XtraReportSerialization
             this.sum_dl53.StylePriority.UsePadding = false;
             this.sum_dl53.StylePriority.UseTextAlignment = false;
             this.sum_dl53.Text = "xrTableCell77";
-            this.sum_dl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dl53.Weight = 0.15992974681160066D;
             // 
             // sum_cl53
@@ -2522,7 +2522,7 @@ namespace XtraReportSerialization
             this.sum_cl53.StylePriority.UseFont = false;
             this.sum_cl53.StylePriority.UsePadding = false;
             this.sum_cl53.StylePriority.UseTextAlignment = false;
-            this.sum_cl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_cl53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_cl53.Weight = 0.15992997723501115D;
             // 
             // sum_dh81ch
@@ -2539,7 +2539,7 @@ namespace XtraReportSerialization
             this.sum_dh81ch.StylePriority.UsePadding = false;
             this.sum_dh81ch.StylePriority.UseTextAlignment = false;
             this.sum_dh81ch.Text = "xrTableCell79";
-            this.sum_dh81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dh81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dh81ch.Weight = 0.15992928893734298D;
             // 
             // sum_dl81ch
@@ -2556,7 +2556,7 @@ namespace XtraReportSerialization
             this.sum_dl81ch.StylePriority.UsePadding = false;
             this.sum_dl81ch.StylePriority.UseTextAlignment = false;
             this.sum_dl81ch.Text = "xrTableCell80";
-            this.sum_dl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dl81ch.Weight = 0.15992974794413598D;
             // 
             // sum_cl81ch
@@ -2573,7 +2573,7 @@ namespace XtraReportSerialization
             this.sum_cl81ch.StylePriority.UsePadding = false;
             this.sum_cl81ch.StylePriority.UseTextAlignment = false;
             this.sum_cl81ch.Text = "xrTableCell81";
-            this.sum_cl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_cl81ch.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_cl81ch.Weight = 0.15993020067021135D;
             // 
             // sum_dh81bg
@@ -2590,7 +2590,7 @@ namespace XtraReportSerialization
             this.sum_dh81bg.StylePriority.UsePadding = false;
             this.sum_dh81bg.StylePriority.UseTextAlignment = false;
             this.sum_dh81bg.Text = "xrTableCell82";
-            this.sum_dh81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dh81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dh81bg.Weight = 0.1599295125403386D;
             // 
             // sum_dl81bg
@@ -2607,7 +2607,7 @@ namespace XtraReportSerialization
             this.sum_dl81bg.StylePriority.UsePadding = false;
             this.sum_dl81bg.StylePriority.UseTextAlignment = false;
             this.sum_dl81bg.Text = "xrTableCell83";
-            this.sum_dl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dl81bg.Weight = 0.159929514110518D;
             // 
             // sum_cl81bg
@@ -2624,7 +2624,7 @@ namespace XtraReportSerialization
             this.sum_cl81bg.StylePriority.UsePadding = false;
             this.sum_cl81bg.StylePriority.UseTextAlignment = false;
             this.sum_cl81bg.Text = "xrTableCell84";
-            this.sum_cl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_cl81bg.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_cl81bg.Weight = 0.15992997574242868D;
             // 
             // sum_dh99
@@ -2641,7 +2641,7 @@ namespace XtraReportSerialization
             this.sum_dh99.StylePriority.UsePadding = false;
             this.sum_dh99.StylePriority.UseTextAlignment = false;
             this.sum_dh99.Text = "xrTableCell85";
-            this.sum_dh99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dh99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dh99.Weight = 0.15992951528815261D;
             // 
             // sum_dl99
@@ -2658,7 +2658,7 @@ namespace XtraReportSerialization
             this.sum_dl99.StylePriority.UsePadding = false;
             this.sum_dl99.StylePriority.UseTextAlignment = false;
             this.sum_dl99.Text = "xrTableCell86";
-            this.sum_dl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dl99.Weight = 0.15992997633124603D;
             // 
             // sum_cl99
@@ -2675,7 +2675,7 @@ namespace XtraReportSerialization
             this.sum_cl99.StylePriority.UsePadding = false;
             this.sum_cl99.StylePriority.UseTextAlignment = false;
             this.sum_cl99.Text = "xrTableCell87";
-            this.sum_cl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_cl99.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_cl99.Weight = 0.15992997642938217D;
             // 
             // sum_dhTongcong
@@ -2692,7 +2692,7 @@ namespace XtraReportSerialization
             this.sum_dhTongcong.StylePriority.UsePadding = false;
             this.sum_dhTongcong.StylePriority.UseTextAlignment = false;
             this.sum_dhTongcong.Text = "sum_dhTongcong";
-            this.sum_dhTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dhTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dhTongcong.Weight = 0.15992974605503976D;
             // 
             // sum_dlTongcong
@@ -2709,7 +2709,7 @@ namespace XtraReportSerialization
             this.sum_dlTongcong.StylePriority.UsePadding = false;
             this.sum_dlTongcong.StylePriority.UseTextAlignment = false;
             this.sum_dlTongcong.Text = "sum_dlTongcong";
-            this.sum_dlTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_dlTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_dlTongcong.Weight = 0.15992859396252135D;
             // 
             // sum_clTongcong
@@ -2726,7 +2726,7 @@ namespace XtraReportSerialization
             this.sum_clTongcong.StylePriority.UsePadding = false;
             this.sum_clTongcong.StylePriority.UseTextAlignment = false;
             this.sum_clTongcong.Text = "xrTableCell78";
-            this.sum_clTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_clTongcong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_clTongcong.Weight = 0.15992997650298432D;
             // 
             // xrTableCell107

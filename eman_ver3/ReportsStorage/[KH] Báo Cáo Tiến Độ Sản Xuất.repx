@@ -140,7 +140,6 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRLabel xrLabel30;
         private DevExpress.XtraReports.UI.XRTable xrTable3;
         private DevExpress.XtraReports.UI.XRTableRow xrTableRow3;
-        private DevExpress.XtraReports.UI.XRTableCell sumSllayton;
         private DevExpress.XtraReports.UI.XRTableCell sumSlduc;
         private DevExpress.XtraReports.UI.XRTableCell xxxx;
         private DevExpress.XtraReports.UI.XRLabel xrLabel29;
@@ -183,7 +182,6 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell sum_thanhtien;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell13;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell2;
-        private DevExpress.XtraReports.UI.XRTableCell xrTableCell8;
         private DevExpress.XtraReports.UI.XRTable xrTable1;
         private DevExpress.XtraReports.UI.XRTableRow xrTableRow1;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell5;
@@ -201,7 +199,6 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell54;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell59;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell20;
-        private DevExpress.XtraReports.UI.XRTableCell sllayton;
         private DevExpress.XtraReports.UI.XRTableCell ptduc;
         private DevExpress.XtraReports.UI.XRTableCell slbancat;
         private DevExpress.XtraReports.UI.XRTableCell ptbancat;
@@ -216,6 +213,12 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell sumSlmai;
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell72;
         private DevExpress.XtraReports.UI.XRTableCell sumSlhoantat;
+        private DevExpress.XtraReports.UI.XRTableCell slltDuc;
+        private DevExpress.XtraReports.UI.XRTableCell slltHT;
+        private DevExpress.XtraReports.UI.XRTableCell xrTableCell8;
+        private DevExpress.XtraReports.UI.XRTableCell xrTableCell60;
+        private DevExpress.XtraReports.UI.XRTableCell sumSlltDuc;
+        private DevExpress.XtraReports.UI.XRTableCell sumSlltHT;
         private string _resourceString;
         public VNN_report304()
         {
@@ -247,14 +250,15 @@ namespace XtraReportSerialization
             this.mahang = new DevExpress.XtraReports.UI.XRTableCell();
             this.ngayxonghang = new DevExpress.XtraReports.UI.XRTableCell();
             this.sldhpx = new DevExpress.XtraReports.UI.XRTableCell();
-            this.sllayton = new DevExpress.XtraReports.UI.XRTableCell();
             this.slduc = new DevExpress.XtraReports.UI.XRTableCell();
+            this.slltDuc = new DevExpress.XtraReports.UI.XRTableCell();
             this.ptduc = new DevExpress.XtraReports.UI.XRTableCell();
             this.slbancat = new DevExpress.XtraReports.UI.XRTableCell();
             this.ptbancat = new DevExpress.XtraReports.UI.XRTableCell();
             this.slmai = new DevExpress.XtraReports.UI.XRTableCell();
             this.ptmai = new DevExpress.XtraReports.UI.XRTableCell();
             this.slhoantat = new DevExpress.XtraReports.UI.XRTableCell();
+            this.slltHT = new DevExpress.XtraReports.UI.XRTableCell();
             this.pthoantat = new DevExpress.XtraReports.UI.XRTableCell();
             this.ghichu = new DevExpress.XtraReports.UI.XRTableCell();
             this.ReportHeader = new DevExpress.XtraReports.UI.ReportHeaderBand();
@@ -277,7 +281,6 @@ namespace XtraReportSerialization
             this.xrTableCell4 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell13 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell2 = new DevExpress.XtraReports.UI.XRTableCell();
-            this.xrTableCell8 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell9 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTable1 = new DevExpress.XtraReports.UI.XRTable();
             this.xrTableRow1 = new DevExpress.XtraReports.UI.XRTableRow();
@@ -289,12 +292,14 @@ namespace XtraReportSerialization
             this.xrTableCell16 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableRow10 = new DevExpress.XtraReports.UI.XRTableRow();
             this.xrTableCell55 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableCell8 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell52 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell56 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell53 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell58 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell54 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell59 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrTableCell60 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell20 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell17 = new DevExpress.XtraReports.UI.XRTableCell();
             this.ReportFooter = new DevExpress.XtraReports.UI.ReportFooterBand();
@@ -351,14 +356,15 @@ namespace XtraReportSerialization
             this.xrTableCell68 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell57 = new DevExpress.XtraReports.UI.XRTableCell();
             this.sumSldhpx = new DevExpress.XtraReports.UI.XRTableCell();
-            this.sumSllayton = new DevExpress.XtraReports.UI.XRTableCell();
             this.sumSlduc = new DevExpress.XtraReports.UI.XRTableCell();
+            this.sumSlltDuc = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell70 = new DevExpress.XtraReports.UI.XRTableCell();
             this.sumSlbancat = new DevExpress.XtraReports.UI.XRTableCell();
             this.sum_c81CH = new DevExpress.XtraReports.UI.XRTableCell();
             this.sumSlmai = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell72 = new DevExpress.XtraReports.UI.XRTableCell();
             this.sumSlhoantat = new DevExpress.XtraReports.UI.XRTableCell();
+            this.sumSlltHT = new DevExpress.XtraReports.UI.XRTableCell();
             this.sum_thanhtien = new DevExpress.XtraReports.UI.XRTableCell();
             this.xxxx = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrLabel29 = new DevExpress.XtraReports.UI.XRLabel();
@@ -421,14 +427,15 @@ namespace XtraReportSerialization
             this.mahang,
             this.ngayxonghang,
             this.sldhpx,
-            this.sllayton,
             this.slduc,
+            this.slltDuc,
             this.ptduc,
             this.slbancat,
             this.ptbancat,
             this.slmai,
             this.ptmai,
             this.slhoantat,
+            this.slltHT,
             this.pthoantat,
             this.ghichu});
             this.xrTableRow2.Dpi = 100F;
@@ -520,27 +527,9 @@ namespace XtraReportSerialization
             this.sldhpx.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sldhpx.Weight = 0.18514876822446819D;
             // 
-            // sllayton
-            // 
-            this.sllayton.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.sllayton.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sllayton")});
-            this.sllayton.Dpi = 100F;
-            this.sllayton.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.sllayton.Name = "sllayton";
-            this.sllayton.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
-            this.sllayton.StylePriority.UseBorders = false;
-            this.sllayton.StylePriority.UseFont = false;
-            this.sllayton.StylePriority.UsePadding = false;
-            this.sllayton.StylePriority.UseTextAlignment = false;
-            this.sllayton.Text = "sllayton";
-            this.sllayton.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sllayton.Weight = 0.18514852155855205D;
-            // 
             // slduc
             // 
-            this.slduc.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
+            this.slduc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.slduc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "slduc")});
             this.slduc.Dpi = 100F;
@@ -553,7 +542,24 @@ namespace XtraReportSerialization
             this.slduc.StylePriority.UseTextAlignment = false;
             this.slduc.Text = "slduc";
             this.slduc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.slduc.Weight = 0.18231409551932795D;
+            this.slduc.Weight = 0.1745684328288129D;
+            // 
+            // slltDuc
+            // 
+            this.slltDuc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.slltDuc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "slltDuc")});
+            this.slltDuc.Dpi = 100F;
+            this.slltDuc.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.slltDuc.Name = "slltDuc";
+            this.slltDuc.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
+            this.slltDuc.StylePriority.UseBorders = false;
+            this.slltDuc.StylePriority.UseFont = false;
+            this.slltDuc.StylePriority.UsePadding = false;
+            this.slltDuc.StylePriority.UseTextAlignment = false;
+            this.slltDuc.Text = "slltDuc";
+            this.slltDuc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+            this.slltDuc.Weight = 0.20289647394374055D;
             // 
             // ptduc
             // 
@@ -570,7 +576,7 @@ namespace XtraReportSerialization
             this.ptduc.StylePriority.UseTextAlignment = false;
             this.ptduc.Text = "100";
             this.ptduc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.ptduc.Weight = 0.17966943676203168D;
+            this.ptduc.Weight = 0.13226207659229572D;
             // 
             // slbancat
             // 
@@ -587,7 +593,7 @@ namespace XtraReportSerialization
             this.slbancat.StylePriority.UseTextAlignment = false;
             this.slbancat.Text = "slbancat";
             this.slbancat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.slbancat.Weight = 0.17966926467003283D;
+            this.slbancat.Weight = 0.17192370010877353D;
             // 
             // ptbancat
             // 
@@ -604,7 +610,7 @@ namespace XtraReportSerialization
             this.ptbancat.StylePriority.UseTextAlignment = false;
             this.ptbancat.Text = "100";
             this.ptbancat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.ptbancat.Weight = 0.17966926943221481D;
+            this.ptbancat.Weight = 0.13224899488654074D;
             // 
             // slmai
             // 
@@ -621,7 +627,7 @@ namespace XtraReportSerialization
             this.slmai.StylePriority.UseTextAlignment = false;
             this.slmai.Text = "slmai";
             this.slmai.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.slmai.Weight = 0.17990406141152859D;
+            this.slmai.Weight = 0.17192014555337129D;
             // 
             // ptmai
             // 
@@ -638,7 +644,7 @@ namespace XtraReportSerialization
             this.ptmai.StylePriority.UseTextAlignment = false;
             this.ptmai.Text = "100";
             this.ptmai.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.ptmai.Weight = 0.17943454394441621D;
+            this.ptmai.Weight = 0.13225238863028743D;
             // 
             // slhoantat
             // 
@@ -655,7 +661,24 @@ namespace XtraReportSerialization
             this.slhoantat.StylePriority.UseTextAlignment = false;
             this.slhoantat.Text = "slhoantat";
             this.slhoantat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.slhoantat.Weight = 0.17990432553209354D;
+            this.slhoantat.Weight = 0.17192369894806692D;
+            // 
+            // slltHT
+            // 
+            this.slltHT.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.slltHT.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "slltHT")});
+            this.slltHT.Dpi = 100F;
+            this.slltHT.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.slltHT.Name = "slltHT";
+            this.slltHT.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
+            this.slltHT.StylePriority.UseBorders = false;
+            this.slltHT.StylePriority.UseFont = false;
+            this.slltHT.StylePriority.UsePadding = false;
+            this.slltHT.StylePriority.UseTextAlignment = false;
+            this.slltHT.Text = "slltHT";
+            this.slltHT.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+            this.slltHT.Weight = 0.20289647308067033D;
             // 
             // pthoantat
             // 
@@ -672,7 +695,7 @@ namespace XtraReportSerialization
             this.pthoantat.StylePriority.UseTextAlignment = false;
             this.pthoantat.Text = "pthoantat";
             this.pthoantat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.pthoantat.Weight = 0.17943422166615472D;
+            this.pthoantat.Weight = 0.13225535592379298D;
             // 
             // ghichu
             // 
@@ -887,7 +910,6 @@ namespace XtraReportSerialization
             this.xrTableCell4,
             this.xrTableCell13,
             this.xrTableCell2,
-            this.xrTableCell8,
             this.xrTableCell9,
             this.xrTableCell17});
             this.xrTableRow5.Dpi = 100F;
@@ -979,24 +1001,6 @@ namespace XtraReportSerialization
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell2.Weight = 0.18528909950645989D;
             // 
-            // xrTableCell8
-            // 
-            this.xrTableCell8.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right) 
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrTableCell8.Dpi = 100F;
-            this.xrTableCell8.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.xrTableCell8.Multiline = true;
-            this.xrTableCell8.Name = "xrTableCell8";
-            this.xrTableCell8.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
-            this.xrTableCell8.StylePriority.UseBorders = false;
-            this.xrTableCell8.StylePriority.UseFont = false;
-            this.xrTableCell8.StylePriority.UsePadding = false;
-            this.xrTableCell8.StylePriority.UseTextAlignment = false;
-            this.xrTableCell8.Text = "SL\r\nlấy tồn";
-            this.xrTableCell8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell8.Weight = 0.18528909887166897D;
-            // 
             // xrTableCell9
             // 
             this.xrTableCell9.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
@@ -1012,7 +1016,7 @@ namespace XtraReportSerialization
             this.xrTableCell9.StylePriority.UsePadding = false;
             this.xrTableCell9.StylePriority.UseTextAlignment = false;
             this.xrTableCell9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell9.Weight = 1.4410924721043805D;
+            this.xrTableCell9.Weight = 1.6263815709760494D;
             // 
             // xrTable1
             // 
@@ -1024,7 +1028,7 @@ namespace XtraReportSerialization
             this.xrTableRow1,
             this.xrTableRow9,
             this.xrTableRow10});
-            this.xrTable1.SizeF = new System.Drawing.SizeF(543.4275F, 75F);
+            this.xrTable1.SizeF = new System.Drawing.SizeF(613.4274F, 75F);
             this.xrTable1.StylePriority.UseBorders = false;
             // 
             // xrTableRow1
@@ -1062,7 +1066,7 @@ namespace XtraReportSerialization
             this.xrTableCell50.Name = "xrTableCell50";
             this.xrTableCell50.StylePriority.UseBorders = false;
             this.xrTableCell50.Text = "Đúc";
-            this.xrTableCell50.Weight = 0.85350982666015618D;
+            this.xrTableCell50.Weight = 1.0669927152565004D;
             // 
             // xrTableCell49
             // 
@@ -1071,7 +1075,7 @@ namespace XtraReportSerialization
             this.xrTableCell49.Name = "xrTableCell49";
             this.xrTableCell49.StylePriority.UseBorders = false;
             this.xrTableCell49.Text = "Bắn cát";
-            this.xrTableCell49.Weight = 0.85350982666015618D;
+            this.xrTableCell49.Weight = 0.64003424144366883D;
             // 
             // xrTableCell51
             // 
@@ -1080,7 +1084,7 @@ namespace XtraReportSerialization
             this.xrTableCell51.Name = "xrTableCell51";
             this.xrTableCell51.StylePriority.UseBorders = false;
             this.xrTableCell51.Text = "Mài";
-            this.xrTableCell51.Weight = 0.85350982666015618D;
+            this.xrTableCell51.Weight = 0.64003424144366861D;
             // 
             // xrTableCell16
             // 
@@ -1089,18 +1093,20 @@ namespace XtraReportSerialization
             this.xrTableCell16.Name = "xrTableCell16";
             this.xrTableCell16.StylePriority.UseBorders = false;
             this.xrTableCell16.Text = "Hoàn tất";
-            this.xrTableCell16.Weight = 0.85350982666015618D;
+            this.xrTableCell16.Weight = 1.0669781084967869D;
             // 
             // xrTableRow10
             // 
             this.xrTableRow10.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
             this.xrTableCell55,
+            this.xrTableCell8,
             this.xrTableCell52,
             this.xrTableCell56,
             this.xrTableCell53,
             this.xrTableCell58,
             this.xrTableCell54,
             this.xrTableCell59,
+            this.xrTableCell60,
             this.xrTableCell20});
             this.xrTableRow10.Dpi = 100F;
             this.xrTableRow10.Name = "xrTableRow10";
@@ -1113,7 +1119,17 @@ namespace XtraReportSerialization
             this.xrTableCell55.Name = "xrTableCell55";
             this.xrTableCell55.StylePriority.UseBorders = false;
             this.xrTableCell55.Text = "SL";
-            this.xrTableCell55.Weight = 0.42675470514585134D;
+            this.xrTableCell55.Weight = 0.36175848841757469D;
+            // 
+            // xrTableCell8
+            // 
+            this.xrTableCell8.Borders = DevExpress.XtraPrinting.BorderSide.Left;
+            this.xrTableCell8.Dpi = 100F;
+            this.xrTableCell8.Multiline = true;
+            this.xrTableCell8.Name = "xrTableCell8";
+            this.xrTableCell8.StylePriority.UseBorders = false;
+            this.xrTableCell8.Text = "SL lấy tồn";
+            this.xrTableCell8.Weight = 0.42693066358492443D;
             // 
             // xrTableCell52
             // 
@@ -1122,7 +1138,7 @@ namespace XtraReportSerialization
             this.xrTableCell52.Name = "xrTableCell52";
             this.xrTableCell52.StylePriority.UseBorders = false;
             this.xrTableCell52.Text = "%";
-            this.xrTableCell52.Weight = 0.42675470514585134D;
+            this.xrTableCell52.Weight = 0.27830340165461265D;
             // 
             // xrTableCell56
             // 
@@ -1131,7 +1147,7 @@ namespace XtraReportSerialization
             this.xrTableCell56.Name = "xrTableCell56";
             this.xrTableCell56.StylePriority.UseBorders = false;
             this.xrTableCell56.Text = "SL";
-            this.xrTableCell56.Weight = 0.42675506203309721D;
+            this.xrTableCell56.Weight = 0.36175848438197888D;
             // 
             // xrTableCell53
             // 
@@ -1140,7 +1156,7 @@ namespace XtraReportSerialization
             this.xrTableCell53.Name = "xrTableCell53";
             this.xrTableCell53.StylePriority.UseBorders = false;
             this.xrTableCell53.Text = "%";
-            this.xrTableCell53.Weight = 0.42675506203309721D;
+            this.xrTableCell53.Weight = 0.27826849631880646D;
             // 
             // xrTableCell58
             // 
@@ -1149,7 +1165,7 @@ namespace XtraReportSerialization
             this.xrTableCell58.Name = "xrTableCell58";
             this.xrTableCell58.StylePriority.UseBorders = false;
             this.xrTableCell58.Text = "SL";
-            this.xrTableCell58.Weight = 0.42731228198636667D;
+            this.xrTableCell58.Weight = 0.36175850315983432D;
             // 
             // xrTableCell54
             // 
@@ -1158,7 +1174,7 @@ namespace XtraReportSerialization
             this.xrTableCell54.Name = "xrTableCell54";
             this.xrTableCell54.StylePriority.UseBorders = false;
             this.xrTableCell54.Text = "%";
-            this.xrTableCell54.Weight = 0.42731228198636667D;
+            this.xrTableCell54.Weight = 0.27828290954882157D;
             // 
             // xrTableCell59
             // 
@@ -1167,7 +1183,16 @@ namespace XtraReportSerialization
             this.xrTableCell59.Name = "xrTableCell59";
             this.xrTableCell59.StylePriority.UseBorders = false;
             this.xrTableCell59.Text = "SL";
-            this.xrTableCell59.Weight = 0.42619760415499713D;
+            this.xrTableCell59.Weight = 0.36175848244835762D;
+            // 
+            // xrTableCell60
+            // 
+            this.xrTableCell60.Borders = DevExpress.XtraPrinting.BorderSide.Left;
+            this.xrTableCell60.Dpi = 100F;
+            this.xrTableCell60.Name = "xrTableCell60";
+            this.xrTableCell60.StylePriority.UseBorders = false;
+            this.xrTableCell60.Text = "SL lấy tồn";
+            this.xrTableCell60.Weight = 0.42693068183107119D;
             // 
             // xrTableCell20
             // 
@@ -1176,7 +1201,7 @@ namespace XtraReportSerialization
             this.xrTableCell20.Name = "xrTableCell20";
             this.xrTableCell20.StylePriority.UseBorders = false;
             this.xrTableCell20.Text = "%";
-            this.xrTableCell20.Weight = 0.42619760415499713D;
+            this.xrTableCell20.Weight = 0.27828919529464297D;
             // 
             // xrTableCell17
             // 
@@ -1927,14 +1952,15 @@ namespace XtraReportSerialization
             this.xrTableCell68,
             this.xrTableCell57,
             this.sumSldhpx,
-            this.sumSllayton,
             this.sumSlduc,
+            this.sumSlltDuc,
             this.xrTableCell70,
             this.sumSlbancat,
             this.sum_c81CH,
             this.sumSlmai,
             this.xrTableCell72,
             this.sumSlhoantat,
+            this.sumSlltHT,
             this.sum_thanhtien,
             this.xxxx});
             this.xrTableRow3.Dpi = 100F;
@@ -2002,27 +2028,9 @@ namespace XtraReportSerialization
             this.sumSldhpx.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sumSldhpx.Weight = 0.18325457129717332D;
             // 
-            // sumSllayton
-            // 
-            this.sumSllayton.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.sumSllayton.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sumSllayton")});
-            this.sumSllayton.Dpi = 100F;
-            this.sumSllayton.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.sumSllayton.Multiline = true;
-            this.sumSllayton.Name = "sumSllayton";
-            this.sumSllayton.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
-            this.sumSllayton.StylePriority.UseBorders = false;
-            this.sumSllayton.StylePriority.UseFont = false;
-            this.sumSllayton.StylePriority.UsePadding = false;
-            this.sumSllayton.StylePriority.UseTextAlignment = false;
-            this.sumSllayton.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sumSllayton.Weight = 0.18325443148507523D;
-            // 
             // sumSlduc
             // 
-            this.sumSlduc.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
+            this.sumSlduc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.sumSlduc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sumSlduc")});
             this.sumSlduc.Dpi = 100F;
@@ -2035,7 +2043,24 @@ namespace XtraReportSerialization
             this.sumSlduc.StylePriority.UsePadding = false;
             this.sumSlduc.StylePriority.UseTextAlignment = false;
             this.sumSlduc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sumSlduc.Weight = 0.18044899710545598D;
+            this.sumSlduc.Weight = 0.17278257858901575D;
+            // 
+            // sumSlltDuc
+            // 
+            this.sumSlltDuc.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.sumSlltDuc.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sumSlltDuc")});
+            this.sumSlltDuc.Dpi = 100F;
+            this.sumSlltDuc.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.sumSlltDuc.Name = "sumSlltDuc";
+            this.sumSlltDuc.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
+            this.sumSlltDuc.StylePriority.UseBorders = false;
+            this.sumSlltDuc.StylePriority.UseFont = false;
+            this.sumSlltDuc.StylePriority.UsePadding = false;
+            this.sumSlltDuc.StylePriority.UseTextAlignment = false;
+            this.sumSlltDuc.Text = "sumSlltDuc";
+            this.sumSlltDuc.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+            this.sumSlltDuc.Weight = 0.20082098590070077D;
             // 
             // xrTableCell70
             // 
@@ -2050,7 +2075,7 @@ namespace XtraReportSerialization
             this.xrTableCell70.StylePriority.UseTextAlignment = false;
             this.xrTableCell70.Text = "x";
             this.xrTableCell70.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell70.Weight = 0.17783108469637687D;
+            this.xrTableCell70.Weight = 0.13090886499943705D;
             // 
             // sumSlbancat
             // 
@@ -2067,7 +2092,7 @@ namespace XtraReportSerialization
             this.sumSlbancat.StylePriority.UseTextAlignment = false;
             this.sumSlbancat.Text = "sumSlbancat";
             this.sumSlbancat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sumSlbancat.Weight = 0.17783156276737033D;
+            this.sumSlbancat.Weight = 0.17016490644731691D;
             // 
             // sum_c81CH
             // 
@@ -2082,7 +2107,7 @@ namespace XtraReportSerialization
             this.sum_c81CH.StylePriority.UseTextAlignment = false;
             this.sum_c81CH.Text = "x";
             this.sum_c81CH.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sum_c81CH.Weight = 0.17783124319686033D;
+            this.sum_c81CH.Weight = 0.1308960821790372D;
             // 
             // sumSlmai
             // 
@@ -2099,7 +2124,7 @@ namespace XtraReportSerialization
             this.sumSlmai.StylePriority.UseTextAlignment = false;
             this.sumSlmai.Text = "sumSlmai";
             this.sumSlmai.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sumSlmai.Weight = 0.17806372996645795D;
+            this.sumSlmai.Weight = 0.17016139039528261D;
             // 
             // xrTableCell72
             // 
@@ -2114,7 +2139,7 @@ namespace XtraReportSerialization
             this.xrTableCell72.StylePriority.UseTextAlignment = false;
             this.xrTableCell72.Text = "x";
             this.xrTableCell72.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell72.Weight = 0.17806325061069295D;
+            this.xrTableCell72.Weight = 0.13089943689296785D;
             // 
             // sumSlhoantat
             // 
@@ -2131,7 +2156,24 @@ namespace XtraReportSerialization
             this.sumSlhoantat.StylePriority.UseTextAlignment = false;
             this.sumSlhoantat.Text = "x";
             this.sumSlhoantat.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sumSlhoantat.Weight = 0.17759955380068909D;
+            this.sumSlhoantat.Weight = 0.1701649056708926D;
+            // 
+            // sumSlltHT
+            // 
+            this.sumSlltHT.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.sumSlltHT.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "sumSlltHT")});
+            this.sumSlltHT.Dpi = 100F;
+            this.sumSlltHT.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.sumSlltHT.Name = "sumSlltHT";
+            this.sumSlltHT.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
+            this.sumSlltHT.StylePriority.UseBorders = false;
+            this.sumSlltHT.StylePriority.UseFont = false;
+            this.sumSlltHT.StylePriority.UsePadding = false;
+            this.sumSlltHT.StylePriority.UseTextAlignment = false;
+            this.sumSlltHT.Text = "sumSlltHT";
+            this.sumSlltHT.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
+            this.sumSlltHT.Weight = 0.20082082508484786D;
             // 
             // sum_thanhtien
             // 
@@ -2146,7 +2188,7 @@ namespace XtraReportSerialization
             this.sum_thanhtien.StylePriority.UseTextAlignment = false;
             this.sum_thanhtien.Text = "x";
             this.sum_thanhtien.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.sum_thanhtien.Weight = 0.17759891465966909D;
+            this.sum_thanhtien.Weight = 0.13090279212914921D;
             // 
             // xxxx
             // 

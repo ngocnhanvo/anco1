@@ -445,7 +445,7 @@ namespace XtraReportSerialization
             this.soluong.StylePriority.UsePadding = false;
             this.soluong.StylePriority.UseTextAlignment = false;
             this.soluong.Text = "soluong";
-            this.soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.soluong.Weight = 0.30202057274908795D;
             // 
             // dongia
@@ -1615,7 +1615,7 @@ namespace XtraReportSerialization
             this.sum_soluong.StylePriority.UseFont = false;
             this.sum_soluong.StylePriority.UsePadding = false;
             this.sum_soluong.StylePriority.UseTextAlignment = false;
-            this.sum_soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
+            this.sum_soluong.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.sum_soluong.Weight = 0.29893088218317121D;
             // 
             // sum_c81CH
