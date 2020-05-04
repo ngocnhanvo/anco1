@@ -14,6 +14,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
+        sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tình Hinh Khối Lượng Theo ĐĐH.repx");
         var report = XtraReport.FromFile(file, true);
