@@ -90,52 +90,28 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoCTDoanhThuTheoMH
                 , (A.dongia * A.soluong) as thanhtien
                 , N'Từ {0} đến {1}' as thang_nam
             from (
-                select 
-	                A.mahang,
-		            A.tensp,
-		            A.dvt,
-                    sum(A.soluong2) as soluong,
-                    A.dongia
-                from (
-	                select
-		                sp.ma_sanpham as mahang
-		                , sp.mota_tiengviet as tensp
-		                , dvtsp.ten_dvt as dvt
-                        , isnull((
-		                    select sum(isnull(soluong_dachuyen, 0)) 
-		                    from md_vanchuyennoibo_cdvc cdvc
-		                    inner join md_vanchuyennoibo vcnb on vcnb.md_vanchuyennoibo_id = cdvc.md_vanchuyennoibo_id
-		                    where 
-			                    cdvc.md_sanpham_id = sp.md_sanpham_id
-			                    and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-			                    and vcnb.loaichuyen = 'VANCNBCTKGH'
-			                    and cdvc.soluong_dachuyen > 0
-                                and cdvc.tenhang = dsdh.so_po
-	                    ), 0) as soluong2
-		                , isnull(dh.gianhap, 0) as dongia
-	                from 
-		                c_dongdsdh dh
-                        left join c_danhsachdathang dsdh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-		                left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
-		                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	                where 
-		                dsdh.trangthai in ('HIEULUC','KETTHUC')
-                        and dsdh.hangiaohang_po between @tungay and @denngay
-                        {3}
-	                group by
-		                sp.ma_sanpham
-                        , sp.md_donvitinhsanpham_id
-                        , sp.md_sanpham_id
-		                , sp.mota_tiengviet
-		                , dvtsp.ten_dvt
-		                , dh.gianhap
-                        , dsdh.so_po
-                )A
-                group by
-                    A.mahang,
-                    A.tensp,
-                    A.dvt,
-                    A.dongia
+	            select
+		            sp.ma_sanpham as mahang
+		            , sp.mota_tiengviet as tensp
+		            , dvtsp.ten_dvt as dvt
+                    , sum(dh.sl_dathang - isnull(dh.sl_giamhanngach, 0)) as soluong
+		            , isnull(dh.gianhap, 0) as dongia
+	            from 
+		            c_dongdsdh dh
+                    left join c_danhsachdathang dsdh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+		            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
+		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+	            where 
+		            dsdh.trangthai in ('HIEULUC','KETTHUC')
+                    and dsdh.hangiaohang_po between @tungay and @denngay
+                    {3}
+	            group by
+		            sp.ma_sanpham
+                    , sp.md_donvitinhsanpham_id
+                    , sp.md_sanpham_id
+		            , sp.mota_tiengviet
+		            , dvtsp.ten_dvt
+		            , dh.gianhap
             )A
             where A.soluong > 0
             order by
