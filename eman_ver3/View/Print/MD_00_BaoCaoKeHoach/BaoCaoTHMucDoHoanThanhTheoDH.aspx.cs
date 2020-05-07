@@ -112,7 +112,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 			            lht.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
 			            and lht.md_sanpham_id = cdh.md_sanpham_id
 			            and isnull(tsx.phieulayht, '') != ''
-	            ), 0) as sllayton
+	            ), 0) as sllt
             from 
 	            md_lenhsanxuat lsx
 	            left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
@@ -128,17 +128,27 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 
             select 
 	            A.*,
-	            (case when A.cbmAll > 0 then A.cbmDuc/A.cbmAll else 0 end) as duc,
-	            (case when A.cbmAll > 0 then A.cbmBancat/A.cbmAll else 0 end) as bancat,
-	            (case when A.cbmAll > 0 then A.cbmMai/A.cbmAll else 0 end) as mai,
+	            (case when A.cbmAll > 0 then (A.cbmDuc + A.cbmTonDuc + A.cbmTonHT)/A.cbmAll else 0 end) as duc,
+	            (case when A.cbmAll > 0 then (A.cbmBancat + A.cbmTonHT)/A.cbmAll else 0 end) as bancat,
+	            (case when A.cbmAll > 0 then (A.cbmMai + A.cbmTonHT)/A.cbmAll else 0 end) as mai,
 	            (case when A.cbmAll > 0 then A.cbmHoantat/A.cbmAll else 0 end) as hoantat,
                  N'Từ {0} đến {1}' as thang_nam
             from (
 	            select 
 		            A.dhpx,
 		            A.ngayxonghang,
+                    (
+			            select sum(B.v2 * B.sllt)
+			            from @tbl B
+			            where B.dhpx = A.dhpx and B.stt = 0	
+		            ) as cbmTonDuc,
+                    (
+                        select sum(B.v2 * B.sllt)
+			            from @tbl B
+			            where B.dhpx = A.dhpx and B.stt = 9999
+		            ) as cbmTonHT,
 		            (
-			            select sum(B.v2 * (B.sldl + B.sllt))
+			            select sum(B.v2 * (B.sldl))
 			            from @tbl B
 			            where B.dhpx = A.dhpx and B.stt = 0	
 		            ) as cbmDuc,

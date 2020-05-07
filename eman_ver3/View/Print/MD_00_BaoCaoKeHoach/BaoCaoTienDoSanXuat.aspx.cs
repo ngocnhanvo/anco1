@@ -181,10 +181,10 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 
             select 
 	            A.*,
-	            (case when A.sldhpx > 0 then (A.slduc + A.slltDuc) / A.sldhpx * 100 else 0 end) as ptduc,
-	            (case when A.sldhpx > 0 then A.slbancat / A.sldhpx * 100 else 0 end) as ptbancat,
-	            (case when A.sldhpx > 0 then A.slmai / A.sldhpx * 100 else 0 end) as ptmai,
-	            (case when A.sldhpx > 0 then (A.slhoantat + A.slltHT) / A.sldhpx * 100 else 0 end) as pthoantat,
+	            (case when A.sldhpx > 0 then (A.slduc + A.slltDuc + A.slltHT) / A.sldhpx * 100 else 0 end) as ptduc,
+	            (case when A.sldhpx > 0 then (A.slbancat + A.slltHT) / A.sldhpx * 100 else 0 end) as ptbancat,
+	            (case when A.sldhpx > 0 then (A.slmai + A.slltHT) / A.sldhpx * 100 else 0 end) as ptmai,
+	            (case when A.sldhpx > 0 then A.slhoantat / A.sldhpx * 100 else 0 end) as pthoantat,
                 N'Từ {0} đến {1}' as thang_nam
 	        from ( 
 		        select 
@@ -212,7 +212,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        B.mahang = A.mahang
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
-                            and B.stt = 1
+                            and B.stt = 9999
 			        ) as slltHT,
 			        (
 				        select sum(isnull(B.sldaHT, 0))
