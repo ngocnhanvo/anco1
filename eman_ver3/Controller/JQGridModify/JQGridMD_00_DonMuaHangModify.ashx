@@ -228,8 +228,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         dmh.phieunhapkho = "Đã tạo phiếu";
                 }
             }
-			db.SaveChanges();
-			
+            db.SaveChanges();
+
             if (msg.Length <= 0)
             {
                 transaction.Commit();
@@ -449,15 +449,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Lỗi:Không tồn tại đối tác kinh doanh \"" + ma_dtkd + "\".";
             }
-            else if (object_.md_trangthai_id != "SOANTHAO")
-            {
-                msg = "false#Lỗi:Đối tượng không phải 'Soạn Thảo' không thể chỉnh sửa.";
-            }
-            else if (md_trangthai_id != "HIEULUC" & md_trangthai_id != "SOANTHAO")
+            else if (md_trangthai_id != "HIEULUC" & object_.md_trangthai_id == "SOANTHAO")
             {
                 msg = "false#Lỗi:Đối tượng chỉ có thể 'Hiệu Lực'.";
             }
 
+            
+            object_.mota = context.Request.Form["mota"];
             if (object_.md_trangthai_id == "HIEULUC")
             {
                 var ngaythanhtoan = VNN_Config.setDateTime(context.Request.Form["ngaythanhtoan"]);
@@ -465,8 +463,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                     object_.ngaythanhtoan = ngaythanhtoan;
                 else
                     msg = "false#Lỗi: Ngày thanh toán không đúng định dạng.";
-                object_.diadiem_giaohang = context.Request.Form["diadiem_giaohang"];
 
+                object_.diadiem_giaohang = context.Request.Form["diadiem_giaohang"];
                 if (msg.Length <= 0)
                     msg = @"true#Đã cập nhật ""Ngày thành toán"" và ""địa điểm giao hàng""";
             }
@@ -687,10 +685,6 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         msg = "true#Cập nhật thành công.";
                     }
                 }
-            }
-            else
-            {
-                msg = "false#Đơn mua hàng đã kết thúc.";
             }
         }
         catch (Exception ex)

@@ -118,15 +118,11 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
                 , (case when dsdh.anco_check = 1 then ddsdh.v2 else ddsdh.v2 * ddsdh.sl_dathang end) as v2
             from 
 	            c_danhsachdathang dsdh
-                , md_doitackinhdoanh dtkd
-                , md_sanpham sp
-	            , c_dongdsdh ddsdh
-                , md_donvitinhsanpham dvt
+                left join md_doitackinhdoanh dtkd on dtkd.ma_dtkd = 'BP-XUONG AN CO 2'
+	            left join c_dongdsdh ddsdh on dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
+                left join md_sanpham sp on ddsdh.md_sanpham_id = sp.md_sanpham_id
+                left join md_donvitinhsanpham dvt on sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
             where 1=1
-	            and dtkd.ma_dtkd = 'BP-XUONG AN CO 2'
-	            AND dsdh.c_danhsachdathang_id = ddsdh.c_danhsachdathang_id
-	            AND ddsdh.md_sanpham_id = sp.md_sanpham_id
-	            AND sp.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id
                 AND dsdh.c_danhsachdathang_id = N'{0}' order by sp.ma_sanpham asc"
             , c_danhsachdathang_id == null ? "" : c_danhsachdathang_id);
         return select;
