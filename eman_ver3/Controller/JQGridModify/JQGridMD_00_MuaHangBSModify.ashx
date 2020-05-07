@@ -260,11 +260,12 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = "false#Lỗi:Không tồn tại đối tác kinh doanh \"" + ma_dtkd + "\".";
             }
-            else if (md_trangthai_id != "HIEULUC" & md_trangthai_id != "SOANTHAO")
+            else if (md_trangthai_id != "HIEULUC" & object_.md_trangthai_id == "SOANTHAO")
             {
                 msg = "false#Lỗi:Đối tượng chỉ có thể 'Hiệu Lực'.";
             }
 
+            object_.mota = context.Request.Form["mota"];
             if (object_.md_trangthai_id == "HIEULUC")
             {
                 var ngaythanhtoan = VNN_Config.setDateTime(context.Request.Form["ngaythanhtoan"]);
@@ -478,10 +479,6 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         db.SaveChanges();
                     }
                 }
-            }
-            else
-            {
-                msg = "false#Đơn mua hàng đã kết thúc.";
             }
 
             if(msg.LastIndexOf("false#") <= -1)
