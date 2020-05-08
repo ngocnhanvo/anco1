@@ -181,7 +181,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 
             select 
 	            A.*,
-                (A.slhoantatCP - A.slltHT) as slhoantat,
+                (case when A.slhoantatCP >= A.slltHT then A.slhoantatCP - A.slltHT else 0 end) as slhoantat,
 	            (case when A.sldhpx > 0 then (A.slduc + A.slltDuc + A.slltHT) / A.sldhpx * 100 else 0 end) as ptduc,
 	            (case when A.sldhpx > 0 then (A.slbancat + A.slltHT) / A.sldhpx * 100 else 0 end) as ptbancat,
 	            (case when A.sldhpx > 0 then (A.slmai + A.slltHT) / A.sldhpx * 100 else 0 end) as ptmai,
@@ -197,7 +197,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 			        A.mspDT, 
 			        A.mspMS, 
 			        A.mspBT,
-			        (
+			        isnull((
 				        select sum(isnull(B.sllayton, 0))
 				        from @tbl B
 				        where 
@@ -205,8 +205,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
                             and B.stt = 0
-			        ) as slltDuc,
-                    (
+			        ), 0) as slltDuc,
+                    isnull((
 				        select sum(isnull(B.sllayton, 0))
 				        from @tbl B
 				        where 
@@ -214,8 +214,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
                             and B.stt = 9999
-			        ) as slltHT,
-			        (
+			        ), 0) as slltHT,
+			        isnull((
 				        select sum(isnull(B.sldaHT, 0))
 				        from @tbl B
 				        where 
@@ -223,8 +223,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
 					        and B.stt = 0
-			        ) as slduc,
-			        (
+			        ), 0) as slduc,
+			        isnull((
 				        select sum(isnull(B.sldaG, 0))
 				        from @tbl B
 				        where 
@@ -232,8 +232,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
 					        and B.stt = 1
-			        ) as slbancat,
-			        (
+			        ), 0) as slbancat,
+			        isnull((
 				        select sum(isnull(B.sldaG, 0))
 				        from @tbl B
 				        where 
@@ -241,8 +241,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
 					        and B.stt = (case when B.px = 'PX1' then 2 else 1 end)
-			        ) as slmai,
-			        (
+			        ), 0) as slmai,
+			        isnull((
 				        select sum(isnull(B.sldaG, 0))
 				        from @tbl B
 				        where 
@@ -250,7 +250,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 					        and B.dhpx = A.dhpx
 					        and B.px = A.px
 					        and B.stt = 9999
-			        ) as slhoantatCP
+			        ), 0) as slhoantatCP
 		        from @tbl A
 		        group by A.dhpx, A.mahang, A.ngayxonghang, A.px, A.sldhpx, A.mspDT, A.mspMS, A.mspBT
             )A
