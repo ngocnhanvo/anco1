@@ -72,48 +72,78 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
             select
-	            A.px
-                , A.tosx
-	            , isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0) - isnull((
-                    select sum(isnull(vtk.tienvtkhoan, 0) + isnull(vtk.tienvtvipham, 0)) 
-                    from md_vattukhoan (nolock) vtk
-                    where vtk.md_to_id = A.md_to_id and vtk.nam = {1} and thang = {0}
-                ), 0) as tienhang
-	            , N'Tháng {0}/năm {1}' as thang_nam
+                A.*,
+                A.tienhangTT -  A.tientonHT as tienhang,
+                N'Tháng {0}/năm {1}' as thang_nam
             from (
-	            select px.ten_phanxuong as px
-	            , tosx.ten_to as [tosx]
-                , tosx.md_to_id
-                , tosx.sapxep
-	            , (
-		            select sum(
-			            cdh.sl_daxuat * cdh.gianhancong
-		            )
-		            from md_xuatkhonb (nolock) xnb
-			            left join md_xuatkhonb_cdh (nolock) cdh on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
-			            left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
-		            where 
-			            ngaychuyen between @tungay and @denngay
-			            and xnb.bosung = 4
-			            and kho.md_to_id = tosx.md_to_id and isnull(hangton, 0) = 0
-	            ) as tienhang1
-	            , (
-		            select sum(
-			            cdh.soluong_dachuyen * cdh.gianhancong
-		            )
-		            from md_vanchuyennoibo (nolock) xnb
-			            left join md_vanchuyennoibo_cdvc (nolock) cdh on cdh.md_vanchuyennoibo_id = xnb.md_vanchuyennoibo_id
-			            left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
-		            where 
-			            ngaychuyen between @tungay and @denngay
-			            and xnb.loaichuyen = 'VANCNBCTKGH'
-			            and kho.md_to_id = tosx.md_to_id and isnull(hangton, 0) = 0
-	            ) as tienhang2
-	            FROM md_phanxuong (nolock) px
-	            left join md_phanxuong_to (nolock) tosx on tosx.md_phanxuong_id = px.md_phanxuong_id
-                where px.md_phanxuong_id = '{2}'
+                select
+	                A.*,
+                    isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0) - isnull((
+                        select sum(isnull(vtk.tienvtkhoan, 0) + isnull(vtk.tienvtvipham, 0)) 
+                        from md_vattukhoan (nolock) vtk
+                        where vtk.md_to_id = A.md_to_id and vtk.nam = {1} and thang = {0}
+                    ), 0) as tienhangTT, 
+                    isnull((
+                        select 
+                            sum(a.soluong_layton * a.gianhancong)
+                        from (
+                            select 
+                                dh.gianhancong
+                                , dh.soluong_layton
+                                , dh.lsx
+                                , dh.md_sanpham_id
+                                , ROW_NUMBER() OVER(PARTITION BY dh.lsx, dh.md_sanpham_id ORDER BY xnb.ngaychuyen ASC) as row
+			                FROM 
+				                md_vanchuyennoibo (nolock) xnb
+                                --left join md_vanchuyennoibo_cdvc (nolock) cdvc on xnb.md_vanchuyennoibo_id = cdvc.md_vanchuyennoibo_id
+				                left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				                left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
+			                where 
+				                xnb.loaichuyen = 'VANCNBCTKGH' 
+				                and kho.md_to_id = A.md_to_id
+                                --and cdvc.md_sanpham_id = dh.md_sanpham_id
+                                --and cdvc.soluong_dichchuyen > 0
+				                and xnb.ngaychuyen between @tungay and @denngay
+                                and isnull(dh.soluong_layton, 0) > 0
+                                and xnb.md_trangthai_id = 'HIEULUC'
+                        )a
+                        where a.row = 1
+                    ), 0) as tientonHT
+                from (
+	                select px.ten_phanxuong as px
+	                , tosx.ten_to as [tosx]
+                    , tosx.md_to_id
+                    , tosx.sapxep
+	                , (
+		                select sum(
+			                cdh.sl_daxuat * cdh.gianhancong
+		                )
+		                from md_xuatkhonb (nolock) xnb
+			                left join md_xuatkhonb_cdh (nolock) cdh on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
+			                left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
+		                where 
+			                ngaychuyen between @tungay and @denngay
+			                and xnb.bosung = 4
+			                and kho.md_to_id = tosx.md_to_id and isnull(hangton, 0) = 0
+	                ) as tienhang1
+	                , (
+		                select sum(
+			                cdh.soluong_dachuyen * cdh.gianhancong
+		                )
+		                from md_vanchuyennoibo (nolock) xnb
+			                left join md_vanchuyennoibo_cdvc (nolock) cdh on cdh.md_vanchuyennoibo_id = xnb.md_vanchuyennoibo_id
+			                left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
+		                where 
+			                ngaychuyen between @tungay and @denngay
+			                and xnb.loaichuyen = 'VANCNBCTKGH'
+			                and kho.md_to_id = tosx.md_to_id and isnull(hangton, 0) = 0
+	                ) as tienhang2
+	                FROM md_phanxuong (nolock) px
+	                left join md_phanxuong_to (nolock) tosx on tosx.md_phanxuong_id = px.md_phanxuong_id
+                    where px.md_phanxuong_id = '{2}'
+                )A        
             )A
-            where (isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0)) > 0
+            where A.tienhangTT -  A.tientonHT > 0
             order by A.sapxep
 		"
         , thang
