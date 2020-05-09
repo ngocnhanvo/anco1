@@ -222,7 +222,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             )C
             where C.slxuat > 0
             group by C.dongia, C.dvt, C.ma_hhvt, C.px, C.tsx, C.ma_to, C.thegiaoviecsx, C.ngaychungtu, C.sctPXK, C.ghichu
-            order by C.ngaychungtu, C.ma_hhvt, C.thegiaoviecsx
+            order by C.ngaychungtu, C.sctPXK, C.ma_hhvt, C.thegiaoviecsx
 		"
         , thang
         , nam
