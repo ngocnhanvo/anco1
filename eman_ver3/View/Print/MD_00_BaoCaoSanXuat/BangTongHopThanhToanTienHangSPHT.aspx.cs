@@ -74,19 +74,24 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
             select
 	            A.px
                 , A.tosx
-	            , isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0) as tienhang
+	            , isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0) - isnull((
+                    select sum(isnull(vtk.tienvtkhoan, 0) + isnull(vtk.tienvtvipham, 0)) 
+                    from md_vattukhoan (nolock) vtk
+                    where vtk.md_to_id = A.md_to_id and vtk.nam = {1} and thang = {0}
+                ), 0) as tienhang
 	            , N'Tháng {0}/năm {1}' as thang_nam
             from (
 	            select px.ten_phanxuong as px
 	            , tosx.ten_to as [tosx]
+                , tosx.md_to_id
                 , tosx.sapxep
 	            , (
 		            select sum(
 			            cdh.sl_daxuat * cdh.gianhancong
 		            )
-		            from md_xuatkhonb xnb (nolock)
-			            left join md_xuatkhonb_cdh cdh (nolock) on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
-			            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
+		            from md_xuatkhonb (nolock) xnb
+			            left join md_xuatkhonb_cdh (nolock) cdh on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
+			            left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
 		            where 
 			            ngaychuyen between @tungay and @denngay
 			            and xnb.bosung = 4
@@ -96,16 +101,16 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
 		            select sum(
 			            cdh.soluong_dachuyen * cdh.gianhancong
 		            )
-		            from md_vanchuyennoibo xnb (nolock)
-			            left join md_vanchuyennoibo_cdvc cdh (nolock) on cdh.md_vanchuyennoibo_id = xnb.md_vanchuyennoibo_id
-			            left join md_kho kho (nolock) on kho.md_kho_id = xnb.tukho
+		            from md_vanchuyennoibo (nolock) xnb
+			            left join md_vanchuyennoibo_cdvc (nolock) cdh on cdh.md_vanchuyennoibo_id = xnb.md_vanchuyennoibo_id
+			            left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
 		            where 
 			            ngaychuyen between @tungay and @denngay
 			            and xnb.loaichuyen = 'VANCNBCTKGH'
 			            and kho.md_to_id = tosx.md_to_id and isnull(hangton, 0) = 0
 	            ) as tienhang2
-	            FROM md_phanxuong px (nolock)
-	            left join md_phanxuong_to tosx (nolock) on tosx.md_phanxuong_id = px.md_phanxuong_id
+	            FROM md_phanxuong (nolock) px
+	            left join md_phanxuong_to (nolock) tosx on tosx.md_phanxuong_id = px.md_phanxuong_id
                 where px.md_phanxuong_id = '{2}'
             )A
             where (isnull(A.tienhang1, 0) + isnull(A.tienhang2, 0)) > 0
