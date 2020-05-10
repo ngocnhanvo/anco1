@@ -113,29 +113,20 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             declare @tienvtkhoan decimal(18, 2), @tienvtvipham decimal(18, 2)
             select top 1 @tienvtkhoan = tienvtkhoan, @tienvtvipham = tienvtvipham 
             from md_vattukhoan where md_to_id = @tosx and nam = cast('{1}' as int) and thang = cast('{0}' as int)
-            declare @truhangton decimal(18, 0) = (
+            declare @truhangton decimal(18, 0) = isnull((
                 select 
-                    sum(A.soluong_layton * A.gianhancong)
-                from (
-                    select 
-                        dh.gianhancong
-                        , dh.soluong_layton
-                        , dh.lsx
-                        , dh.md_sanpham_id
-                        , ROW_NUMBER() OVER(PARTITION BY dh.lsx, dh.md_sanpham_id ORDER BY xnb.ngaychuyen ASC) as row
-			        FROM 
-				        md_vanchuyennoibo (nolock) xnb
-				        left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
-				        left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
-			        where 
-				        xnb.loaichuyen = 'VANCNBCTKGH' 
-				        and kho.md_to_id = @tosx
-				        and xnb.ngaychuyen between @tungay and @denngay
-                        and isnull(dh.soluong_layton, 0) > 0
-                        and xnb.md_trangthai_id = 'HIEULUC'
-                )A
-                where A.row = 1
-            )
+                    sum(isnull(dh.soluong_layton, 0) * A.gianhancong)
+			    FROM 
+				    md_vanchuyennoibo (nolock) xnb
+				    left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				    left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
+			    where 
+				    xnb.loaichuyen = 'VANCNBCTKGH' 
+				    and kho.md_to_id = @tosx
+				    and xnb.ngaychuyen between @tungay and @denngay
+                    and xnb.md_trangthai_id = 'HIEULUC'
+                    and dh.mota = 'DLT'
+            ), 0)
 
             select 
                 C.sctPXK
