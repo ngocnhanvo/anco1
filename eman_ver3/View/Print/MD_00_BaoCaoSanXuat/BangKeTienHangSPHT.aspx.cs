@@ -115,7 +115,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
             from md_vattukhoan where md_to_id = @tosx and nam = cast('{1}' as int) and thang = cast('{0}' as int)
             declare @truhangton decimal(18, 0) = isnull((
                 select 
-                    sum(isnull(dh.soluong_layton, 0) * A.gianhancong)
+                    sum(isnull(dh.soluong_layton, 0) * dh.gianhancong)
 			    FROM 
 				    md_vanchuyennoibo (nolock) xnb
 				    left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
