@@ -89,7 +89,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
                     ), 0) as tienhangTT, 
                     isnull((
                         select 
-                            sum(isnull(dh.soluong_layton, 0) * A.gianhancong)
+                            sum(isnull(dh.soluong_layton, 0) * dh.gianhancong)
 			            FROM 
 				            md_vanchuyennoibo (nolock) xnb
 				            left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
