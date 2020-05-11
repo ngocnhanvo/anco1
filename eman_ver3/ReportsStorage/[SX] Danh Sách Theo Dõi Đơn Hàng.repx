@@ -1,7 +1,7 @@
 /// <XRTypeInfo>
 ///   <AssemblyFullName>App_Code.obnuvkfe, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</AssemblyFullName>
 ///   <AssemblyLocation>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\App_Code.obnuvkfe.dll</AssemblyLocation>
-///   <TypeName>VNN_report128</TypeName>
+///   <TypeName>VNN_report310</TypeName>
 ///   <Localization>en-GB</Localization>
 ///   <Version>16.1</Version>
 ///   <References>
@@ -81,14 +81,14 @@
 ///     <Reference Path="C:\Windows\Microsoft.NET\Framework\v4.0.30319\Temporary ASP.NET Files\anco2\c1a4bd4a\329d1276\assembly\dl3\d4870524\d94134ff_df1cd501\newtonsoft.json.dll" />
 ///   </References>
 ///   <Resources>
-///     <Resource Name="XtraReportSerialization.VNN_report128">
+///     <Resource Name="XtraReportSerialization.VNN_report310">
 /// zsrvvgEAAACRAAAAbFN5c3RlbS5SZXNvdXJjZXMuUmVzb3VyY2VSZWFkZXIsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OSNTeXN0ZW0uUmVzb3VyY2VzLlJ1bnRpbWVSZXNvdXJjZVNldAIAAAAAAAAAAAAAAFBBRFBBRFC0AAAA</Resource>
 ///   </Resources>
 /// </XRTypeInfo>
 namespace XtraReportSerialization
 {
 
-    public class VNN_report128 : DevExpress.XtraReports.UI.XtraReport
+    public class VNN_report310 : DevExpress.XtraReports.UI.XtraReport
     {
         private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
         private DevExpress.XtraReports.UI.BottomMarginBand BottomMargin;
@@ -168,9 +168,9 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRTableCell xrTableCell28;
         private DevExpress.XtraReports.UI.XRTableCell sum_thanhtien;
         private string _resourceString;
-        public VNN_report128()
+        public VNN_report310()
         {
-            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report128");
+            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report310");
             this.InitializeComponent();
         }
         private System.Resources.ResourceManager resources
@@ -742,6 +742,7 @@ namespace XtraReportSerialization
             this.xrLabel5.StylePriority.UseFont = false;
             this.xrLabel5.StylePriority.UsePadding = false;
             this.xrLabel5.StylePriority.UseTextAlignment = false;
+            this.xrLabel5.Text = "Ngày hiệu lực: 10/05/2020";
             this.xrLabel5.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel6
@@ -757,6 +758,7 @@ namespace XtraReportSerialization
             this.xrLabel6.StylePriority.UseFont = false;
             this.xrLabel6.StylePriority.UsePadding = false;
             this.xrLabel6.StylePriority.UseTextAlignment = false;
+            this.xrLabel6.Text = "Lần sửa đổi: 01";
             this.xrLabel6.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel3
@@ -772,6 +774,7 @@ namespace XtraReportSerialization
             this.xrLabel3.StylePriority.UseFont = false;
             this.xrLabel3.StylePriority.UsePadding = false;
             this.xrLabel3.StylePriority.UseTextAlignment = false;
+            this.xrLabel3.Text = "MQL: PRO-32";
             this.xrLabel3.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // PageHeader
@@ -1412,7 +1415,7 @@ namespace XtraReportSerialization
             this.xrPageInfo2.StylePriority.UseTextAlignment = false;
             this.xrPageInfo2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
-            // VNN_report128
+            // VNN_report310
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.TopMargin,

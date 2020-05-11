@@ -128,11 +128,11 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
                 (
                     case
                         when
-                            QQ.thanhtienCP < 0
+                            (QQ.slconlai * Q.dongia) < 0
                         then
                             0
                         else
-                            QQ.thanhtienCP
+                            (QQ.slconlai * Q.dongia)
                     end
                 ) as thanhtien
             from (
@@ -153,16 +153,6 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
                                 Q.slchiato - Q.sldalam
                         end
                     ) as slconlai,
-                    (
-                        case
-                            when 
-                                Q.sttHT = Q.stt
-                            then 
-                                (Q.sldalam - Q.sllayton) * Q.dongia
-                            else 
-                                Q.sldalam * Q.dongia
-                        end
-                    ) as thanhtienCP,
 	                Q.ngaytrienkhai,
                     Q.ngaygiaohang,
                     Q.dongia,
