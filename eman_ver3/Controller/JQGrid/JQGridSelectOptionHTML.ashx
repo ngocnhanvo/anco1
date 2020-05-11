@@ -39,7 +39,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
                 cn.vattu == true ? "KVT" :
                     !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
                         !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
-                            cn.hangton == true ? "KTTP" : "KTP"
+                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHODG") ? "KDG" : "KTP"
             );
         }
         str += "</select>";
