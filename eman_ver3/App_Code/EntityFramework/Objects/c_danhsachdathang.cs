@@ -91,6 +91,12 @@
                         public string khachhang { get; set; }
                 
 						
+                        #region c_danhsachdathang_khoDG_wintaFN
+                        
+                        #endregion c_danhsachdathang_khoDG_wintaFN
+                        public string khoDG { get; set; }
+                
+						
                         #region c_danhsachdathang_md_doitackinhdoanh_id_wintaFN
                         
                         #endregion c_danhsachdathang_md_doitackinhdoanh_id_wintaFN

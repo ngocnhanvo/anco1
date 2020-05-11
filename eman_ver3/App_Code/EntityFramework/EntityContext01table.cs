@@ -694,6 +694,10 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("khachhang")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.khoDG)
+                            .HasColumnName("khoDG")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.md_doitackinhdoanh_id)
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("nvarchar");
@@ -1754,6 +1758,10 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.sl_donggoi)
                             .HasColumnName("sl_donggoi")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.sl_donggoiTP)
+                            .HasColumnName("sl_donggoiTP")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.sl_giamhanngach)

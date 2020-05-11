@@ -148,7 +148,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     var tongSLdaLT = db.md_vanchuyennoibo_dalayton.Where(s =>
                                         s.md_sanpham_id == lht.md_sanpham_id
                                         & s.lsx == lht.lsx
-                                        & s.mota == "DLT").Sum(s=>s.soluong_layton);
+                                        & s.mota == "DLT").Sum(s => s.soluong_layton);
                                     tongSLdaLT = tongSLdaLT == null ? 0 : tongSLdaLT.GetValueOrDefault(0);
                                     var sllt = lht.soluong_layton.GetValueOrDefault(0) - tongSLdaLT.GetValueOrDefault(0);
                                     lht.soluong_layton = sl_dichchuyen_thucte > sllt ? sllt : sl_dichchuyen_thucte;
@@ -287,6 +287,24 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 add_kho_hsd(db, null, vcnb_cdvc.md_sanpham_id, sl_dichchuyen_thucte, vcnb, 1, us, kho_sp_nhapkho.md_kho_sanpham_id);
                                 //end Nhap kho
                             }
+
+                            //Cap nhat lai cac dong van chuyen
+                            var sldgSTs = db.md_vanchuyennoibo_cdvc.Where(s =>
+                                s.md_sanpham_id == vcnb_cdvc.md_sanpham_id &
+                                s.md_vanchuyennoibo_cdvc_id != vcnb_cdvc.md_vanchuyennoibo_cdvc_id &
+                                db.md_vanchuyennoibo.Where(t =>
+                                    t.md_vanchuyennoibo_id == s.md_vanchuyennoibo_id
+                                    & t.md_vanchuyennoibo_id != vcnb.md_vanchuyennoibo_id
+                                    & t.sctdathang == vcnb.sctdathang
+                                    & t.md_trangthai_id != "HIEULUC").FirstOrDefault() != null
+                            );
+
+                            foreach (var sldgST in sldgSTs.ToList())
+                            {
+                                sldgST.soluong_toida = sldgST.soluong_toida - vcnb_cdvc.soluong_dachuyen;
+                                sldgST.soluong_muonchuyen = sldgST.soluong_muonchuyen > sldgST.soluong_toida ? sldgST.soluong_toida : sldgST.soluong_muonchuyen;
+                                sldgST.soluong_dichchuyen = sldgST.soluong_dichchuyen > sldgST.soluong_muonchuyen ? sldgST.soluong_muonchuyen : sldgST.soluong_dichchuyen;
+                            }
                         }
 
                         foreach (var item in lsxtsx.Distinct())
@@ -312,7 +330,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     var LHTTSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                         tsxs.Contains(s.md_lenhsanxuat_tosx_id)
                                     )
-                                    .Where(s => s.sl_dagiao != s.sl_dahoanthanh)
+                                    .Where(s => s.sl_dagiao < s.sl_dahoanthanh)
                                     .ToList();
 
                                     if (LHTTSX.Count <= 0)

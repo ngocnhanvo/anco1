@@ -211,6 +211,12 @@
                         public Decimal? sl_donggoi { get; set; }
                 
 						
+                        #region c_dongdsdh_sl_donggoiTP_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_donggoiTP_wintaFN
+                        public Decimal? sl_donggoiTP { get; set; }
+                
+						
                         #region c_dongdsdh_sl_giamhanngach_wintaFN
                         
                         #endregion c_dongdsdh_sl_giamhanngach_wintaFN
