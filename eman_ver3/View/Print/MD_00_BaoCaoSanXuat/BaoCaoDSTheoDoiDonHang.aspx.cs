@@ -128,11 +128,11 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
                 (
                     case
                         when
-                            (QQ.slconlai * Q.dongia) < 0
+                            (QQ.slconlai * QQ.dongia) < 0
                         then
                             0
                         else
-                            (QQ.slconlai * Q.dongia)
+                            (QQ.slconlai * QQ.dongia)
                     end
                 ) as thanhtien
             from (
