@@ -91,10 +91,22 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_dalayton_sldalay_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_dalayton_sldalay_wintaFN
+                        public Decimal? sldalay { get; set; }
+                
+						
                         #region md_vanchuyennoibo_dalayton_soluong_layton_wintaFN
                         
                         #endregion md_vanchuyennoibo_dalayton_soluong_layton_wintaFN
                         public Decimal? soluong_layton { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_dalayton_tongsoluong_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_dalayton_tongsoluong_wintaFN
+                        public Decimal? tongsoluong { get; set; }
                 
 						
                         #region md_vanchuyennoibo_dalayton_tosx_wintaFN

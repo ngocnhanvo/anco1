@@ -133,6 +133,12 @@
                         public DateTime? ngaydenghi { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_ngayhieuluc_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_vanchuyennoibo_ngaytao_wintaFN
                         
                         #endregion md_vanchuyennoibo_ngaytao_wintaFN

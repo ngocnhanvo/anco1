@@ -1052,6 +1052,10 @@ modelBuilder.Entity<md_vanchuyennoibo>().HasKey<string>(p => p.md_vanchuyennoibo
                             .HasColumnName("ngaydenghi")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.ngayhieuluc)
+                            .HasColumnName("ngayhieuluc")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
@@ -1320,8 +1324,16 @@ modelBuilder.Entity<md_vanchuyennoibo_dalayton>().HasKey<string>(p => p.md_vanch
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo_dalayton>()
+                            .Property(p => p.sldalay)
+                            .HasColumnName("sldalay")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_vanchuyennoibo_dalayton>()
                             .Property(p => p.soluong_layton)
                             .HasColumnName("soluong_layton")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_vanchuyennoibo_dalayton>()
+                            .Property(p => p.tongsoluong)
+                            .HasColumnName("tongsoluong")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_vanchuyennoibo_dalayton>()
                             .Property(p => p.tosx)
