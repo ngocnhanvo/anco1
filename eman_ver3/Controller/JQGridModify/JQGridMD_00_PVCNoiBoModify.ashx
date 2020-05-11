@@ -291,11 +291,14 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             //Cap nhat lai cac dong van chuyen
                             var sldgSTs = db.md_vanchuyennoibo_cdvc.Where(s =>
                                 s.md_sanpham_id == vcnb_cdvc.md_sanpham_id &
+                                s.tuto == vcnb_cdvc.tuto &
+                                s.dento == vcnb_cdvc.dento &
                                 s.md_vanchuyennoibo_cdvc_id != vcnb_cdvc.md_vanchuyennoibo_cdvc_id &
                                 db.md_vanchuyennoibo.Where(t =>
                                     t.md_vanchuyennoibo_id == s.md_vanchuyennoibo_id
                                     & t.md_vanchuyennoibo_id != vcnb.md_vanchuyennoibo_id
                                     & t.sctdathang == vcnb.sctdathang
+                                    & t.loaichuyen == "VANCNBCTKGH"
                                     & t.md_trangthai_id != "HIEULUC").FirstOrDefault() != null
                             );
 
