@@ -88,7 +88,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
             where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_thucxuat > 0
-            order by sp.ma_sanpham asc
+            order by xb.ngaydenghi, nknb_cdh.tenhang, sp.ma_sanpham
 		"
         , md_xuatkhonb_id
         );
