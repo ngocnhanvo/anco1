@@ -285,21 +285,21 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                         }
                         else if (xnb.bosung == 4)
                         {
-                            //var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
-                            //var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
-                            //var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
-                            //    s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
-                            //    & s.md_sanpham_id == xb_cdh.md_sanpham_id
-                            //    ).FirstOrDefault();
+                            var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
+                            var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                            var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                                s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                                & s.md_sanpham_id == xb_cdh.md_sanpham_id
+                                ).FirstOrDefault();
 
-                            //if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case)
-                            //{
-                            //    msg += string.Format(
-                            //        @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
-                            //        sp.ma_sanpham,
-                            //        xb_cdh.tenhang,
-                            //        spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros());
-                            //}
+                            if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case)
+                            {
+                                msg += string.Format(
+                                    @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
+                                    sp.ma_sanpham,
+                                    xb_cdh.tenhang,
+                                    spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros());
+                            }
                         }
 
                         if (msg.Length <= 0)
