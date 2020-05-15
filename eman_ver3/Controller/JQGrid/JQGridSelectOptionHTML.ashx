@@ -33,13 +33,14 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
         foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> int.Parse(Regex.Replace(s.ma_kho, "[^0-9]", ""))))
         {
-            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"">{1}</option>",
+            str += string.Format(@"<option value=""{0}"" loaikho=""{2}"" toId=""{3}"">{1}</option>",
                 cn.md_kho_id,
                 cn.ten_kho,
                 cn.vattu == true ? "KVT" :
                     !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
                         !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
-                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHODG") ? "KDG" : "KTP"
+                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHODG") ? "KDG" : "KTP",
+                cn.md_to_id
             );
         }
         str += "</select>";
@@ -84,7 +85,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         {
             str += string.Format(@"<option value=""{0}"">{1}</option>"
                 , cn.id
-                , cn.ten           
+                , cn.ten
             );
         }
         context.Response.Write(str);

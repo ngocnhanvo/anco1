@@ -1072,6 +1072,10 @@ modelBuilder.Entity<md_vanchuyennoibo>().HasKey<string>(p => p.md_vanchuyennoibo
                             .HasColumnName("phienbangiaNC")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.phieugiamHN)
+                            .HasColumnName("phieugiamHN")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.sapxep)
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");

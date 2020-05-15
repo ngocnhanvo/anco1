@@ -379,7 +379,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 if (lht.sl_tonkho == slTonKho)
                                 {
                                     cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) - lht.sl_layton.GetValueOrDefault(0);
-                                    if(dhCDTT != null)
+                                    if (dhCDTT != null)
                                         dhCDTT.sl_dahoanthanh = lht.sl_layton.GetValueOrDefault(0);
 
                                     decimal? sltdHT = 0;
@@ -479,6 +479,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 cdvc.md_sanpham_id = lht.md_sanpham_id;
                                 cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
                                 cdvc.lsxId = lsx.md_lenhsanxuat_id;
+                                cdvc.tukho = tsx.md_lenhsanxuat_tosx_id;
                                 cdvc.soluong_dachuyen = 0;
                                 cdvc.soluong_toida = lht.sl_layton;
                                 cdvc.soluong_muonchuyen = lht.sl_layton;

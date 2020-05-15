@@ -155,16 +155,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 			            dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
 			            and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
 	            ), 0) as sldhpx,
-	            isnull((
-		            select 
-			            sum(isnull(lht.sl_layton, 0))
-		            from 
-			            md_lenhsanxuat_tosx_dklht lht
-		            where 
-			            lht.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
-			            and lht.md_sanpham_id = cdh.md_sanpham_id
-			            and isnull(tsx.phieulayht, '') != ''
-	            ), 0) as sllayton
+	            cdh.sl_nhapkho as sllayton
             from 
 	            md_lenhsanxuat_tosx_cdh cdh
 	            left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
@@ -178,81 +169,85 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
 	            and px.ma_phanxuong in ('PX1', 'PX2')
                 {2}                
                 {3}
-
+            
             select 
-	            A.*,
-                (case when A.slhoantatCP >= A.slltHT then A.slhoantatCP - A.slltHT else 0 end) as slhoantat,
-	            (case when A.sldhpx > 0 then (A.slduc + A.slltDuc + A.slltHT) / A.sldhpx * 100 else 0 end) as ptduc,
-	            (case when A.sldhpx > 0 then (A.slbancat + A.slltHT) / A.sldhpx * 100 else 0 end) as ptbancat,
-	            (case when A.sldhpx > 0 then (A.slmai + A.slltHT) / A.sldhpx * 100 else 0 end) as ptmai,
-	            (case when A.sldhpx > 0 then A.slhoantatCP / A.sldhpx * 100 else 0 end) as pthoantat,
+                A.*,
+                (case when A.sldhpx > 0 then (A.slhoantat + A.slltHT) / A.sldhpx * 100 else 0 end) as pthoantat,
                 N'Từ {0} đến {1}' as thang_nam
-	        from ( 
-		        select 
-			        A.dhpx,
-			        A.mahang,
-			        A.ngayxonghang,
-			        A.px,
-			        A.sldhpx,
-			        A.mspDT, 
-			        A.mspMS, 
-			        A.mspBT,
-			        isnull((
-				        select sum(isnull(B.sllayton, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-                            and B.stt = 0
-			        ), 0) as slltDuc,
-                    isnull((
-				        select sum(isnull(B.sllayton, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-                            and B.stt = 9999
-			        ), 0) as slltHT,
-			        isnull((
-				        select sum(isnull(B.sldaHT, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-					        and B.stt = 0
-			        ), 0) as slduc,
-			        isnull((
-				        select sum(isnull(B.sldaG, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-					        and B.stt = 1
-			        ), 0) as slbancat,
-			        isnull((
-				        select sum(isnull(B.sldaG, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-					        and B.stt = (case when B.px = 'PX1' then 2 else 1 end)
-			        ), 0) as slmai,
-			        isnull((
-				        select sum(isnull(B.sldaG, 0))
-				        from @tbl B
-				        where 
-					        B.mahang = A.mahang
-					        and B.dhpx = A.dhpx
-					        and B.px = A.px
-					        and B.stt = 9999
-			        ), 0) as slhoantatCP
-		        from @tbl A
-		        group by A.dhpx, A.mahang, A.ngayxonghang, A.px, A.sldhpx, A.mspDT, A.mspMS, A.mspBT
+            from (
+                select 
+	                A.*,
+                    (case when A.slhoantatCP >= A.slltHT then A.slhoantatCP - A.slltHT else 0 end) as slhoantat,
+	                (case when A.sldhpx > 0 then (A.slduc + A.slltDuc + A.slltHT) / A.sldhpx * 100 else 0 end) as ptduc,
+	                (case when A.sldhpx > 0 then (A.slbancat + A.slltHT) / A.sldhpx * 100 else 0 end) as ptbancat,
+	                (case when A.sldhpx > 0 then (A.slmai + A.slltHT) / A.sldhpx * 100 else 0 end) as ptmai
+	            from ( 
+		            select 
+			            A.dhpx,
+			            A.mahang,
+			            A.ngayxonghang,
+			            A.px,
+			            A.sldhpx,
+			            A.mspDT, 
+			            A.mspMS, 
+			            A.mspBT,
+			            isnull((
+				            select sum(isnull(B.sllayton, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+                                and B.stt = 0
+			            ), 0) as slltDuc,
+                        isnull((
+				            select sum(isnull(B.sllayton, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+                                and B.stt = 9999
+			            ), 0) as slltHT,
+			            isnull((
+				            select sum(isnull(B.sldaHT, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+					            and B.stt = 0
+			            ), 0) as slduc,
+			            isnull((
+				            select sum(isnull(B.sldaG, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+					            and B.stt = 1
+			            ), 0) as slbancat,
+			            isnull((
+				            select sum(isnull(B.sldaG, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+					            and B.stt = (case when B.px = 'PX1' then 2 else 1 end)
+			            ), 0) as slmai,
+			            isnull((
+				            select sum(isnull(B.sldaG, 0))
+				            from @tbl B
+				            where 
+					            B.mahang = A.mahang
+					            and B.dhpx = A.dhpx
+					            and B.px = A.px
+					            and B.stt = 9999
+			            ), 0) as slhoantatCP
+		            from @tbl A
+		            group by A.dhpx, A.mahang, A.ngayxonghang, A.px, A.sldhpx, A.mspDT, A.mspMS, A.mspBT
+                )A
             )A
             order by A.ngayxonghang, A.dhpx, A.px, A.mspDT, A.mspMS, A.mspBT
 		"

@@ -95,6 +95,16 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         foreach (var vcnb_cdvc in vcnb_cdvcs.OrderBy(s => s.denkho).ToList())
                         {
                             vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+
+                            if(vcnb.loaichuyen == "VANCNBTC")
+                            {
+                                var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
+                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+
+                                if (cdhLSX != null)
+                                    cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                            }
                             //start Xuat kho
                             string[] arr_tukho = vcnb.tukho.Split(',');
                             decimal sl_dichchuyen_thucte = vcnb_cdvc.soluong_dichchuyen.Value;

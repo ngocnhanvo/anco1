@@ -163,6 +163,12 @@
                         public string phienbangiaNC { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_phieugiamHN_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_phieugiamHN_wintaFN
+                        public string phieugiamHN { get; set; }
+                
+						
                         #region md_vanchuyennoibo_sapxep_wintaFN
                         
                         #endregion md_vanchuyennoibo_sapxep_wintaFN
