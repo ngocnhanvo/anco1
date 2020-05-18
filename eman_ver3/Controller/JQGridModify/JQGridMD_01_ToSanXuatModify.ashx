@@ -364,10 +364,10 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 & s.sl_layton > 0
                             ).FirstOrDefault();
 
-                            var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                s.md_sanpham_id == cdh.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
-                            ).FirstOrDefault();
+                            //var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                            //    s.md_sanpham_id == cdh.md_sanpham_id
+                            //    & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
+                            //).FirstOrDefault();
 
                             if (lht != null)
                             {
@@ -379,8 +379,8 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 if (lht.sl_tonkho == slTonKho)
                                 {
                                     cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) - lht.sl_layton.GetValueOrDefault(0);
-                                    if (dhCDTT != null)
-                                        dhCDTT.sl_dahoanthanh = lht.sl_layton.GetValueOrDefault(0);
+                                    //if (dhCDTT != null)
+                                    //    dhCDTT.sl_dahoanthanh = lht.sl_layton.GetValueOrDefault(0);
 
                                     decimal? sltdHT = 0;
                                     if (cdh.sl_chiato < 0)

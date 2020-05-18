@@ -96,14 +96,37 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         {
                             vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
 
-                            if(vcnb.loaichuyen == "VANCNBTC")
+                            if (vcnb.loaichuyen == "VANCNBTC")
                             {
                                 var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                     s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
                                     & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
 
+                                var ctHN = db.md_hanngachPXTo_chitiet.Where(s => s.md_hanngachPXTo_chitiet_id == vcnb_cdvc.denkho).FirstOrDefault();
+
+                                if (ctHN != null)
+                                    ctHN.sllayton = ctHN.sllayton.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+
                                 if (cdhLSX != null)
+                                {
                                     cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+
+                                    var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == cdhLSX.md_lenhsanxuat_tosx_id).FirstOrDefault();
+
+                                    var tsx2 = db.md_lenhsanxuat_tosx.Where(s =>
+                                        s.stt > tsx.stt
+                                        & s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id
+                                    ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
+
+                                    string lsxTsxIdTiepTheo = tsx2 == null ? "" : tsx2.md_lenhsanxuat_tosx_id;
+                                    var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_sanpham_id == cdhLSX.md_sanpham_id
+                                        & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
+                                    ).FirstOrDefault();
+
+                                    if (dhCDTT != null)
+                                        dhCDTT.sl_dahoanthanh = dhCDTT.sl_dahoanthanh.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                }
                             }
                             //start Xuat kho
                             string[] arr_tukho = vcnb.tukho.Split(',');

@@ -79,6 +79,12 @@
                         public int? slgiam { get; set; }
                 
 						
+                        #region md_hanngachPXTo_chitiet_sllayton_wintaFN
+                        
+                        #endregion md_hanngachPXTo_chitiet_sllayton_wintaFN
+                        public int? sllayton { get; set; }
+                
+						
                     }
                 }
             

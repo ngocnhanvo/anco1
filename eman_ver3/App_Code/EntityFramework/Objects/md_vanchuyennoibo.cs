@@ -79,6 +79,12 @@
                         public string loaichuyen_id { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_loaiphieuHN_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_loaiphieuHN_wintaFN
+                        public string loaiphieuHN { get; set; }
+                
+						
                         #region md_vanchuyennoibo_md_lenhsanxuat_tosx_id_wintaFN
                         
                         #endregion md_vanchuyennoibo_md_lenhsanxuat_tosx_id_wintaFN

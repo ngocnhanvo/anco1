@@ -1015,6 +1015,10 @@ modelBuilder.Entity<md_vanchuyennoibo>().ToTable("md_vanchuyennoibo");
                             .HasColumnName("loaichuyen_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.loaiphieuHN)
+                            .HasColumnName("loaiphieuHN")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
                             .HasColumnType("nvarchar");
