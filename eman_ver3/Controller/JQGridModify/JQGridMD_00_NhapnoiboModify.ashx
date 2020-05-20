@@ -175,7 +175,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                                         }
 
                                         lsx_to_cdh.sl_dahoanthanh += sl_nhap;
-                                        lsx_to_cdh.sl_nhapkho = 0;
+                                        //lsx_to_cdh.sl_nhapkho = 0;
                                     }
 
                                     var ck_dh = db.md_nhapkhonb_cdh.Where(s =>
