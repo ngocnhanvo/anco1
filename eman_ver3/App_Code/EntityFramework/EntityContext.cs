@@ -97,6 +97,7 @@ public virtual DbSet<md_hanngach_chitiet> md_hanngach_chitiet { get; set; }
 public virtual DbSet<md_hanngachPXTo> md_hanngachPXTo { get; set; }
 public virtual DbSet<md_hanngachPXTo_chitiet> md_hanngachPXTo_chitiet { get; set; }
 public virtual DbSet<md_hanngachPXTo_chitiet2> md_hanngachPXTo_chitiet2 { get; set; }
+public virtual DbSet<md_hanngachPXTo_chuyenvekhoton> md_hanngachPXTo_chuyenvekhoton { get; set; }
 public virtual DbSet<md_hinhthucthanhtoan> md_hinhthucthanhtoan { get; set; }
 public virtual DbSet<md_hoadon> md_hoadon { get; set; }
 public virtual DbSet<md_hoadon_chitiet> md_hoadon_chitiet { get; set; }

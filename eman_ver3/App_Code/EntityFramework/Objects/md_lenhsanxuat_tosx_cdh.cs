@@ -127,6 +127,12 @@
                         public Decimal? sl_chiato2 { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sl_chophepnkton_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_chophepnkton_wintaFN
+                        public Decimal? sl_chophepnkton { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_dagiao_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_dagiao_wintaFN
@@ -179,6 +185,12 @@
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_nhapkho_wintaFN
                         public Decimal? sl_nhapkho { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_sl_nkton_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_nkton_wintaFN
+                        public Decimal? sl_nkton { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_cdh_sl_tinhvattu_wintaFN

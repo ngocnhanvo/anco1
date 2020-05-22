@@ -627,6 +627,12 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             {
                 msg = string.Format(@"false#Lỗi:Số đơn hàng không thể để trống.");
             }
+            else
+            {
+                var countPO = db.c_danhsachdathang.Where(s => s.so_po == so_po).Count();
+                if(countPO > 0)
+                    msg = string.Format(@"false#Lỗi:Số đơn hàng đã tồn tại.");
+            }
             if (msg.Length <= 0)
             {
                 string action = "add";
@@ -658,7 +664,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
-        string so_po = context.Request.Form["so_po"];
+        string so_po = context.Request.Form["so_po"].Trim();
         //string sochungtu = VNN_VariablePublic.sochungtu(db, "DSDH", 1);
         //int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
         string trangthai = context.Request.Form["trangthai"];
@@ -683,9 +689,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             {
                 msg += "false#Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.";
             }
-            else if (string.IsNullOrEmpty(so_po.Trim()))
+            else if (string.IsNullOrEmpty(so_po))
             {
                 msg = string.Format(@"false#Lỗi:Số đơn hàng không thể để trống.");
+            }
+            else
+            {
+                var countPO = db.c_danhsachdathang.Where(s => s.so_po == so_po & s.c_danhsachdathang_id != object_.c_danhsachdathang_id).Count();
+                if(countPO > 0)
+                    msg = string.Format(@"false#Lỗi:Số đơn hàng đã tồn tại.");
             }
             int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
             DateTime ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);

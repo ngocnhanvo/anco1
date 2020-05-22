@@ -63,6 +63,9 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                 {
                     foreach (var vcnb in db.md_vanchuyennoibo.Where(s => vnn.Contains(s.md_vanchuyennoibo_id)).ToList())
                     {
+                        var khoXuat = db.md_kho.Where(s => s.md_kho_id == vcnb.tukho).FirstOrDefault();
+                        var khoNhan = db.md_kho.Where(s => s.md_kho_id == vcnb.denkho).FirstOrDefault();
+
                         var lsxtsx = new List<md_lenhsanxuat>();
                         if (vcnb.md_trangthai_id != "DANHAN")
                         {
@@ -104,10 +107,35 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 var ctHN = db.md_hanngachPXTo_chitiet.Where(s => s.md_hanngachPXTo_chitiet_id == vcnb_cdvc.denkho).FirstOrDefault();
 
+                                var chuyenVeKT = false;
                                 if (ctHN != null)
+                                {
                                     ctHN.sllayton = ctHN.sllayton.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
 
-                                if (cdhLSX != null)
+                                    var cTVK = db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
+                                        s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
+                                        & s.toId == khoNhan.md_to_id).FirstOrDefault();
+
+                                    if(cTVK != null)
+                                    {
+                                        cTVK.sldachuyen = cTVK.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        if(khoNhan.md_to_id != khoXuat.md_to_id)
+                                            cTVK.slchuyen = cTVK.slchuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        foreach(var ctVKCDT in db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
+                                        s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
+                                        & s.stt < cTVK.stt)) {
+                                            ctVKCDT.sldachuyen = ctVKCDT.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        }
+                                        var dhCTVK = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_lenhsanxuat_tosx_id == cTVK.tosxId & s.md_sanpham_id == cTVK.md_sanpham_id).FirstOrDefault();
+                                        if (dhCTVK != null)
+                                            dhCTVK.sl_nkton = dhCTVK.sl_nkton.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+
+                                        chuyenVeKT = true;
+                                    }
+                                }
+
+                                if (cdhLSX != null & chuyenVeKT == false)
                                 {
                                     cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
 
@@ -118,7 +146,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         & s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id
                                     ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
 
-                                    string lsxTsxIdTiepTheo = tsx2 == null ? "" : tsx2.md_lenhsanxuat_tosx_id;
+                                    string lsxTsxIdTiepTheo = tsx2 == null ? tsx.md_lenhsanxuat_tosx_id : tsx2.md_lenhsanxuat_tosx_id;
                                     var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                         s.md_sanpham_id == cdhLSX.md_sanpham_id
                                         & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo

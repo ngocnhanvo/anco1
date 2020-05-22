@@ -58,7 +58,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "PXKNB", 1);
         int count_slxuat = 0;
         bool commit = true;
         using (var transaction = db.Database.BeginTransaction())
