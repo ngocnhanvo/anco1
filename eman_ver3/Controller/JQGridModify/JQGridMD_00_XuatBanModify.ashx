@@ -219,7 +219,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                             }
                         }
 
-                        if (msg.Length <= 0 & dh.sl_xuat > 0)
+                        if (msg.Length <= 0 & dh.sl_xuat.GetValueOrDefault(0) > 0)
                         {
                             count_slxuat++;
                             soluong_xuat = "" + dh.sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
