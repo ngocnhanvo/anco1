@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_chuyenton_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_chuyenton_wintaFN
+                        public bool? chuyenton { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_dachuyenhet_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_dachuyenhet_wintaFN

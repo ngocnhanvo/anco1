@@ -1215,6 +1215,10 @@ modelBuilder.Entity<md_vanchuyennoibo_cdvc>().ToTable("md_vanchuyennoibo_cdvc");
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.chuyenton)
+                            .HasColumnName("chuyenton")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.dachuyenhet)
                             .HasColumnName("dachuyenhet")
                             .HasColumnType("bit");

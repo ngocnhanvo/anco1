@@ -484,6 +484,7 @@ public class JQGridMD_01_ToSanXuatModify : IHttpHandler, System.Web.SessionState
                                 cdvc.soluong_toida = lht.sl_layton;
                                 cdvc.soluong_muonchuyen = lht.sl_layton;
                                 cdvc.soluong_dichchuyen = lht.sl_layton;
+                                cdvc.chuyenton = true;
                                 cdvc.ngaytao = DateTime.Now;
                                 cdvc.ngaycapnhat = DateTime.Now;
                                 cdvc.bophantao = us.md_phongban_id;

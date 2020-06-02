@@ -111,12 +111,26 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
     public String CreateSql(HttpContext context)
     {
         string oper = context.Request.QueryString["oper"];
+        string bplvt = context.Request.QueryString["bplvt"];
+
         string khonhap = "null";
         if(xk.bosung == 4)
         {
             khonhap = "(select top 1 ten_kho from md_kho where md_to_id = xb.md_to_id and isnull(hangton, 0) = 0)";
         }
         string sql = string.Format(@"
+            
+            declare @xuatcho nvarchar(MAX), @px nvarchar(MAX);
+            select top 1 @xuatcho = ten_to, @px = md_phanxuong_id from md_phanxuong_to where md_to_id = '{2}';
+            if(@xuatcho is null)
+            begin
+                set @xuatcho = (select top 1 ten_phongban from ad_department where md_phongban_id = '{2}');
+            end
+            else
+            begin
+                set @px = (select top 1 ten_phanxuong from md_phanxuong where md_phanxuong_id = @px);
+            end
+
 		    select 
                 sp.ma_sanpham as ma_vthh 
                 , sp.mota_tiengviet as ten_vthh
@@ -124,11 +138,8 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 , xb.sochungtu as sct_lsx 
                 , xb.ngaychuyen as ngaychuyen
                 , xb.ngaydenghi
-                , isnull(
-                    (select top 1 ten_to from md_phanxuong_to where xb.md_to_id = md_to_id),
-                    (select top 1 ten_phongban from ad_department where xb.md_to_id = md_phongban_id)
-                ) as xuatcho
-                , (select top 1 ten_phanxuong from md_phanxuong where xb.md_phanxuong_id = md_phanxuong_id) as bophan
+                , @xuatcho as xuatcho
+                , @px as bophan
                 , kho.ten_kho as khoxuat
                 , xb.mota as diengiai
                 , nknb_cdh.sl_thucxuat as soluong
@@ -145,10 +156,12 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
 		    where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_thucxuat > 0
+                and nknb_cdh.md_kho_id = '{2}'
             order by nknb_cdh.tenhang, sp.ma_sanpham asc
 		"
         , xk.md_xuatkhonb_id
         , khonhap
+        , bplvt
         );
         return sql;
     }
