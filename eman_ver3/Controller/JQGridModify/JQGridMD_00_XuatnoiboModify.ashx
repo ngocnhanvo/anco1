@@ -254,20 +254,19 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id
                                                         & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                                                 {
-
                                                     decimal tslhn = ddhpx_cdh.sl_chiato.Value - ddhpx_cdh.sl_dahoanthanh.Value;
                                                     //xuat thieu du
-                                                    if (tslhn >= sl_xuat_cuoi)
-                                                    {
+                                                    //if (tslhn >= sl_xuat_cuoi)
+                                                    //{
                                                         ddhpx_cdh.sl_dahoanthanh += sl_xuat_cuoi;
-                                                        sl_xuat_cuoi = 0;
-                                                    }
+                                                        //sl_xuat_cuoi = 0;
+                                                    //}
                                                     //xuat du
-                                                    else
-                                                    {
-                                                        ddhpx_cdh.sl_dahoanthanh += tslhn;
-                                                        sl_xuat_cuoi = sl_xuat_cuoi - tslhn;
-                                                    }
+                                                    //else
+                                                    //{
+                                                        //ddhpx_cdh.sl_dahoanthanh += tslhn;
+                                                        //sl_xuat_cuoi = sl_xuat_cuoi - tslhn;
+                                                    //}
 
                                                     var ck_dh = db.md_xuatkhonb_cdh.Where(s =>
                                                        s.md_xuatkhonb_id != xk.md_xuatkhonb_id
