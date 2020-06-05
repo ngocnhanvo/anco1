@@ -161,6 +161,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 					                where 
 						                ten_phienbangia like N'%BG CAT SOI ANCO 2%'
 						                and ngay_hieuluc <= xnb.ngaytao	
+                                    order by ngay_hieuluc desc
 				                ) 
 			            where 
 				            xnb.bosung = 4 
