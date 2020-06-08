@@ -155,6 +155,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 	                    Q.slchiato,
                         Q.sllayton,
                         Q.stt,
+                        Q.sttHT,
                         (case when Q.sldalam > Q.slchiato then Q.slchiato else Q.sldalam end) as sldalam,
 	                    Q.ngaytrienkhai,
                         Q.ngaygiaohang,
