@@ -47,7 +47,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
             var thang = tbl.Rows[0]["thang"] + "";
             var nam = tbl.Rows[0]["thang"] + "";
             tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Biên Bản Kiểm Kê SP Dở Dang Chi Tiết - " + thang + "-" + nam;
+            report.DisplayName = "Biên Bản Kiểm Kê SP Dở Dang Theo Từng Mặt Hàng - " + thang + "-" + nam;
             tbl.Rows[0]["dd"] = infoPrint.dd;
             tbl.Rows[0]["MM"] = infoPrint.MM;
             tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
