@@ -129,9 +129,9 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
             set @tenPX = (select ten_phanxuong from md_phanxuong where md_phanxuong_id = @px)
-    
-            select 
-	            A.*,
+            
+            select
+                A.*,
                 A.tongSL - A.slDaDuc - A.tKDuc as chuaSX,
 	            (A.tKDuc + A.tKBanCat + A.tKMai + A.tKHoanTat) as soSach,
                 @thang as thang,
@@ -139,60 +139,73 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
                 @tenPX as px
             from (
                 select 
-                    A.mahang,
+	                A.mahang,
                     A.dvt,
-                    A.tongSL,
+                    sum(A.tongSL) as tongSL,
                     sum(A.slDaDuc) as slDaDuc,
                     sum(A.tKDuc) as tKDuc,
                     sum(A.tKBanCat) as tKBanCat,
                     sum(A.tKMai) as tKMai,
                     sum(A.tKHoanTat) as tKHoanTat
                 from (
-	                select
-		                sp.ma_sanpham as mahang,
-		                dvtsp.ten_dvt as dvt,
-                        tsx.stt,
-		                isnull((
-			                select 
-				                sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
-			                from 
-				                md_dondathangphanxuong_cdh dhpxDH
-			                where 
-				                dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
-				                and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
-		                ), 0) as tongSL,
-		                (
-                            case when tsx.stt = 0 
-                            then (
-                                case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
-                                else isnull(cdh.sl_dahoanthanh, 0) + isnull(cdh.sl_nhapkho, 0)
+                    select 
+	                    A.theGiaoViec,
+                        A.mahang,
+                        A.dvt,
+                        A.tongSL,
+                        sum(A.slDaDuc) as slDaDuc,
+                        sum(A.tKDuc) as tKDuc,
+                        sum(A.tKBanCat) as tKBanCat,
+                        sum(A.tKMai) as tKMai,
+                        sum(A.tKHoanTat) as tKHoanTat
+                    from (
+	                    select 
+		                    dhpx.donhang_thamchieu as theGiaoViec,
+		                    sp.ma_sanpham as mahang,
+		                    dvtsp.ten_dvt as dvt,
+                            tsx.stt,
+		                    isnull((
+			                    select 
+				                    sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
+			                    from 
+				                    md_dondathangphanxuong_cdh dhpxDH
+			                    where 
+				                    dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+				                    and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
+		                    ), 0) as tongSL,
+		                    (
+                                case when tsx.stt = 0 
+                                then (
+                                    case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
+                                    else isnull(cdh.sl_dahoanthanh, 0) + isnull(cdh.sl_nhapkho, 0)
+                                    end
+                                ) 
+                                else 0 
                                 end
-                            ) 
-                            else 0 
-                            end
-                        ) as slDaDuc,
-		                (case when tsx.stt = 0 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKDuc,
-		                (case when tsx.stt = 1 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKBanCat,
-		                (case when tsx.stt = 2 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKMai,
-		                (case when tsx.stt = 9999 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKHoanTat
-	                FROM 
-		                md_lenhsanxuat_tosx_cdh cdh
-		                left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
-		                left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id
-		                left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
-		                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
-		                left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
-	                where 
-		                1=1
-		                and lsx.ngaydkgiaotp between @tungay and @denngay
-		                and lsx.md_phanxuong_id = @px
-                        {3} {4}
+                            ) as slDaDuc,
+		                    (case when tsx.stt = 0 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKDuc,
+		                    (case when tsx.stt = 1 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKBanCat,
+		                    (case when tsx.stt = 2 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKMai,
+		                    (case when tsx.stt = 9999 then isnull(cdh.sl_nhapkho, 0) else 0 end) as tKHoanTat
+	                    FROM 
+		                    md_lenhsanxuat_tosx_cdh cdh
+		                    left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
+		                    left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id
+		                    left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
+		                    left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+		                    left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+	                    where 
+		                    1=1
+		                    and lsx.ngaydkgiaotp between @tungay and @denngay
+		                    and lsx.md_phanxuong_id = @px
+                            {3} {4}
+                    )A
+                    group by A.theGiaoViec, A.mahang, A.dvt, A.tongSL
                 )A
-                group by 
-                    A.mahang, A.dvt, A.tongSL
+                group by A.mahang, A.dvt
             )A
-            order by A.mahang
+            order by A.mahang, A.dvt
 		"
         , thang
         , nam
