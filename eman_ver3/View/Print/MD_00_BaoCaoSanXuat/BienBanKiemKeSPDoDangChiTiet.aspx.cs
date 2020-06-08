@@ -163,8 +163,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
                             case when tsx.stt = 0 
                             then (
                                 case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                then cdh.sl_chiato
-                                else isnull(cdh.sl_dahoanthanh, 0)
+                                then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
+                                else isnull(cdh.sl_dahoanthanh, 0) + isnull(cdh.sl_nhapkho, 0)
                                 end
                             ) 
                             else 0 
