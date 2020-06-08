@@ -45,7 +45,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             var thang = tbl.Rows[0]["thang"] + "";
-            var nam = tbl.Rows[0]["thang"] + "";
+            var nam = tbl.Rows[0]["nam"] + "";
             tbl.Rows[0]["logo"] = infoPrint.logo;
             report.DisplayName = "Biên Bản Kiểm Kê SP Dở Dang Chi Tiết - " + thang + "-" + nam;
             tbl.Rows[0]["dd"] = infoPrint.dd;
