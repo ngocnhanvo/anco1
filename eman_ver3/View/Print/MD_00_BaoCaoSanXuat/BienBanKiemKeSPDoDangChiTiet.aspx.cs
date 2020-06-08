@@ -115,7 +115,11 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
         thang = thang.Length < 2 ? "0" + thang : thang;
         string nam = context.Request.QueryString["nam"];
         string px = context.Request.QueryString["px"];
+        string donhang = context.Request.QueryString["donhang"];
+        string masp = context.Request.QueryString["masp"];
 
+        donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dhpx.donhang_thamchieu like N'{0}'", donhang);
+        masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
         string sql = string.Format(@"	 
             declare @thang nvarchar(32) = '{0}';
             declare @nam nvarchar(32) = '{1}';
@@ -185,6 +189,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
 		                1=1
 		                and lsx.ngaydkgiaotp between @tungay and @denngay
 		                and lsx.md_phanxuong_id = @px
+                        {3} {4}
                 )A
                 group by 
                     A.theGiaoViec, A.mahang, A.dvt, A.tongSL
@@ -194,6 +199,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
         , thang
         , nam
         , px
+        , donhang
+        , masp
         );
         return sql;
     }
