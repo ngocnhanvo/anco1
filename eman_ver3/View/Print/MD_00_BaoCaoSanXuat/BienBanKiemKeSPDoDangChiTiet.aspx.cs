@@ -174,10 +174,58 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
                             else 0 
                             end
                         ) as slDaDuc,
-		                (case when tsx.stt = 0 then isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_dagiao, 0) else 0 end) as tKDuc,
-		                (case when tsx.stt = 1 then isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_dagiao, 0) else 0 end) as tKBanCat,
-		                (case when tsx.stt = 2 then isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_dagiao, 0) else 0 end) as tKMai,
-		                (case when tsx.stt = 9999 then isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_dagiao, 0) else 0 end) as tKHoanTat
+		                (case when tsx.stt = 0 
+                            then
+                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dahoanthanh, 0)
+                                end) 
+                                 - 
+                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dagiao, 0)
+                                end) 
+                            else 0 
+                        end) as tKDuc,
+                        (case when tsx.stt = 1 
+                            then
+                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dahoanthanh, 0)
+                                end) 
+                                 - 
+                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dagiao, 0)
+                                end) 
+                            else 0 
+                        end) as tKBanCat,
+                        (case when tsx.stt = 2 
+                            then
+                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dahoanthanh, 0)
+                                end) 
+                                 - 
+                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato
+                                    else isnull(cdh.sl_dagiao, 0)
+                                end) 
+                            else 0 
+                        end) as tKMai,
+                        (case when tsx.stt = 9999 
+                            then
+                                (case when isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_nhapkho, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
+                                    else isnull(cdh.sl_dahoanthanh, 0)
+                                end) 
+                                 - 
+                                (case when isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0) > cdh.sl_chiato
+                                    then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
+                                    else isnull(cdh.sl_dagiao, 0)
+                                end) 
+                            else 0 
+                        end) as tKHoanTat
 	                FROM 
 		                md_lenhsanxuat_tosx_cdh cdh
 		                left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
