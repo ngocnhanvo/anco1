@@ -84,6 +84,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
                 , sp.mota_tiengviet as ten_hhvt
 		        , dvtsp.ten_dvt as dvt
                 , xb.donhang_thamchieu as sct_donhang
+                , xb.donhang_thamchieu as thegiaoviec
                 , xb.chungtu_lenhsx as sct_lsx 
                 , xb.ngaydenghi
                 , isnull(

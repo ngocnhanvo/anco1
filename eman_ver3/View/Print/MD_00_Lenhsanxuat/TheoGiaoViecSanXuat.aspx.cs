@@ -32,9 +32,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
         if (tbl.Rows.Count > 0)
         {
             var infoPrint = PrintAnco2.GetInfoPrint();
-            var soluong = report.Report.FindControl("soluong", true);
-            soluong.DataBindings[0].FormatString = sothapphan;
-
+            tbl.Columns.Add("sum_slton", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
@@ -58,8 +56,22 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
             else
                 tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
 
+            var sumLT = tbl.Compute("Sum(slton)", string.Empty).ToString();
+            if (string.IsNullOrEmpty(sumLT))
+                tbl.Rows[lastRow]["sum_slton"] = DBNull.Value;
+            else
+                tbl.Rows[lastRow]["sum_slton"] = double.Parse(sumLT);
+
+            var soluong = report.Report.FindControl("soluong", true);
+            var slton = report.Report.FindControl("slton", true);
             var sum_soluong = report.Report.FindControl("sum_soluong", true);
-            sum_soluong.DataBindings[0].FormatString = sothapphan;
+            var sum_slton = report.Report.FindControl("sum_slton", true);
+
+            soluong.DataBindings[0].FormatString =
+            slton.DataBindings[0].FormatString =
+            sum_soluong.DataBindings[0].FormatString =
+            sum_slton.DataBindings[0].FormatString = sothapphan;
+
             if (string.IsNullOrEmpty(inPDF))
                 ReportViewer1.Report = report;
             else
@@ -80,7 +92,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
             Security.id_phongban(context));
 
         string slchiato = "sl_chiato";
-        if(us.ma_phongban == "PKH")
+        if (us.ma_phongban == "PKH")
         {
             slchiato = "sl_chiato2";
         }
@@ -98,6 +110,28 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
 	            , sp.mota_tiengviet as ten_vthh
 	            , dvtsp.ten_dvt as dvt
 	            , lsx_tsx_cdh.{1} as soluong
+                , (case when lsx_tsx.stt != 9999 
+                    then
+                        (case when isnull(lsx_tsx_cdh.sl_dahoanthanh, 0) > lsx_tsx_cdh.sl_chiato
+                            then lsx_tsx_cdh.sl_chiato
+                            else isnull(lsx_tsx_cdh.sl_dahoanthanh, 0)
+                        end) 
+                            - 
+                        (case when isnull(lsx_tsx_cdh.sl_dagiao, 0) > lsx_tsx_cdh.sl_chiato
+                            then lsx_tsx_cdh.sl_chiato
+                            else isnull(lsx_tsx_cdh.sl_dagiao, 0)
+                        end) 
+                    else 
+                        (case when isnull(lsx_tsx_cdh.sl_dahoanthanh, 0) - isnull(lsx_tsx_cdh.sl_nhapkho, 0) > lsx_tsx_cdh.sl_chiato
+                            then lsx_tsx_cdh.sl_chiato + isnull(lsx_tsx_cdh.sl_nhapkho, 0)
+                            else isnull(lsx_tsx_cdh.sl_dahoanthanh, 0)
+                        end) 
+                            - 
+                        (case when isnull(lsx_tsx_cdh.sl_dagiao, 0) - isnull(lsx_tsx_cdh.sl_nhapkho, 0) > lsx_tsx_cdh.sl_chiato
+                            then lsx_tsx_cdh.sl_chiato + isnull(lsx_tsx_cdh.sl_nhapkho, 0)
+                            else isnull(lsx_tsx_cdh.sl_dagiao, 0)
+                        end)
+                end) as slton
 	            , lsx_tsx.ngaybatdausx as ngaysanxuat
 	            , lsx_tsx.ngaydkht as ngayhoanthanh
 	            , lsx_tsx_cdh.mota as ghichu
