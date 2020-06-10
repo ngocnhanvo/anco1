@@ -245,8 +245,9 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
 		                    left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
 	                    where 
 		                    1=1
-		                    and lsx.ngaydkgiaotp between @tungay and @denngay
+		                    and lsx.ngaylap <= @denngay
 		                    and lsx.md_phanxuong_id = @px
+                            and lsx.md_trangthai_id in ('DAXL')
                             {3} {4}
                     )A
                     group by A.theGiaoViec, A.mahang, A.dvt, A.tongSL
