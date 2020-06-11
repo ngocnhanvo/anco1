@@ -267,10 +267,10 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BaoCaoChiTietTinhHinhS
 				            and lsx.md_trangthai_id in ('DAXL')
                             {1} {2}
 		            )A
-		            group by A.nHTGKTP, A.theGiaoViec, A.mahang, A.dvt
+		            group by A.theGiaoViec, A.mahang, A.dvt, A.nHTGKTP
 	            )A
             )A
-            order by A.mahang, A.dvt
+            order by A.nHTGKTP, A.theGiaoViec, A.mahang, A.dvt
 		"
         , px
         , donhang
