@@ -388,6 +388,10 @@ modelBuilder.Entity<md_hanngachPXTo_chitiet>().HasKey<string>(p => p.md_hanngach
                             .HasColumnName("slgioihan")
                             .HasColumnType("int");
                             modelBuilder.Entity<md_hanngachPXTo_chitiet>()
+                            .Property(p => p.slkhoton)
+                            .HasColumnName("slkhoton")
+                            .HasColumnType("int");
+                            modelBuilder.Entity<md_hanngachPXTo_chitiet>()
                             .Property(p => p.sllayton)
                             .HasColumnName("sllayton")
                             .HasColumnType("int");
