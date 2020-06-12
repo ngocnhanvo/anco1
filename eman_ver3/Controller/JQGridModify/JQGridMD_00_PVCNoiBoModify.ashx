@@ -114,7 +114,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                     var cTVK = db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
                                         s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
-                                        & s.toId == khoNhan.md_to_id).FirstOrDefault();
+                                        & s.toId == khoXuat.md_to_id).FirstOrDefault();
 
                                     if(cTVK != null)
                                     {
