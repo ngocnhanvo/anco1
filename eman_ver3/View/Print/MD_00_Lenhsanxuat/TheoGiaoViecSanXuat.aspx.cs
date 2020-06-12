@@ -110,6 +110,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
 	            , sp.mota_tiengviet as ten_vthh
 	            , dvtsp.ten_dvt as dvt
 	            , lsx_tsx_cdh.{1} as soluong
+				, lsx_tsx_cdh.sl_nhapkho as slton
                 , (case when lsx_tsx.stt != 9999 
                     then
                         (case when isnull(lsx_tsx_cdh.sl_dahoanthanh, 0) > lsx_tsx_cdh.sl_chiato
@@ -131,7 +132,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
                             then lsx_tsx_cdh.sl_chiato + isnull(lsx_tsx_cdh.sl_nhapkho, 0)
                             else isnull(lsx_tsx_cdh.sl_dagiao, 0)
                         end)
-                end) as slton
+                end) as sltonCancel
 	            , lsx_tsx.ngaybatdausx as ngaysanxuat
 	            , lsx_tsx.ngaydkht as ngayhoanthanh
 	            , lsx_tsx_cdh.mota as ghichu
