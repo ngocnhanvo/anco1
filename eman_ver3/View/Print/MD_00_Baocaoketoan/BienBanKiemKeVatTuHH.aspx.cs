@@ -32,7 +32,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BienBanKiemKeVatTuHH : 
         {
             var infoPrint = PrintAnco2.GetInfoPrint();
            
-            tbl.Columns.Add("sumSLTTKiemKe", Type.GetType("System.Double"));
+            tbl.Columns.Add("sumSLTTKiemKe2", Type.GetType("System.Double"));
             tbl.Columns.Add("logo", Type.GetType("System.String"));
             tbl.Columns.Add("dd", Type.GetType("System.String"));
             tbl.Columns.Add("MM", Type.GetType("System.String"));
@@ -45,7 +45,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BienBanKiemKeVatTuHH : 
             tbl.Rows[lastRow]["dd"] = infoPrint.dd;
             tbl.Rows[lastRow]["MM"] = infoPrint.MM;
             tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            tbl.Rows[lastRow]["sumSLTTKiemKe"] = tbl.Compute("Sum(sLTTKiemKe)", string.Empty);
+            tbl.Rows[lastRow]["sumSLTTKiemKe2"] = tbl.Compute("Sum(sLTTKiemKe2)", string.Empty);
 
             var sLTTKiemKe = report.Report.FindControl("sLTTKiemKe", true);
             var sumSLTTKiemKe = report.Report.FindControl("sumSLTTKiemKe", true);
@@ -83,7 +83,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BienBanKiemKeVatTuHH : 
 
             select 
 	            A.*,
-               @thang_nam as thang_nam
+                null as sLTTKiemKe,
+                @thang_nam as thang_nam
             from (
 	            select
 		            sp.ma_sanpham as maHang,
@@ -99,7 +100,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BienBanKiemKeVatTuHH : 
 					            and kgd.md_sanpham_id = ksp.md_sanpham_id
 					            and kgd.ngaychuyen <= @nnk
 			            )A
-		            ) as sLTTKiemKe,
+		            ) as sLTTKiemKe2,
 		            @tenKho as kho
 	            FROM md_kho_sanpham ksp
 		            left join md_sanpham sp on sp.md_sanpham_id = ksp.md_sanpham_id
@@ -107,7 +108,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BienBanKiemKeVatTuHH : 
 	            WHERE
 		            ksp.md_kho_id = @kho
             )A
-            where A.sLTTKiemKe > 0
+            where A.sLTTKiemKe2 > 0
             ORDER BY A.tenHang, A.dvt
 		"
         , nnkD.ToString("dd/MM/yyyy")
