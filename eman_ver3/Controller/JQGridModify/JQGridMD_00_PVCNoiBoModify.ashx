@@ -121,11 +121,11 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         cTVK.sldachuyen = cTVK.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
                                         if(khoNhan.md_to_id != khoXuat.md_to_id)
                                             cTVK.slchuyen = cTVK.slchuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                        foreach(var ctVKCDT in db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
-                                        s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
-                                        & s.stt < cTVK.stt)) {
-                                            ctVKCDT.sldachuyen = ctVKCDT.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                        }
+                                        //foreach(var ctVKCDT in db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
+                                        //s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
+                                        //& s.stt < cTVK.stt)) {
+                                        //    ctVKCDT.sldachuyen = ctVKCDT.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        //}
                                         var dhCTVK = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                             s.md_lenhsanxuat_tosx_id == cTVK.tosxId & s.md_sanpham_id == cTVK.md_sanpham_id).FirstOrDefault();
                                         if (dhCTVK != null)
