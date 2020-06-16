@@ -101,10 +101,16 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_TheoGiaoViecSanXuat : Sy
         string sql = string.Format(@"
             select
                 A.*,
-                A.soluongCP - A.slton as soluong
+				(
+					case when A.stt != 9999 
+					then A.soluongCP - A.slton 
+					else A.soluongCP
+					end
+				) as soluong
             from (
 		        select 
                     lsx.sochungtu
+					, lsx_tsx.stt
 	                , dhpx.sochungtu as sct_dhpx
 	                , dhpx.donhang_thamchieu as donhang
 	                , (select ten_to from md_phanxuong_to where lsx_tsx.md_phanxuong_to_id = md_to_id) as tosx
