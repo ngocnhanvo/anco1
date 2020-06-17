@@ -288,10 +288,28 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         {
                             dhcpx1.md_doitackinhdoanh_id = "";
                         }
-
-                        if (dhcpx1.md_doitackinhdoanh_id.Trim().Length < 1 & dhcpx1.md_phanxuong_id.Trim().Length < 1)
+						
+						string pxId = dhcpx1.md_phanxuong_id.Trim(), dtkdId = dhcpx1.md_doitackinhdoanh_id.Trim();
+						
+						var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhcpx1.md_sanpham_id).FirstOrDefault();
+						if(dhcpx1.sl_phanphoi == dhcpx1.sl_candat & pxId.Length < 1) {
+							msg += string.Format(@"
+                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"".</div>",
+                            sp == null ? "(unknown)" : sp.ma_sanpham);
+						}
+						else if(dhcpx1.sl_phanphoi == 0 & dtkdId.Length < 1) {
+							msg += string.Format(@"
+                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Đối tác kinh doanh"".</div>",
+                            sp == null ? "(unknown)" : sp.ma_sanpham);
+						}
+						else if(dhcpx1.sl_phanphoi != dhcpx1.sl_candat & pxId.Length < 1 & dtkdId.Length < 1) {
+							msg += string.Format(@"
+                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"" và ""Đối tác kinh doanh"".</div>",
+                            sp == null ? "(unknown)" : sp.ma_sanpham);
+						}
+                        else if (pxId.Length < 1 & dtkdId.Length < 1)
                         {
-                            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhcpx1.md_sanpham_id).FirstOrDefault();
+                            
                             msg += string.Format(@"
                                 <div style='color:red'>Dòng {0} không thể bỏ trống một trong 2 dữ liêu: Đối tác kinh doanh và phân xưởng sản xuất.</div>",
                             sp == null ? "(unknown)" : sp.ma_sanpham);
