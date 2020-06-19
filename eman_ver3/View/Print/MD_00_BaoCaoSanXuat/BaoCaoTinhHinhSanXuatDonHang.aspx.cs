@@ -162,7 +162,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        , dhpx.md_phanxuong_id
 					        --duc
 					        , (
-						        select isnull(sl_dagiao, 0)
+						        select 
+                                    (
+                                        case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0)
+                                        then isnull(sl_chiato, 0)
+                                        else isnull(sl_dagiao, 0)
+                                        end
+                                    )
 						        where tsx.stt = 0
 					        ) as giaoduc
 					        , (
@@ -171,7 +177,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        ) as dhduc
 					        --ban cat
 					        , (
-						        select isnull(sl_dagiao, 0)
+						        select
+                                    (
+                                        case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0)
+                                        then isnull(sl_chiato, 0)
+                                        else isnull(sl_dagiao, 0)
+                                        end
+                                    )
 						        where tsx.stt = 1
 					        ) as giaobancat
 					        , (
@@ -180,7 +192,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        ) as dhbancat
 					        --mai
 					        , (
-						        select isnull(sl_dagiao, 0)
+						        select
+                                    (
+                                        case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0)
+                                        then isnull(sl_chiato, 0)
+                                        else isnull(sl_dagiao, 0)
+                                        end
+                                    )
 						        where tsx.stt = 2
 					        ) as giaomai
 					        , (
@@ -189,7 +207,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoTinhHinhSanXuatDon
 					        ) as dhmai
 					        --hoan tat
 					        , (
-						        select isnull(sl_dagiao, 0)
+						        select 
+                                    (
+                                        case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0) + isnull(sl_nhapkho, 0)
+                                        then isnull(sl_chiato, 0) + isnull(sl_nhapkho, 0)
+                                        else isnull(sl_dagiao, 0)
+                                        end
+                                    )
 						        where tsx.stt = 9999
 					        ) as giaohoantat
 					        , (
