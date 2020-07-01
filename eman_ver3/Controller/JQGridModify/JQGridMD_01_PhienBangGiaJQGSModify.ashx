@@ -122,6 +122,24 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                             cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
                         }
                     }
+					
+					foreach (var cdh in db.md_vanchuyennoibo_dalayton.Where(s =>
+                        vcnbIds.Contains(s.md_vanchuyennoibo_id)
+                    ).ToList())
+                    {
+                        var gsp = db.md_giasanpham
+                                .Where(s =>
+                                    s.md_phienbangia_id == id
+                                    & s.md_sanpham_id == cdh.md_sanpham_id
+                                    & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                    & s.gia != cdh.gianhancong)
+                                .FirstOrDefault();
+
+                        if (gsp != null)
+                        {
+                            cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                        }
+                    }
                     db.SaveChanges();
                 }
             }
