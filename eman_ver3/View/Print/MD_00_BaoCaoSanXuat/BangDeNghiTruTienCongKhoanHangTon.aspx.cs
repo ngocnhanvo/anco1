@@ -40,12 +40,12 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
             tbl.Columns.Add("yyyy", Type.GetType("System.String"));
             //Header
             tbl.Rows[0]["logo"] = infoPrint.logo;
+            tbl.Rows[0]["dd"] = infoPrint.dd;
+            tbl.Rows[0]["MM"] = infoPrint.MM;
+            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
             report.DisplayName = "Bảng đề nghị trừ tiền hàng tồn - " + tbl.Rows[0]["thang_nam"];
             //Footer
             int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
             tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
             tbl.Rows[lastRow]["sum_sltru"] = tbl.Compute("sum(sltru)", string.Empty);
 
@@ -130,7 +130,6 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 				            , dh.md_sanpham_id
 				            , dh.md_donvitinhsanpham_id
                             , dh.lsx
-                            , ROW_NUMBER() OVER(PARTITION BY dh.lsx, dh.md_sanpham_id ORDER BY xnb.ngaychuyen ASC) as row
 			            FROM 
 				            md_vanchuyennoibo (nolock) xnb
 				            left join md_vanchuyennoibo_dalayton (nolock) dh on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
@@ -146,7 +145,6 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongK
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id
 		            left join md_phanxuong_to tsx on tsx.md_to_id = A.md_to_id
 		            left join md_phanxuong px on px.md_phanxuong_id = tsx.md_phanxuong_id
-                    where A.row = 1
 	            )B
             )C
             where C.sltru > 0
