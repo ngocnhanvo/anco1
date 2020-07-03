@@ -99,6 +99,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         {
                             vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
 
+                            string toSXId = "", lsx = "";
+                            int sanxuat = 0;
                             if (vcnb.loaichuyen == "VANCNBTC")
                             {
                                 var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
@@ -137,9 +139,11 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 if (cdhLSX != null & chuyenVeKT == false)
                                 {
+                                    sanxuat = 4;
                                     cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
 
                                     var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == cdhLSX.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                    toSXId = tsx.md_lenhsanxuat_tosx_id;
 
                                     var tsx2 = db.md_lenhsanxuat_tosx.Where(s =>
                                         s.stt > tsx.stt
@@ -163,9 +167,12 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             var lstSPId = new List<string>();
                             if (vcnb.loaichuyen == "VANCNBCTKGH")
                             {
+                                sanxuat = 3;
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
                                 var lsxto = Extension.getLSXToId2(vcnb_cdvc.lsx_to, db);
                                 var tsx = lsxto.tsx;
+                                toSXId = tsx.md_lenhsanxuat_tosx_id;
+                                lsx = lsxto.lsx.sochungtu;
                                 var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                             s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
                                             & s.macuoi.Contains(sp.ma_sanpham));
@@ -256,6 +263,13 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         dongsanxuat = " ",
                                         md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
                                         sapxep = "",
+                                        md_to_id = khoXuat.md_to_id,
+                                        md_to_id2 = khoXuat.md_to_id,
+                                        lsx = lsx,
+                                        sanxuat = sanxuat,
+                                        tosxId = toSXId,
+                                        tosxId2 = toSXId,
+
                                         mota = vcnb_cdvc.tenhang,
                                         nguoitao = us.ad_user_id,
                                         vaitrotao = us.ad_role_id,
