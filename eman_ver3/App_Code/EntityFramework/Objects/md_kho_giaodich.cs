@@ -97,6 +97,12 @@
                         public string md_to_id { get; set; }
                 
 						
+                        #region md_kho_giaodich_md_to_id2_wintaFN
+                        
+                        #endregion md_kho_giaodich_md_to_id2_wintaFN
+                        public string md_to_id2 { get; set; }
+                
+						
                         #region md_kho_giaodich_mota_wintaFN
                         
                         #endregion md_kho_giaodich_mota_wintaFN
@@ -155,6 +161,12 @@
                         
                         #endregion md_kho_giaodich_tosxId_wintaFN
                         public string tosxId { get; set; }
+                
+						
+                        #region md_kho_giaodich_tosxId2_wintaFN
+                        
+                        #endregion md_kho_giaodich_tosxId2_wintaFN
+                        public string tosxId2 { get; set; }
                 
 						
                         #region md_kho_giaodich_vaitrocapnhat_wintaFN
