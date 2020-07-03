@@ -141,6 +141,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
 
                             if (msg.Length <= 0 & dh.sl_nhap > 0)
                             {
+                                var lsxTSX = Extension.getLSXToId(dh.lsx_to, db);
                                 count_slnhap = 1;
                                 decimal sl_nhap = dh.sl_nhap.Value;
                                 //--cap nhat so luong xuat
@@ -153,14 +154,13 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                                 msg += add_kho_hsd(db, dh, nk, us, khospId);
                                 db.SaveChanges();
                                 //--tao lich su nhap kho
-                                add_kho_ls(db, dh, nk, nhanvoi, us);
+                                add_kho_ls(db, dh, nk, nhanvoi, us, lsxTSX);
                                 db.SaveChanges();
                                 //--cap nhat lenh san xuat
                                 decimal sl_nhap_cuoi = sl_nhap * nhanvoi;
                                 decimal sl_nhap_cuoi2 = sl_nhap_cuoi;
                                 if (sl_nhap > 0)
                                 {
-                                    var lsxTSX = Extension.getLSXToId(dh.lsx_to, db);
                                     foreach (var lsx_to_cdh in db.md_lenhsanxuat_tosx_cdh.
                                             Where(s =>
                                             s.md_sanpham_id == sp.md_sanpham_id &
@@ -348,7 +348,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
     }
 
     //--tao lich su nhap kho
-    public string add_kho_ls(EntityContext db, md_nhapkhonb_cdh dh, md_nhapkhonb nk, decimal nhanvoi, User_TK us)
+    public string add_kho_ls(EntityContext db, md_nhapkhonb_cdh dh, md_nhapkhonb nk, decimal nhanvoi, User_TK us, md_lenhsanxuat_tosx tsx)
     {
         string id_new = Helper.getNewId();
         md_kho_giaodich giao = new md_kho_giaodich();
@@ -361,7 +361,10 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         giao.dongnhapxuat = nk.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
         giao.mota = dh.tenhang;
-
+        giao.md_to_id = nk.md_to_id;
+        giao.sanxuat = 1;
+        giao.lsx = dh.lsx_to.Substring(0, 13);
+        giao.tosxId = tsx.md_lenhsanxuat_tosx_id;
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;
         giao.bophantao = us.md_phongban_id;

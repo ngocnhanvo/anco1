@@ -1095,6 +1095,10 @@ modelBuilder.Entity<md_kho_giaodich>().ToTable("md_kho_giaodich");
                             .HasColumnName("kieuchuyen")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.lsx)
+                            .HasColumnName("lsx")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("nvarchar");
@@ -1111,6 +1115,10 @@ modelBuilder.Entity<md_kho_giaodich>().HasKey<string>(p => p.md_kho_giaodich_id)
                             .Property(p => p.md_sanpham_id)
                             .HasColumnName("md_sanpham_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.md_to_id)
+                            .HasColumnName("md_to_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
@@ -1136,6 +1144,10 @@ modelBuilder.Entity<md_kho_giaodich>().HasKey<string>(p => p.md_kho_giaodich_id)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.sanxuat)
+                            .HasColumnName("sanxuat")
+                            .HasColumnType("int");
+                            modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.sapxep)
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");
@@ -1143,6 +1155,10 @@ modelBuilder.Entity<md_kho_giaodich>().HasKey<string>(p => p.md_kho_giaodich_id)
                             .Property(p => p.soluong_dichchuyen)
                             .HasColumnName("soluong_dichchuyen")
                             .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.tosxId)
+                            .HasColumnName("tosxId")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")

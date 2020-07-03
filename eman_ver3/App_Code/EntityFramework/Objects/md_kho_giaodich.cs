@@ -61,6 +61,12 @@
                         public string kieuchuyen { get; set; }
                 
 						
+                        #region md_kho_giaodich_lsx_wintaFN
+                        
+                        #endregion md_kho_giaodich_lsx_wintaFN
+                        public string lsx { get; set; }
+                
+						
                         #region md_kho_giaodich_md_donvitinhsanpham_id_wintaFN
                         
                         #endregion md_kho_giaodich_md_donvitinhsanpham_id_wintaFN
@@ -83,6 +89,12 @@
                         
                         #endregion md_kho_giaodich_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
+                
+						
+                        #region md_kho_giaodich_md_to_id_wintaFN
+                        
+                        #endregion md_kho_giaodich_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
                 
 						
                         #region md_kho_giaodich_mota_wintaFN
@@ -121,6 +133,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_kho_giaodich_sanxuat_wintaFN
+                        
+                        #endregion md_kho_giaodich_sanxuat_wintaFN
+                        public int? sanxuat { get; set; }
+                
+						
                         #region md_kho_giaodich_sapxep_wintaFN
                         
                         #endregion md_kho_giaodich_sapxep_wintaFN
@@ -131,6 +149,12 @@
                         
                         #endregion md_kho_giaodich_soluong_dichchuyen_wintaFN
                         public Decimal? soluong_dichchuyen { get; set; }
+                
+						
+                        #region md_kho_giaodich_tosxId_wintaFN
+                        
+                        #endregion md_kho_giaodich_tosxId_wintaFN
+                        public string tosxId { get; set; }
                 
 						
                         #region md_kho_giaodich_vaitrocapnhat_wintaFN
