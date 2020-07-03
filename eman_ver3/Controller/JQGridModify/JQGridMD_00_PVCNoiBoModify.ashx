@@ -99,7 +99,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         {
                             vcnb_cdvc.soluong_dachuyen = vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
 
-                            string toSXId = "", lsx = "";
+                            string toSXId = "", toSXId2 = "", lsx = "";
                             int sanxuat = 0;
                             if (vcnb.loaichuyen == "VANCNBTC")
                             {
@@ -151,10 +151,12 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
 
                                     string lsxTsxIdTiepTheo = tsx2 == null ? tsx.md_lenhsanxuat_tosx_id : tsx2.md_lenhsanxuat_tosx_id;
+                                    toSXId2 = lsxTsxIdTiepTheo;
+
                                     var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_sanpham_id == cdhLSX.md_sanpham_id
-                                        & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
-                                    ).FirstOrDefault();
+                                s.md_sanpham_id == cdhLSX.md_sanpham_id
+                                & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
+                            ).FirstOrDefault();
 
                                     if (dhCDTT != null)
                                         dhCDTT.sl_dahoanthanh = dhCDTT.sl_dahoanthanh.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
@@ -268,7 +270,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         lsx = lsx,
                                         sanxuat = sanxuat,
                                         tosxId = toSXId,
-                                        tosxId2 = toSXId,
+                                        tosxId2 = toSXId2,
 
                                         mota = vcnb_cdvc.tenhang,
                                         nguoitao = us.ad_user_id,

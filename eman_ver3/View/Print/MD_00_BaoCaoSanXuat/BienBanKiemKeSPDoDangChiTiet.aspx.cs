@@ -149,96 +149,140 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
                     sum(A.tKMai) as tKMai,
                     sum(A.tKHoanTat) as tKHoanTat
                 from (
-	                select 
-		                dhpx.donhang_thamchieu as theGiaoViec,
-		                sp.ma_sanpham as mahang,
-		                dvtsp.ten_dvt as dvt,
-                        tsx.stt,
-		                isnull((
-			                select 
-				                sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
-			                from 
-				                md_dondathangphanxuong_cdh dhpxDH
-			                where 
-				                dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
-				                and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
-		                ), 0) as tongSL,
-		                (
-                            case when tsx.stt = 0 
-                            then (
-                                case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
-                                else isnull(cdh.sl_dahoanthanh, 0) + isnull(cdh.sl_nhapkho, 0)
-                                end
-                            ) 
-                            else 0 
+		            select A.*,
+		            (
+                        case when A.stt = 0 
+                        then (
+                            case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
+                            then A.sl_chiato + isnull(A.sl_nhapkho, 0)
+                            else isnull(A.sl_dahoanthanh, 0) + isnull(A.sl_nhapkho, 0)
                             end
-                        ) as slDaDuc,
-		                (case when tsx.stt = 0 
-                            then
-                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dahoanthanh, 0)
-                                end) 
-                                 - 
-                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dagiao, 0)
-                                end) 
-                            else 0 
-                        end) as tKDuc,
-                        (case when tsx.stt = 1 
-                            then
-                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dahoanthanh, 0)
-                                end) 
-                                 - 
-                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dagiao, 0)
-                                end) 
-                            else 0 
-                        end) as tKBanCat,
-                        (case when tsx.stt = 2 
-                            then
-                                (case when isnull(cdh.sl_dahoanthanh, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dahoanthanh, 0)
-                                end) 
-                                 - 
-                                (case when isnull(cdh.sl_dagiao, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato
-                                    else isnull(cdh.sl_dagiao, 0)
-                                end) 
-                            else 0 
-                        end) as tKMai,
-                        (case when tsx.stt = 9999 
-                            then
-                                (case when isnull(cdh.sl_dahoanthanh, 0) - isnull(cdh.sl_nhapkho, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
-                                    else isnull(cdh.sl_dahoanthanh, 0)
-                                end) 
-                                 - 
-                                (case when isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0) > cdh.sl_chiato
-                                    then cdh.sl_chiato + isnull(cdh.sl_nhapkho, 0)
-                                    else isnull(cdh.sl_dagiao, 0)
-                                end) 
-                            else 0 
-                        end) as tKHoanTat
-	                FROM 
-		                md_lenhsanxuat_tosx_cdh cdh
-		                left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
-		                left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id
-		                left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
-		                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
-		                left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
-	                where 
-		                1=1
-		                and lsx.ngaylap <= @denngay
-		                and lsx.md_phanxuong_id = @px
-                        and lsx.md_trangthai_id in ('DAXL')
-                        {3} {4}
+                        ) 
+                        else 0 
+                        end
+                    ) as slDaDuc,
+		            (case when A.stt = 0 
+                        then
+                            (case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dahoanthanh, 0)
+                            end) 
+                                - 
+                            (case when isnull(A.sl_dagiao, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dagiao, 0)
+                            end) 
+                        else 0 
+                    end) as tKDuc,
+                    (case when A.stt = 1 
+                        then
+                            (case when isnull(A.sl_dahoanthanh + A.sl_nhapkho, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dahoanthanh + A.sl_nhapkho, 0)
+                            end) 
+                                - 
+                            (case when isnull(A.sl_dagiao, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dagiao, 0)
+                            end) 
+                        else 0 
+                    end) as tKBanCat,
+                    (case when A.stt = 2 
+                        then
+                            (case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dahoanthanh, 0)
+                            end) 
+                                - 
+                            (case when isnull(A.sl_dagiao, 0) > A.sl_chiato
+                                then A.sl_chiato
+                                else isnull(A.sl_dagiao, 0)
+                            end) 
+                        else 0 
+                    end) as tKMai,
+                    (case when A.stt = 9999 
+                        then
+                            (case when isnull(A.sl_dahoanthanh, 0) - isnull(A.sl_nhapkho, 0) > A.sl_chiato
+                                then A.sl_chiato + isnull(A.sl_nhapkho, 0)
+                                else isnull(A.sl_dahoanthanh, 0)
+                            end) 
+                                - 
+                            (case when isnull(A.sl_dagiao, 0) - isnull(A.sl_nhapkho, 0) > A.sl_chiato
+                                then A.sl_chiato + isnull(A.sl_nhapkho, 0)
+                                else isnull(A.sl_dagiao, 0)
+                            end) 
+                        else 0 
+                    end) as tKHoanTat
+		            from (
+			            select 
+				            dhpx.donhang_thamchieu as theGiaoViec,
+				            sp.ma_sanpham as mahang,
+				            dvtsp.ten_dvt as dvt,
+				            tsx.stt,
+				            cdh.sl_chiato,	
+				            isnull((
+					            select 
+						            sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
+					            from 
+						            md_dondathangphanxuong_cdh dhpxDH
+					            where 
+						            dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
+						            and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
+				            ), 0) as tongSL,
+				            isnull((
+					            select sum(isnull(kgd.soluong_dichchuyen, 0))
+					            from md_kho_giaodich kgd
+					            where 
+						            tsx.md_lenhsanxuat_tosx_id = kgd.toSXId
+						            and kgd.md_sanpham_id = cdh.md_sanpham_id
+						            and kgd.sanxuat in (
+							            case 
+								            when tsx.stt = 0 then 1
+								            else 2 
+							            end
+						            )
+						            and kgd.kieuchuyen = N'Nhập kho'
+						            and kgd.ngaychuyen <= @denngay
+				            ), 0) as sl_dahoanthanh,
+				            isnull((
+					            select sum(isnull(kgd.soluong_dichchuyen, 0))
+					            from md_kho_giaodich kgd
+					            where 
+						            kgd.tosxId = tsx.md_lenhsanxuat_tosx_id
+						            and kgd.md_sanpham_id = cdh.md_sanpham_id
+						            and kgd.sanxuat in (
+							            case 
+								            when tsx.stt = 9999 then 3
+								            else 2 
+							            end
+						            )
+						            and kgd.kieuchuyen = N'Xuất kho'
+						            and kgd.ngaychuyen <= @denngay
+				            ), 0) as sl_dagiao,
+				            isnull((
+					            select sum(isnull(kgd.soluong_dichchuyen, 0))
+					            from md_kho_giaodich kgd
+					            where 
+						            tsx.md_lenhsanxuat_tosx_id = (case when tsx.stt = 0 then kgd.tosxId else kgd.tosxId2 end)
+						            and kgd.md_sanpham_id = cdh.md_sanpham_id
+						            and kgd.sanxuat = 4
+						            and kgd.kieuchuyen = N'Xuất kho'
+						            and kgd.ngaychuyen <= @denngay
+				            ), 0) as sl_nhapkho
+			            FROM 
+				            md_lenhsanxuat_tosx_cdh cdh
+				            left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
+				            left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id
+				            left join md_dondathangphanxuong dhpx on dhpx.md_dondathangphanxuong_id = lsx.md_dondathangphanxuong_id
+				            left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+				            left join md_donvitinhsanpham dvtsp on sp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id
+			            where 
+				            1=1
+				            and lsx.ngaylap <= @denngay
+				            and lsx.md_phanxuong_id = @px
+				            and lsx.md_trangthai_id in ('DAXL')
+                            {3} {4}
+		            )A
                 )A
                 group by 
                     A.theGiaoViec, A.mahang, A.dvt, A.tongSL
