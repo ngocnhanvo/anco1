@@ -202,9 +202,9 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
                     end) as tKMai,
                     (case when A.stt = 9999 
                         then
-                            (case when isnull(A.sl_dahoanthanh, 0) - isnull(A.sl_nhapkho, 0) > A.sl_chiato
+                            (case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
                                 then A.sl_chiato + isnull(A.sl_nhapkho, 0)
-                                else isnull(A.sl_dahoanthanh, 0)
+                                else isnull(A.sl_dahoanthanh, 0) + isnull(A.sl_nhapkho, 0)
                             end) 
                                 - 
                             (case when isnull(A.sl_dagiao, 0) - isnull(A.sl_nhapkho, 0) > A.sl_chiato
