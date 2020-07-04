@@ -154,9 +154,9 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     toSXId2 = lsxTsxIdTiepTheo;
 
                                     var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                s.md_sanpham_id == cdhLSX.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
-                            ).FirstOrDefault();
+                                        s.md_sanpham_id == cdhLSX.md_sanpham_id
+                                        & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
+                                    ).FirstOrDefault();
 
                                     if (dhCDTT != null)
                                         dhCDTT.sl_dahoanthanh = dhCDTT.sl_dahoanthanh.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
