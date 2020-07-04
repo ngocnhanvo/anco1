@@ -246,7 +246,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
 						            kgd.tosxId = tsx.md_lenhsanxuat_tosx_id
 						            and kgd.md_sanpham_id = cdh.md_sanpham_id
 						            and kgd.sanxuat = (case when tsx.stt = 9999 then 3 else 2 end)
-	                                and kgd.kieuchuyen = (case when tsx.stt = 9999 then N'Nhập kho' else N'Xuất kho' end)
+	                                and kgd.kieuchuyen = N'Xuất kho'
 						            and kgd.ngaychuyen <= @denngay
 				            ), 0) as sl_dagiao,
 				            isnull((
