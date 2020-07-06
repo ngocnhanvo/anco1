@@ -107,14 +107,15 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTi
                     , tosx.md_to_id
                     , tosx.sapxep
 	                , (
-		                select sum(cdh.sl_daxuat * cdh.gianhancong)
-		                from md_xuatkhonb (nolock) xnb
-			                left join md_xuatkhonb_cdh (nolock) cdh on cdh.md_xuatkhonb_id = xnb.md_xuatkhonb_id
-			                left join md_kho (nolock) kho on kho.md_kho_id = xnb.tukho
-		                where 
-			                ngaychuyen between @tungay and @denngay
-			                and xnb.bosung = 4
-			                and kho.md_to_id = tosx.md_to_id and isnull(kho.hangton, 0) = 0
+			            select 
+				            sum(kgd.soluong_dichchuyen * kgd.gianhancong)
+			            from 
+				            md_kho_giaodich kgd
+			            where 
+				            kgd.ngaychuyen between @tungay and @denngay
+				            and sanxuat = 2
+				            and kieuchuyen = N'Xuất kho'
+				            and md_to_id = tosx.md_to_id
 	                ) as tienhang1
 	                , (
 		                select sum(cdh.soluong_dachuyen * cdh.gianhancong)
