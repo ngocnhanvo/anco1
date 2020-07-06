@@ -463,12 +463,12 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
             if (commit == true)
             {
-                //transaction.Commit();
+                transaction.Commit();
 
-                //string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(ghinos);
-                //json.urlData = typeof(md_ghinotruno).Name;
-                //json.WriteJson(jsonData);
-                transaction.Rollback();
+                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(ghinos);
+                json.urlData = typeof(md_ghinotruno).Name;
+                json.WriteJson(jsonData);
+                //transaction.Rollback();
             }
             else
                 transaction.Rollback();
