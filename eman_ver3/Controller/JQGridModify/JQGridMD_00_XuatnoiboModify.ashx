@@ -58,7 +58,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
-        var ktSL = context.Request.QueryString["ktSL"] == "True";
+        var ktSL = (context.Request.Form["ktSL"] + "").ToLower() == "true";
         int count_slxuat = 0;
         bool commit = true;
         using (var transaction = db.Database.BeginTransaction())
@@ -463,11 +463,12 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
             if (commit == true)
             {
-                transaction.Commit();
+                //transaction.Commit();
 
-                string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(ghinos);
-                json.urlData = typeof(md_ghinotruno).Name;
-                json.WriteJson(jsonData);
+                //string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(ghinos);
+                //json.urlData = typeof(md_ghinotruno).Name;
+                //json.WriteJson(jsonData);
+                transaction.Rollback();
             }
             else
                 transaction.Rollback();
