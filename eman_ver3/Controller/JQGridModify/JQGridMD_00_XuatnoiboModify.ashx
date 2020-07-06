@@ -58,6 +58,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
+        var ktSL = context.Request.QueryString["ktSL"] == "True";
         int count_slxuat = 0;
         bool commit = true;
         using (var transaction = db.Database.BeginTransaction())
@@ -406,30 +407,34 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                             }
                         }
 
-                        //if (count_slxuat <= 0 & msg == "")
-                        //{
-                        //    msg += "<div style='color:red'>Lỗi: Dòng \"" + xk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
-                        //}
-                        //else
-                        //{
-                        foreach (var item in lsxtsx.Distinct())
+                        if (ktSL == true)
                         {
-                            int countSLHT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                s.md_lenhsanxuat_tosx_id == item.md_lenhsanxuat_tosx_id
-                            ).Where(s =>
-                                s.sl_chiato != s.sl_dahoanthanh
-                                | s.sl_chiato != s.sl_dagiao
-                            ).Count();
-
-                            if (countSLHT <= 0)
+                            if (count_slxuat <= 0 & msg == "")
                             {
-                                if (item.ngayhoanthanh == null)
-                                    item.ngayhoanthanh = xk.ngaychuyen;
-                                item.check_hoanthanh = true;
-                                db.SaveChanges();
+                                msg += "<div style='color:red'>Lỗi: Dòng \"" + xk.sochungtu + " phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
                             }
                         }
-                        //}
+
+                        if(msg.Length <= 0)
+                        {
+                            foreach (var item in lsxtsx.Distinct())
+                            {
+                                int countSLHT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == item.md_lenhsanxuat_tosx_id
+                                ).Where(s =>
+                                    s.sl_chiato != s.sl_dahoanthanh
+                                    | s.sl_chiato != s.sl_dagiao
+                                ).Count();
+
+                                if (countSLHT <= 0)
+                                {
+                                    if (item.ngayhoanthanh == null)
+                                        item.ngayhoanthanh = xk.ngaychuyen;
+                                    item.check_hoanthanh = true;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
                     }
 
                     //Kiem tra de chuyen thanh Hieu Luc
@@ -593,10 +598,10 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         giao.md_to_id = md_to_id;
         giao.md_to_id2 = px.md_to_id;
         giao.lsx = lsxSCT;
-        giao.tosxId = db.md_lenhsanxuat_tosx.Where(s => 
+        giao.tosxId = db.md_lenhsanxuat_tosx.Where(s =>
             s.md_lenhsanxuat_id == lsxId
             & s.md_phanxuong_to_id == md_to_id).Select(s=>s.md_lenhsanxuat_tosx_id).FirstOrDefault();
-        giao.tosxId2 = tsx.md_lenhsanxuat_tosx_id;
+        giao.tosxId2 = tsx == null ? "" : tsx.md_lenhsanxuat_tosx_id;
         giao.sanxuat = px.bosung == 4 ? 2 : 0;
 
         giao.nguoitao = us.ad_user_id;

@@ -125,6 +125,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
             declare @nam nvarchar(32) = '{1}';
             declare @px nvarchar(32) = '{2}', @tenPX nvarchar(32) = '';
             
+            declare @minDate datetime = convert(datetime, N'01/01/2019 00:00:00',103);
             declare @tungay datetime = convert(datetime, N'01/'+ @thang +N'/'+ @nam + N' 00:00:00',103);
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
@@ -269,7 +270,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangC
 			            where 
 				            1=1
 				            and lsx.md_phanxuong_id = @px
-				            and lsx.md_trangthai_id in ('DAXL')
+                            and lsx.md_trangthai_id not in ('CHUAHOANTHANH', 'KHDXL')
+				            and isnull(lsx.ngayhoanthanh, @minDate) <= @denngay
                             {3} {4}
 		            )A
                 )A
