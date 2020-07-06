@@ -271,6 +271,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         sanxuat = sanxuat,
                                         tosxId = toSXId,
                                         tosxId2 = toSXId2,
+                                        gianhancong = vcnb_cdvc.gianhancong,
+                                        pbgNC = vcnb.phienbangiaNC,
 
                                         mota = vcnb_cdvc.tenhang,
                                         nguoitao = us.ad_user_id,

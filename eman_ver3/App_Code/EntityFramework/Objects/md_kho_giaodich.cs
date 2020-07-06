@@ -43,6 +43,12 @@
                         public string dongvanchuyen { get; set; }
                 
 						
+                        #region md_kho_giaodich_gianhancong_wintaFN
+                        
+                        #endregion md_kho_giaodich_gianhancong_wintaFN
+                        public Decimal? gianhancong { get; set; }
+                
+						
                         #region md_kho_giaodich_giatriVND_wintaFN
                         
                         #endregion md_kho_giaodich_giatriVND_wintaFN
@@ -137,6 +143,12 @@
                         
                         #endregion md_kho_giaodich_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region md_kho_giaodich_pbgNC_wintaFN
+                        
+                        #endregion md_kho_giaodich_pbgNC_wintaFN
+                        public string pbgNC { get; set; }
                 
 						
                         #region md_kho_giaodich_sanxuat_wintaFN

@@ -111,6 +111,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDonHangNhapKhoTP
 		                where cdvc.tenhang = dsdh.so_po
 			                and cdvc.md_sanpham_id = sp.md_sanpham_id
 			                and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                            and isnull(cdvc.lsx_to,'') != ''
 	                ), 0) as slNhapKho
                 from c_danhsachdathang dsdh
                 left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id

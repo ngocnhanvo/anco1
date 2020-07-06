@@ -253,7 +253,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             string khoNext = Helper.layKhoCuaTo(lsx.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                             string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);
                                             add_nhapkho_hsd(db, dh, khoNext, us, KSPID);
-                                            add_nhapkho_ls(db, dh, khoNext, xk.ngaychuyen, xk.sochungtu, 1, us, lsx, lsxTSX, xk.md_to_id);
+                                            add_nhapkho_ls(db, dh, khoNext, xk, 1, us, lsx, lsxTSX, xk.md_to_id);
                                             db.SaveChanges();
                                             foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                                     s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id
@@ -604,6 +604,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             & s.md_phanxuong_to_id == md_to_id).Select(s=>s.md_lenhsanxuat_tosx_id).FirstOrDefault();
         giao.tosxId2 = tsx == null ? "" : tsx.md_lenhsanxuat_tosx_id;
         giao.sanxuat = px.bosung == 4 ? 2 : 0;
+        giao.gianhancong = dh.gianhancong;
+        giao.pbgNC = px.phienbangiaNC;
 
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;
@@ -760,7 +762,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
     }
 
     //--tao lich su nhap kho
-    public string add_nhapkho_ls(EntityContext db, md_xuatkhonb_cdh dh, string khoId, DateTime? ngaychuyen, string sochungtu, decimal nhanvoi, User_TK us, md_lenhsanxuat lsx, md_lenhsanxuat_tosx tsx, string md_to_id)
+    public string add_nhapkho_ls(EntityContext db, md_xuatkhonb_cdh dh, string khoId, md_xuatkhonb px, decimal nhanvoi, User_TK us, md_lenhsanxuat lsx, md_lenhsanxuat_tosx tsx, string md_to_id)
     {
         string id_new = Helper.getNewId();
         md_kho_giaodich giao = new md_kho_giaodich();
@@ -768,9 +770,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         giao.md_kho_id = khoId;
         giao.md_sanpham_id = dh.md_sanpham_id;
         giao.soluong_dichchuyen = dh.sl_thucxuat;
-        giao.ngaychuyen = ngaychuyen.Value;
+        giao.ngaychuyen = px.ngaychuyen.Value;
         giao.kieuchuyen = "Nhập kho";
-        giao.dongnhapxuat = sochungtu;
+        giao.dongnhapxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
         giao.mota = dh.tenhang;
 
@@ -782,6 +784,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         giao.tosxId = tsx.md_lenhsanxuat_tosx_id;
         giao.tosxId2 = tsx.md_lenhsanxuat_tosx_id;
         giao.sanxuat = 2;
+        giao.gianhancong = dh.gianhancong;
+        giao.pbgNC = px.phienbangiaNC;
 
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;

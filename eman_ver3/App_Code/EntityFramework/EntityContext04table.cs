@@ -1083,6 +1083,10 @@ modelBuilder.Entity<md_kho_giaodich>().ToTable("md_kho_giaodich");
                             .HasColumnName("dongvanchuyen")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.gianhancong)
+                            .HasColumnName("gianhancong")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.giatriVND)
                             .HasColumnName("giatriVND")
                             .HasColumnType("decimal").HasPrecision(18, 4);
@@ -1147,6 +1151,10 @@ modelBuilder.Entity<md_kho_giaodich>().HasKey<string>(p => p.md_kho_giaodich_id)
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_kho_giaodich>()
+                            .Property(p => p.pbgNC)
+                            .HasColumnName("pbgNC")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kho_giaodich>()
                             .Property(p => p.sanxuat)
                             .HasColumnName("sanxuat")
