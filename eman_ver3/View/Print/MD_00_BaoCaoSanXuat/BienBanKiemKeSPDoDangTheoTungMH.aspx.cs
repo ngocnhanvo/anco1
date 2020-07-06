@@ -280,7 +280,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
 				                1=1
 				                and lsx.md_phanxuong_id = @px
 				                and lsx.md_trangthai_id not in ('CHUAHOANTHANH', 'KHDXL')
-                                and isnull(lsx.ngayhoanthanh, @minDate) <= @denngay
+                                and isnull(lsx.ngayhoanthanh, @tungay) >= @tungay
                                 {3} {4}
 		                )A
                     )A
