@@ -63,7 +63,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         try
         {
             decimal cbm = decimal.Parse(context.Request.Form["v2"]);
-            decimal gianhap = decimal.Parse(context.Request.Form["gianhap"]);
+            
             string id = context.Request.Form["id_parent"];
             string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "VINHGIA").Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
             var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
@@ -111,6 +111,9 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
 
             if (msg.Length <= 0)
             {
+                var strGN = string.Format(@"select isnull([dbo].[GET_GiaBanSP](N'{0}', N'{1}'),0)", sp.ma_sanpham, dsdh.khachhang);
+                var gianhap = ((decimal?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(strGN)).GetValueOrDefault(0);
+
                 string action = "add";
                 string[] column_ex = { "c_danhsachdathang_id", "sl_conlai", "sl_dagiao", "md_doitackinhdoanh_id", "sl_hanngach", "sl_giamhanngach" };
                 VNN_Function.SetFormValue("c_danhsachdathang_id", id);
