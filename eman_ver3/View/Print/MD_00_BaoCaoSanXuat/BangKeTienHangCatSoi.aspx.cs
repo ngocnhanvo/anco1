@@ -168,6 +168,35 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 				            and (kho.md_to_id = @tosx1 or kho.md_to_id = @tosx2)
 				            and xnb.ngaychuyen between @tungay and @denngay
 				            and dh.sl_daxuat is not null
+                        union
+			            select
+                            xnb.sochungtu as sctPXK
+				            , dh.tenhang as thegiaoviecsx
+                            , xnb.ngaychuyen as ngaychungtu
+				            , xnb.md_to_id
+				            , dh.soluong_dachuyen as slxuat
+				            , xnb.phienbangiaNC
+				            , dh.md_sanpham_id
+				            , dh.md_donvitinhsanpham_id
+                            , gsp.gia as dongia
+                            , substring(dh.lsx_to,0, 13) as ghichu
+			            FROM 
+				            md_vanchuyennoibo xnb (nolock)
+				            left join md_vanchuyennoibo_cdvc dh (nolock) on xnb.md_vanchuyennoibo_id = dh.md_vanchuyennoibo_id
+				            left join md_giasanpham (nolock) gsp on gsp.md_sanpham_id = dh.md_sanpham_id
+                                and gsp.md_phienbangia_id = (
+					                select top 1 md_phienbangia_id 
+					                from md_phienbangia
+					                where 
+						                ten_phienbangia like N'%BG CAT SOI ANCO 2%'
+						                and ngay_hieuluc <= xnb.ngaytao	
+                                    order by ngay_hieuluc desc
+				                ) 
+			            where 
+				            xnb.loaichuyen = 'VANCNBCTKGH' 
+				            and (xnb.md_to_id = @tosx1 or xnb.md_to_id = @tosx2)
+				            and xnb.ngaychuyen between @tungay and @denngay
+				            and dh.soluong_dachuyen is not null
 		            )A
 		            left join md_sanpham sp on sp.md_sanpham_id = A.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = A.md_donvitinhsanpham_id

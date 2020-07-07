@@ -1,7 +1,7 @@
 ﻿/// <XRTypeInfo>
 ///   <AssemblyFullName>App_Code.tl17o3n-, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</AssemblyFullName>
 ///   <AssemblyLocation>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2test\2ace0491\cc6dc7af\App_Code.tl17o3n-.dll</AssemblyLocation>
-///   <TypeName>VNN_report311</TypeName>
+///   <TypeName>VNN_report313</TypeName>
 ///   <Localization>en-GB</Localization>
 ///   <Version>16.1</Version>
 ///   <References>
@@ -81,14 +81,14 @@
 ///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2test\2ace0491\cc6dc7af\assembly\dl3\d0a6862b\9e094b3f_e2f8d501\Newtonsoft.Json.dll" />
 ///   </References>
 ///   <Resources>
-///     <Resource Name="XtraReportSerialization.VNN_report311">
+///     <Resource Name="XtraReportSerialization.VNN_report313">
 /// zsrvvgEAAACRAAAAbFN5c3RlbS5SZXNvdXJjZXMuUmVzb3VyY2VSZWFkZXIsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OSNTeXN0ZW0uUmVzb3VyY2VzLlJ1bnRpbWVSZXNvdXJjZVNldAIAAAAAAAAAAAAAAFBBRFBBRFC0AAAA</Resource>
 ///   </Resources>
 /// </XRTypeInfo>
 namespace XtraReportSerialization
 {
 
-    public class VNN_report311 : DevExpress.XtraReports.UI.XtraReport
+    public class VNN_report313 : DevExpress.XtraReports.UI.XtraReport
     {
         private DevExpress.XtraReports.UI.TopMarginBand TopMargin;
         private DevExpress.XtraReports.UI.DetailBand Detail;
@@ -214,9 +214,9 @@ namespace XtraReportSerialization
         private DevExpress.XtraReports.UI.XRLabel xrLabel29;
         private System.Resources.ResourceManager _resources;
         private string _resourceString;
-        public VNN_report311()
+        public VNN_report313()
         {
-            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report311");
+            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report313");
             this.InitializeComponent();
         }
         private System.Resources.ResourceManager resources
@@ -419,7 +419,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell7.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell7.Dpi = 100F;
-            this.xrTableCell7.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.xrTableCell7.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.xrTableCell7.Name = "xrTableCell7";
             this.xrTableCell7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.xrTableCell7.StylePriority.UseBorders = false;
@@ -439,7 +439,7 @@ namespace XtraReportSerialization
             this.sctPXK.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sctPXK")});
             this.sctPXK.Dpi = 100F;
-            this.sctPXK.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.sctPXK.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.sctPXK.Name = "sctPXK";
             this.sctPXK.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.sctPXK.StylePriority.UseBorders = false;
@@ -456,7 +456,7 @@ namespace XtraReportSerialization
             this.ngaychungtu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "ngaychungtu", "{0:dd/MM/yyyy}")});
             this.ngaychungtu.Dpi = 100F;
-            this.ngaychungtu.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.ngaychungtu.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.ngaychungtu.Name = "ngaychungtu";
             this.ngaychungtu.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.ngaychungtu.StylePriority.UseBorders = false;
@@ -473,7 +473,7 @@ namespace XtraReportSerialization
             this.thegiaoviecsx.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "thegiaoviecsx")});
             this.thegiaoviecsx.Dpi = 100F;
-            this.thegiaoviecsx.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.thegiaoviecsx.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.thegiaoviecsx.Name = "thegiaoviecsx";
             this.thegiaoviecsx.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.thegiaoviecsx.StylePriority.UseBorders = false;
@@ -482,7 +482,7 @@ namespace XtraReportSerialization
             this.thegiaoviecsx.StylePriority.UseTextAlignment = false;
             this.thegiaoviecsx.Text = "thegiaoviecsx";
             this.thegiaoviecsx.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.thegiaoviecsx.Weight = 0.56628857253565545D;
+            this.thegiaoviecsx.Weight = 0.52853600095891451D;
             // 
             // ma_hhvt
             // 
@@ -490,7 +490,7 @@ namespace XtraReportSerialization
             this.ma_hhvt.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "ma_hhvt")});
             this.ma_hhvt.Dpi = 100F;
-            this.ma_hhvt.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.ma_hhvt.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.ma_hhvt.Name = "ma_hhvt";
             this.ma_hhvt.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.ma_hhvt.StylePriority.UseBorders = false;
@@ -506,7 +506,7 @@ namespace XtraReportSerialization
             this.dvt.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "dvt")});
             this.dvt.Dpi = 100F;
-            this.dvt.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.dvt.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.dvt.Name = "dvt";
             this.dvt.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.dvt.StylePriority.UseBorders = false;
@@ -514,7 +514,7 @@ namespace XtraReportSerialization
             this.dvt.StylePriority.UsePadding = false;
             this.dvt.StylePriority.UseTextAlignment = false;
             this.dvt.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.dvt.Weight = 0.13213400123944796D;
+            this.dvt.Weight = 0.16988657281618896D;
             // 
             // slxuat
             // 
@@ -522,7 +522,7 @@ namespace XtraReportSerialization
             this.slxuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "slxuat")});
             this.slxuat.Dpi = 100F;
-            this.slxuat.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.slxuat.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.slxuat.Name = "slxuat";
             this.slxuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.slxuat.StylePriority.UseBorders = false;
@@ -538,7 +538,7 @@ namespace XtraReportSerialization
             this.dongia.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "dongia", "{0:#,#}")});
             this.dongia.Dpi = 100F;
-            this.dongia.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.dongia.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.dongia.Name = "dongia";
             this.dongia.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.dongia.StylePriority.UseBorders = false;
@@ -554,7 +554,7 @@ namespace XtraReportSerialization
             this.thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "thanhtien", "{0:#,#}")});
             this.thanhtien.Dpi = 100F;
-            this.thanhtien.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.thanhtien.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.thanhtien.Name = "thanhtien";
             this.thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
             this.thanhtien.StylePriority.UseBorders = false;
@@ -571,7 +571,7 @@ namespace XtraReportSerialization
             this.ghichu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "ghichu")});
             this.ghichu.Dpi = 100F;
-            this.ghichu.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.ghichu.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.ghichu.Multiline = true;
             this.ghichu.Name = "ghichu";
             this.ghichu.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 2, 100F);
@@ -948,7 +948,7 @@ namespace XtraReportSerialization
             this.xrTableCell9.StylePriority.UseTextAlignment = false;
             this.xrTableCell9.Text = "Thẻ giao việc SX";
             this.xrTableCell9.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell9.Weight = 0.56628857894123D;
+            this.xrTableCell9.Weight = 0.52853600680387469D;
             // 
             // xrTableCell4
             // 
@@ -980,7 +980,7 @@ namespace XtraReportSerialization
             this.xrTableCell1.StylePriority.UseTextAlignment = false;
             this.xrTableCell1.Text = "ĐVT";
             this.xrTableCell1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell1.Weight = 0.13213400440580722D;
+            this.xrTableCell1.Weight = 0.16988657654316255D;
             // 
             // xrTableCell2
             // 
@@ -1800,7 +1800,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell13.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell13.Dpi = 100F;
-            this.xrTableCell13.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.xrTableCell13.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.xrTableCell13.Multiline = true;
             this.xrTableCell13.Name = "xrTableCell13";
             this.xrTableCell13.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
@@ -1810,7 +1810,7 @@ namespace XtraReportSerialization
             this.xrTableCell13.StylePriority.UseTextAlignment = false;
             this.xrTableCell13.Text = "Tổng cộng";
             this.xrTableCell13.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell13.Weight = 1.3804307024420428D;
+            this.xrTableCell13.Weight = 1.3430644569850574D;
             // 
             // xrTableCell49
             // 
@@ -1824,7 +1824,7 @@ namespace XtraReportSerialization
             this.xrTableCell49.StylePriority.UsePadding = false;
             this.xrTableCell49.StylePriority.UseTextAlignment = false;
             this.xrTableCell49.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
-            this.xrTableCell49.Weight = 0.48576289744126161D;
+            this.xrTableCell49.Weight = 0.52312914289824708D;
             // 
             // sum_slxuat
             // 
@@ -1832,7 +1832,7 @@ namespace XtraReportSerialization
             this.sum_slxuat.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_slxuat")});
             this.sum_slxuat.Dpi = 100F;
-            this.sum_slxuat.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.sum_slxuat.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.sum_slxuat.Multiline = true;
             this.sum_slxuat.Name = "sum_slxuat";
             this.sum_slxuat.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
@@ -1863,7 +1863,7 @@ namespace XtraReportSerialization
             this.sum_thanhtien.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sum_thanhtien", "{0:#,#}")});
             this.sum_thanhtien.Dpi = 100F;
-            this.sum_thanhtien.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.sum_thanhtien.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.sum_thanhtien.Name = "sum_thanhtien";
             this.sum_thanhtien.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.sum_thanhtien.StylePriority.UseBorders = false;
@@ -1903,7 +1903,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell51.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrTableCell51.Dpi = 100F;
-            this.xrTableCell51.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.xrTableCell51.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.xrTableCell51.Name = "xrTableCell51";
             this.xrTableCell51.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrTableCell51.StylePriority.UseBorders = false;
@@ -1920,7 +1920,7 @@ namespace XtraReportSerialization
             this.tienvtkhoan.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "tienvtkhoan", "{0:#,#}")});
             this.tienvtkhoan.Dpi = 100F;
-            this.tienvtkhoan.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.tienvtkhoan.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.tienvtkhoan.Name = "tienvtkhoan";
             this.tienvtkhoan.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.tienvtkhoan.StylePriority.UseBorders = false;
@@ -1958,7 +1958,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell57.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrTableCell57.Dpi = 100F;
-            this.xrTableCell57.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.xrTableCell57.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.xrTableCell57.Name = "xrTableCell57";
             this.xrTableCell57.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrTableCell57.StylePriority.UseBorders = false;
@@ -1975,7 +1975,7 @@ namespace XtraReportSerialization
             this.tienvtvipham.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "tienvtvipham", "{0:#,#}")});
             this.tienvtvipham.Dpi = 100F;
-            this.tienvtvipham.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.tienvtvipham.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.tienvtvipham.Name = "tienvtvipham";
             this.tienvtvipham.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.tienvtvipham.StylePriority.UseBorders = false;
@@ -2013,7 +2013,7 @@ namespace XtraReportSerialization
             // 
             this.cellTTHT.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.cellTTHT.Dpi = 100F;
-            this.cellTTHT.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cellTTHT.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.cellTTHT.Name = "cellTTHT";
             this.cellTTHT.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.cellTTHT.StylePriority.UseBorders = false;
@@ -2030,7 +2030,7 @@ namespace XtraReportSerialization
             this.tienhangton.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "tienhangton", "{0:#,#}")});
             this.tienhangton.Dpi = 100F;
-            this.tienhangton.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.tienhangton.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.tienhangton.Name = "tienhangton";
             this.tienhangton.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.tienhangton.StylePriority.UseBorders = false;
@@ -2068,7 +2068,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell52.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrTableCell52.Dpi = 100F;
-            this.xrTableCell52.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.xrTableCell52.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.xrTableCell52.Name = "xrTableCell52";
             this.xrTableCell52.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrTableCell52.StylePriority.UseBorders = false;
@@ -2085,7 +2085,7 @@ namespace XtraReportSerialization
             this.tongtientt.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "tongtientt", "{0:#,#}")});
             this.tongtientt.Dpi = 100F;
-            this.tongtientt.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.tongtientt.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.tongtientt.Name = "tongtientt";
             this.tongtientt.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.tongtientt.StylePriority.UseBorders = false;
@@ -2123,7 +2123,7 @@ namespace XtraReportSerialization
             // 
             this.xrTableCell69.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrTableCell69.Dpi = 100F;
-            this.xrTableCell69.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.xrTableCell69.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.xrTableCell69.Name = "xrTableCell69";
             this.xrTableCell69.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.xrTableCell69.StylePriority.UseBorders = false;
@@ -2140,7 +2140,7 @@ namespace XtraReportSerialization
             this.sotienbangchu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "sotienbangchu")});
             this.sotienbangchu.Dpi = 100F;
-            this.sotienbangchu.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.sotienbangchu.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
             this.sotienbangchu.Name = "sotienbangchu";
             this.sotienbangchu.Padding = new DevExpress.XtraPrinting.PaddingInfo(3, 3, 3, 3, 100F);
             this.sotienbangchu.StylePriority.UseBorders = false;
@@ -2163,7 +2163,7 @@ namespace XtraReportSerialization
             this.xrLabel29.Text = "Lưu trình";
             this.xrLabel29.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleRight;
             // 
-            // VNN_report311
+            // VNN_report313
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.TopMargin,
