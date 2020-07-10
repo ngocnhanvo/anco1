@@ -283,7 +283,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
                                 and (
                                     isnull(cdh.sl_danhapkho, 0) < cdh.sl_dat
                                     or
-                                    (isnull(cdh.sl_danhapkho, 0) >= cdh.sl_dat and isnull(cdh.ngayhoanthanh, @tungay) >= @tungay)
+                                    (isnull(cdh.sl_danhapkho, 0) >= cdh.sl_dat and isnull(cdh.ngayhoanthanh, @denngay) >= @denngay)
                                 )
                                 {3} {4}
 		                )A
