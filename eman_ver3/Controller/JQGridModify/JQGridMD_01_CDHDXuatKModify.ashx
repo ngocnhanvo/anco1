@@ -46,7 +46,7 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
                 break;
             }
             else {
-                decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
+                decimal sltd = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
                 if (sel_val == "0")
                 {
                     xb_cdh.sl_xuat = sltd;
