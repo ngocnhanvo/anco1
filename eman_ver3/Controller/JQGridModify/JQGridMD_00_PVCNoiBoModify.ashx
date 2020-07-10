@@ -180,9 +180,18 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                             & s.macuoi.Contains(sp.ma_sanpham));
 
                                 tsx.ngaygiao = vcnb.ngaychuyen;
+                                var tsxsInLSX = db.md_lenhsanxuat_tosx.Where(t => t.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s=>s.md_lenhsanxuat_tosx_id).ToList();
                                 foreach (var cai in lsxSp.ToList())
                                 {
-                                    cai.sl_danhapkho += vcnb_cdvc.soluong_dichchuyen;
+                                    var cdhsInLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_sanpham_id == cai.md_sanpham_id
+                                        & tsxsInLSX.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
+
+                                    foreach (var cdhInLsx in cdhsInLSX)
+                                    {
+                                        cdhInLsx.sl_danhapkho = cdhInLsx.sl_danhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                                        cdhInLsx.ngayhoanthanh = vcnb.ngaychuyen;
+                                    }
                                     cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen;
                                     if (cai.sl_chiato < cai.sl_dagiao)
                                         cai.sl_layton = cai.sl_dagiao - cai.sl_chiato;
