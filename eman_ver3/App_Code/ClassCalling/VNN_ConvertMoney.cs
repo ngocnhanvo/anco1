@@ -351,9 +351,9 @@ public static class VNN_ConvertMoney
     {
         string kq = "";
 		if(donvitien == "VND"){
-            tien = Math.Ceiling(tien);
             if (tien > 0) {
-				MakeToString mk_tien = new MakeToString(tien);
+                tien = Math.Ceiling(tien);
+                MakeToString mk_tien = new MakeToString(tien);
 				mk_tien.BlockProcessing();
 				kq = mk_tien.ReadThis() + " " + donvitien;
 			}

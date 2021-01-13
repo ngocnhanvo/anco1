@@ -97,11 +97,11 @@
         var congthem = -12;
         var margin = 2;
         // Số càng cao độ cao càng giảm
-        var cap0_0 = 223, td0_0 = '32px', margin_nd0_0 = '-13px 0 0 8px'; if (Browser == 'Firefox') { cap0_0 = 224 + 4; margin0_0 = '-64px 0 0 0'; margin_nd0_0 = '-13px 0 0 8px'; }
-        var cap0_1 = 215, td0_1 = '32px', margin_nd0_1 = '-21px 0 0 8px'; if (Browser == 'Firefox') { cap0_1 = 216 + 4; margin0_1 = '-64px 0 0 0'; margin_nd0_1 = '-21px 0 0 8px'; }
-        var cap1_0 = 249, td1_0 = '57px', margin_nd1_0 = '-13px 0 0 8px'; if (Browser == 'Firefox') { cap1_0 = 240 + 4; margin1_0 = '-56px 0 0 0'; margin_nd1_0 = '-13px 0 0 8px'; }
-        var cap1_1 = 223, td1_1 = '32px', margin_nd1_1 = '-13px 0 0 8px'; if (Browser == 'Firefox') { cap1_1 = 216 + 4; margin1_1 = '-64px 0 0 0'; margin_nd1_1 = '-13px 0 0 8px'; }
-        var cap2_0 = 249, td2_0 = '57px', margin_nd2_0 = '-13px 0 0 8px'; if (Browser == 'Firefox') { cap2_0 = 240 + 4; margin2_0 = '-56px 0 0 0'; margin_nd2_0 = '-13px 0 0 8px'; }
+        var cap0_0 = 223, td0_0 = '32px', margin_nd0_0 = '-13px 0 0 8px'; //if (Browser == 'Firefox') { cap0_0 = 224 + 4; margin0_0 = '-64px 0 0 0'; margin_nd0_0 = '-13px 0 0 8px'; }
+        var cap0_1 = 215, td0_1 = '32px', margin_nd0_1 = '-21px 0 0 8px'; //if (Browser == 'Firefox') { cap0_1 = 216 + 4; margin0_1 = '-64px 0 0 0'; margin_nd0_1 = '-21px 0 0 8px'; }
+        var cap1_0 = 249, td1_0 = '57px', margin_nd1_0 = '-13px 0 0 8px'; //if (Browser == 'Firefox') { cap1_0 = 240 + 4; margin1_0 = '-56px 0 0 0'; margin_nd1_0 = '-13px 0 0 8px'; }
+        var cap1_1 = 223, td1_1 = '32px', margin_nd1_1 = '-13px 0 0 8px'; //if (Browser == 'Firefox') { cap1_1 = 216 + 4; margin1_1 = '-64px 0 0 0'; margin_nd1_1 = '-13px 0 0 8px'; }
+        var cap2_0 = 249, td2_0 = '57px', margin_nd2_0 = '-13px 0 0 8px'; //if (Browser == 'Firefox') { cap2_0 = 240 + 4; margin2_0 = '-56px 0 0 0'; margin_nd2_0 = '-13px 0 0 8px'; }
 
         $('.cl_td_noidungmodule').html('<div class="div_noidung_menu loading"></div>');
 
@@ -143,7 +143,7 @@
             }
             else {
                 //khi khong co module con nao
-                if (Browser == 'Chrome') { $('.border_div_modulelv1').css('padding', '16px 0 0 0'); }
+                //if (Browser == 'Chrome') { $('.border_div_modulelv1').css('padding', '16px 0 0 0'); }
                 $('.cl_td_module').css('height', td0_1);
                 $('.div_noidung_menu').css('margin', margin_nd0_1);
                 $('#input_docaogrid').val(cap0_1 + Number(congthem));
@@ -237,10 +237,10 @@
 
         }
 
-        if (Browser == 'Firefox' & c > 0) {
-            var dodaimoi = Number($('#input_docaogrid').val()) + 8;
-            $('#input_docaogrid').val(dodaimoi);
-        }
+        //if (Browser == 'Firefox' & c > 0) {
+        //    var dodaimoi = Number($('#input_docaogrid').val()) + 8;
+        //    $('#input_docaogrid').val(dodaimoi);
+        //}
 
         loadnoidung(d);
 		$('.span_' + e).addClass('module_spanselect');

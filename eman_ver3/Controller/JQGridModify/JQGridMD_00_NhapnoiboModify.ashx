@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -596,50 +596,49 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                var object_ = db.md_nhapkhonb.Where(p => p.md_nhapkhonb_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "HIEULUC")
-                {
-                    msg_del = "Lỗi:Đối tượng đã hiệu lực " + i;
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "CHUACHUYENHET")
-                {
-                    msg_del = "Lỗi:Đối tượng trong trạng thái Chưa Chuyển Hết";
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    object_.trangthai = "SOANTHAO";
+                    var object_ = db.md_nhapkhonb.Where(p => p.md_nhapkhonb_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if (object_.trangthai == "HIEULUC")
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Đã được ""Hiệu Lực"".", object_.sochungtu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "PNKNB:" + object_.sochungtu, db);
+                        object_.trangthai = "SOANTHAO";
+                        db.SaveChanges();
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
             if (msg.Length <= 0)
             {
-                msg = "true#Trả về bên đề nghị thành công.";
+                msg = @"true#Trả phiếu nhập kho đã chọn về ""Soạn Thảo"" thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

@@ -134,5 +134,20 @@ namespace DataAcess
 
         #endregion md_ghinotruno_sanpham_dvt_wintaFN
         public string sanpham_dvt { get; set; }
+
+        #region md_ghinotruno_stclienquan_wintaFN
+
+        #endregion md_ghinotruno_stclienquan_wintaFN
+        public string stclienquan { get; set; }
+
+        #region md_ghinotruno_dongxuatkhoId_wintaFN
+
+        #endregion md_ghinotruno_dongxuatkhoId_wintaFN
+        public string dongxuatkhoId { get; set; }
+
+        #region md_ghinotruno_ngaydenghi_wintaFN
+
+        #endregion md_ghinotruno_ngaydenghi_wintaFN
+        public DateTime? ngaydenghi { get; set; }
     }
 }

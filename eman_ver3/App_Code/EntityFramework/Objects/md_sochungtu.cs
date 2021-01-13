@@ -25,6 +25,12 @@
                         public int? buocnhay { get; set; }
                 
 						
+                        #region md_sochungtu_giatri_namtruoc_wintaFN
+                        
+                        #endregion md_sochungtu_giatri_namtruoc_wintaFN
+                        public string giatri_namtruoc { get; set; }
+                
+						
                         #region md_sochungtu_giatri_thaydoi_wintaFN
                         
                         #endregion md_sochungtu_giatri_thaydoi_wintaFN
@@ -71,6 +77,18 @@
                         
                         #endregion md_sochungtu_mota_wintaFN
                         public string mota { get; set; }
+                
+						
+                        #region md_sochungtu_namnay_wintaFN
+                        
+                        #endregion md_sochungtu_namnay_wintaFN
+                        public int? namnay { get; set; }
+                
+						
+                        #region md_sochungtu_namtruoc_wintaFN
+                        
+                        #endregion md_sochungtu_namtruoc_wintaFN
+                        public int? namtruoc { get; set; }
                 
 						
                         #region md_sochungtu_ngaycapnhat_wintaFN

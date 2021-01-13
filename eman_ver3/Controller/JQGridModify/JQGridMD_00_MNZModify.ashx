@@ -170,7 +170,7 @@ public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequ
                     if (loai == "JQG")
                     { msg = Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, 0); }
                     else
-                    { msg = Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, 0); } 
+                    { msg = Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, 0); }
                 }
                 VNN_Function.SortColumn("ad_menu", sapxep, null, null, "ma_menu", ma_menu, ma_menucha);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
@@ -181,7 +181,7 @@ public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequ
         }
         catch (Exception ex)
         {
-           msg = String.Format("false#" + ex.Message);
+            msg = String.Format("false#" + ex.Message);
         }
         context.Response.Write(msg);
     }
@@ -396,15 +396,20 @@ public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequ
     public void LoadMenu(HttpContext context)
     {
         string result_menu = "";
-        ADmin_JSON json = new ADmin_JSON();
-        var menus = json.ad_menuJSON();
-        var role_mmcs = json.ad_role_mmcJSON();
         string ad_user_id = Security.id_taikhoan(context);
         string ad_role_id = Security.id_vaitro(context);
 
+        ADmin_JSON json = new ADmin_JSON();
+        var menus = json.ad_menuJSON();
+        var role_mmcs = json.ad_role_mmcJSON();
+        var user_mmcs = json.ad_user_mmcJSON();
+        user_mmcs = user_mmcs.Where(s => s.ad_user_id == ad_user_id)
+                        .Where(s => string.IsNullOrEmpty(s.ad_role_id) | s.ad_role_id == ad_role_id).ToList();
+        role_mmcs = role_mmcs.Where(s => s.ad_role_id == ad_role_id).ToList();
+
         var dt_menu0 = menus.Where(s => s.capmenu == 0 & s.hoatdong == true).OrderBy(s => s.sapxep);
-        var dt_menu0_1 = menus.Where(s => s.capmenu == 1 & s.hoatdong == true &
-            role_mmcs.Where(s1 => s1.ad_menu_id == s.ad_menu_id & s1.ad_role_id == ad_role_id).Take(1).Count() > 0
+        var dt_menu0_1 = menus.Where(s => s.capmenu == 1 & s.hoatdong == true 
+            & (role_mmcs.Where(s1 => s1.ad_menu_id == s.ad_menu_id).Take(1).Count() > 0 | user_mmcs.Where(s1 => s1.ad_menu_id == s.ad_menu_id).Take(1).Count() > 0)
         ).OrderBy(s => s.sapxep);
         foreach (var mn_cap0 in dt_menu0)
         {

@@ -90,7 +90,7 @@
 
 var pdfjsLib = __webpack_require__(1);
 var CSS_UNITS = 96.0 / 72.0;
-var DEFAULT_SCALE_VALUE = 'auto';
+var DEFAULT_SCALE_VALUE = DEFAULT_ZOOM;
 var DEFAULT_SCALE = 1.0;
 var MIN_SCALE = 0.25;
 var MAX_SCALE = 10.0;
@@ -1536,7 +1536,7 @@ var PDFViewerApplication = {
     if (this.isViewerEmbedded) {
       return;
     }
-    document.title = title;
+    //document.title = title;
   },
   close: function pdfViewClose() {
     var errorWrapper = this.appConfig.errorWrapper.container;
@@ -1632,7 +1632,7 @@ var PDFViewerApplication = {
       downloadManager.downloadUrl(url, filename);
     }
     var url = this.baseUrl;
-    var filename = getPDFFileNameFromURL(this.url);
+    var filename = DEFAULT_FILEDOWN ? DEFAULT_FILEDOWN : getPDFFileNameFromURL(this.url);
     var downloadManager = this.downloadManager;
     downloadManager.onerror = function (err) {
       PDFViewerApplication.error('PDF failed to download.');

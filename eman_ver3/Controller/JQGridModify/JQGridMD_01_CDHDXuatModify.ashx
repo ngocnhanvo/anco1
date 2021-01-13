@@ -256,12 +256,13 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                 md_xuatkhonb xnb = null;
                 foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
                 {
+                    var errorExist = false;
                     if (xnb == null)
                         xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
 
                     if (xnb.trangthai == "HIEULUC")
                     {
-                        msg = "<div style='margin: 2px 0 2px 0;'>Lỗi:Dòng " + xnb.sochungtu + " đã Hiệu lực.</div>";
+                        msg = "Dòng " + xnb.sochungtu + " đã Hiệu lực.";
                         break;
                     }
                     else
@@ -270,20 +271,9 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
                         decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
                         if (sel_val == "0")
-                        {
                             slvc_case = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
-                        }
 
-                        var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, xb_cdh.md_sanpham_id, db);
-                        if (sltkTT < slvc_case)
-                        {
-                            msg += string.Format(
-                               @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL tồn kho thực tế: <b>{2}</b></div>",
-                               sp.ma_sanpham,
-                               xb_cdh.tenhang,
-                               sltkTT.DropTrailingZeros());
-                        }
-                        else if (xnb.bosung == 4)
+                        if (xnb.bosung == 4)
                         {
                             var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
                             var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
@@ -292,8 +282,37 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                                 & s.md_sanpham_id == xb_cdh.md_sanpham_id
                                 ).FirstOrDefault();
 
-                            if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case)
+
+                            foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                                    & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                             {
+                                var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
+                                var slcto = ddhpx_cdh.sl_chiato.GetValueOrDefault(0) + ddhpx_cdh.sl_nhapkho.GetValueOrDefault(0);
+                                slvc_case = sel_val == "2" ? (sltdChuyen >= 0 ? (sltdChuyen > slcto ? slcto : sltdChuyen) : 0) : slvc_case;
+                                if (sltdChuyen < slvc_case)
+                                {
+                                    errorExist = true;
+                                    msg +=  string.Format(@"
+                                        <div style='margin: 2px 0 2px 0;'>
+                                            Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
+                                            <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
+                                            <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
+                                        </div>
+                                    ",
+                                    sp.ma_sanpham
+                                    , slvc_case.DropTrailingZeros()
+                                    , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                                    , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                                    , xb_cdh.tenhang
+                                    );
+                                    break;
+                                }
+                            }
+
+                            if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case & errorExist == false)
+                            {
+                                errorExist = true;
                                 msg += string.Format(
                                     @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
                                     sp.ma_sanpham,
@@ -302,7 +321,18 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                             }
                         }
 
-                        if (msg.Length <= 0)
+                        var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, xb_cdh.md_sanpham_id, db);
+                        if (sltkTT < slvc_case & errorExist == false)
+                        {
+                            errorExist = true;
+                            msg += string.Format(
+                               @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL tồn kho thực tế: <b>{2}</b></div>",
+                               sp.ma_sanpham,
+                               xb_cdh.tenhang,
+                               sltkTT.DropTrailingZeros());
+                        }
+
+                        if (errorExist == false)
                         {
                             if (xnb.bosung == 0 | xnb.bosung == 3)
                             {
@@ -320,6 +350,7 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                             }
                             else
                             {
+                                errorExist = true;
                                 msg += string.Format(
                                     @"<div style='margin: 2px 0 2px 0;'>Lỗi: Dòng <b>{0}</b> ({1}) SL tối đa là: <b>{1}</b></div>",
                                     sp.ma_sanpham,
@@ -330,11 +361,9 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                         }
                     }
                 }
-                if (msg.Length <= 0)
-                {
 
+                if (msg.Length <= 0)
                     db.SaveChanges();
-                }
             }
             catch (Exception ex)
             {
@@ -365,6 +394,7 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        var pbvt = context.Request.Form["pbVT"] != null;
         try
         {
             decimal sl_xuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
@@ -392,9 +422,22 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             }
             else
             {
+                var slST = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id
+                    & s.md_sanpham_id == object_.md_sanpham_id
+                    & s.md_xuatkhonb_cdh_id != object_.md_xuatkhonb_cdh_id).ToList().Sum(s => s.sl_thucxuat.GetValueOrDefault(0));
+
+                var tongSLMX = slST + sl_xuat;
                 var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, sp.md_sanpham_id, db);
-                if (sltkTT < sl_xuat)
-                    msg = @"false#Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
+                if (sltkTT < tongSLMX)
+                {
+                    if (pbvt == false)
+                    {
+                        msg = @"false#Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
+                        msg += string.Format(@"<br>SL muốn xuất ở dòng đang chọn: {0}", sl_xuat.DropTrailingZeros());
+                        msg += string.Format(@"<br>SL muốn xuất ở các dòng khác: {0}", slST.DropTrailingZeros());
+                        msg += string.Format(@"<br>Tổng SL muốn xuất: {0}", tongSLMX.DropTrailingZeros());
+                    }
+                }
                 else if (xnb.bosung == 4)
                 {
                     var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
@@ -404,18 +447,40 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                         & s.md_sanpham_id == object_.md_sanpham_id
                         ).FirstOrDefault();
 
+                    foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                            s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                            & s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                    {
+                        var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
+                        if (sltdChuyen < sl_xuat)
+                        {
+                            msg = string.Format(@"false#
+                                Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
+                                <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
+                                <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
+                            ",
+                            sp.ma_sanpham
+                            , sl_xuat.DropTrailingZeros()
+                            , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                            , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                            , object_.tenhang
+                            );
+                            break;
+                        }
+                    };
+
                     if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
                         msg = @"false#Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
                 }
-            }
 
-            if (msg.Length <= 0)
-            {
-                object_.ghino = (sl_xuat - object_.tong_sl_xuat + object_.truno).GetValueOrDefault(0).Set0WhenlessThan0();
-                object_.sl_thucxuat = sl_xuat;
-                db.SaveChanges();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.(--)" + object_.sl_xuat2;
+                if (msg.Length <= 0)
+                {
+                    object_.ghino = (sl_xuat - object_.tong_sl_xuat + object_.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                    object_.sl_thucxuat = sl_xuat;
+                    db.SaveChanges();
+                    VNN_Function.loaddulieu_Auto(db, ma_module);
+                    msg = "true#Cập nhật thành công.(--)" + object_.sl_xuat2;
+                }
             }
         }
         catch (Exception ex)

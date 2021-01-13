@@ -8,152 +8,130 @@ using System.Data;
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BaoCaoChiTietTinhHinhSXHH : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public InfoPrint infoPrint = PrintAnco2.GetInfoPrint();
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Báo Cáo Chi Tiết Tình Hình Sản Xuất Hàng Hóa.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Báo Cáo Chi Tiết Tình Hình Sản Xuất Hàng Hóa.repx";
+        string nameRpt = "Báo Cáo Chi Tiết Tình Hình Sản Xuất Hàng Hóa";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sumSLCTDuc", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLLTDuc", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLDLDuc", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCLDuc", Type.GetType("System.Double"));
 
-            tbl.Columns.Add("sumSLCTDuc", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLLTDuc", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLDLDuc", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLCLDuc", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCTBanCat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLDLBanCat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCLBanCat", Type.GetType("System.Double"));
 
-            tbl.Columns.Add("sumSLCTBanCat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLDLBanCat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLCLBanCat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCTMai", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLDLMai", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCLMai", Type.GetType("System.Double"));
 
-            tbl.Columns.Add("sumSLCTMai", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLDLMai", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLCLMai", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCTHoanTat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLLTHoanTat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLDLHoanTat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSLCLHoanTat", Type.GetType("System.Double"));
+        //Header;
 
-            tbl.Columns.Add("sumSLCTHoanTat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLLTHoanTat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLDLHoanTat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSLCLHoanTat", Type.GetType("System.Double"));
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
 
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header;
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Báo Cáo Chi Tiết Tình Hình Sản Xuất Hàng Hóa";
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sumSLCTDuc"] = tbl.Compute("sum(sLCTDuc)", string.Empty);
+        tbl.Rows[lastRow]["sumSLLTDuc"] = tbl.Compute("sum(sLLTDuc)", string.Empty);
+        tbl.Rows[lastRow]["sumSLDLDuc"] = tbl.Compute("sum(sLDLDuc)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCLDuc"] = tbl.Compute("sum(sLCLDuc)", string.Empty);
 
-            tbl.Rows[lastRow]["sumSLCTDuc"] = tbl.Compute("sum(sLCTDuc)", string.Empty);
-            tbl.Rows[lastRow]["sumSLLTDuc"] = tbl.Compute("sum(sLLTDuc)", string.Empty);
-            tbl.Rows[lastRow]["sumSLDLDuc"] = tbl.Compute("sum(sLDLDuc)", string.Empty);
-            tbl.Rows[lastRow]["sumSLCLDuc"] = tbl.Compute("sum(sLCLDuc)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCTBanCat"] = tbl.Compute("sum(sLCTBanCat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLDLBanCat"] = tbl.Compute("sum(sLDLBanCat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCLBanCat"] = tbl.Compute("sum(sLCLBanCat)", string.Empty);
 
-            tbl.Rows[lastRow]["sumSLCTBanCat"] = tbl.Compute("sum(sLCTBanCat)", string.Empty);
-            tbl.Rows[lastRow]["sumSLDLBanCat"] = tbl.Compute("sum(sLDLBanCat)", string.Empty);
-            tbl.Rows[lastRow]["sumSLCLBanCat"] = tbl.Compute("sum(sLCLBanCat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCTMai"] = tbl.Compute("sum(sLCTMai)", string.Empty);
+        tbl.Rows[lastRow]["sumSLDLMai"] = tbl.Compute("sum(sLDLMai)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCLMai"] = tbl.Compute("sum(sLCLMai)", string.Empty);
 
-            tbl.Rows[lastRow]["sumSLCTMai"] = tbl.Compute("sum(sLCTMai)", string.Empty);
-            tbl.Rows[lastRow]["sumSLDLMai"] = tbl.Compute("sum(sLDLMai)", string.Empty);
-            tbl.Rows[lastRow]["sumSLCLMai"] = tbl.Compute("sum(sLCLMai)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCTHoanTat"] = tbl.Compute("sum(sLCTHoanTat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLLTHoanTat"] = tbl.Compute("sum(sLLTHoanTat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLDLHoanTat"] = tbl.Compute("sum(sLDLHoanTat)", string.Empty);
+        tbl.Rows[lastRow]["sumSLCLHoanTat"] = tbl.Compute("sum(sLCLHoanTat)", string.Empty);
 
-            tbl.Rows[lastRow]["sumSLCTHoanTat"] = tbl.Compute("sum(sLCTHoanTat)", string.Empty);
-            tbl.Rows[lastRow]["sumSLLTHoanTat"] = tbl.Compute("sum(sLLTHoanTat)", string.Empty);
-            tbl.Rows[lastRow]["sumSLDLHoanTat"] = tbl.Compute("sum(sLDLHoanTat)", string.Empty);
-            tbl.Rows[lastRow]["sumSLCLHoanTat"] = tbl.Compute("sum(sLCLHoanTat)", string.Empty);
+        var sLCTDuc = ReportViewer1.Report.Report.FindControl("sLCTDuc", true);
+        var sLLTDuc = ReportViewer1.Report.Report.FindControl("sLLTDuc", true);
+        var sLDLDuc = ReportViewer1.Report.Report.FindControl("sLDLDuc", true);
+        var sLCLDuc = ReportViewer1.Report.Report.FindControl("sLCLDuc", true);
+        var sLCTBanCat = ReportViewer1.Report.Report.FindControl("sLCTBanCat", true);
+        var sLDLBanCat = ReportViewer1.Report.Report.FindControl("sLDLBanCat", true);
+        var sLCLBanCat = ReportViewer1.Report.Report.FindControl("sLCLBanCat", true);
+        var sLCTMai = ReportViewer1.Report.Report.FindControl("sLCTMai", true);
+        var sLDLMai = ReportViewer1.Report.Report.FindControl("sLDLMai", true);
+        var sLCLMai = ReportViewer1.Report.Report.FindControl("sLCLMai", true);
+        var sLCTHoanTat = ReportViewer1.Report.Report.FindControl("sLCTHoanTat", true);
+        var sLLTHoanTat = ReportViewer1.Report.Report.FindControl("sLLTHoanTat", true);
+        var sLDLHoanTat = ReportViewer1.Report.Report.FindControl("sLDLHoanTat", true);
+        var sLCLHoanTat = ReportViewer1.Report.Report.FindControl("sLCLHoanTat", true);
+        var sumSLCTDuc = ReportViewer1.Report.Report.FindControl("sumSLCTDuc", true);
+        var sumSLLTDuc = ReportViewer1.Report.Report.FindControl("sumSLLTDuc", true);
+        var sumSLDLDuc = ReportViewer1.Report.Report.FindControl("sumSLDLDuc", true);
+        var sumSLCLDuc = ReportViewer1.Report.Report.FindControl("sumSLCLDuc", true);
+        var sumSLCTBanCat = ReportViewer1.Report.Report.FindControl("sumSLCTBanCat", true);
+        var sumSLDLBanCat = ReportViewer1.Report.Report.FindControl("sumSLDLBanCat", true);
+        var sumSLCLBanCat = ReportViewer1.Report.Report.FindControl("sumSLCLBanCat", true);
+        var sumSLCTMai = ReportViewer1.Report.Report.FindControl("sumSLCTMai", true);
+        var sumSLDLMai = ReportViewer1.Report.Report.FindControl("sumSLDLMai", true);
+        var sumSLCLMai = ReportViewer1.Report.Report.FindControl("sumSLCLMai", true);
+        var sumSLCTHoanTat = ReportViewer1.Report.Report.FindControl("sumSLCTHoanTat", true);
+        var sumSLLTHoanTat = ReportViewer1.Report.Report.FindControl("sumSLLTHoanTat", true);
+        var sumSLDLHoanTat = ReportViewer1.Report.Report.FindControl("sumSLDLHoanTat", true);
+        var sumSLCLHoanTat = ReportViewer1.Report.Report.FindControl("sumSLCLHoanTat", true);
 
-            var sLCTDuc = report.Report.FindControl("sLCTDuc", true);
-            var sLLTDuc = report.Report.FindControl("sLLTDuc", true);
-            var sLDLDuc = report.Report.FindControl("sLDLDuc", true);
-            var sLCLDuc = report.Report.FindControl("sLCLDuc", true);
-            var sLCTBanCat = report.Report.FindControl("sLCTBanCat", true);
-            var sLDLBanCat = report.Report.FindControl("sLDLBanCat", true);
-            var sLCLBanCat = report.Report.FindControl("sLCLBanCat", true);
-            var sLCTMai = report.Report.FindControl("sLCTMai", true);
-            var sLDLMai = report.Report.FindControl("sLDLMai", true);
-            var sLCLMai = report.Report.FindControl("sLCLMai", true);
-            var sLCTHoanTat = report.Report.FindControl("sLCTHoanTat", true);
-            var sLLTHoanTat = report.Report.FindControl("sLLTHoanTat", true);
-            var sLDLHoanTat = report.Report.FindControl("sLDLHoanTat", true);
-            var sLCLHoanTat = report.Report.FindControl("sLCLHoanTat", true);
-            var sumSLCTDuc = report.Report.FindControl("sumSLCTDuc", true);
-            var sumSLLTDuc = report.Report.FindControl("sumSLLTDuc", true);
-            var sumSLDLDuc = report.Report.FindControl("sumSLDLDuc", true);
-            var sumSLCLDuc = report.Report.FindControl("sumSLCLDuc", true);
-            var sumSLCTBanCat = report.Report.FindControl("sumSLCTBanCat", true);
-            var sumSLDLBanCat = report.Report.FindControl("sumSLDLBanCat", true);
-            var sumSLCLBanCat = report.Report.FindControl("sumSLCLBanCat", true);
-            var sumSLCTMai = report.Report.FindControl("sumSLCTMai", true);
-            var sumSLDLMai = report.Report.FindControl("sumSLDLMai", true);
-            var sumSLCLMai = report.Report.FindControl("sumSLCLMai", true);
-            var sumSLCTHoanTat = report.Report.FindControl("sumSLCTHoanTat", true);
-            var sumSLLTHoanTat = report.Report.FindControl("sumSLLTHoanTat", true);
-            var sumSLDLHoanTat = report.Report.FindControl("sumSLDLHoanTat", true);
-            var sumSLCLHoanTat = report.Report.FindControl("sumSLCLHoanTat", true);
-
-            sLCTDuc.DataBindings[0].FormatString =
-            sLLTDuc.DataBindings[0].FormatString =
-            sLDLDuc.DataBindings[0].FormatString =
-            sLCLDuc.DataBindings[0].FormatString =
-            sLCTBanCat.DataBindings[0].FormatString =
-            sLDLBanCat.DataBindings[0].FormatString =
-            sLCLBanCat.DataBindings[0].FormatString =
-            sLCTMai.DataBindings[0].FormatString =
-            sLDLMai.DataBindings[0].FormatString =
-            sLCLMai.DataBindings[0].FormatString =
-            sLCTHoanTat.DataBindings[0].FormatString =
-            sLLTHoanTat.DataBindings[0].FormatString =
-            sLDLHoanTat.DataBindings[0].FormatString =
-            sLCLHoanTat.DataBindings[0].FormatString =
-            sumSLCTDuc.DataBindings[0].FormatString =
-            sumSLLTDuc.DataBindings[0].FormatString =
-            sumSLDLDuc.DataBindings[0].FormatString =
-            sumSLCLDuc.DataBindings[0].FormatString =
-            sumSLCTBanCat.DataBindings[0].FormatString =
-            sumSLDLBanCat.DataBindings[0].FormatString =
-            sumSLCLBanCat.DataBindings[0].FormatString =
-            sumSLCTMai.DataBindings[0].FormatString =
-            sumSLDLMai.DataBindings[0].FormatString =
-            sumSLCLMai.DataBindings[0].FormatString =
-            sumSLCTHoanTat.DataBindings[0].FormatString =
-            sumSLLTHoanTat.DataBindings[0].FormatString =
-            sumSLDLHoanTat.DataBindings[0].FormatString =
-            sumSLCLHoanTat.DataBindings[0].FormatString = sothapphan;
-            
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        sLCTDuc.DataBindings[0].FormatString =
+        sLLTDuc.DataBindings[0].FormatString =
+        sLDLDuc.DataBindings[0].FormatString =
+        sLCLDuc.DataBindings[0].FormatString =
+        sLCTBanCat.DataBindings[0].FormatString =
+        sLDLBanCat.DataBindings[0].FormatString =
+        sLCLBanCat.DataBindings[0].FormatString =
+        sLCTMai.DataBindings[0].FormatString =
+        sLDLMai.DataBindings[0].FormatString =
+        sLCLMai.DataBindings[0].FormatString =
+        sLCTHoanTat.DataBindings[0].FormatString =
+        sLLTHoanTat.DataBindings[0].FormatString =
+        sLDLHoanTat.DataBindings[0].FormatString =
+        sLCLHoanTat.DataBindings[0].FormatString =
+        sumSLCTDuc.DataBindings[0].FormatString =
+        sumSLLTDuc.DataBindings[0].FormatString =
+        sumSLDLDuc.DataBindings[0].FormatString =
+        sumSLCLDuc.DataBindings[0].FormatString =
+        sumSLCTBanCat.DataBindings[0].FormatString =
+        sumSLDLBanCat.DataBindings[0].FormatString =
+        sumSLCLBanCat.DataBindings[0].FormatString =
+        sumSLCTMai.DataBindings[0].FormatString =
+        sumSLDLMai.DataBindings[0].FormatString =
+        sumSLCLMai.DataBindings[0].FormatString =
+        sumSLCTHoanTat.DataBindings[0].FormatString =
+        sumSLLTHoanTat.DataBindings[0].FormatString =
+        sumSLDLHoanTat.DataBindings[0].FormatString =
+        sumSLCLHoanTat.DataBindings[0].FormatString = sothapphan;
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string px = context.Request.QueryString["px"];
         string donhang = context.Request.QueryString["donhang"];
         string masp = context.Request.QueryString["masp"];

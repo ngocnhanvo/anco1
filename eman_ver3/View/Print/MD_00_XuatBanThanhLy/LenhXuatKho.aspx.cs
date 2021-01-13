@@ -6,66 +6,53 @@ using System.Data;
 
 public partial class PrintControllers_MD_00_XuatBanThanhLy_LenhXuatKho : System.Web.UI.Page
 {
-    public string logo = "", sothapphan = "";
+    public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Lệnh Xuất Kho.repx");
-        var report = XtraReport.FromFile(file, true);
+        inPDF = context.Request.QueryString["inPDF"];
+        string nameTemp = "[KT] Lệnh Xuất Kho.repx";
+        string nameRpt = "Lệnh Xuất Kho {sct_lsx}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            var soluong = report.Report.FindControl("soluong", true);
-            soluong.DataBindings[0].FormatString = sothapphan;
-            var ghino = report.Report.FindControl("ghino", true);
-            ghino.DataBindings[0].FormatString = sothapphan;
-            var truno = report.Report.FindControl("truno", true);
-            truno.DataBindings[0].FormatString = sothapphan;
-            var tongcong = report.Report.FindControl("tongcong", true);
-            tongcong.DataBindings[0].FormatString = sothapphan;
-            var thucxuat = report.Report.FindControl("thucxuat", true);
-            thucxuat.DataBindings[0].FormatString = sothapphan;
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        var soluong = ReportViewer1.Report.Report.FindControl("soluong", true);
+        soluong.DataBindings[0].FormatString = sothapphan;
+        var ghino = ReportViewer1.Report.Report.FindControl("ghino", true);
+        ghino.DataBindings[0].FormatString = sothapphan;
+        var truno = ReportViewer1.Report.Report.FindControl("truno", true);
+        truno.DataBindings[0].FormatString = sothapphan;
+        var tongcong = ReportViewer1.Report.Report.FindControl("tongcong", true);
+        tongcong.DataBindings[0].FormatString = sothapphan;
+        var thucxuat = ReportViewer1.Report.Report.FindControl("thucxuat", true);
+        thucxuat.DataBindings[0].FormatString = sothapphan;
 
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
-            tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
-            tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
-            tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_soluong"] = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_tongcong"] = double.Parse(tbl.Compute("Sum(tongcong)", string.Empty).ToString());
-            var sum_soluong = report.Report.FindControl("sum_soluong", true);
-            sum_soluong.DataBindings[0].FormatString = sothapphan;
-            var sum_tongcong = report.Report.FindControl("sum_tongcong", true);
-            sum_tongcong.DataBindings[0].FormatString = sothapphan;
-            this.ReportViewer1.Report = report;
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
+        //Header
+        var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+        tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+        tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+        tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_soluong"] = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_tongcong"] = double.Parse(tbl.Compute("Sum(tongcong)", string.Empty).ToString());
+        var sum_soluong = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
+        sum_soluong.DataBindings[0].FormatString = sothapphan;
+        var sum_tongcong = ReportViewer1.Report.Report.FindControl("sum_tongcong", true);
+        sum_tongcong.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)

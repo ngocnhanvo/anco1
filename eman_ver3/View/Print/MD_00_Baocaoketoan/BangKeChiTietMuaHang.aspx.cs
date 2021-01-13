@@ -15,120 +15,99 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KT] Bảng Kê Chi Tiết Mua Hàng.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KT] Bảng Kê Chi Tiết Mua Hàng.repx";
+        string nameRpt = "Bảng Kê Chi Tiết Mua Hàng {tungay} - {denngay}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thuegtgt", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_tongthanhtoan", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumGroup_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumGroup_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumGroup_thuegtgt", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumGroup_tongthanhtoan", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            report.DisplayName = "Bảng kê chi tiết mua hàng";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thuegtgt", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_tongthanhtoan", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumGroup_soluong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumGroup_thanhtien", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumGroup_thuegtgt", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumGroup_tongthanhtoan", Type.GetType("System.Double"));
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
             
-            var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            var sum_thanhtien = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
-            var sum_thuegtgt = tbl.Compute("Sum(thuegtgt)", string.Empty).ToString();
-            var sum_tongthanhtoan = tbl.Compute("Sum(tongthanhtoan)", string.Empty).ToString();
+        var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
+        var sum_thanhtien = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
+        var sum_thuegtgt = tbl.Compute("Sum(thuegtgt)", string.Empty).ToString();
+        var sum_tongthanhtoan = tbl.Compute("Sum(tongthanhtoan)", string.Empty).ToString();
 
-            var soluong_cell = report.Report.FindControl("soluong", true);
-            soluong_cell.DataBindings[0].FormatString = sothapphan;
-            var sumGroup_soluong_cell = report.Report.FindControl("sumGroup_soluong", true);
-            sumGroup_soluong_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_soluong_cell = report.Report.FindControl("sum_soluong", true);
-            sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
-            //Group 1
-            string group_sochungtu = "";
-            for(int i = 0; i < tbl.Rows.Count; i++)
-            {
-                DataRow row = tbl.Rows[i];
-                //Header
-                row["logo"] = infoPrint.logo;
-                //Footer
-                row["dd"] = infoPrint.dd;
-                row["MM"] = infoPrint.MM;
-                row["yyyy"] = infoPrint.yyyy;
-                if (string.IsNullOrEmpty(sum_soluong))
-                    row["sum_soluong"] = DBNull.Value;
-                else
-                    row["sum_soluong"] = double.Parse(sum_soluong);
-
-                if (string.IsNullOrEmpty(sum_thanhtien))
-                    row["sum_thanhtien"] = DBNull.Value;
-                else
-                    row["sum_thanhtien"] = double.Parse(sum_thanhtien);
-
-                if (string.IsNullOrEmpty(sum_thuegtgt))
-                    row["sum_thuegtgt"] = DBNull.Value;
-                else
-                    row["sum_thuegtgt"] = double.Parse(sum_thuegtgt);
-
-                if (string.IsNullOrEmpty(sum_tongthanhtoan))
-                    row["sum_tongthanhtoan"] = DBNull.Value;
-                else
-                    row["sum_tongthanhtoan"] = double.Parse(sum_tongthanhtoan);
-
-                string sochungtu = row["sochungtu"].ToString();
-                if(group_sochungtu != sochungtu)
-                {
-                    string value = tbl.Compute("Sum(soluong)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
-                    if (string.IsNullOrEmpty(value))
-                        row["sumGroup_soluong"] = DBNull.Value;
-                    else
-                        row["sumGroup_soluong"] = decimal.Parse(value);
-
-                    value = tbl.Compute("Sum(thanhtien)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
-                    if (string.IsNullOrEmpty(value))
-                        row["sumGroup_thanhtien"] = DBNull.Value;
-                    else
-                        row["sumGroup_thanhtien"] = decimal.Parse(value);
-
-                    value = tbl.Compute("Sum(thuegtgt)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
-                    if (string.IsNullOrEmpty(value))
-                        row["sumGroup_thuegtgt"] = DBNull.Value;
-                    else
-                        row["sumGroup_thuegtgt"] = decimal.Parse(value);
-
-                    value = tbl.Compute("Sum(tongthanhtoan)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
-                    if (string.IsNullOrEmpty(value))
-                        row["sumGroup_tongthanhtoan"] = DBNull.Value;
-                    else
-                        row["sumGroup_tongthanhtoan"] = decimal.Parse(value);
-                    group_sochungtu = sochungtu;
-                }
-            }
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
+        var soluong_cell = ReportViewer1.Report.Report.FindControl("soluong", true);
+        soluong_cell.DataBindings[0].FormatString = sothapphan;
+        var sumGroup_soluong_cell = ReportViewer1.Report.Report.FindControl("sumGroup_soluong", true);
+        sumGroup_soluong_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_soluong_cell = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
+        sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
+        //Group 1
+        string group_sochungtu = "";
+        for(int i = 0; i < tbl.Rows.Count; i++)
         {
-            Response.Write("<h1>Không có dữ liệu</h1>");
+            DataRow row = tbl.Rows[i];
+            //Header
+
+            //Footer
+            if (string.IsNullOrEmpty(sum_soluong))
+                row["sum_soluong"] = DBNull.Value;
+            else
+                row["sum_soluong"] = double.Parse(sum_soluong);
+
+            if (string.IsNullOrEmpty(sum_thanhtien))
+                row["sum_thanhtien"] = DBNull.Value;
+            else
+                row["sum_thanhtien"] = double.Parse(sum_thanhtien);
+
+            if (string.IsNullOrEmpty(sum_thuegtgt))
+                row["sum_thuegtgt"] = DBNull.Value;
+            else
+                row["sum_thuegtgt"] = double.Parse(sum_thuegtgt);
+
+            if (string.IsNullOrEmpty(sum_tongthanhtoan))
+                row["sum_tongthanhtoan"] = DBNull.Value;
+            else
+                row["sum_tongthanhtoan"] = double.Parse(sum_tongthanhtoan);
+
+            string sochungtu = row["sochungtu"].ToString();
+            if(group_sochungtu != sochungtu)
+            {
+                string value = tbl.Compute("Sum(soluong)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
+                if (string.IsNullOrEmpty(value))
+                    row["sumGroup_soluong"] = DBNull.Value;
+                else
+                    row["sumGroup_soluong"] = decimal.Parse(value);
+
+                value = tbl.Compute("Sum(thanhtien)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
+                if (string.IsNullOrEmpty(value))
+                    row["sumGroup_thanhtien"] = DBNull.Value;
+                else
+                    row["sumGroup_thanhtien"] = decimal.Parse(value);
+
+                value = tbl.Compute("Sum(thuegtgt)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
+                if (string.IsNullOrEmpty(value))
+                    row["sumGroup_thuegtgt"] = DBNull.Value;
+                else
+                    row["sumGroup_thuegtgt"] = decimal.Parse(value);
+
+                value = tbl.Compute("Sum(tongthanhtoan)", string.Format("[sochungtu] = '{0}'", sochungtu)).ToString();
+                if (string.IsNullOrEmpty(value))
+                    row["sumGroup_tongthanhtoan"] = DBNull.Value;
+                else
+                    row["sumGroup_tongthanhtoan"] = decimal.Parse(value);
+                group_sochungtu = sochungtu;
+            }
         }
     }
 
@@ -160,8 +139,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeChiTietMuaHang : 
 	            , (dh.giatriVND * dh.sl_nhap2 * isnull(thue.giatri, 0) / 100) as thuegtgt
 	            , (dh.giatriVND * dh.sl_nhap2 + dh.giatriVND * dh.sl_nhap2 * isnull(thue.giatri, 0) / 100) as tongthanhtoan
 	            , dvtsp.ten_dvt as dvt
-                , @tungay as tungay
-                , @denngay as denngay
+                , N'{0}' as tungay
+                , N'{1}' as denngay
             FROM md_nhapkho_ncc ncc
                 left join md_nhapkho_ncc_dh dh on ncc.md_nhapkho_ncc_id = dh.md_nhapkho_ncc_id
                 left join md_sanpham sp on dh.md_sanpham_id = sp.md_sanpham_id

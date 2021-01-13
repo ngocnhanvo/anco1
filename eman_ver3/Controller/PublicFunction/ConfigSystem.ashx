@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.IO;
 using DataAcess;
+using Newtonsoft.Json;
 
 public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -194,13 +195,34 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
 
     public void changeColor(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        ad_systemconfig ttc = db.ad_systemconfig.FirstOrDefault();
-        if (ttc != null)
+        var db = new EntityContext();
+        string msg = "";
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            ttc.mausac = context.Request.QueryString["mausac"];
-            db.SaveChanges();
+            try
+            {
+                var userId = Security.id_taikhoan(context);
+                var user = db.ad_user.Where(s => s.ad_user_id == userId).FirstOrDefault();
+                if (user != null)
+                {
+                    user.mauBackground = context.Request.Form["mausac"];
+                    db.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+
+            if (msg.Length <= 0)
+                transaction.Commit();
+            else
+                transaction.Rollback();
         }
+
+        context.Response.Write(msg);
     }
 
     public void loadColor(HttpContext context)

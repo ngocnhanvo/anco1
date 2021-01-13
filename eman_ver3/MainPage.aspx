@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" %>
-
+<%var version = 14; %>
 <html>
 <head>
     <link rel="shortcut icon" href="images/logo/anco_logo.ico" />
@@ -19,13 +19,16 @@
     <link rel="stylesheet" href="css/FontAwesome/fontawesome_all.css">
     <!-- Script Grid -->
     <script src="js/Public_script/jquery-1.10.2.js" type="text/javascript"></script>
-     <script src="js/Public_script/jquery.jqGrid.min.js" type="text/javascript"></script>
+    <script src="js/Public_script/jquery.signalR-2.4.1.min.js" type="text/javascript"></script>
+    <script src="signalr/hubs" type="text/javascript"></script>
+    <script src="js/VNN_script/ExecSignalR.js?ver=<%=version %>" type="text/javascript"></script>
+    <script src="js/Public_script/jquery.jqGrid.min.js?ver=<%=version %>" type="text/javascript"></script>
     <script src="js/Public_script/chosen.jquery.min.js" type="text/javascript"></script>
     <script src="js/Public_script/prism.js" type="text/javascript" charset="utf-8"></script>
     <!--Script VNN-->
-    <script src="js/VNN_script/GridFunction_View.js" type="text/javascript"></script>
-    <script src="js/VNN_script/GridFunction_Admin.js?ver=2" type="text/javascript"></script>
-    <script async src="js/VNN_script/User_GridFormatter.js?ver=2" type="text/javascript"></script>
+    <script src="js/VNN_script/GridFunction_View.js?ver=<%=version %>" type="text/javascript"></script>
+    <script src="js/VNN_script/GridFunction_Admin.js?ver=<%=version %>" type="text/javascript"></script>
+    <script async src="js/VNN_script/User_GridFormatter.js?ver=<%=version %>" type="text/javascript"></script>
     <!-- layout -->
     <script src="js/Public_script/jquery.number.js" type="text/javascript"></script>
     <script src="js/Public_script/jquery.form.js" type="text/javascript"></script>
@@ -34,6 +37,8 @@
     <script async src="js/jqxwidgets/jqxbuttons.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxscrollbar.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxlistbox.js" type="text/javascript"></script>
+    <script async src="js/jqxwidgets/jqxdragdrop.js" type="text/javascript"></script>
+   
     <!--/ layout -->
     <!--Script Module-->
     <%=kq_script[0]%>
@@ -54,7 +59,7 @@
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 12px;" onclick="click_back()" alt="" title="trở về trang trước" src="images/Menu/header_back2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0" onclick="click_refreshPage()" alt="" title="làm mới trang hiện tại" src="images/Menu/header_frefesh2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="click_doimau()" alt="" title="đổi màu" src="images/Menu/header_idea2.png" />
-                    <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" alt="" title="giúp đỡ" src="images/Menu/header_ask2.png" />
+                    <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="loadContent('MN_01_HT1','','Hướng dẫn sử dụng','Trợ Giúp')" alt="" title="giúp đỡ" src="images/Menu/header_ask2.png" />
                 </td>
                 <td align="right" class="cl_td_urlmenu" style="font-size: 10px !important"><span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span></td>
                 <td style="display:none; min-width: 110px; width: 110px" align="right">
@@ -76,7 +81,7 @@
                         <div class="menu_module_first" align="center">Đang tải menu ...</div>
                     </td>
                     <td style="width: 12px; min-width: 12px">
-                        <div class="div_chiacach" style="margin: 10px 0px 0px -7px;">
+                        <div onclick="configModelGridForUser()" class="div_chiacach" style="margin: 10px 0px 0px -7px;">
                             <img class="cl_img_div_chiatach" width="20px" height="20px" alt="" src="images/Menu/phanquyen.png" />
 
                         </div>
@@ -140,7 +145,7 @@
         $('body').click(function (e) {
             $('#div_chuotphai').remove();
         });
-        load_doimau(null);
+
 		<%
         string ma_module = "MD_00_NhatKy";
         string[] get_records = VNN_Config.get_records();
@@ -148,18 +153,30 @@
         string[] colModel = VNN_Config.get_colModel(Context, ma_module);
 		%>
 		function view_log() {
-            var tengrid_small = "MD_00_NhatKy";
-            $('#mainpane').append('<div id="dlg_gridSmall" style="overflow: hidden;" title="Xem nhật ký"><div class="nhan_loading"></div>' +
+            let tengrid_small = "MD_00_NhatKy";
+			
+            let ma_md_select = $('.module_spanselect').attr('regiongrid');
+		    try {
+		        if(ma_md_select == null | ma_md_select == '') {
+		            ma_md_select = $('.module_spanselect').attr('id').replace('span_','');
+		        }
+
+		        if(ma_md_select) {
+		            ma_md_select = '[' + ma_md_select.replace("grid", "") + ']';
+		        }
+		        else {
+		            return;
+		        }
+		    }
+		    catch(r) {
+		        return;
+		    }
+
+		    $('#mainpane').append('<div id="dlg_gridSmall" style="overflow: hidden;" title="Xem nhật ký"><div class="nhan_loading"></div>' +
             '<table id="grid' + tengrid_small + '" class="gridResize"></talbe>' +
             '<div  id="pagergrid' + tengrid_small + '"></div>' +
             '</div>');
-			
-			let ten_md_select = $('.module_spanselect').text();
-			let ma_md_select = '';
-			if(ten_md_select != null & ten_md_select != '') {
-				ma_md_select = $('.module_spanselect').attr('id').replace('span_','');
-				ten_md_select = ten_md_select + ' - [' + ma_md_select + ']';
-			}
+            
 			var firstload_<%=ma_module%> = 0;
             $('#dlg_gridSmall').dialog({
                 modal: true,
@@ -190,12 +207,16 @@
                             <%=colModel[0] %>
                         ],
 						ondblClickRow: function(e){
-							<%=get_STTaID[4] %>;
+						    $('#view_gridMD_00_NhatKy').click();
 						},
 						beforeRequest: function() { 
 							//giữ focus
 							input_focus = $('input:focus').attr('id');
 							$('#grid' + tengrid_small).jqGrid('getGridParam', 'postData').module_select = 1;
+
+                            if(firstload_<%=ma_module%> == 0) {
+							    $('#grid' + tengrid_small).jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" (md.ten_module+\' - [\'+md.ma_module+\']\')","op":"bw","data":"'+ ma_md_select +'"}]}';
+							}
 						},
                         gridComplete: function () {
                             $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());
@@ -203,18 +224,16 @@
                         loadComplete: function (data) {
                             $('.nhan_loading').remove();
                             $('#grid' + tengrid_small).jqGrid('setSelection', id_<%=ma_module %>);
-							if(firstload_<%=ma_module%> == 0){
-								$('#gs_ad_module_id').val(ten_md_select);
-								firstload_<%=ma_module%> = 1;
-								$('#grid' + tengrid_small).jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" (md.ten_module+\' - [\'+md.ma_module+\']\')","op":"bw","data":"'+ ten_md_select +'"}]}';
-								setTimeout(function(){ loadclick_('grid'+tengrid_small,null); }, 300);
-							}
+                            if(firstload_<%=ma_module%> == 0) {
+                                firstload_<%=ma_module%> = 1;
+                                $('#gs_ad_module_id').val(ma_md_select);
+                            }
                         },
                         caption: ""
                     });
                     jQuery('#grid' + tengrid_small).jqGrid('navGrid', '#pagergrid' + tengrid_small, {
                          add:false,edit:false,del:false,search:false,view:true,refresh:true
-                    }, {}, {}, {}, {}, {}, {}, {});
+                    }, {}, {}, {}, {}, {  beforeShowForm: function (formid) { formid.closest('div.ui-jqdialog').dialogCenter(); } }, {}, {});
                     jQuery("#grid" + tengrid_small).jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });
                 },
                 close: function () {
@@ -230,13 +249,248 @@
                     }
                     ]
             });
-        }
-		
+		}
+
+        var clickToShowOrHideElement = function(a) {
+            let type = $(a).parent().parent().attr('id').lastIndexOf('listHide') > -1 ? 0 : 1;
+            let itemHides = $("#listHide").jqxListBox('getItems');
+            let itemShows = $("#listShow").jqxListBox('getItems');
+            let text = $(a).next().text();
+            console.log(text);
+            if(type == 0) {
+                let index = itemHides.findIndex(function(a){ return a.label == text });
+                let item = $("#listHide").jqxListBox('getItem', index);
+                
+                $("#listHide").jqxListBox('removeAt', index); 
+                $("#listShow").jqxListBox('insertAt', item, itemShows.length);
+            }
+            else {
+                let index = itemShows.findIndex(function(a){ return a.label == text });
+                let item = $("#listShow").jqxListBox('getItem', index);
+
+                $("#listShow").jqxListBox('removeAt', index); 
+                $("#listHide").jqxListBox('insertAt', item, itemHides.length);
+
+            }
+        };
+
+        function configModelGridForUser() {
+            let ma_md_select = $('.module_spanselect').attr('regiongrid');
+            try {
+                if(ma_md_select == null | ma_md_select == '') {
+                    ma_md_select = 'grid' + $('.module_spanselect').attr('id').replace('span_','');
+                }
+
+                if(!ma_md_select)
+                    return;
+            }
+            catch(r) {
+                return;
+            }
+
+            let gridSet = $("#"+ma_md_select);
+            let models = gridSet.jqGrid('getGridParam', 'colModel').filter(function(a) { return a.khoaTuyChinh != true & ['rn','cb'].lastIndexOf(a.name) <= -1});
+            let listShow = models.filter(function(a){ return a.hidden == false });
+            let listHide = models.filter(function(a){ return a.hidden == true });
+
+            $('#mainpane').append(`
+                <div id="dlg_gridSmall" style="overflow: hidden;" title="Cấu hình lưới dữ liệu">
+                    <table>
+                        <tr>
+                            <td colspan=3>
+                                <input type="radio" style="position: relative;top: 1.5px;left: -1px;" id="macDinhChieuDaiTungCot" name="tuyChonCauHinhLuoi"/>
+                                <label for="macDinhChieuDaiTungCot"><b>Mặc định chiều dài của từng cột giống với cột trên lưới dữ liệu</b></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan=3>
+                                <input type="radio" style="position: relative;top: 1.5px;left: -1px;" id="sapXepCotHoacAnHienCot" name="tuyChonCauHinhLuoi"/>
+                                <label for="sapXepCotHoacAnHienCot"><b>Sắp xếp cột hoặc ẩn hiển cột</b></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan=3><div style="height:5px"></div></td>
+                        </tr>
+                        <tr>
+                            <td><label><b>Cột hiển thị</b></label></td>
+                            <td style="width:10px"></td>
+                            <td><label><b>Cột bị ẩn</b></label></td>
+                        </tr>
+                        <tr>
+                            <td><div id="listShow"></div></td>
+                            <td></td>
+                            <td><div id="listHide"></div></td>
+                        </tr>
+
+                        <tr>
+                            <td><div id="listShow"></div></td>
+                            <td></td>
+                            <td style="text-align: right">
+                                <input type="checkbox" style="position: relative;top: 1.5px;left: -1px;" id="khoiPhucCaiDatMacDinh"/>
+                                <label style="user-select: none;" for="khoiPhucCaiDatMacDinh">Khôi phục cài đặt mặc định</label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>`
+            );
+
+            $('#dlg_gridSmall').dialog({
+                modal: true,
+                width: 540,
+                height: 485,
+                open: function (event, ui) {
+                    
+                    $("#listShow").jqxListBox({ allowDrop: true, allowDrag: true, source: listShow, width: 250, height: 300, 
+                        renderer: function (index, label, value) {
+                            return "<span style='cursor:pointer' onclick='clickToShowOrHideElement(this)' class='clickToShowOrHideElement glyphicon glyphicon-minus'></span><label style='margin-left:5px'>" + label + "</label>";
+                        } 
+                    });
+                    $("#listHide").jqxListBox({ allowDrop: true, allowDrag: true, source: listHide, width: 250, height: 300, 
+                        renderer: function (index, label, value) {
+                            return "<span style='cursor:pointer' onclick='clickToShowOrHideElement(this)' class='clickToShowOrHideElement glyphicon glyphicon-plus'></span><label style='margin-left:5px'>" + label + "</label>";
+                        } 
+                    });
+
+                    let updateItemsForList = function(items) {
+                        for(let i=0; i<items.length; i++) {
+                            if(i > 0) {
+                                let prev = items[i - 1].originalItem.name;
+                                items[i - 1].originalItem.namePrev = prev;
+                            }
+                            items[i].value = items[i].originalItem;
+                        }
+
+                        return items;
+                    }
+
+                    let itemShows = $("#listShow").jqxListBox('getItems');
+                    itemShows = updateItemsForList(itemShows);
+
+                    let itemHides = $("#listHide").jqxListBox('getItems');
+                    itemHides = updateItemsForList(itemHides);
+
+                    $('#sapXepCotHoacAnHienCot').prop('checked', true);
+
+                    let moKhoaOrKhoaList = function(type){
+                        $('#listShow').jqxListBox({ disabled: type });
+                        $('#listHide').jqxListBox({ disabled: type }); 
+                    }
+
+                    $('input[name="tuyChonCauHinhLuoi"]').change(function(){
+                        let checked = $(this).prop('checked');
+                        if(checked) {
+                            let id =  $(this).attr('id');
+                            if(id =='macDinhChieuDaiTungCot')
+                                moKhoaOrKhoaList(true);
+                            else
+                                moKhoaOrKhoaList(false);
+                        }
+                    });
+
+                    $('#khoiPhucCaiDatMacDinh').change(function(){
+                        let checked = $(this).prop('checked');
+                        if(checked) {
+                            moKhoaOrKhoaList(true);
+                            $('input[name="tuyChonCauHinhLuoi"]').prop('disabled', true);
+                        }
+                        else {
+                            $('input[name="tuyChonCauHinhLuoi"]').prop('disabled', false);
+                            $('input[name="tuyChonCauHinhLuoi"]').change();
+                        }
+                    });
+
+                    Logo_Center("glyphicon glyphicon-cog", true);
+                },
+                close: function () {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons: [
+                    {
+                        id: 'btn-ok',
+                        text: 'Đồng ý',
+                        click: function () {
+                            let khoiPhucCaiDatMacDinh = $('#khoiPhucCaiDatMacDinh').prop('checked');
+                            let macDinhChieuDaiTungCot = $('#macDinhChieuDaiTungCot').prop('checked');
+                            let sapXepCotHoacAnHienCot = $('#sapXepCotHoacAnHienCot').prop('checked');
+                            let type = khoiPhucCaiDatMacDinh ? 3 : (sapXepCotHoacAnHienCot ? 2 : (macDinhChieuDaiTungCot ? 1 : 0));
+
+                            let itemModels = [];
+
+                            if(type == 1) {
+                                let gridGS = gridSet[0].grid.headers;
+                                let gridGSCP = gridSet[0].grid.headersCp;
+                                for(let i in models) {
+                                    let model = models[i];
+                                    let indexGridGS = gridGS.findIndex(function(a) { return a.el.id == ma_md_select + '_' + model.name });
+                                    let oldWidth = gridGSCP[indexGridGS].width;
+
+                                    if(oldWidth != model.width) {
+                                        itemModels.push({
+                                            name: model.name,
+                                            label: model.label,
+                                            hidden: model.hidden,
+                                            width: model.width
+                                        });
+                                    }
+                                }
+                            }
+                            else if(type == 2) {
+                                let items = $("#listShow").jqxListBox('getItems');
+                                for(let i in items) {
+                                    let item = items[i];
+                                    itemModels.push({
+                                        name: item.value.name,
+                                        label: item.value.label,
+                                        hidden: false
+                                    });
+                                }
+
+                                items = $("#listHide").jqxListBox('getItems');
+                                for(let i in items) {
+                                    let item = items[i];
+                                    itemModels.push({
+                                        name: item.value.name,
+                                        label: item.value.label,
+                                        hidden: true
+                                    });
+                                }
+                            }
+
+                            $('.nhan-loi').remove();
+                            $('#dlg_gridSmall').prepend(`<div class="nhan_loading0"></div>`);
+                            let thisSav = this;
+                            $.post('Controller/PublicFunction/ChangePrintMethod.ashx?oper=configColumns', 
+                                { itemModels: JSON.stringify(itemModels), grid: ma_md_select, type: type }, function(rs) {
+                                $('.nhan_loading0').remove();
+                                if(rs.length > 0) {
+                                    $('#dlg_gridSmall').prepend(`<div class="nhan-loi">${rs}</div>`);
+                                }
+                                else {
+                                    $(thisSav).dialog("destroy").remove();
+                                    $('.module_spanselect').click();
+                                }
+                            });
+                        }
+                    },
+                    {
+                        id: 'btn-close',
+                        text: 'Thoát',
+                        click: function () {
+                            $(this).dialog("destroy").remove();
+                        }
+                    }
+                ]
+            });
+		}
 		
 		//Load auto
 		<%=VNN_Function.setFunction_AutoLoad(db) %>
 
-		//Xem chi tiết tài khoản
+        //Xem chi tiết tài khoản
+        let chuyenCachInBTSangPDF = <%=tk.chuyenCachInBTSangPDF.GetValueOrDefault(false).ToString().ToLower() %>;
+        let tuDongNhanDienCachIn = <%=tk.tuDongNhanDienCachIn.GetValueOrDefault(false).ToString().ToLower() %>;
+        let mauBackgroundDF = '<%=tk.mauBackground %>';
+        load_doimau_client(mauBackgroundDF);
 		let ma_tk = '<%=tk.ma_user %>';
 		let ma_role = '<%=tk.ma_role %>';
         let ten_role = '<%=tk.ten_role %>';
@@ -289,7 +543,58 @@
                 format_number(elem, 0, !dec ? 4 : dec);
         }
 
+        function getHTMLSelectSoThapPhan(selected, id) 
+        {
+            selected = selected == null ? 5 : selected;
+
+            let html = `
+                <select id="sothapphan" class="FormElement">
+                    <option value="0">Không lấy số thập phân</option>
+                    <option value="1">Lấy 1 số thập phân</option>
+                    <option value="2">Lấy 2 số thập phân</option>
+                    <option value="3">Lấy 3 số thập phân</option>
+                    <option value="4">Lấy 4 số thập phân</option>
+                    <option value="5">Lấy số thập phân tự động</option>
+                </select>
+            `;
+
+            html = html.replace('<option value="'+ selected +'">', '<option selected value="'+ selected +'">');
+
+            if(id != null)
+                $(id).html(html).children().unwrap();
+
+            return html;
+        }
+
+        function getHTMLSelectKieuIn(selected, id) 
+        {
+            selected = selected == null ? 0 : selected;
+
+            let html = `
+                <select id="kieuInBaoCao" class="FormElement">
+                    <option value="0">In trên trình duyệt</option>
+                    <option value="1">In thông qua PDF</option>
+                    <option value="2">In thông qua Excel</option>
+                    <option value="3">In thông qua PDF (Mẫu Excel)</option>
+                </select>
+            `;
+
+            if(chuyenCachInBTSangPDF)
+                selected = selected == 0 ? 1 : selected;
+
+            html = html.replace('<option value="'+ selected +'">', '<option selected value="'+ selected +'">');
+
+            if(id != null)
+                $(id).html(html).children().unwrap();
+
+            return html;
+        }
+
 		history.pushState(null,null,""),window.addEventListener("popstate",function(){history.pushState(null,null,"")}),"Firefox"!=Browser&&$(window).bind("beforeunload",function(n){return null==reload_page?'BẠN MUỐN LÀM MỚI LẠI GIAO DIỆN?\n\n >> Nhấn "Reload This Page" để làm mới\n >> Nhấn "Don\'t Reload" để hủy thao tác.':void 0});
+    
+		window.onresize = function() {
+		    click_refreshPage2();
+		}; 
     </script>
 </body>
 </html>

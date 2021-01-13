@@ -37,6 +37,7 @@ public virtual DbSet<ad_status> ad_status { get; set; }
 public virtual DbSet<ad_systemconfig> ad_systemconfig { get; set; }
 public virtual DbSet<ad_table_manager> ad_table_manager { get; set; }
 public virtual DbSet<ad_user> ad_user { get; set; }
+public virtual DbSet<ad_user_mmc> ad_user_mmc { get; set; }
 public virtual DbSet<ad_user_role> ad_user_role { get; set; }
 public virtual DbSet<c_danhsachdathang> c_danhsachdathang { get; set; }
 public virtual DbSet<c_danhsachdathang_nangluc> c_danhsachdathang_nangluc { get; set; }
@@ -103,6 +104,8 @@ public virtual DbSet<md_hoadon> md_hoadon { get; set; }
 public virtual DbSet<md_hoadon_chitiet> md_hoadon_chitiet { get; set; }
 public virtual DbSet<md_kho> md_kho { get; set; }
 public virtual DbSet<md_kho_ghino> md_kho_ghino { get; set; }
+public virtual DbSet<md_kho_ghinoBK> md_kho_ghinoBK { get; set; }
+public virtual DbSet<md_kho_ghinoBK2> md_kho_ghinoBK2 { get; set; }
 public virtual DbSet<md_kho_giaodich> md_kho_giaodich { get; set; }
 public virtual DbSet<md_kho_giucho> md_kho_giucho { get; set; }
 public virtual DbSet<md_kho_sanpham> md_kho_sanpham { get; set; }

@@ -6,9 +6,9 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -99,7 +99,7 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
             else
             {
                 string chk_sp = db.md_giasanpham.
-                        Where(s => 
+                        Where(s =>
                         s.md_sanpham_id == sp.md_sanpham_id &
                         s.md_phienbangia_id == id &
                         s.md_donvitinhsanpham_id == donvitinh &
@@ -132,54 +132,60 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        var db = new EntityContext();
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_giasanpham";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.md_giasanpham.Where(p => p.md_giasanpham_id == id_del_).Select(s => s.md_giasanpham_id).Take(1).FirstOrDefault();
+                string id_del = context.Request.Form["id"];
+
+                var object_ = db.md_giasanpham.Where(p => p.md_giasanpham_id == id_del).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    var pbg001s = db.md_vanchuyennoibo.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
+                    var pbg002s = db.md_xuatkhonb.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
+                    var pbg003s = db.c_donmuahang.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id).Take(1).Count();
+                    if(pbg001s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho phiếu chuyển kho";
+                    else if(pbg002s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho phiếu xuất kho nội bộ";
+                    else if(pbg003s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho đơn mua hàng hóa vật tư";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id).Select(s=>s.ten_phienbangia).FirstOrDefault();
+                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).Select(s=>s.ma_sanpham).FirstOrDefault();
+                    VNN_Function.Write_log(context, ma_module, null, oper, "PBG:" + pbg + ", MSP:" + sp, db);
+                    db.md_giasanpham.Remove(object_);
+                    db.SaveChanges();
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = string.Format("true#{0}", "Xóa giá sản phẩm thành công");
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format("false#{0}", msg);
             }
         }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+
         context.Response.Write(msg);
     }
 

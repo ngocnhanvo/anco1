@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] Phiếu nhập kho từ NCC</title>
+    <title>[eMan] <%=ReportViewer1.Report.DisplayName %></title>
 	<script>
 
 	</script>

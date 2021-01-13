@@ -10,58 +10,37 @@ using DataAcess;
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangTongHopThanhToanTienHangSPHT : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.repx";
+        string nameRpt = "Tổng hợp tiền hàng SPHT {thang_nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_tienhang", Type.GetType("System.Double"));
+        //Header
 
-            tbl.Columns.Add("sum_tienhang", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Tổng hợp tiền hàng SPHT - " + tbl.Rows[0]["thang_nam"];
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            tbl.Rows[lastRow]["sum_tienhang"] = tbl.Compute("sum(tienhang)", string.Empty);
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_tienhang"] = tbl.Compute("sum(tienhang)", string.Empty);
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
 		string nam = context.Request.QueryString["nam"];

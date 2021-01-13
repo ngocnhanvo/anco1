@@ -13,13 +13,26 @@ public static class Helper
         return Guid.NewGuid().ToString().Replace("-", "");
     }
 
+    public static string EncodeHTML_VNN(string a)
+    {
+        if (a == null)
+        {
+            a = "";
+        }
+        a = a.Replace("&", "%26");
+        a = a.Replace("+", "%2B");
+        a = a.Replace("&", "%26");
+        a = a.Replace("+", "%2B");
+        return a;
+    }
+
     public static System.Collections.Generic.Dictionary<string, string> pathReport(string name)
     {
         name = name.Replace("/", "-");
         var obj = new System.Collections.Generic.Dictionary<string, string>();
         obj["name"] = name;
         obj["link"] = HttpContext.Current.Server.MapPath("~/DEV_REPORT/pdfs/" + name);
-        obj["linkView"] = Security.UrlBase() + "DEV_REPORT/pdfs/" + name;
+        obj["linkView"] = EncodeHTML_VNN(Security.UrlBase() + "DEV_REPORT/pdfs/" + name);
         return obj;
     }
 
@@ -128,10 +141,46 @@ public static class Helper
 
     public static void viewFile(DevExpress.XtraReports.UI.XtraReport report)
     {
-        var pathRp = pathReport(report.DisplayName + ".pdf");
-        report.ExportToPdf(pathRp["link"]);
+        if (report != null)
+        {
+            var pathRp = pathReport(report.DisplayName + ".pdf");
+            report.ExportToPdf(pathRp["link"]);
 
-        string url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + pathRp["linkView"] + "?" + Guid.NewGuid();
-        HttpContext.Current.Response.Redirect(url);
+            string url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + pathRp["linkView"] + "&remove=true&zoom=page-width&id=" + Guid.NewGuid();
+            HttpContext.Current.Response.Redirect(url);
+        }
+    }
+
+    public static dynamic setDefaultValueWhenInsertOrUpdate(dynamic a, User_TK us, bool edit)
+    {
+        if (!edit)
+        {
+            a.ngaytao = DateTime.Now;
+
+            a.nguoitao = us.ad_user_id;
+            a.value_nguoitao = us.ma_user;
+
+            a.bophantao = us.md_phongban_id;
+            a.value_bophantao = us.ten_phongban;
+
+            a.vaitrotao = us.ad_role_id;
+            a.value_vaitrotao = us.ten_role;
+        }
+        
+        a.ngaycapnhat = DateTime.Now;
+        
+        a.nguoicapnhat = us.ad_user_id;
+
+        a.value_nguoicapnhat = us.ma_user;
+        
+        a.bophancapnhat = us.md_phongban_id;
+
+        a.value_bophancapnhat = us.ten_phongban;
+        
+        a.vaitrocapnhat = us.ad_role_id;
+
+        a.value_vaitrocapnhat = us.ten_role;
+        
+        return a;
     }
 }

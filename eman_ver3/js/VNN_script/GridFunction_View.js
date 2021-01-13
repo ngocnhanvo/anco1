@@ -67,7 +67,9 @@ function xemthongtinchitiet() {
                     confirm: $('#txtXNMK').val(),
                     oper: "save"
                 }, function (n) {
-                    n = n.split("(##)"), $("#dlg_gridSmall .nhan_loading").remove(), $("#dlg_gridSmall").prepend(n[2]), "True" == n[0] && (reload_page = !0, window.location.href = n[1])
+                    $('.nhan-loi').remove();
+                    $('.nhan-thanhcong').remove();
+                    n = n.split("(##)"), $("#dlg_gridSmall .nhan_loading").remove(), $("#dlg_gridSmall").prepend(n[2]), "true" == n[0] && (reload_page = !0, window.location.href = n[1])
                 })
             }
         }, {

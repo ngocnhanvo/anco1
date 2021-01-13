@@ -27,6 +27,7 @@ public class ADmin_JSON
         modules.Add("ad_case");
         modules.Add("ad_role_mmc");
         modules.Add("ad_systemconfig");
+        modules.Add("ad_user_mmc");
         foreach (var module in modules)
         {
             context.Cache.Remove(module);
@@ -51,84 +52,18 @@ public class ADmin_JSON
     {
         urlData = typeof(ad_column).Name;
         object cache = HttpContext.Current.Cache.Get(urlData);
-        List<ad_column> ad_columns = new List<ad_column>();
+        var jsonData = new List<ad_column>();
 
         if (cache == null)
         {
-            var items = ReadJSON();
-            foreach (var s in items)
-            {
-                var item = new ad_column();
-                item.ad_column_id = s["ad_column_id"].ToString();
-                item.ad_module_id = s["ad_module_id"].ToString();
-                item.align = s["align"].ToString();
-                item.bophantao = s["bophantao"].ToString();
-                item.colspan = s["colspan"].ToString();
-                if(s["disable_modify"] != null)
-                    item.disable_modify = s["disable_modify"].ToString();
-                item.editable = s["editable"].ToString();
-                item.editoptions = s["editoptions"].ToString();
-                if(s["editrules"] != null)
-                    item.editrules = s["editrules"].ToString();
-                item.edittype = s["edittype"].ToString();
-                item.@fixed = s["fixed"].ToString();
-                item.focus = s["focus"].ToString().ToLower() == "true";
-                item.formatoptions = s["formatoptions"].ToString();
-                item.formatter = s["formatter"].ToString();
-                if(s["formoptions"] != null)
-                    item.formoptions = s["formoptions"].ToString();
-                if (s["frozen"] != null)
-                    item.frozen = s["frozen"].ToString() == "true";
-                item.hidden = s["hidden"].ToString();
-                item.hoatdong = s["hoatdong"].ToString().ToLower() == "true";
-                item.important = s["important"].ToString();
-                item.index_cot = s["index_cot"].ToString();
-                item.key_cot = s["key_cot"].ToString();
-                item.label = s["label"].ToString();
-                item.ma_column = s["ma_column"].ToString();
-                item.ma_edittype = s["ma_edittype"].ToString();
-                item.ma_menu = s["ma_menu"].ToString();
-                item.ma_module = s["ma_module"].ToString();
-                item.mota = s["mota"].ToString();
-                item.ngaycapnhat = DateTime.Parse(s["ngaycapnhat"].ToString());
-                item.ngaytao = DateTime.Parse(s["ngaytao"].ToString());
-                item.nguoicapnhat = s["nguoicapnhat"].ToString();
-                item.nguoitao = s["nguoitao"].ToString();
-                item.reset_modify = s["reset_modify"].ToString().ToLower() == "true";
-                item.sapxep = s["sapxep"].ToString();
-                item.searchoptions = s["searchoptions"].ToString();
-                item.sopt = s["sopt"].ToString();
-                item.stype = s["stype"].ToString();
-                item.ten_column = s["ten_column"].ToString();
-                if (s["unformat"] != null)
-                    item.unformat = s["unformat"].ToString();
-                item.vaitrocapnhat = s["vaitrocapnhat"].ToString();
-                item.vaitrotao = s["vaitrotao"].ToString();
-                if (s["value_bophancapnhat"] != null)
-                    item.value_bophancapnhat = s["value_bophancapnhat"].ToString();
-                if (s["value_bophantao"] != null)
-                    item.value_bophantao = s["value_bophantao"].ToString();
-                if (s["value_nguoicapnhat"] != null)
-                    item.value_nguoicapnhat = s["value_nguoicapnhat"].ToString();
-                if (s["value_nguoitao"] != null)
-                    item.value_nguoitao = s["value_nguoitao"].ToString();
-                if (s["value_vaitrocapnhat"] != null)
-                    item.value_vaitrocapnhat = s["value_vaitrocapnhat"].ToString();
-                if (s["value_vaitrotao"] != null)
-                    item.value_vaitrotao = s["value_vaitrotao"].ToString();
-                if (s["width"] != null)
-                    item.width = s["width"].ToString();
-
-                if (item != null)
-                    ad_columns.Add(item);
-            }
-            HttpContext.Current.Cache.Insert(urlData, ad_columns);
+            jsonData = JsonConvert.DeserializeObject<List<ad_column>>(ReadStringJSON());
+            HttpContext.Current.Cache.Insert(urlData, jsonData);
         }
         else
         {
-            ad_columns = cache as List<ad_column>;
+            jsonData = cache as List<ad_column>;
         }
-        return ad_columns;
+        return jsonData;
     }
 
     public List<ad_systemconfig> ad_systemconfigJSON()
@@ -413,6 +348,32 @@ public class ADmin_JSON
         return md_ghinotrunos;
     }
 
+    public List<ad_user_mmc> ad_user_mmcJSON()
+    {
+        urlData = typeof(ad_user_mmc).Name;
+        object cache = HttpContext.Current.Cache.Get(urlData);
+        var jsonData = new List<ad_user_mmc>();
+
+        if (cache == null)
+        {
+            jsonData = JsonConvert.DeserializeObject<List<ad_user_mmc>>(ReadStringJSON());
+            HttpContext.Current.Cache.Insert(urlData, jsonData);
+        }
+        else
+        {
+            jsonData = cache as List<ad_user_mmc>;
+        }
+        return jsonData;
+    }
+
+    public string ReadStringJSON()
+    {
+        HttpContext context = HttpContext.Current;
+        string url = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/JsonData/" + urlData + ".json");
+        string json = File.ReadAllText(url);
+        return json;
+    }
+
     #region Modify
     public void WriteJson()
     {
@@ -453,6 +414,21 @@ public class ADmin_JSON
             w.Close();
         }
         File.WriteAllText(filepath, jsonData);
+        context.Cache.Remove(urlData);
+    }
+
+    public void WriteJson(List<dynamic> jsonData)
+    {
+        var data = JsonConvert.SerializeObject(jsonData);
+        HttpContext context = HttpContext.Current;
+        string filepath = context.Server.MapPath(Security.UrlBase() + "App_Data/JsonData/" + urlData + ".json");
+        if (!File.Exists(filepath))
+        {
+            StreamWriter w = new StreamWriter(filepath, false, Encoding.UTF8);
+            w.Flush();
+            w.Close();
+        }
+        File.WriteAllText(filepath, data);
         context.Cache.Remove(urlData);
     }
     #endregion

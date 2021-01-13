@@ -42,6 +42,10 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
                 {
                     Dictionary<string, object> userJSon = new Dictionary<string, object>();
                     userJSon["ad_user_id"] = us.ad_user_id;
+                    userJSon["ma_user"] = us.ma_user;
+                    userJSon["mauBackground"] = us.mauBackground;
+                    userJSon["chuyenCachInBTSangPDF"] = us.chuyenCachInBTSangPDF;
+                    userJSon["tuDongNhanDienCachIn"] = us.tuDongNhanDienCachIn;
                     foreach (ad_user_role tk_vtr in db.ad_user_role.Where(s => s.ad_user_id == us.ad_user_id & s.macdinh == true).ToList())
                     {
                         userJSon["user_role"] = tk_vtr.ad_role_id;

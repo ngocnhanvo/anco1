@@ -6,9 +6,9 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_PXModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -85,58 +85,50 @@ public class JQGridMD_00_PXModify : IHttpHandler, System.Web.SessionState.IRequi
     }
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        var db = new EntityContext();
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_phanxuong";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.md_phanxuong.Where(p => p.md_phanxuong_id == id_del_).Select(s => s.md_phanxuong_id).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    string action = "del";
-                    string[] column_ex = {
+                    var object_ = db.md_phanxuong.Where(p => p.md_phanxuong_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
-                    ;
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "PX:" + object_.ten_phanxuong, db);
+                        db.md_phanxuong.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
             if (msg.Length <= 0)
             {
-                msg = "true#Xóa thành công.";
+                msg = string.Format(@"true#Xóa phân xưởng đã chọn thành công");
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);
     }
+
     public bool IsReusable
     {
         get

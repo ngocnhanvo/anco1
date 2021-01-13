@@ -18,72 +18,52 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Đơn đặt mua vật tư.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[VT] Đơn đặt mua vật tư.repx";
+        string nameRpt = "Đơn đặt mua vật tư";
         string sql = CreateSql(context);
-        viewReport(report, sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("thueVatText", Type.GetType("System.String"));
+        //Header
 
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            tbl.Columns.Add("thueVatText", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
-            double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
-            double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
-            double sum_thue10 = Math.Ceiling(sum_thanhtien * thueVAT / 100);
-            double sum_tongcong = sum_thanhtien + sum_thue10;
-            var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thue10", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
-            tbl.Columns.Add("bangchu", Type.GetType("System.String"));
-            tbl.Rows[lastRow]["sum_soluong"] = sum_soluong;
-            tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
-            tbl.Rows[lastRow]["sum_thue10"] = sum_thue10;
-            tbl.Rows[lastRow]["sum_tongcong"] = arr.Value;
-            tbl.Rows[lastRow]["bangchu"] = arr.Key;
-            tbl.Rows[lastRow]["thueVatText"] = "Thuế VAT " + thueVAT + "%";
-            //FormatString
-            var soluong_cell = report.Report.FindControl("soluong", true);
-            soluong_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_soluong_cell = report.Report.FindControl("sum_soluong", true);
-            sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
-            //Output
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
+        double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
+        double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
+        double sum_thue10 = Math.Ceiling(sum_thanhtien * thueVAT / 100);
+        double sum_tongcong = sum_thanhtien + sum_thue10;
+        var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
+        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thue10", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
+        tbl.Columns.Add("bangchu", Type.GetType("System.String"));
+        tbl.Rows[lastRow]["sum_soluong"] = sum_soluong;
+        tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
+        tbl.Rows[lastRow]["sum_thue10"] = sum_thue10;
+        tbl.Rows[lastRow]["sum_tongcong"] = arr.Value;
+        tbl.Rows[lastRow]["bangchu"] = arr.Key;
+        tbl.Rows[lastRow]["thueVatText"] = "Thuế VAT " + thueVAT + "%";
+        //FormatString
+        var soluong_cell = ReportViewer1.Report.Report.FindControl("soluong", true);
+        soluong_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_soluong_cell = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
+        sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string c_donmuahang_id = context.Request.QueryString["id"];	
 		string sql = string.Format(@"
         declare @httt nvarchar(MAX) = (select top 1 ten from md_hinhthucthanhtoan order by sapxep asc)

@@ -6,9 +6,9 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -115,21 +115,21 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 db.SaveChanges();
                                 dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
                             }
-							else {
-								string[] mspCuoi = object_.macuoi_id.Split(',');
-								if(mspCuoi.Length > 0) 
-								{
-									var sldat = db.c_doichieuhangton_dkdh.Where(s =>
-										mspCuoi.Contains(s.md_sanpham_id)
-										& s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Sum(s => s.sl_dat);
-					
-									dklht.sl_lay = sl_conlai;
-									object_.sl_conlai = sl_conlai;
-									object_.sl_dat = sldat - sl_conlai;
-									db.SaveChanges();
-									dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
-								}
-							}
+                            else {
+                                string[] mspCuoi = object_.macuoi_id.Split(',');
+                                if(mspCuoi.Length > 0)
+                                {
+                                    var sldat = db.c_doichieuhangton_dkdh.Where(s =>
+                                        mspCuoi.Contains(s.md_sanpham_id)
+                                        & s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Sum(s => s.sl_dat);
+
+                                    dklht.sl_lay = sl_conlai;
+                                    object_.sl_conlai = sl_conlai;
+                                    object_.sl_dat = sldat - sl_conlai;
+                                    db.SaveChanges();
+                                    dequyDCTHT_CDH(db, sp.ma_sanpham, sp.md_sanpham_id, object_);
+                                }
+                            }
                         }
                     }
                 }
@@ -190,32 +190,32 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
         {
             try
             {
-                string[] id_del = context.Request.Form["id"].Split(',');
-                for (int i = 0; i < id_del.Length; i++)
+                var ids = context.Request.Form["id"].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    var id_del_ = id_del[i];
                     var object_ = db.c_doichieuhangton_dkdh.Where(p => p.c_doichieuhangton_dkdh_id == id_del_).Take(1).FirstOrDefault();
                     if (object_ == null)
                     {
-                        msg += string.Format("Lỗi dòng {1}: Không tìm thấy đối tượng cần xóa<br>", "", i + 1);
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
                     else
                     {
                         var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
                         if (dcht == null)
                         {
-                            msg += string.Format("Lỗi dòng {1}: Không tìm thấy phiếu đối chiếu hàng tồn<br>", "", i + 1);
+                            msg += string.Format(@"<br>Không tìm thấy phiếu đối chiếu hàng tồn.");
                         }
-                        else if (!string.IsNullOrEmpty(dcht.phieuhangton) & dcht.phieuhangton != " ")
+                        else if (!string.IsNullOrWhiteSpace(dcht.kehoach))
                         {
-                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập phiếu lấy hàng tồn<br>", dcht.ten_donhang, i + 1);
+                            msg += string.Format(@"<br><b>{0}</b>: Đã lập kế hoạch đặt hàng.", dcht.ten_donhang);
                         }
-                        else if (!string.IsNullOrEmpty(dcht.kehoach) & dcht.kehoach != " ")
+                        else if (!string.IsNullOrWhiteSpace(dcht.phieuhangton))
                         {
-                            msg += string.Format("Lỗi dòng {1}: {0} Đã lập kế hoạch đặt hàng<br>", dcht.ten_donhang, i + 1);
+                            msg += string.Format(@"<br><b>{0}</b>: Đã lập phiếu lấy hàng tồn.", dcht.ten_donhang);
                         }
                         else
                         {
+                            VNN_Function.Write_log(context, ma_module, null, oper, "TĐCHT:" + dcht.ten_donhang + ", " + object_.md_sanpham_id, db);
                             db.c_doichieuhangton_dkdh.Remove(object_);
                             db.SaveChanges();
                         }
@@ -224,21 +224,20 @@ public class JQGridMD_01_DKDHJQGSModify : IHttpHandler, System.Web.SessionState.
             }
             catch (Exception ex)
             {
-                msg = string.Format("Lỗi: {0}", ex.Message);
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa dự kiến đặt hàng đã chọn thành công");
                 transaction.Commit();
-                msg = "true#Xóa thành công.";
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
+                msg = string.Format(@"false#{0}", msg.Substring(4));
                 transaction.Rollback();
-                msg = "false#" + msg;
             }
-
-            VNN_Function.loaddulieu_Auto(db, ma_module);
         }
         context.Response.Write(msg);
     }

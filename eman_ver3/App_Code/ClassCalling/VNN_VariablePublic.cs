@@ -72,6 +72,11 @@ public class VNN_VariablePublic
         //md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
         string nam = DateTime.Now.Year.ToString().Substring(2, 2);
 
+        if(sct.namnay != DateTime.Now.Year)
+        {
+            throw new ArgumentNullException("Kế toán cần cập nhật số chứng từ theo năm " + DateTime.Now.Year);
+        }
+
         string gttd = sct.giatri_thaydoi;
 		int count_gttd = gttd.Length;
 		congthem = congthem * sct.buocnhay.Value;
@@ -251,5 +256,8 @@ public class User_TK
     public string ten_role { get; set; }
     public string ten_phongban { get; set; }
     public string ma_phongban { get; set; }
+    public string mauBackground { get; set; }
+    public bool? chuyenCachInBTSangPDF { get; set; }
+    public bool? tuDongNhanDienCachIn { get; set; }
 }
 

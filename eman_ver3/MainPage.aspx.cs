@@ -12,17 +12,22 @@ public partial class MainPage : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         //
-        //string ad_userID = Security.id_taikhoan(Context);
-        //if (string.IsNullOrEmpty(ad_userID))
-        //{
-        //    Response.Redirect(Security.UrlBase() + "Login.aspx");
-        //}
+        var userAll = Security.all_taikhoan(Context);
+        if (userAll.Count > 0)
+        {
+            if(!userAll.ContainsKey("ma_user"))
+                Response.Redirect(Security.UrlBase() + "Login.aspx");
+        }
+
         tk = VNN_Function.get_user(
             Security.id_taikhoan(Context),
             Security.id_vaitro(Context),
             Security.id_phongban(Context),
             db
         );
+
+
+
         kq_script = VNN_VariablePublic.Module_script(json);
         ttc = json.ad_systemconfigJSON().FirstOrDefault();
         if (ttc.date_import != null)

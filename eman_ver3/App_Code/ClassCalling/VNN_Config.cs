@@ -100,6 +100,13 @@ public static class VNN_Config
 
     public static string[] get_colModel(System.Web.HttpContext context, string ma_module)
     {
+        var lstDic = new List<Dictionary<string, object>>();
+        var allTK = Security.all_taikhoan(context);
+        var ma_user = allTK.ContainsKey("ma_user") ? allTK["ma_user"] : "";
+        var modelStr = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/"+ ma_user + "/grid"+ ma_module +".json");
+        if (System.IO.File.Exists(modelStr))
+            lstDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(System.IO.File.ReadAllText(modelStr));
+
         string[] kq = new string[10];
 
         kq[0] = ""; //Get Col_Model
@@ -118,8 +125,37 @@ public static class VNN_Config
         ADmin_JSON json = new ADmin_JSON();
         var cols = json.ad_columnJSON();
         var sels = json.ad_selectoptionJSON();
-        foreach (var cot in cols.Where(s => s.ma_module == ma_module & s.hoatdong == true).OrderBy(p => p.sapxep))
+
+        var col1s = cols.Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList().Clone();
+        var col2s = col1s.Clone();
+
+        var lstDicShow = lstDic.Where(s => s["hidden"].ToString().ToLower() == "false").ToList();
+        var lstDicHidden = lstDic.Where(s => s["hidden"].ToString().ToLower() == "true").ToList();
+        
+        var colsFilter = col1s.Where(s => lstDicShow.Select(t => t["name"].ToString()).Contains(s.ma_column)).OrderBy(s=>s.sapxep).ToList();
+        for(var i = 0; i < colsFilter.Count; i++)
         {
+            var editCol = col2s.Where(s => s.ma_column == lstDicShow[i]["name"].ToString()).FirstOrDefault();
+            editCol.sapxep = colsFilter[i].sapxep;
+            editCol.hidden = "false";
+        }
+
+        foreach(var item in lstDicHidden)
+        {
+            var editCol = col2s.Where(s => s.ma_column == item["name"].ToString()).FirstOrDefault();
+            editCol.hidden = "true";
+        }
+
+        col2s = col2s.OrderBy(p => p.sapxep).ToList();
+        foreach (var cot in col2s)
+        {
+            var itemDic = lstDic.Where(s => s["name"].ToString() == cot.ma_column).FirstOrDefault();
+            if (itemDic != null)
+            {
+                if (itemDic.ContainsKey("width"))
+                    cot.width = itemDic["width"].ToString();
+            }
+
             if (cot.disable_modify == "dis_all")
             {
                 kq[6] += "khoa_column('" + cot.ma_column + "');";
@@ -166,9 +202,9 @@ public static class VNN_Config
 
             kq[0] += "{";
             if (cot.key_cot != null & cot.key_cot != "")
-                kq[0] += "key:" + cot.key_cot + ",";
+                kq[0] += "key:" + cot.key_cot + ", xuatExcel:" + cot.editrules + ", khoaTuyChinh:" + cot.not_order.GetValueOrDefault(false).ToString().ToLower() + ",";
             else
-                kq[0] += "key:false,";
+                kq[0] += "key:false, xuatExcel" + cot.editrules + ", khoaTuyChinh:" + cot.not_order.GetValueOrDefault(false).ToString().ToLower() + ",";
             //--
             if (cot.@fixed != null & cot.@fixed != "")
                 kq[0] += "fixed:" + cot.@fixed + ",";
@@ -520,8 +556,8 @@ public static class VNN_Config
                     if (cn.id_parent == true) { hamxuly = hamxuly.Replace("id_parent", "null"); }
                     string id_case = "img_btn" + cn.ma_case, title_case = cn.ten_case;
                     string mota = string.IsNullOrEmpty(cn.mota) ? "1==1" : cn.mota;
-                    
-                    kq += "\nnutnhan += '" + VNN_Function.set_Icon(cn.logo, "img_btnmacdinh", hamxuly, id_case, title_case) + "';";
+
+                    kq += "\nnutnhan += '"+ VNN_Function.set_Icon(cn.logo, "img_btnmacdinh", hamxuly, id_case, title_case) + "';";
                     kq += "\nchuotphai +='<tr id=\""+ cn.ma_case +"\" onclick=\"" + hamxuly + "\">' +";
                     kq += "\n'<td style=\"width: 25px;\">' +";
                     kq += "\n'" + VNN_Function.set_Icon(cn.logo, "img_rightdiv", "", "", "") + "' +";
@@ -531,9 +567,11 @@ public static class VNN_Config
                     kq += "\n'</td>' +";
                     kq += "\n'</tr>';";
                     detailfncChuotPhai += "if("+ mota + ") {";
-                    detailfncChuotPhai += "$('#"+cn.ma_case+"').show()";
+                    detailfncChuotPhai += "$('#" + cn.ma_case + "').show();";
+                    detailfncChuotPhai += "$('#img_btn" + cn.ma_case+"').show();";
                     detailfncChuotPhai += "} else {";
-                    detailfncChuotPhai += "$('#" + cn.ma_case + "').hide()";
+                    detailfncChuotPhai += "$('#" + cn.ma_case + "').hide();";
+                    detailfncChuotPhai += "$('#img_btn" + cn.ma_case + "').hide();";
                     detailfncChuotPhai += "}";
                 }
             }
@@ -548,18 +586,17 @@ public static class VNN_Config
         kq += "\n//trang chu";
         kq += "\nnutnhan += '" + VNN_Function.set_Icon(icon_home, "img_btnmacdinh", hamxuly_home, "img_btntrangchu", title_home) + "';";
 
-        kq += string.Format(@"let fncChuotPhai = function() {{ 
-            let idSel = $('#' + tengrid_hd).jqGrid('getGridParam', 'selrow');
-			let rowData = $('#'+ tengrid_hd).jqGrid('getRowData', idSel);
-            console.log(rowData);
+        kq += string.Format(@"let fncChuotPhai = function(a) {{ 
+            let idSel = $('#' + a).jqGrid('getGridParam', 'selrow');
+			let rowData = $('#'+ a).jqGrid('getRowData', idSel);
             {0}
         }}", detailfncChuotPhai);
 
         kq += "\n//tao nut tren header";
         kq += "\nchuotphai += '</table></div>';";
-        kq += "\nload_menurightclick(tengrid_hd, chuotphai, fncChuotPhai);";
+        kq += "\nload_menurightclick(tengrid_hd, chuotphai, fncChuotPhai, nutnhan);";
         kq += "\nSetWidth_BtnHeader(10);";
-		kq += "\nload_menuleftclick(tengrid_hd, nutnhan);";
+		kq += "\nload_menuleftclick(tengrid_hd, nutnhan, fncChuotPhai);";
 		kq += "\n$('#org_' + tengrid_hd).val(0);";
         kq += "\n}";
        

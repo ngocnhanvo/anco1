@@ -6,9 +6,9 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -288,28 +288,28 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                         {
                             dhcpx1.md_doitackinhdoanh_id = "";
                         }
-						
-						string pxId = dhcpx1.md_phanxuong_id.Trim(), dtkdId = dhcpx1.md_doitackinhdoanh_id.Trim();
-						
-						var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhcpx1.md_sanpham_id).FirstOrDefault();
-						if(dhcpx1.sl_phanphoi == dhcpx1.sl_candat & pxId.Length < 1) {
-							msg += string.Format(@"
+
+                        string pxId = dhcpx1.md_phanxuong_id.Trim(), dtkdId = dhcpx1.md_doitackinhdoanh_id.Trim();
+
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhcpx1.md_sanpham_id).FirstOrDefault();
+                        if(dhcpx1.sl_phanphoi == dhcpx1.sl_candat & pxId.Length < 1) {
+                            msg += string.Format(@"
                                 <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"".</div>",
                             sp == null ? "(unknown)" : sp.ma_sanpham);
-						}
-						else if(dhcpx1.sl_phanphoi == 0 & dtkdId.Length < 1) {
-							msg += string.Format(@"
+                        }
+                        else if(dhcpx1.sl_phanphoi == 0 & dtkdId.Length < 1) {
+                            msg += string.Format(@"
                                 <div style='color:red'>Dòng {0} không thể bỏ trống ""Đối tác kinh doanh"".</div>",
                             sp == null ? "(unknown)" : sp.ma_sanpham);
-						}
-						else if(dhcpx1.sl_phanphoi != dhcpx1.sl_candat & (pxId.Length < 1 | dtkdId.Length < 1)) {
-							msg += string.Format(@"
+                        }
+                        else if(dhcpx1.sl_phanphoi != dhcpx1.sl_candat & (pxId.Length < 1 | dtkdId.Length < 1)) {
+                            msg += string.Format(@"
                                 <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"" và ""Đối tác kinh doanh"".</div>",
                             sp == null ? "(unknown)" : sp.ma_sanpham);
-						}
+                        }
                         else if (pxId.Length < 1 & dtkdId.Length < 1)
                         {
-                            
+
                             msg += string.Format(@"
                                 <div style='color:red'>Dòng {0} không thể bỏ trống một trong 2 dữ liêu: Đối tác kinh doanh và phân xưởng sản xuất.</div>",
                             sp == null ? "(unknown)" : sp.ma_sanpham);
@@ -743,50 +743,45 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
-                string[] id_del = context.Request.Form["id"].Split(',');
-                int count = id_del.Count();
-                for (int i = 0; i < count; i++)
+                var ids = context.Request.Form["id"].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "";
-                    var id_del_ = id_del[i];
                     var object_ = db.c_kehoachdathang.Where(p => p.c_kehoachdathang_id == id_del_).Take(1).FirstOrDefault();
                     if (object_ == null)
                     {
-                        msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
-                        msg += msg_del + "<br>";
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
-                    else if (object_.trangthai != "SOANTHAO")
+                    else
                     {
-                        if (db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).Count() > 0)
+                        if (db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id & object_.trangthai != "SOANTHAO").Count() > 0)
                         {
-                            msg_del = "Lỗi:\"" + object_.ten_kh + "\" đã hiệu lực, không thể xóa.";
-                            msg += msg_del + "<br>";
+                            msg += string.Format(@"<br><b>{0}</b>: Đã hiệu lực.", object_.ten_kh);
                         }
-                    }
-                    else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id
+                        else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id
                             & db.c_nhucauvattu_dhpx.Where(t => t.md_dondathangphanxuong_id == s.c_kehoachdathang_dhcpx_id).Count() > 0).Count() > 0)
-                    {
-                        msg += string.Format(@"<div style='color:red'>Dòng {0} đã tạo nhu cầu mua vật tư.</div>", object_.ten_kh);
-                    }
-
-                    if (msg_del.Length <= 0)
-                    {
-                        c_doichieuhangton dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Take(1).FirstOrDefault();
-                        c_danhsachdathang ds = db.c_danhsachdathang.FirstOrDefault(s => s.c_danhsachdathang_id == dcht.c_danhsachdathang_id);
-                        if (dcht != null)
                         {
-                            dcht.kehoach = " ";
-                            ds.md_trangthai_id = "DOICHIEUHANGTON";
+                            msg += string.Format(@"<br><b>{0}</b>: Đã tạo nhu cầu mua vật tư.", object_.ten_kh);
                         }
+                        else
+                        {
+                            var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Take(1).FirstOrDefault();
+                            var ds = db.c_danhsachdathang.FirstOrDefault(s => s.c_danhsachdathang_id == dcht.c_danhsachdathang_id);
+                            if (dcht != null)
+                            {
+                                dcht.kehoach = " ";
+                                ds.md_trangthai_id = "DOICHIEUHANGTON";
+                            }
 
-                        db.c_kehoachdathang.Remove(object_);
-                        db.SaveChanges();
+                            VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
+                            db.c_kehoachdathang.Remove(object_);
+                            db.SaveChanges();
+                        }
                     }
                 }
             }
@@ -797,13 +792,13 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa kế hoạch đặt hàng đã chọn thành công");
                 transaction.Commit();
-                msg = "true#Xóa thành công.";
                 VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
                 transaction.Rollback();
             }
         }

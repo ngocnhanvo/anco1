@@ -14,60 +14,40 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Phiếu Đề Nghị Sửa và Giao Nhận Hàng Tồn.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KH] Phiếu Đề Nghị Sửa và Giao Nhận Hàng Tồn.repx";
+        string nameRpt = "Phiếu Đề Nghị Sửa và Giao Nhận Hàng Tồn {theodonhang}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
 
-            tbl.Columns.Add("sum_sl_denghigiao", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = tbl.Rows[0]["theodonhang"] + "-RP015";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            var sum_sl_denghigiao = tbl.Compute("Sum(sl_denghigiao)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_sl_denghigiao))
-                tbl.Rows[lastRow]["sum_sl_denghigiao"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_sl_denghigiao"] = double.Parse(sum_sl_denghigiao);
+        tbl.Columns.Add("sum_sl_denghigiao", Type.GetType("System.Double"));
+        tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
+        //Header
 
-            var sl_denghigiao_cell = report.Report.FindControl("sl_denghigiao", true);
-            sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sl_denghigiao_cell = report.Report.FindControl("sum_sl_denghigiao", true);
-            sum_sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        var sum_sl_denghigiao = tbl.Compute("Sum(sl_denghigiao)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_sl_denghigiao))
+            tbl.Rows[lastRow]["sum_sl_denghigiao"] = DBNull.Value;
         else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+            tbl.Rows[lastRow]["sum_sl_denghigiao"] = double.Parse(sum_sl_denghigiao);
+
+        var sl_denghigiao_cell = ReportViewer1.Report.Report.FindControl("sl_denghigiao", true);
+        sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sl_denghigiao_cell = ReportViewer1.Report.Report.FindControl("sum_sl_denghigiao", true);
+        sum_sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)

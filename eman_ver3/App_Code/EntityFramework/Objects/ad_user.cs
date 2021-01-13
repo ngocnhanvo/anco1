@@ -31,6 +31,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region ad_user_chuyenCachInBTSangPDF_wintaFN
+                        
+                        #endregion ad_user_chuyenCachInBTSangPDF_wintaFN
+                        public bool? chuyenCachInBTSangPDF { get; set; }
+                
+						
                         #region ad_user_diachi_wintaFN
                         
                         #endregion ad_user_diachi_wintaFN
@@ -85,6 +91,12 @@
                         public string matkhau { get; set; }
                 
 						
+                        #region ad_user_mauBackground_wintaFN
+                        
+                        #endregion ad_user_mauBackground_wintaFN
+                        public string mauBackground { get; set; }
+                
+						
                         #region ad_user_md_phongban_id_wintaFN
                         
                         #endregion ad_user_md_phongban_id_wintaFN
@@ -125,6 +137,12 @@
                         
                         #endregion ad_user_phone_wintaFN
                         public string phone { get; set; }
+                
+						
+                        #region ad_user_tuDongNhanDienCachIn_wintaFN
+                        
+                        #endregion ad_user_tuDongNhanDienCachIn_wintaFN
+                        public bool? tuDongNhanDienCachIn { get; set; }
                 
 						
                         #region ad_user_vaitrocapnhat_wintaFN

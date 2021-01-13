@@ -1,32 +1,45 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" %>
-
 <% 
-    string url_pdf = Request.QueryString["url_pdf"];
+    string urlPDF = Request.QueryString["urlpdf"];
+    string url_PDF = Request.QueryString["url_pdf"];
+    string validPDF = string.IsNullOrEmpty(urlPDF) ? url_PDF : urlPDF;
+    string url_pdf = "../Controller/API_System.ashx?oper=loadPDF&urlPDF=" + validPDF + "&remove=" + Request.QueryString["remove"];
+    //url_pdf = Request.QueryString["urlpdf"];
+    string ZoomPrint = Request.QueryString["zoomprint"];
+    string title = Request.QueryString["namedown"];
+    string nameFile = validPDF.Substring(validPDF.LastIndexOf("/") + 1);
+    title = string.IsNullOrEmpty(title) ? nameFile : title;
 %>
 <!DOCTYPE html>
-<html dir="ltr" mozdisallowselectionprint moznomarginboxes>
+<html dir="ltr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PDF.js viewer</title>
+    <title><%=title %></title>
     <link rel="stylesheet" href="viewer.css">
     <!-- This snippet is used in production (included from viewer.html) -->
     <link rel="resource" type="application/l10n" href="locale/locale.properties">
     <script>
-        let DEFAULT_URL = '<%=url_pdf%>';
+        var DEFAULT_URL = '<%=url_pdf%>';
+        var DEFAULT_ZOOM = '<%=Request.QueryString["zoom"]%>';
+        var DEFAULT_FILEDOWN = '<%=title%>';
     </script>
-    <script src="l10n.js"></script>
-    <script src="build/pdf.js"></script>
-    <script src="viewer.js"></script>
-    <script src="/Scripts/jquery-1.9.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="l10n.js?ver=3"></script>
+    <script src="build/pdf.js?ver=3"></script>
+    <script src="viewer.js?ver=3"></script>
+    <style type="text/css">
+		@media print {
+			html {
+				zoom: <%=ZoomPrint%>;
+			}
+		}
+	</style>
 </head>
 
 <body tabindex="1" class="loadingInProgress">
     <div id="outerContainer">
-
         <div id="sidebarContainer">
             <div id="toolbarSidebar">
                 <div class="splitToolbarButton toggled">
@@ -197,7 +210,7 @@
                             </div>
                             <span id="scaleSelectContainer" class="dropdownToolbarButton">
                                 <select id="scaleSelect" title="Zoom" tabindex="23" data-l10n-id="zoom">
-                                    <option id="pageAutoOption" title="" value="auto" selected="selected" data-l10n-id="page_scale_auto">Automatic Zoom</option>
+                                    <option id="pageAutoOption" title="" value="auto" data-l10n-id="page_scale_auto">Automatic Zoom</option>
                                     <option id="pageActualOption" title="" value="page-actual" data-l10n-id="page_scale_actual">Actual Size</option>
                                     <option id="pageFitOption" title="" value="page-fit" data-l10n-id="page_scale_fit">Fit Page</option>
                                     <option id="pageWidthOption" title="" value="page-width" data-l10n-id="page_scale_width">Full Width</option>

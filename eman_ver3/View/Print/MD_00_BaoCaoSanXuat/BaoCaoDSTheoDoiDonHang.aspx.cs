@@ -10,89 +10,66 @@ using DataAcess;
 public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public InfoPrint infoPrint = PrintAnco2.GetInfoPrint();
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Danh Sách Theo Dõi Đơn Hàng.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Danh Sách Theo Dõi Đơn Hàng.repx";
+        string nameRpt = "Báo cáo theo dõi đơn hàng";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        da.SelectCommand.CommandTimeout = 100000;
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_slchiato", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_sllayton", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_sldalam", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_slconlai", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        //Header
 
-            tbl.Columns.Add("sum_slchiato", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_sllayton", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_sldalam", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_slconlai", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Báo cáo theo dõi đơn hàng";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_slchiato"] = tbl.Compute("sum(slchiato)", string.Empty);
-            tbl.Rows[lastRow]["sum_sllayton"] = tbl.Compute("sum(sllayton)", string.Empty);
-            tbl.Rows[lastRow]["sum_sldalam"] = tbl.Compute("sum(sldalam)", string.Empty);
-            tbl.Rows[lastRow]["sum_slconlai"] = tbl.Compute("sum(slconlai)", string.Empty);
-            tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            //slchiato
-            var slchiato_cell = report.Report.FindControl("slchiato", true);
-            slchiato_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slchiato_cell = report.Report.FindControl("sum_slchiato", true);
-            sum_slchiato_cell.DataBindings[0].FormatString = sothapphan;
-            //sllayton
-            var sllayton_cell = report.Report.FindControl("sllayton", true);
-            sllayton_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sllayton_cell = report.Report.FindControl("sum_sllayton", true);
-            sum_sllayton_cell.DataBindings[0].FormatString = sothapphan;
-            //sldalam
-            var sldalam_cell = report.Report.FindControl("sldalam", true);
-            sldalam_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sldalam_cell = report.Report.FindControl("sum_sldalam", true);
-            sum_sldalam_cell.DataBindings[0].FormatString = sothapphan;
-            //slconlai
-            var slconlai_cell = report.Report.FindControl("slconlai", true);
-            slconlai_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slconlai_cell = report.Report.FindControl("sum_slconlai", true);
-            sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
-
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_slchiato"] = tbl.Compute("sum(slchiato)", string.Empty);
+        tbl.Rows[lastRow]["sum_sllayton"] = tbl.Compute("sum(sllayton)", string.Empty);
+        tbl.Rows[lastRow]["sum_sldalam"] = tbl.Compute("sum(sldalam)", string.Empty);
+        tbl.Rows[lastRow]["sum_slconlai"] = tbl.Compute("sum(slconlai)", string.Empty);
+        tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
+        //slchiato
+        var slchiato_cell = ReportViewer1.Report.Report.FindControl("slchiato", true);
+        slchiato_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_slchiato_cell = ReportViewer1.Report.Report.FindControl("sum_slchiato", true);
+        sum_slchiato_cell.DataBindings[0].FormatString = sothapphan;
+        //sllayton
+        var sllayton_cell = ReportViewer1.Report.Report.FindControl("sllayton", true);
+        sllayton_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sllayton_cell = ReportViewer1.Report.Report.FindControl("sum_sllayton", true);
+        sum_sllayton_cell.DataBindings[0].FormatString = sothapphan;
+        //sldalam
+        var sldalam_cell = ReportViewer1.Report.Report.FindControl("sldalam", true);
+        sldalam_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sldalam_cell = ReportViewer1.Report.Report.FindControl("sum_sldalam", true);
+        sum_sldalam_cell.DataBindings[0].FormatString = sothapphan;
+        //slconlai
+        var slconlai_cell = ReportViewer1.Report.Report.FindControl("slconlai", true);
+        slconlai_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_slconlai_cell = ReportViewer1.Report.Report.FindControl("sum_slconlai", true);
+        sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
         string denngay = context.Request.QueryString["den"];
         string px = context.Request.QueryString["px"];
@@ -104,7 +81,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
 
         DateTime tu = DateTime.ParseExact(tungay, "dd-MM-yyyy", null);
         DateTime den = DateTime.ParseExact(denngay, "dd-MM-yyyy", null);
-
+        //nhan
         string sql = string.Format(@"	       
             declare @tungay datetime = convert(datetime,N'{0} 00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59',103);
@@ -115,6 +92,7 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
             declare @tento nvarchar(MAX) = (select ten_to from md_phanxuong_to where md_to_id = @tosx)
             select 
                 Q2.*,
+                N'Từ {0} đến {1}' as thang_nam,
                 (
                     case
                         when
@@ -156,7 +134,13 @@ public partial class PrintControllers_MD_00_Baocaovattu_BaoCaoDSTheoDoiDonHang :
                         Q.sllayton,
                         Q.stt,
                         Q.sttHT,
-                        (case when Q.sldalam > Q.slchiato then Q.slchiato else Q.sldalam end) as sldalam,
+                        (
+                            case 
+                                when Q.sldalam > Q.slchiato 
+                                then (case when Q.sttHT = Q.stt then Q.sldalam else Q.slchiato end) 
+                                else Q.sldalam 
+                            end
+                        ) as sldalam,
 	                    Q.ngaytrienkhai,
                         Q.ngaygiaohang,
                         Q.dongia,

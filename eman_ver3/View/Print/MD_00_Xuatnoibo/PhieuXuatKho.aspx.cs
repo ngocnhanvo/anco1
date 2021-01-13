@@ -20,92 +20,124 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
         xk = db.md_xuatkhonb.FirstOrDefault(s => s.md_xuatkhonb_id == md_xuatkhonb_id);
 
         string file = Server.MapPath(Security.UrlBase());
+
+        string nameTemp = "[KT] Phiếu Xuất Kho.repx";
+        string nameRpt = "Phiếu Xuất Kho {sct_lsx}";
+
         if (new int[] { 0, 4 }.Contains(xk.bosung.GetValueOrDefault(9999)))
         {
-            file += "/ReportsStorage/[SX] Phiếu Xuất Kho.repx";
+            nameTemp = "[SX] Phiếu Xuất Kho.repx";
         }
-        else
-        {
-            file += "/ReportsStorage/[KT] Phiếu Xuất Kho.repx";
-        }
-
-        var report = XtraReport.FromFile(file, true);
+        
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        var bosung = tbl.Rows[0]["bosung"].ToString();
+        if (new string[] { "0", "1", "2", "3" }.Contains(bosung))
         {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            var soluong = report.Report.FindControl("soluong", true);
-            soluong.DataBindings[0].FormatString = sothapphan;
+            var query = from row in tbl.AsEnumerable()
+                        group row by new
+                        {
+                            ma_vthh = row.Field<string>("ma_vthh"),
+                            ten_vthh = row.Field<string>("ten_vthh"),
+                            dvt = row.Field<string>("dvt"),
+                            sct_lsx = row.Field<string>("sct_lsx"),
+                            ngaychuyen = row.Field<DateTime?>("ngaychuyen"),
+                            ngaydenghi = row.Field<DateTime?>("ngaydenghi"),
+                            xuatcho = row.Field<string>("xuatcho"),
+                            bophan = row.Field<string>("bophan"),
+                            khoxuat = row.Field<string>("khoxuat"),
+                            dongia = row.Field<decimal?>("dongia"),
+                            thanhtien = row.Field<decimal?>("thanhtien"),
+                            khonhap = row.Field<string>("khonhap"),
+                            yeucau = row.Field<string>("yeucau"),
+                            diengiai = row.Field<string>("diengiai")
+                        } into g
+                        orderby g.Key.ma_vthh
+                        select new
+                        {
+                            g.Key.ma_vthh,
+                            g.Key.ten_vthh,
+                            g.Key.dvt,
+                            g.Key.sct_lsx,
+                            g.Key.ngaychuyen,
+                            g.Key.ngaydenghi,
+                            g.Key.xuatcho,
+                            g.Key.bophan,
+                            g.Key.khoxuat,
+                            g.Key.dongia,
+                            g.Key.thanhtien,
+                            g.Key.khonhap,
+                            g.Key.yeucau,
+                            g.Key.diengiai,
+                            soluong = g.Sum(s => s.Field<decimal?>("soluong")),
+                            donhang = string.Join(", ", g.Select(s => s.Field<string>("donhang")).ToList())
+                        };
 
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            var ngaychuyen = tbl.Rows[0]["ngaychuyen"] as DateTime?;
-            tbl.Rows[0]["dd"] = ngaychuyen.Value.ToString("dd");
-            tbl.Rows[0]["MM"] = ngaychuyen.Value.ToString("MM");
-            tbl.Rows[0]["yyyy"] = ngaychuyen.Value.ToString("yyyy");
-            report.DisplayName = tbl.Rows[0]["sct_lsx"] + "-RP002";
-            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
-            tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
-            tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
-            tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sumSL))
-                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
 
-            var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
-            if(string.IsNullOrEmpty(sumTT))
-                tbl.Rows[lastRow]["sum_thanhtien"] =  DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sumTT);
-
-            var sum_soluong = report.Report.FindControl("sum_soluong", true);
-            sum_soluong.DataBindings[0].FormatString = sothapphan;
-
-            var kho_cell = report.Report.FindControl("khoxuat", true);
-            var withF = kho_cell.WidthF;
-            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["khoxuat"].ToString(), "Tahoma", (float)9.5, true);
-            var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
-            theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
-
-            var yeucau = report.Report.FindControl("yeucau", true);
-            withF = yeucau.WidthF;
-            yeucau.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["yeucau"].ToString(), "Tahoma", (float)9.5, true);
-            var pnNgayThangNam_cell = report.Report.FindControl("pnNgayThangNam", true);
-            pnNgayThangNam_cell.LeftF = pnNgayThangNam_cell.LeftF + yeucau.WidthF - withF;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
+            var tblDistinct = query.ToList().ToDataTable();
+            tbl.Rows.Clear();
+            foreach (DataRow row in tblDistinct.Rows)
+            {
+                tbl.ImportRow(row);
+            }
         }
+
+        var soluong = ReportViewer1.Report.Report.FindControl("soluong", true);
+        soluong.DataBindings[0].FormatString = sothapphan;
+
+        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
+        //Header
+        var ngaychuyen = tbl.Rows[0]["ngaychuyen"] as DateTime?;
+        tbl.Rows[0]["dd"] = ngaychuyen.Value.ToString("dd");
+        tbl.Rows[0]["MM"] = ngaychuyen.Value.ToString("MM");
+        tbl.Rows[0]["yyyy"] = ngaychuyen.Value.ToString("yyyy");
+        var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+        tbl.Rows[0]["dd_yeucau"] = ngaydenghi.Value.ToString("dd");
+        tbl.Rows[0]["MM_yeucau"] = ngaydenghi.Value.ToString("MM");
+        tbl.Rows[0]["yyyy_yeucau"] = ngaydenghi.Value.ToString("yyyy");
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        var sumSL = tbl.Compute("Sum(soluong)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sumSL))
+            tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
         else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+            tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sumSL);
+
+        var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString();
+        if(string.IsNullOrEmpty(sumTT))
+            tbl.Rows[lastRow]["sum_thanhtien"] =  DBNull.Value;
+        else
+            tbl.Rows[lastRow]["sum_thanhtien"] = double.Parse(sumTT);
+
+        var sum_soluong = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
+        sum_soluong.DataBindings[0].FormatString = sothapphan;
+
+        var kho_cell = ReportViewer1.Report.Report.FindControl("khoxuat", true);
+        var withF = kho_cell.WidthF;
+        kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["khoxuat"].ToString(), "Tahoma", (float)9.5, true);
+        var theochitietsau_cell = ReportViewer1.Report.Report.FindControl("theochitietsau", true);
+        theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
+
+        var yeucau = ReportViewer1.Report.Report.FindControl("yeucau", true);
+        withF = yeucau.WidthF;
+        yeucau.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["yeucau"].ToString(), "Tahoma", (float)9.5, true);
+        var pnNgayThangNam_cell = ReportViewer1.Report.Report.FindControl("pnNgayThangNam", true);
+        pnNgayThangNam_cell.LeftF = pnNgayThangNam_cell.LeftF + yeucau.WidthF - withF;
     }
 
     public String CreateSql(HttpContext context)
@@ -148,6 +180,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 , {1} as khonhap
                 , xb.sochungtu as yeucau
                 , nknb_cdh.tenhang as donhang
+                , xb.bosung
 		    from md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id

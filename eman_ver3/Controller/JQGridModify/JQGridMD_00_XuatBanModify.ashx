@@ -6,9 +6,9 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -187,7 +187,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                         msg = "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
                         break;
                     }
-                    
+
                     string soluong_xuat = "0";
                     var count = db.md_xuatban_cdh.Where(s => s.md_xuatban_id == px.md_xuatban_id & s.sl_xuat > 0).ToList();
                     foreach (var dh in count)
@@ -201,7 +201,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                             msg += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho hoặc phân xưởng đến.</div>";
                         }
                         else if (khosp == null)
-                        {                           
+                        {
                             msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" không có trong kho.</div>";
                         }
                         else if (khosp.soluong < dh.sl_xuat)
@@ -445,47 +445,49 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
-            {
-                msg_del = ""; var id_del_ = id_del[i];
-                md_xuatban object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng " + i;
-                    msg += msg_del + "<br>";
-                }
-                else if (object_.trangthai == "HIEULUC")
-                {
-                    msg_del = string.Format(@"Lỗi:Phiếu xuất kho đã ""Hiệu Lực"".");
-                    msg += msg_del + "<br>";
-                }
 
-                if (msg_del.Length <= 0)
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    object_.trangthai = "SOANTHAO";
+                    var object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần trả.", id_del_);
+                    }
+                    else if (object_.trangthai == "HIEULUC")
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Đã được ""Hiệu Lực"".", object_.sochungtu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "PXB:" + object_.sochungtu, db);
+                        object_.trangthai = "SOANTHAO";
+                        db.SaveChanges();
+                    }
                 }
             }
-
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Trả phiếu xuất bán đã chọn về ""Soạn Thảo"" thành công.";
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

@@ -32,7 +32,10 @@ public static class VNN_Function
             ma_role = vtr.ma_role,
             ten_role = vtr.ten_role,
             ten_phongban = pb.ten_phongban,
-            ma_phongban = pb.ma_phongban
+            ma_phongban = pb.ma_phongban,
+            mauBackground = string.IsNullOrWhiteSpace(tk.mauBackground) ? "mau_01" : tk.mauBackground,
+            chuyenCachInBTSangPDF = tk.chuyenCachInBTSangPDF,
+            tuDongNhanDienCachIn = tk.tuDongNhanDienCachIn
         };
         return user;
     }
@@ -51,6 +54,9 @@ public static class VNN_Function
         user.ten_role = vtr.ten_role;
         user.ten_phongban = pb.ten_phongban;
         user.ma_phongban = pb.ma_phongban;
+        user.mauBackground = string.IsNullOrWhiteSpace(tk.mauBackground) ? "mau_01" : tk.mauBackground;
+        user.chuyenCachInBTSangPDF = tk.chuyenCachInBTSangPDF;
+        user.tuDongNhanDienCachIn = tk.tuDongNhanDienCachIn;
         return user;
     }
 
@@ -788,7 +794,7 @@ public static class VNN_Function
     {
         string kq = "";
         ad_case cn = null;
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
+        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
         if (oper != "add" & oper != "edit" & oper != "del")
         {
             if (ma_modulebs != null & ma_modulebs != "")

@@ -13,8 +13,8 @@ using NPOI.SS.Util;
 using System.IO;
 public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -100,51 +100,47 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string[] id_del = context.Request.Form["id"].Split(',');
-            int count = id_del.Length;
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                var object_ = db.md_kho.Where(p => p.md_kho_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa";
-                    msg += msg_del + "\n";
-                }
-                else if(db.md_kho_sanpham.Where(s=>s.md_kho_id == object_.md_kho_id).Sum(s=>s.soluong) > 0)
-                {
-                    msg_del = "Lỗi:Kho còn hàng, không thể xóa";
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    db.md_kho.Remove(object_);
+                    var object_ = db.md_kho.Where(p => p.md_kho_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if (db.md_kho_sanpham.Where(s => s.md_kho_id == object_.md_kho_id).Sum(s => s.soluong) > 0)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Còn hàng trong kho.", object_.ten_kho);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "TKho:" + object_.ten_kho, db);
+                        db.md_kho.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Xóa kho đã chọn thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

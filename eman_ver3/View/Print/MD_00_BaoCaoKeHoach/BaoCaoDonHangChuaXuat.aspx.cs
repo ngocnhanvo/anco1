@@ -16,72 +16,50 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDonHangChuaXuat 
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Đơn Hàng Chưa Xuất.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KH] Báo Cáo Đơn Hàng Chưa Xuất.repx";
+        string nameRpt = "Báo Cáo Đơn Hàng Chưa Xuất {thang_nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_dh", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_daxuat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_conlai", Type.GetType("System.Double"));
+        //Header
 
-            tbl.Columns.Add("sum_dh", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_daxuat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_conlai", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Đơn hàng chưa xuất";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            tbl.Rows[lastRow]["sum_dh"] = tbl.Compute("sum(dh)", string.Empty);
-            tbl.Rows[lastRow]["sum_daxuat"] = tbl.Compute("sum(daxuat)", string.Empty);
-            tbl.Rows[lastRow]["sum_conlai"] = tbl.Compute("sum(conlai)", string.Empty);
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
 
-            var dh_cell = report.Report.FindControl("dh", true);
-            dh_cell.DataBindings[0].FormatString = sothapphan;
-            var daxuat_cell = report.Report.FindControl("daxuat", true);
-            daxuat_cell.DataBindings[0].FormatString = sothapphan;
-            var conlai_cell = report.Report.FindControl("conlai", true);
-            conlai_cell.DataBindings[0].FormatString = sothapphan;
+        tbl.Rows[lastRow]["sum_dh"] = tbl.Compute("sum(dh)", string.Empty);
+        tbl.Rows[lastRow]["sum_daxuat"] = tbl.Compute("sum(daxuat)", string.Empty);
+        tbl.Rows[lastRow]["sum_conlai"] = tbl.Compute("sum(conlai)", string.Empty);
 
-            var sum_dh_cell = report.Report.FindControl("sum_dh", true);
-            sum_dh_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_daxuat_cell = report.Report.FindControl("sum_daxuat", true);
-            sum_daxuat_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_conlai_cell = report.Report.FindControl("sum_conlai", true);
-            sum_conlai_cell.DataBindings[0].FormatString = sothapphan;
+        var dh_cell = ReportViewer1.Report.Report.FindControl("dh", true);
+        dh_cell.DataBindings[0].FormatString = sothapphan;
+        var daxuat_cell = ReportViewer1.Report.Report.FindControl("daxuat", true);
+        daxuat_cell.DataBindings[0].FormatString = sothapphan;
+        var conlai_cell = ReportViewer1.Report.Report.FindControl("conlai", true);
+        conlai_cell.DataBindings[0].FormatString = sothapphan;
 
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        var sum_dh_cell = ReportViewer1.Report.Report.FindControl("sum_dh", true);
+        sum_dh_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_daxuat_cell = ReportViewer1.Report.Report.FindControl("sum_daxuat", true);
+        sum_daxuat_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_conlai_cell = ReportViewer1.Report.Report.FindControl("sum_conlai", true);
+        sum_conlai_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
         string denngay = context.Request.QueryString["den"];
         string donhang = context.Request.QueryString["donhang"];

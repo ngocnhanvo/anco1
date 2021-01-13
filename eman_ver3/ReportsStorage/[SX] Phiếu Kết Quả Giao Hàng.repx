@@ -1,7 +1,7 @@
 /// <XRTypeInfo>
 ///   <AssemblyFullName>App_Code.2a6qiqwl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</AssemblyFullName>
 ///   <AssemblyLocation>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\App_Code.2a6qiqwl.dll</AssemblyLocation>
-///   <TypeName>VNN_report333</TypeName>
+///   <TypeName>VNN_report401</TypeName>
 ///   <Localization>en-GB</Localization>
 ///   <Version>16.1</Version>
 ///   <References>
@@ -81,14 +81,14 @@
 ///     <Reference Path="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\anco2\c021ca08\a76621c4\assembly\dl3\9ace238c\4f271d33_fed2d401\newtonsoft.json.dll" />
 ///   </References>
 ///   <Resources>
-///     <Resource Name="XtraReportSerialization.VNN_report333">
+///     <Resource Name="XtraReportSerialization.VNN_report401">
 /// zsrvvgEAAACRAAAAbFN5c3RlbS5SZXNvdXJjZXMuUmVzb3VyY2VSZWFkZXIsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OSNTeXN0ZW0uUmVzb3VyY2VzLlJ1bnRpbWVSZXNvdXJjZVNldAIAAAAAAAAAAAAAAFBBRFBBRFC0AAAA</Resource>
 ///   </Resources>
 /// </XRTypeInfo>
 namespace XtraReportSerialization
 {
 
-    public class VNN_report333 : DevExpress.XtraReports.UI.XtraReport
+    public class VNN_report401 : DevExpress.XtraReports.UI.XtraReport
     {
         private DevExpress.XtraReports.UI.DetailBand Detail;
         private DevExpress.XtraReports.UI.XRTable xrTable2;
@@ -212,9 +212,9 @@ namespace XtraReportSerialization
         private System.Resources.ResourceManager _resources;
         private DevExpress.XtraReports.UI.XRLabel xrLabel16;
         private string _resourceString;
-        public VNN_report333()
+        public VNN_report401()
         {
-            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report333");
+            this._resourceString = DevExpress.XtraReports.Serialization.XRResourceManager.GetResourceFor("XtraReportSerialization.VNN_report401");
             this.InitializeComponent();
         }
         private System.Resources.ResourceManager resources
@@ -376,7 +376,7 @@ namespace XtraReportSerialization
             // 
             // xrTable2
             // 
-            this.xrTable2.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable2.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable2.Dpi = 100F;
             this.xrTable2.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
@@ -520,7 +520,7 @@ namespace XtraReportSerialization
             // 
             // ghichu
             // 
-            this.ghichu.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.ghichu.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.ghichu.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
             new DevExpress.XtraReports.UI.XRBinding("Text", null, "ghichu")});
@@ -883,7 +883,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell10
             // 
-            this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell10.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.logo});
@@ -906,7 +906,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell11
             // 
-            this.xrTableCell11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell11.Dpi = 100F;
             this.xrTableCell11.Font = new System.Drawing.Font("Tahoma", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -921,8 +921,8 @@ namespace XtraReportSerialization
             // 
             // xrTableCell12
             // 
-            this.xrTableCell12.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTableCell12.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+            | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell12.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrLabel5,
@@ -1004,7 +1004,7 @@ namespace XtraReportSerialization
             // 
             // xrTable5
             // 
-            this.xrTable5.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable5.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable5.Dpi = 100F;
             this.xrTable5.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
@@ -1031,7 +1031,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell3
             // 
-            this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell3.Dpi = 100F;
             this.xrTableCell3.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
@@ -1049,7 +1049,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell5
             // 
-            this.xrTableCell5.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell5.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell5.Dpi = 100F;
             this.xrTableCell5.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
@@ -1065,7 +1065,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell4
             // 
-            this.xrTableCell4.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell4.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell4.Dpi = 100F;
             this.xrTableCell4.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
@@ -1081,7 +1081,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell1
             // 
-            this.xrTableCell1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell1.Dpi = 100F;
             this.xrTableCell1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
@@ -1097,7 +1097,7 @@ namespace XtraReportSerialization
             // 
             // xrTableCell2
             // 
-            this.xrTableCell2.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.xrTableCell2.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell2.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrLabel23,
@@ -1177,8 +1177,8 @@ namespace XtraReportSerialization
             // 
             // xrTableCell17
             // 
-            this.xrTableCell17.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTableCell17.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
+            | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell17.Dpi = 100F;
             this.xrTableCell17.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
@@ -1263,7 +1263,7 @@ namespace XtraReportSerialization
             // yyyy
             // 
             this.yyyy.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "yyyy")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "yyyy_yeucau")});
             this.yyyy.Dpi = 100F;
             this.yyyy.Font = new System.Drawing.Font("Tahoma", 9F);
             this.yyyy.LocationFloat = new DevExpress.Utils.PointFloat(770.611F, 34.9967F);
@@ -1291,7 +1291,7 @@ namespace XtraReportSerialization
             // MM
             // 
             this.MM.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "MM")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "MM_yeucau")});
             this.MM.Dpi = 100F;
             this.MM.Font = new System.Drawing.Font("Tahoma", 9F);
             this.MM.LocationFloat = new DevExpress.Utils.PointFloat(719.7776F, 35F);
@@ -1332,7 +1332,7 @@ namespace XtraReportSerialization
             // dd
             // 
             this.dd.DataBindings.AddRange(new DevExpress.XtraReports.UI.XRBinding[] {
-            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dd")});
+            new DevExpress.XtraReports.UI.XRBinding("Text", null, "dd_yeucau")});
             this.dd.Dpi = 100F;
             this.dd.Font = new System.Drawing.Font("Tahoma", 9F);
             this.dd.LocationFloat = new DevExpress.Utils.PointFloat(661.6111F, 35F);
@@ -1346,7 +1346,7 @@ namespace XtraReportSerialization
             // 
             // xrTable8
             // 
-            this.xrTable8.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable8.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable8.Dpi = 100F;
             this.xrTable8.LocationFloat = new DevExpress.Utils.PointFloat(0F, 187.5F);
@@ -1537,7 +1537,7 @@ namespace XtraReportSerialization
             // 
             // xrTable7
             // 
-            this.xrTable7.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable7.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable7.Dpi = 100F;
             this.xrTable7.LocationFloat = new DevExpress.Utils.PointFloat(0.13F, 102.5F);
@@ -1733,7 +1733,7 @@ namespace XtraReportSerialization
             // 
             // xrTable6
             // 
-            this.xrTable6.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable6.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable6.Dpi = 100F;
             this.xrTable6.LocationFloat = new DevExpress.Utils.PointFloat(0.1251411F, 77F);
@@ -1942,7 +1942,7 @@ namespace XtraReportSerialization
             // 
             // xrTable3
             // 
-            this.xrTable3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.xrTable3.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTable3.Dpi = 100F;
             this.xrTable3.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0F);
@@ -2061,7 +2061,7 @@ namespace XtraReportSerialization
             // 
             // sum_thanhtien1
             // 
-            this.sum_thanhtien1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
+            this.sum_thanhtien1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.sum_thanhtien1.Dpi = 100F;
             this.sum_thanhtien1.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -2102,7 +2102,7 @@ namespace XtraReportSerialization
             this.xrLabel16.Text = " PKQGH__/__";
             this.xrLabel16.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
-            // VNN_report333
+            // VNN_report401
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.TopMargin,

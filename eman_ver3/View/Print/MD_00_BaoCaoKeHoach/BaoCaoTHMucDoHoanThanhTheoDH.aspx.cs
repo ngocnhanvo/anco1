@@ -12,47 +12,25 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo TH Mức Độ Hoàn Thành Theo ĐH.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KH] Báo Cáo TH Mức Độ Hoàn Thành Theo ĐH.repx";
+        string nameRpt = "Báo Cáo TH Mức Độ Hoàn Thành Theo ĐH";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        //Header
 
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Báo cáo mức độ hoàn thành theo đơn hàng";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
     }
 
     public string CreateSql(HttpContext context)
@@ -157,12 +135,16 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 		            (
 			            select sum(B.v2 * (B.sldl))
 			            from @tbl B
-			            where B.dhpx = A.dhpx and B.stt = 1	
+			            where 
+                            B.dhpx = A.dhpx 
+                            and B.stt = (case when B.px = 'PX1' then 1 when B.px = 'PX2' then 2 else 1 end)	
 		            ) as cbmBancat,
 		            (
 			            select sum(B.v2 * (B.sldl))
 			            from @tbl B
-			            where B.dhpx = A.dhpx and B.stt = (case when B.px = 'PX1' then 2 else 1 end)
+			            where 
+                            B.dhpx = A.dhpx
+                            and B.stt = (case when B.px = 'PX1' then 2 when B.px = 'PX2' then 1 else 2 end)	
 		            ) as cbmMai,
 		            (
 			            select sum(B.v2 * (B.sldl))

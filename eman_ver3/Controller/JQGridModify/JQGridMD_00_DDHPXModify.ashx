@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -417,6 +417,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 string id = context.Request.Form["id"];
                 var object_ = db.md_dondathangphanxuong.Where(p => p.md_dondathangphanxuong_id == id).Take(1).FirstOrDefault();
                 var dsdh = db.c_danhsachdathang.FirstOrDefault(s => s.sochungtu == object_.sctdathang);
+
+                md_phanxuong pxuongXL = null;
                 if (object_ == null)
                 {
                     msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
@@ -444,6 +446,13 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 else if (string.IsNullOrEmpty(ngay_hieuluc))
                 {
                     msg = "Lỗi: Hãy chọn ngày bắt đầu sản xuất.";
+                }
+                else
+                {
+                    pxuongXL = db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).FirstOrDefault();
+
+                    if(pxuongXL.ma_phanxuong != us.ma_phongban)
+                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxuongXL.ma_phanxuong, us.ma_phongban);
                 }
 
                 if (msg.Length <= 0)
@@ -760,114 +769,99 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        var db = new EntityContext();
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_dondathangphanxuong";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                var object_ = db.md_dondathangphanxuong.Where(p => p.md_dondathangphanxuong_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                else if (object_.md_trangthai_id != "SOANTHAO")
-                {
-                    msg_del = "Lỗi: Dòng \"" + object_.sochungtu + "\" không ở trạng thái soạn thảo, không thể xóa";
-                    msg += msg_del + "\n";
-                }
-                else
-                {
-                    int countPXTo = db.md_hanngachPXTo
-                            .Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Count();
-                    if (countPXTo > 0)
+                    var object_ = db.md_dondathangphanxuong.Where(p => p.md_dondathangphanxuong_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
                     {
-                        msg_del += string.Format(@"Lỗi: Đơn đặt hàng PX ""{0}"" đã tạo phiếu giảm hạn ngạch", object_.sochungtu);
-                        msg += msg_del + "\n";
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
-                }
-
-                if (msg_del.Length <= 0)
-                {
-                    var dhcpx = db.c_kehoachdathang_dhcpx.FirstOrDefault(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id);
-                    if (dhcpx != null)
-                        dhcpx.dongdathang = " ";
-
-                    db.md_dondathangphanxuong.Remove(object_);
-                    db.SaveChanges();
-                    var c_kehoachdathang_dhcpxes = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id);
-                    var c_kehoachdathang_dhnccs = db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id);
-                    if (
-                        c_kehoachdathang_dhcpxes.Count() == c_kehoachdathang_dhcpxes.Where(s => s.dongdathang == " ").Count() &
-                        c_kehoachdathang_dhnccs.Count() == c_kehoachdathang_dhnccs.Where(s => s.chungtu == " ").Count()
-                    )
+                    else if (object_.md_trangthai_id != "SOANTHAO")
                     {
-                        var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).FirstOrDefault();
-                        if (khdh != null)
-                            khdh.trangthai = "SOANTHAO";
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Chỉ có thể xóa khi ở trạng thái ""Soạn Thảo"".", object_.sochungtu, object_.donhang_thamchieu);
                     }
-
-                    //
-                    foreach (c_kehoachdathang_dhcpx dhcpx_ in db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).ToList())
+                    else
                     {
-                        c_kehoachdathang khdh_ = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx_.c_kehoachdathang_id).FirstOrDefault();
-                        // dem SL don dat hang chua tao
-                        int dem_SLPX = db.c_kehoachdathang_dhcpx.Where(s => s.dongdathang == " " & s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
-                        int dem_SLCC = db.c_kehoachdathang_dhncc.Where(s => s.chungtu == " " & s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
-                        // dem tong SL don hang
-                        int dem_SLPX_ = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
-                        int dem_SLCC_ = db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
-
-                        int dem_SL = dem_SLPX + dem_SLCC;
-                        //
-                        int dem_SL_ = dem_SLPX_ + dem_SLCC_;
-                        if (dem_SL == dem_SL_)
+                        int countPXTo = db.md_hanngachPXTo.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Count();
+                        if (countPXTo > 0)
                         {
-                            khdh_.trangthai = "SOANTHAO";
-                            khdh_.mota = " ";
+                            msg += string.Format(@"<br><b>{0} ({1})</b>: Đã tạo phiếu giảm hạn ngạch.", object_.sochungtu, object_.donhang_thamchieu);
                         }
-                        else if (dem_SL > 0)
+                        else
                         {
-                            khdh_.mota = "Còn \"" + dem_SL + "\" đơn hàng chưa đặt cho PX hoặc chưa cho NCC";
-                            khdh_.trangthai = "CHUAHET";
+                            var dhcpx = db.c_kehoachdathang_dhcpx.FirstOrDefault(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id);
+                            if (dhcpx != null)
+                                dhcpx.dongdathang = " ";
+
+                            VNN_Function.Write_log(context, ma_module, null, oper, "DDHPX:" + object_.sochungtu + ", DHTC:" + object_.donhang_thamchieu, db);
+                            db.md_dondathangphanxuong.Remove(object_);
+                            db.SaveChanges();
+                            var c_kehoachdathang_dhcpxes = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id);
+                            var c_kehoachdathang_dhnccs = db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id);
+                            if (
+                                c_kehoachdathang_dhcpxes.Count() == c_kehoachdathang_dhcpxes.Where(s => s.dongdathang == " ").Count() &
+                                c_kehoachdathang_dhnccs.Count() == c_kehoachdathang_dhnccs.Where(s => s.chungtu == " ").Count()
+                            )
+                            {
+                                var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).FirstOrDefault();
+                                if (khdh != null)
+                                    khdh.trangthai = "SOANTHAO";
+                            }
+
+                            //
+                            foreach (var dhcpx_ in db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).ToList())
+                            {
+                                c_kehoachdathang khdh_ = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx_.c_kehoachdathang_id).FirstOrDefault();
+                                // dem SL don dat hang chua tao
+                                int dem_SLPX = db.c_kehoachdathang_dhcpx.Where(s => s.dongdathang == " " & s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
+                                int dem_SLCC = db.c_kehoachdathang_dhncc.Where(s => s.chungtu == " " & s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
+                                // dem tong SL don hang
+                                int dem_SLPX_ = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
+                                int dem_SLCC_ = db.c_kehoachdathang_dhncc.Where(s => s.c_kehoachdathang_id == khdh_.c_kehoachdathang_id).Count();
+
+                                int dem_SL = dem_SLPX + dem_SLCC;
+                                //
+                                int dem_SL_ = dem_SLPX_ + dem_SLCC_;
+                                if (dem_SL == dem_SL_)
+                                {
+                                    khdh_.trangthai = "SOANTHAO";
+                                    khdh_.mota = " ";
+                                }
+                                else if (dem_SL > 0)
+                                {
+                                    khdh_.mota = "Còn \"" + dem_SL + "\" đơn hàng chưa đặt cho PX hoặc chưa cho NCC";
+                                    khdh_.trangthai = "CHUAHET";
+                                }
+                            }
+                            db.SaveChanges();
                         }
-                        /*else
-                        {
-                            khdh_.mota = "";
-                            khdh_.trangthai = "DAHET";
-                        }*/
                     }
-                    db.SaveChanges();
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa đơn đặt hàng phân xưởng đã chọn thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

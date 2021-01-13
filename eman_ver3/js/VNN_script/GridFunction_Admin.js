@@ -181,6 +181,8 @@ function click_origination(tengrid_v) {
 		$('#'+tengrid_v).hideCol('hoatdong');
 		$('#org_' + tengrid_v).val(0);
 	}
+
+	//$('#' + tengrid_v)[0].grid.dragEnd(1);
 	$('#' + tengrid_v)[0].triggerToolbar();
 }
 
@@ -644,14 +646,20 @@ function loadPage(t){
 function loading_grid(t) {
     $("#load_" + t).css("display", "block")
 }
+
 function loadMenu(t) {
     systemload > 0 && window.stop(), enable_timer = !1, $(".menu").load("View/" + t, function () { enable_timer = !0 })
 }
+
 function dem_Records() {
     systemload = 0; var t = $(".menu_td_menuchinh tr td table tr td div table tr td a"); $(t).removeAttr("style"), $(t).css("color", "red"); var n = ""; $(t).each(function (i) { n += $(this).attr("name"), i < $(t).length - 1 && (n += ",") }), null != n & "" != n && $.post("Controller/PublicFunction/CountDocument.ashx?oper=countCV", { ma_menu: n }, function (n) { n = n.split("(##)"), $(t).each(function (t) { loadgiatri_demCV($(this).attr("id"), n[t]) }), $(".menu_td_menuchinh tr td table tr td div table tr td a").css("color", "black"), "&nbsp;(0)" != $("#a_MN_01_CVChuaXem").html() && $("#a_MN_01_CVChuaXem").css("color", "rgb(25, 98, 247)"), "&nbsp;(0)" != $("#a_MN_01_CVDangTamDung").html() && $("#a_MN_01_CVDangTamDung").css("color", "rgb(25, 98, 247)"), "&nbsp;(0)" != $("#a_MN_01_CongViecChuaXem").html() && $("#a_MN_01_CongViecChuaXem").css("color", "rgb(25, 98, 247)") })
-} function loadgiatri_demCV(t, n) {
+} 
+
+function loadgiatri_demCV(t, n) {
     $("#" + t).empty(), $("#" + t).prepend("&nbsp;" + n)
-} function loadclick(t, n, i) {
+} 
+
+function loadclick(t, n, i) {
     if (null == id_action[i]) { try { $(".ui-state-error").css("display", "none") } catch (a) { } var e = $("#" + t).jqGrid("getGridParam", "postData").filters, o = $("#" + t).jqGrid("getGridParam", "postData").page, r = $("#" + t).jqGrid("getGridParam", "postData").sord, d = $("#" + t).jqGrid("getGridParam", "postData").sidx; id_oper[i] = n, id_action[i] = i, $("#" + t).jqGrid("setGridParam", { postData: { filters: e, sord: r, sidx: d }, search: !0 }), $("#" + t).trigger("reloadGrid", [{ page: o }]) }
 } function loadclick_(t, n) {
     let postDT = $("#" + t).jqGrid("getGridParam", "postData");
@@ -696,34 +704,230 @@ function click_refreshPage() {
         $(n).each(function () { $(this).val("") }); var i = $(".ui-search-table tr > .ui-search-input select"); $(i).each(function () { $(this).val("") }), $(".ui-pg-div > .ui-icon-refresh").click(), $("div.ui-jqgrid-pager").css("width", window.innerWidth - $(".menu").width() - 28); var a = "div.ui-jqgrid-bdiv", e = "div.ui-jqgrid-hdiv"; $(a).each(function () { $(this).hasClass("frozen-bdiv") || $(this).css("width", window.innerWidth - $(".menu").width() - 28) }), $(e).each(function () { $(this).hasClass("frozen-div") || $(this).css("width", window.innerWidth - $(".menu").width() - 28) }), $("div.ui-jqgrid-view").css("width", window.innerWidth - $(".menu").width() - 28), $("div.ui-jqgrid").css("width", window.innerWidth - $(".menu").width() - 28), "Firefox" == Browser ? ($("div.ui-jqgrid-bdiv").css("height", window.innerHeight - $("#input_docaogrid").val()), $("div.ui-jqgrid-view").css("height", window.innerHeight - $("#input_docaogrid").val() + 75), $("div.sub_mainpage").css("height", window.innerHeight - $("#input_docaogrid").val() + 112)) : ($("div.ui-jqgrid-bdiv").css("height", window.innerHeight - $("#input_docaogrid").val()), $("div.ui-jqgrid-view").css("height", window.innerHeight - $("#input_docaogrid").val() + 76), $("div.sub_mainpage").css("height", window.innerHeight - $("#input_docaogrid").val() + 112))
     }
 }
-function click_back() { $(function () { $("#input_nhanback").val("true"), $("#input_ghinhomodule").val(""); var t = $("#input_trovetrangtruoc").val().split("/").length - 1, n = $("#input_trovetrangtruoc").val().split("/")[t - 1], i = $("#input_trovetrangtruoc").val().split("/")[t], a = $("#input_trovetrangtruoc").val().length, e = ""; if (n.indexOf("&") < 0 & i.indexOf("&") < 0) { var o = $("#input_trovetrangtruoc").val().split("/")[t].length; a > 16 && $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(), $("#" + n).click() } else if (i.indexOf("&") > -1) { var r = i.split("&").length - 1, o = i.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r - 1; d >= 1; d--){ var c = i.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + i.split("&")[0]).click() } else { var r = n.split("&").length - 1, o = n.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r; d >= 1; d--){ var c = n.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + n.split("&")[0]).click() } $("#input_trovetrangtruoc").val(e) }) } function click_doimau() { $("body").append('<div id="dlg_dsvt_daketthuc" title="Đổi màu phần mềm theo ý khách hàng"><table id="xemchitietcv" align="left"><tr><td><input class="nhan_radio" type="radio" id="mau_01" name="rdiMau" value="rgba(9, 80, 153, 0.909804)"/></td><td style="background-color:rgba(9, 80, 153, 0.909804); width:50px"></td><td><p>Màu mặc định</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_02" name="rdiMau" value="rgba(153, 9, 31, 0.8)"/></td><td style="background-color:red; width:50px"></td><td><p>Màu đỏ</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_03" name="rdiMau" value="rgb(111, 111, 111)"/></td><td style="background-color:grey; width:50px"></td><td><p>Màu xám</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_04" name="rdiMau" value="rgb(72, 137, 61)"/></td><td style="background-color:rgb(72, 137, 61); width:50px"></td><td><p>Màu xanh lá cây</p></td></tr><tr class="khoangtrang_tr"><td></td></tr><tr><td><input class="nhan_radio" type="radio" id="mau_05" name="rdiMau" value="rgb(90, 24, 142)"/></td><td style="background-color:rgb(90, 24, 142); width:50px"></td><td><p>Màu tím</p></td></tr></table></div>'), $("#dlg_dsvt_daketthuc").dialog({ modal: !1, width: 260, height: 250, open: function () { $.get("Controller/PublicFunction/ConfigSystem.ashx?oper=loadColor", function (t) { $("#" + t).attr("checked", !0) }), $(".nhan_radio").change(function () { $("#mainpane").css("background-color", $(this).val()), load_doimau_client($(this).attr("id")) }) }, close: function () { load_doimau(this) }, buttons: [{ id: "btn-ok", text: "Lưu", click: function () { var t = $("input[name=rdiMau]:checked"); $("#dlg_dsvt_daketthuc").prepend('<div class="nhan_loading"></div>'), $.post("Controller/PublicFunction/ConfigSystem.ashx?oper=changeColor&mausac=" + t.attr("id"), function () { $(".nhan-loading").remove() }), load_doimau(this) } }, { id: "btn-close", text: "Thoát", click: function () { load_doimau(this) } }] }) } function load_doimau_client(t) { "mau_01" == t ? ($(".div_chiacach").css("background-color", "rgba(247, 247, 247, 0.95)"), $(".nhan_header").css("background", 'url("images/toolbar0.png")'), $(".label_bg_body").css("background-image", "url(images/Menu/menu_labelBody.png)"), $(".label_bg_right").css("background-image", "url(images/Menu/menu_labelRight.png)"), $(".label_bg_left").css("background-image", "url(images/Menu/menu_labelLeft.png)"), $("#mainpane").css("background-color", "rgba(9, 80, 153, 0.909804)")) : "mau_02" == t ? ($(".div_chiacach").css("background-color", "rgb(175, 70, 66)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_02.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgba(153, 9, 31, 0.8)")) : "mau_03" == t ? ($(".div_chiacach").css("background-color", "rgb(121, 116, 117)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_03.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgb(111, 111, 111)")) : "mau_04" == t ? ($(".div_chiacach").css("background-color", "rgb(72, 137, 61)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_04.png")'), $(".label_bg_body").css("background-image", "none"), $(".label_bg_right").css("background-image", "none"), $(".label_bg_left").css("background-image", "none"), $("#mainpane").css("background-color", "rgb(72, 137, 61)")) : "mau_05" == t && ($(".div_chiacach").css("background-color", "rgb(90, 24, 142)"), $(".nhan_header").css("background", 'url("images/toolbar_mau_05.png")'), $(".label_bg_body").css("background-image", "url(images/Menu/menu_labelBody.png)"), $(".label_bg_right").css("background-image", "url(images/Menu/menu_labelRight.png)"), $(".label_bg_left").css("background-image", "url(images/Menu/menu_labelLeft.png)"), $("#mainpane").css("background-color", "rgb(90, 24, 142)")) } function load_doimau(t) { $.get("Controller/PublicFunction/ConfigSystem.ashx?oper=loadColor", function (n) { load_doimau_client(n), null != t && $(t).dialog("destroy").remove() }) }
-function load_menurightclick(tg, n, f) {
+
+function click_refreshPage2() {
+    var t = window.innerHeight - 15;
+    $("#mainpane").css("height", t),
+    $(".menu").css("height", t - $(".nhan_header").height() - 6),
+    $(".noidung").css("height", t - $(".nhan_header").height() - 6),
+    $(".cl_table_menu").css("height", window.innerHeight - $(".nhan_header").height() - 26),
+    $(".cl_table_noidung").css("height", window.innerHeight - $(".nhan_header").height() - 26),
+    $(".menu_div_dongkhung").css("height", t - $(".nhan_header").height() - 38),
+    $("div.div_noidung_menu").css("width", window.innerWidth - $(".menu").width() - 28),
+    $("div.sub_mainpage").css("height", window.innerHeight - 102)
+}
+
+function click_back() { $(function () { $("#input_nhanback").val("true"), $("#input_ghinhomodule").val(""); var t = $("#input_trovetrangtruoc").val().split("/").length - 1, n = $("#input_trovetrangtruoc").val().split("/")[t - 1], i = $("#input_trovetrangtruoc").val().split("/")[t], a = $("#input_trovetrangtruoc").val().length, e = ""; if (n.indexOf("&") < 0 & i.indexOf("&") < 0) { var o = $("#input_trovetrangtruoc").val().split("/")[t].length; a > 16 && $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(), $("#" + n).click() } else if (i.indexOf("&") > -1) { var r = i.split("&").length - 1, o = i.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r - 1; d >= 1; d--) { var c = i.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + i.split("&")[0]).click() } else { var r = n.split("&").length - 1, o = n.split("&")[r].length; $("#input_trovetrangtruoc").val(Remove($("#input_trovetrangtruoc").val(), a - o - 1, a)), e = $("#input_trovetrangtruoc").val(); for (var d = r; d >= 1; d--) { var c = n.split("&")[d]; $("#input_ghinhomodule").val($("#input_ghinhomodule").val() + "#" + c) } $("#" + n.split("&")[0]).click() } $("#input_trovetrangtruoc").val(e) }) }
+
+function click_doimau() {
+    $("body").append(`
+        <div id="dlg_dsvt_daketthuc" title="Đổi màu phần mềm theo ý khách hàng">
+
+            <table id="xemchitietcv" align="left">
+
+                <tr> <td><input class="nhan_radio" type="radio" id="mau_01" name="rdiMau"/></td><td style="background-color:rgba(9, 80, 153, 0.9); width:50px"></td><td><label for="mau_01">Màu mặc định</label></td></tr>
+
+                <tr class="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_02" name="rdiMau"/></td><td style="background-color:red; width:50px"></td><td><label for="mau_02">Màu đỏ</label></td></tr>
+
+                <tr class="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_03" name="rdiMau"/></td><td style="background-color:grey; width:50px"></td><td><label for="mau_03">Màu xám</label></td></tr>
+
+                <tr class="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_04" name="rdiMau"/></td><td style="background-color:rgb(72, 137, 61); width:50px"></td><td><label for="mau_04">Màu xanh lá cây</label></td></tr>
+
+                <tr class="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_05" name="rdiMau"/></td><td style="background-color:rgb(90, 24, 142); width:50px"></td><td><label for="mau_05">Màu tím</label></td></tr>
+
+                <tr class ="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_06" name="rdiMau"/></td><td style="background-color:rgb(175 161 24); width:50px"></td><td><label for="mau_06">Màu vàng</label></td></tr>
+
+                <tr class ="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_07" name="rdiMau"/></td><td style="background-color:rgb(20 179 154); width:50px"></td><td><label for="mau_07">Màu xanh ngọc</label></td></tr>
+
+                <tr class ="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_08" name="rdiMau"/></td><td style="background-color:rgb(202 64 111); width:50px"></td><td><label for="mau_08">Màu hồng</label></td></tr>
+
+                <tr class ="khoangtrang_tr"><td></td></tr>
+
+                <tr><td><input class ="nhan_radio" type="radio" id="mau_09" name="rdiMau"/></td><td style="background: linear-gradient(0deg, rgb(45 174 168), rgb(233 0 0)); width:50px"></td><td><label for="mau_09">Màu đỏ và xanh ngọc</label></td></tr>
+
+            </table>
+
+        </div>`);
+    $('#' + mauBackgroundDF).prop('checked', true);
+    let defaultColor = mauBackgroundDF;
+
+    $("#dlg_dsvt_daketthuc").dialog({
+        modal: true,
+        width: 260,
+        open: function () {
+            
+
+            $(".nhan_radio").change(function () {
+                let checked = $(this).prop('checked');
+                if (checked) {
+                    let color = $(this).attr("id");
+                    load_doimau_client(color);
+                }
+            });
+
+            Logo_Center("glyphicon glyphicon-cog", true);
+        },
+        close: function () {
+            load_doimau_client(defaultColor);
+            $(this).dialog().remove();
+        },
+        buttons: [
+            {
+                id: "btn-ok",
+                text: "Lưu lại",
+                click: function () {
+                    let thisSav = this;
+                    let t = $("input[name=rdiMau]:checked");
+                    let mauBK = t.attr("id");
+                    $('div.nhan-loi').remove();
+                    $("#dlg_dsvt_daketthuc").prepend('<div class="nhan_loading"></div>');
+                    $.post("Controller/PublicFunction/ConfigSystem.ashx?oper=changeColor", { mausac: mauBK }, function (rs) {
+
+                        if (rs.length <= 0) {
+                            mauBackgroundDF = mauBK;
+                            load_doimau_client(mauBK);
+                            $(thisSav).dialog().remove();
+                        }
+                        else {
+                            $("#dlg_dsvt_daketthuc").prepend('<div class="nhan-loi">'+ rs +'</div>');
+                        }
+
+                        $(".nhan-loading").remove();
+                    });
+                }
+            },
+            {
+                id: "btn-close",
+                text: "Thoát",
+                click: function () { load_doimau_client(defaultColor); $(this).dialog().remove(); }
+            }
+        ]
+    });
+}
+
+function load_doimau_client(t) {
+
+    if ("mau_01" == t) {
+        $("#mainpane").css("background", "rgba(9, 80, 153, 0.9");
+        $(".nhan_header").css("background", '');
+        $(".menu").css('background', '#F7F7F7');
+        $(".noidung").css('background', '#F7F7F7');
+        $(".div_chiacach").css({ 'background': '#F7F7F7', 'border': '1px solid #F7F7F7' });
+    }
+    else if("mau_02" == t) {
+        $("#mainpane").css("background", "rgba(153, 9, 31, 0.8)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, #923745, #ff0026)");
+        $(".menu").css('background', '#ffdde2');
+        $(".noidung").css('background', '#ffdde2');
+        $(".div_chiacach").css({ 'background': '#ffdde2', 'border': '1px solid #ffdde2' });
+
+    }
+    else if("mau_03" == t) {
+        $("#mainpane").css("background", "rgb(111, 111, 111)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(84 84 84), rgb(189 187 187))");
+        $(".menu").css('background', '#FFFFFF');
+        $(".noidung").css('background', '#FFFFFF');
+        $(".div_chiacach").css({ 'background': '#FFFFFF', 'border': '1px solid #FFFFFF' });
+    }
+    else if("mau_04" == t) {
+        $("#mainpane").css("background", "rgb(72, 137, 61)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(79 119 71), rgb(63 212 38))");
+        $(".menu").css('background', '#ddffd7');
+        $(".noidung").css('background', '#ddffd7');
+        $(".div_chiacach").css({ 'background': '#ddffd7', 'border': '1px solid #ddffd7' });
+    }
+    else if("mau_05" == t) {
+        $("#mainpane").css("background", "rgb(90, 24, 142)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(75 18 119), rgb(122 0 218))");
+        $(".menu").css('background', '#FFFFFF');
+        $(".noidung").css('background', '#FFFFFF');
+        $(".div_chiacach").css({ 'background': '#FFFFFF', 'border': '1px solid #FFFFFF' });
+    }
+    else if ("mau_06" == t) {
+        $("#mainpane").css("background", "rgb(175 161 24)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(165 151 27), rgb(249, 226, 0))");
+        $(".menu").css('background', '#feffdd');
+        $(".noidung").css('background', '#feffdd');
+        $(".div_chiacach").css({ 'background': '#feffdd', 'border': '1px solid #feffdd' });
+    }
+    else if ("mau_07" == t) {
+        $("#mainpane").css("background", "rgb(20 179 154)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(18 169 145), rgb(0 239 201))");
+        $(".menu").css('background', '#edfffc');
+        $(".noidung").css('background', '#edfffc');
+        $(".div_chiacach").css({ 'background': '#feffdd', 'border': '1px solid #edfffc' });
+    }
+    else if ("mau_08" == t) {
+        $("#mainpane").css("background", "rgb(202 64 111)");
+        $(".nhan_header").css("background", "linear-gradient(70deg, rgb(191 26 82), rgb(255 101 153))");
+        $(".menu").css('background', 'linear-gradient(0deg, rgb(255 191 213), rgb(255 239 239))');
+        $(".noidung").css('background', 'linear-gradient(0deg, rgb(255 191 213), rgb(255 239 239))');
+        $(".div_chiacach").css({ 'background': 'rgb(253 218 218)', 'border': '1px solid rgb(253 218 218)' });
+    }
+    else if ("mau_09" == t) {
+        $("#mainpane").css("background", "linear-gradient(0deg, rgb(45 174 168), rgb(233 0 0))");
+        $(".nhan_header").css("background", "linear-gradient(12deg, rgb(255 0 0), rgb(9 202 192))");
+        $(".menu").css('background', 'linear-gradient(-90deg, rgb(255 208 208), rgb(240 255 254))');
+        $(".noidung").css('background', 'linear-gradient(45deg, rgb(255 208 208), rgb(240 255 254))');
+        $(".div_chiacach").css({ 'background': 'rgb(253 218 218)', 'border': '1px solid rgb(253 218 218)' });
+    }
+}
+
+function load_menurightclick(tg, n, f, nutnhan) {
 	let i=$("#gview_"+ tg +" .ui-jqgrid-bdiv");
 	i=null==i.attr("class") ? tengrid2:"#gview_"+ tg +" .ui-jqgrid-bdiv";
-	for(let a=i.split(","),e=0;e<a.length;e++) {
-		$(a[e]).bind("contextmenu",function(t){
-			if(2==t.button) {
-				$(this).click();
-				$("#div_chuotphai").remove();
-				$(".cl_table_noidung").prepend(n);
-				div_load("div_chuotphai",n,t);
-				if(f) {
-					f();
-				}
-				return false;
-			}
-			else {
-				return false;
-			}
-		})
+	for (let a = i.split(","), e = 0; e < a.length; e++) {
+	    $(a[e]).off("contextmenu");
+	    $(a[e]).bind("contextmenu", function (t) {
+	        if (2 == t.button) {
+	            $(this).click();
+	            $("#div_chuotphai").remove();
+	            $(".cl_table_noidung").prepend(n);
+	            div_load("div_chuotphai", n, t);
+
+	            let grid = $(this).parent().attr('id').replace('gview_', '');
+	            if (f) {
+	                f(grid);
+	            }
+	            return false;
+	        }
+	        else {
+	            return false;
+	        }
+	    });
+
+	    $(a[e]).off("click");
+	    $(a[e]).click(function () {
+	        $(".cl_div_chuathanhcongcu").html(nutnhan);
+	        let grid = $(this).parent().attr('id').replace('gview_', '');
+
+	        $('.module_spanselect').first().attr('regiongrid', grid);
+	        if (f) {
+	            f(grid);
+	        }
+        });
 	}
 }
 
 function load_menuleftclick(t,n){
-	let i=$("#gview_"+t+" .ui-jqgrid-bdiv");
-	i=null==i.attr("class")?tengrid2:"#gview_"+t+" .ui-jqgrid-bdiv";
-	for(let a=i.split(","),e=0;e<a.length;e++)
-		$(a[e]).click(function(){$(".cl_div_chuathanhcongcu").html(n)})
+	//let i=$("#gview_"+t+" .ui-jqgrid-bdiv");
+	//i=null==i.attr("class")?tengrid2:"#gview_"+t+" .ui-jqgrid-bdiv";
+	//for(let a=i.split(","),e=0;e<a.length;e++)
+	//	$(a[e]).click(function(){$(".cl_div_chuathanhcongcu").html(n)})
 }
 	
 	

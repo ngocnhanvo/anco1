@@ -23,9 +23,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     List<VNN> vNNs = new List<VNN>();
     EntityContext db = new EntityContext();
     Public pub = new Public();
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -603,10 +604,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
         string so_po = context.Request.Form["so_po"].Trim();
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "DSDH", 1);
 
         try
         {
+            string sochungtu = VNN_VariablePublic.sochungtu(db, "DSDH", 1);
             int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
             int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
             DateTime ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);
@@ -743,76 +744,60 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "c_danhsachdathang";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                c_danhsachdathang object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi dòng " + i + ": Không tìm thấy đối tượng cần xóa.";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "HUYBO")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hủy.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "KETTHUC")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã kết thúc.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.trangthai == "HIEULUC")
-                {
-                    msg_del = "<div style='color:red'>Lỗi:Đơn hàng " + object_.sochungtu + " đã hiệu lực.</div>";
-                    msg += msg_del + "\n";
-                }
-                else if (object_.md_trangthai_id != "HIEULUC")
-                {
-                    msg_del = "Lỗi dòng: " + i + ":Đã hiệu lực không thể xóa.";
-                    msg += msg_del + "\n";
-                }
-                else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
-                {
-                    msg_del = string.Format(@"Lỗi:Đơn hàng ""{0}"" đã tạo phiếu giảm hạn ngạch.", object_.sochungtu);
-                    msg += msg_del + "<br>";
-                }
+                var ids = context.Request.Form["id"].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).ToList();
 
-
-                if (msg_del.Length <= 0)
+                foreach (var id_del_ in ids)
                 {
-                    db.c_danhsachdathang.Remove(object_);
+                    var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if (new string[] { "HIEULUC", "HUYBO", "KETTHUC" }.Contains(object_.trangthai))
+                    {
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang trong trạng thái ""Hiệu Lực"", ""Hủy"" hoặc ""Kết Thúc"".", object_.sochungtu, object_.so_po);
+                    }
+                    else if (!new string[] { "HIEULUC", "SOANTHAO" }.Contains(object_.md_trangthai_id))
+                    {
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang triển khai.", object_.sochungtu, object_.so_po);
+                    }
+                    else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
+                    {
+                       msg += string.Format(@"<br><b>{0} ({1})</b>: Đã tạo phiếu giảm hạn ngạch.", object_.sochungtu, object_.so_po);
+                    }
+                    else if (object_.dg_nangluc.GetValueOrDefault(false))
+                    {
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Đã từng hiệu lực không thể xóa.", object_.sochungtu, object_.so_po);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "MĐH:" + object_.sochungtu + ", TĐH:" + object_.so_po, db);
+                        db.c_danhsachdathang.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa các đơn hàng đã chọn thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

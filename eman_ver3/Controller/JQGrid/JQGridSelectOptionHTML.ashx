@@ -23,7 +23,27 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
             case "selBoPhanLay":
                 this.selBoPhanLay(context);
                 break;
+            case "selChucNang":
+                this.selChucNang(context);
+                break;
         }
+    }
+
+    public void selChucNang(HttpContext context)
+    {
+        var db = new EntityContext();
+        string str = "<select>";
+        str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
+        foreach (var cn in db.ad_case.Where(s => s.hoatdong == true).ToList().OrderBy(s=> s.ten_case))
+        {
+            str += string.Format(@"<option value=""{0}"" macase=""{2}"">{1}</option>",
+                cn.ad_case_id,
+                cn.ten_case,
+                cn.ma_case
+            );
+        }
+        str += "</select>";
+        context.Response.Write(str);
     }
 
     public void selKho(HttpContext context)
@@ -76,7 +96,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
     {
         var db = new EntityContext();
         string id = context.Request.QueryString["id"];
-        var cdhs = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == id).Select(s => s.md_kho_id).Distinct();
+        var cdhs = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == id & s.sl_muonxuat != null).Select(s => s.md_kho_id).Distinct().ToList();
         var bophanlay = db.md_phanxuong_to.Where(s => cdhs.Contains(s.md_to_id)).Select(s=>new { id = s.md_to_id, ten = s.ten_to });
         var bophanlay2 = db.ad_department.Where(s => cdhs.Contains(s.md_phongban_id)).Select(s=>new { id = s.md_phongban_id, ten = s.ten_phongban });
         var bophanlayAll = bophanlay.Union(bophanlay2);

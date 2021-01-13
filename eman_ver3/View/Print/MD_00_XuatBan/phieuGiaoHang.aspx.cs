@@ -14,45 +14,25 @@ public partial class PrintControllers_MD_00_XuatBan_phieuGiaoHang : System.Web.U
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string c_danhsachdathang_id = context.Request.QueryString["id"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Phiếu giao hàng.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KH] Phiếu giao hàng.repx";
+        string nameRpt = "Phiếu giao hàng {so_po}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = tbl.Rows[0]["so_po"] + "-RP011";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        //Header
+
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
     }
 
     public String CreateSql(HttpContext context)

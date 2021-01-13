@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
-using System.Web.Services;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using DataAcess;
+using Newtonsoft.Json;
+
 public class ChangePassword : IHttpHandler, System.Web.SessionState.IRequiresSessionState {
 
     public void ProcessRequest (HttpContext context) {
@@ -17,11 +15,15 @@ public class ChangePassword : IHttpHandler, System.Web.SessionState.IRequiresSes
         String oldPassword= context.Request.Form["oldpassword"];
         String newPassword= context.Request.Form["newpassword"];
         String confirmPassword= context.Request.Form["confirm"];
-        ad_user tk = db.ad_user.SingleOrDefault(p => p.ad_user_id.Equals(ck));
 
-        if (tk != null)
+
+        string msg = "";
+        dynamic result = new Dictionary<string, object>() { { "ok", false }, { "msg", "" } };
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            if(tk.ma_user != "giamdoc" & tk.ma_user != "vanthu" & tk.ma_user != "truongphong" & tk.ma_user != "nhanvien")
+            ad_user tk = db.ad_user.SingleOrDefault(p => p.ad_user_id.Equals(ck));
+            if (tk != null)
             {
                 if (tk.matkhau.Equals(Security.EncodeMd5Hash(oldPassword)))
                 {
@@ -29,24 +31,38 @@ public class ChangePassword : IHttpHandler, System.Web.SessionState.IRequiresSes
                     {
                         tk.matkhau = Security.EncodeMd5Hash(newPassword);
                         db.SaveChanges();
-                        context.Response.Write("Thay đổi mật khẩu thành công.");
+                        result["ok"] = true;
                     }
-                    else {
-                        context.Response.Write("Xác nhận mật khẩu không đúng.");
+                    else
+                    {
+                        msg = "Xác nhận mật khẩu không đúng.";
                     }
                 }
-                else {
-                    context.Response.Write("Sai mật khẩu cũ.");
+                else
+                {
+                    msg = "Sai mật khẩu cũ.";
                 }
             }
             else
             {
-                context.Response.Write("Tài khoản này là tài khoản demo, bạn không thể thay đổi mật khẩu.");
+                msg  = "Tài khoản không tồn tại.";
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = "<div class='nhan-thanhcong'>Cập nhật mật khẩu thành công</div>";
+                result["ok"] = true;
+                transaction.Commit();
+            }
+            else
+            {
+                msg = string.Format(@"<div class='nhan-loi'>{0}</div>", msg);
+                transaction.Rollback();
             }
         }
-        else {
-            context.Response.Write("Tài khoản không tồn tại.");
-        }
+
+        result["msg"] = msg;
+        context.Response.Write(JsonConvert.SerializeObject(result));
     }
 
     public bool IsReusable {

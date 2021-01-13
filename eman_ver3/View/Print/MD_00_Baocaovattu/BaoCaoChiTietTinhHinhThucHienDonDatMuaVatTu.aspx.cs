@@ -15,88 +15,67 @@ public partial class PrintControllers_MD_00_Baocaovattu_baoCaoChiTietTinhHinhThu
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Báo Cáo Chi Tiết Tình Hình Thực Hiện Đơn Đặt Mua Vật Tư.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[VT] Báo Cáo Chi Tiết Tình Hình Thực Hiện Đơn Đặt Mua Vật Tư.repx";
+        string nameRpt = "Báo Cáo Chi Tiết Tình Hình Thực Hiện Đơn Đặt Mua Vật Tư";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
 
-            tbl.Columns.Add("sum_sldonhang", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_sldonhang", Type.GetType("System.Double"));
             tbl.Columns.Add("sum_sldanhan", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_slconlai", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = "Chi tiết tình hình thực hiện đơn mua VT";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            var sum_sldonhang = tbl.Compute("Sum(sl_donhang)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_sldonhang))
-                tbl.Rows[lastRow]["sum_sldonhang"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_sldonhang"] = double.Parse(sum_sldonhang);
+        tbl.Columns.Add("sum_slconlai", Type.GetType("System.Double"));
+        //Header
 
-            var sum_sldanhan = tbl.Compute("Sum(sl_danhan)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_sldanhan))
-                tbl.Rows[lastRow]["sum_sldanhan"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_sldanhan"] = double.Parse(sum_sldanhan);
-
-            var sum_slconlai = tbl.Compute("Sum(sl_conlai)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_slconlai))
-                tbl.Rows[lastRow]["sum_slconlai"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_slconlai"] = double.Parse(sum_slconlai);
-
-            var sl_donhang_cell = report.Report.FindControl("sl_donhang", true);
-            sl_donhang_cell.DataBindings[0].FormatString = sothapphan;
-            var sl_danhan_cell = report.Report.FindControl("sl_danhan", true);
-            sl_danhan_cell.DataBindings[0].FormatString = sothapphan;
-            var sl_conlai_cell = report.Report.FindControl("sl_conlai", true);
-            sl_conlai_cell.DataBindings[0].FormatString = sothapphan;
-
-            var sumgroup_sldonhang_cell = (XRTableCell)report.Report.FindControl("sumgroup_sldonhang", true);
-            sumgroup_sldonhang_cell.Summary.FormatString = sothapphan;
-            var sumgroup_sldanhan_cell = (XRTableCell)report.Report.FindControl("sumgroup_sldanhan", true);
-            sumgroup_sldanhan_cell.Summary.FormatString = sothapphan;
-            var sumgroup_slconlai_cell = (XRTableCell)report.FindControl("sumgroup_slconlai", false);
-            sumgroup_slconlai_cell.Summary.FormatString = sothapphan;
-
-            var sum_sldonhang_cell = report.Report.FindControl("sum_sldonhang", true);
-            sum_sldonhang_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_sldanhan_cell = report.Report.FindControl("sum_sldanhan", true);
-            sum_sldanhan_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slconlai_cell = report.Report.FindControl("sum_slconlai", true);
-            sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
-
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        var sum_sldonhang = tbl.Compute("Sum(sl_donhang)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_sldonhang))
+            tbl.Rows[lastRow]["sum_sldonhang"] = DBNull.Value;
         else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+            tbl.Rows[lastRow]["sum_sldonhang"] = double.Parse(sum_sldonhang);
+
+        var sum_sldanhan = tbl.Compute("Sum(sl_danhan)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_sldanhan))
+            tbl.Rows[lastRow]["sum_sldanhan"] = DBNull.Value;
+        else
+            tbl.Rows[lastRow]["sum_sldanhan"] = double.Parse(sum_sldanhan);
+
+        var sum_slconlai = tbl.Compute("Sum(sl_conlai)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_slconlai))
+            tbl.Rows[lastRow]["sum_slconlai"] = DBNull.Value;
+        else
+            tbl.Rows[lastRow]["sum_slconlai"] = double.Parse(sum_slconlai);
+
+        var sl_donhang_cell = ReportViewer1.Report.Report.FindControl("sl_donhang", true);
+        sl_donhang_cell.DataBindings[0].FormatString = sothapphan;
+        var sl_danhan_cell = ReportViewer1.Report.Report.FindControl("sl_danhan", true);
+        sl_danhan_cell.DataBindings[0].FormatString = sothapphan;
+        var sl_conlai_cell = ReportViewer1.Report.Report.FindControl("sl_conlai", true);
+        sl_conlai_cell.DataBindings[0].FormatString = sothapphan;
+
+        var sumgroup_sldonhang_cell = (XRTableCell)ReportViewer1.Report.Report.FindControl("sumgroup_sldonhang", true);
+        sumgroup_sldonhang_cell.Summary.FormatString = sothapphan;
+        var sumgroup_sldanhan_cell = (XRTableCell)ReportViewer1.Report.Report.FindControl("sumgroup_sldanhan", true);
+        sumgroup_sldanhan_cell.Summary.FormatString = sothapphan;
+        var sumgroup_slconlai_cell = (XRTableCell)ReportViewer1.Report.FindControl("sumgroup_slconlai", false);
+        sumgroup_slconlai_cell.Summary.FormatString = sothapphan;
+
+        var sum_sldonhang_cell = ReportViewer1.Report.Report.FindControl("sum_sldonhang", true);
+        sum_sldonhang_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sldanhan_cell = ReportViewer1.Report.Report.FindControl("sum_sldanhan", true);
+        sum_sldanhan_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_slconlai_cell = ReportViewer1.Report.Report.FindControl("sum_slconlai", true);
+        sum_slconlai_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public string CreateSql(HttpContext context)

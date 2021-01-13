@@ -6,10 +6,10 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
         {
             case "add":
@@ -21,9 +21,60 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
             case "del":
                 this.del(context);
                 break;
+            case "CA_01_CapNhatNamHienTai":
+                this.CA_01_CapNhatNamHienTai(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_CapNhatNamHienTai(HttpContext context)
+    {
+        var msg = "";
+        var db = new EntityContext();
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            var checkFinally = true;
+            try
+            {
+                var scts = db.md_sochungtu.ToList();
+                foreach (var sct in scts)
+                {
+                    if (sct.namnay >= DateTime.Now.Year)
+                    {
+                        msg += string.Format(@"<div class='nhan-loi'>Lỗi: <b>{0}</b> Cập nhật thất bại, năm ""{1}"" đã từng được cập nhật</div>.", sct.ma_sochungtu, DateTime.Now.Year);
+                    }
+                    else
+                    {
+                        sct.namtruoc = sct.namnay;
+                        sct.namnay = DateTime.Now.Year;
+                        sct.giatri_namtruoc = sct.giatri_thaydoi;
+
+                        var giatri_thaydoi = sct.giatri_thaydoi;
+                        int count_gttd = giatri_thaydoi.Length;
+                        sct.giatri_thaydoi = VNN_Config.load_number("0", count_gttd);
+                        sct.khuonmau = sct.khuonmau.Replace(giatri_thaydoi, sct.giatri_thaydoi);
+                        VNN_Function.Write_log(context, "MD_00_QLSochungtu", null, oper, "SCT:" + sct.ma_sochungtu + ", Năm HT:" + DateTime.Now.Year, db);
+                        db.SaveChanges();
+
+                        msg += string.Format(@"<div class='nhan-thanhcong'><b>{0}</b>: Cập nhật thành công cho năm ""{1}""</div>.", sct.ma_sochungtu, DateTime.Now.Year);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                msg =  string.Format(@"<div class='nhan-loi'>Lỗi: {0}</div>", ex.Message);
+                checkFinally = false;
+            }
+
+            if (checkFinally)
+                transaction.Commit();
+            else
+                transaction.Rollback();
+        }
+
+        context.Response.Write(msg);
     }
 
     public void add(HttpContext context)
@@ -31,8 +82,8 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
         EntityContext db = new EntityContext();
         string msg = "",id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-		string md_trangthai_id = context.Request.Form["md_trangthai_id"];
-		string ma_sochungtu = context.Request.Form["ma_sochungtu"];
+        string md_trangthai_id = context.Request.Form["md_trangthai_id"];
+        string ma_sochungtu = context.Request.Form["ma_sochungtu"];
         try
         {
             string id = context.Request.Form["id"];
@@ -45,13 +96,13 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
                 VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Thêm thành công." + "#" + id_new;
-				db = new EntityContext();
-				if(md_trangthai_id == "HIEULUC"){
-					foreach(md_sochungtu sct in db.md_sochungtu.Where(s=>s.md_sochungtu_id != id_new & s.md_trangthai_id == "HIEULUC" & s.ma_sochungtu == ma_sochungtu)){
-						sct.md_trangthai_id = "SOANTHAO";
-					}
-				}
-				db.SaveChanges();
+                db = new EntityContext();
+                if(md_trangthai_id == "HIEULUC"){
+                    foreach(md_sochungtu sct in db.md_sochungtu.Where(s=>s.md_sochungtu_id != id_new & s.md_trangthai_id == "HIEULUC" & s.ma_sochungtu == ma_sochungtu)){
+                        sct.md_trangthai_id = "SOANTHAO";
+                    }
+                }
+                db.SaveChanges();
             }
         }
         catch(Exception ex)
@@ -66,8 +117,8 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-		string md_trangthai_id = context.Request.Form["md_trangthai_id"];
-		string ma_sochungtu = context.Request.Form["ma_sochungtu"];
+        string md_trangthai_id = context.Request.Form["md_trangthai_id"];
+        string ma_sochungtu = context.Request.Form["ma_sochungtu"];
         try
         {
             string id = context.Request.Form["id"];
@@ -76,7 +127,7 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-            
+
             if (msg.Length <= 0)
             {
                 string action = "edit";
@@ -86,13 +137,13 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
                 VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
-				db = new EntityContext();
-				if(md_trangthai_id == "HIEULUC"){
-					foreach(md_sochungtu sct in db.md_sochungtu.Where(s=>s.md_sochungtu_id != object_.md_sochungtu_id & s.md_trangthai_id == "HIEULUC" & s.ma_sochungtu == ma_sochungtu)){
-						sct.md_trangthai_id = "SOANTHAO";
-					}
-				}
-				db.SaveChanges();
+                db = new EntityContext();
+                if(md_trangthai_id == "HIEULUC"){
+                    foreach(md_sochungtu sct in db.md_sochungtu.Where(s=>s.md_sochungtu_id != object_.md_sochungtu_id & s.md_trangthai_id == "HIEULUC" & s.ma_sochungtu == ma_sochungtu)){
+                        sct.md_trangthai_id = "SOANTHAO";
+                    }
+                }
+                db.SaveChanges();
             }
         }
         catch(Exception ex)
@@ -105,51 +156,48 @@ public class JQGridMD_00_QLSochungtuModify : IHttpHandler, System.Web.SessionSta
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_sochungtu";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-string object_ = db.md_sochungtu.Where(p => p.md_sochungtu_id == id_del_).Select(s => s.md_sochungtu_id).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table , action, column_ex, db);
+                    var object_ = db.md_sochungtu.Where(p => p.md_sochungtu_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if(object_.md_trangthai_id == "HIEULUC")
+                    {
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Đã được ""Hiệu Lực"".", object_.ma_sochungtu, object_.ten_sochungtu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "SCT:" + object_.ma_sochungtu + ", Tên:" + object_.ten_sochungtu, db);
+                        db.md_sochungtu.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Xóa số chứng từ đã chọn thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

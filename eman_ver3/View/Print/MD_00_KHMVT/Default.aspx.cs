@@ -13,76 +13,57 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_Default : System.Web.UI.
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Phiếu yêu cầu mua vật tư.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[VT] Phiếu yêu cầu mua vật tư.repx";
+        string nameRpt = "Phiếu yêu cầu mua vật tư";
         string sql = CreateSql(context);
-        viewReport(report, sql, context);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, string SqlQuery, HttpContext context)
+    public void viewReport(string SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            var sl_tonkho = report.Report.FindControl("sl_tonkho", true);
-            sl_tonkho.DataBindings[0].FormatString = sothapphan;
-            var sl_theobom = report.Report.FindControl("sl_theobom", true);
-            sl_theobom.DataBindings[0].FormatString = sothapphan;
-            var sl_dutru = report.Report.FindControl("sl_dutru", true);
-            sl_dutru.DataBindings[0].FormatString = sothapphan;
-            var sl_yeucau = report.Report.FindControl("sl_yeucau", true);
-            sl_yeucau.DataBindings[0].FormatString = sothapphan;
-            var sl_duyet = report.Report.FindControl("sl_duyet", true);
-            sl_duyet.DataBindings[0].FormatString = sothapphan;
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        var sl_tonkho = ReportViewer1.Report.Report.FindControl("sl_tonkho", true);
+        sl_tonkho.DataBindings[0].FormatString = sothapphan;
+        var sl_theobom = ReportViewer1.Report.Report.FindControl("sl_theobom", true);
+        sl_theobom.DataBindings[0].FormatString = sothapphan;
+        var sl_dutru = ReportViewer1.Report.Report.FindControl("sl_dutru", true);
+        sl_dutru.DataBindings[0].FormatString = sothapphan;
+        var sl_yeucau = ReportViewer1.Report.Report.FindControl("sl_yeucau", true);
+        sl_yeucau.DataBindings[0].FormatString = sothapphan;
+        var sl_duyet = ReportViewer1.Report.Report.FindControl("sl_duyet", true);
+        sl_duyet.DataBindings[0].FormatString = sothapphan;
 
-            tbl.Columns.Add("sum_tonkho", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_theobom", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_dutru", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_yeucau", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_duyet", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = "Phiếu yêu cầu mua VT";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_tonkho"] = double.Parse(tbl.Compute("Sum(sl_tonkho)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_theobom"] = double.Parse(tbl.Compute("Sum(sl_theobom)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_dutru"] = double.Parse(tbl.Compute("Sum(sl_dutru)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_yeucau"] = double.Parse(tbl.Compute("Sum(sl_yeucau)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_duyet"] = double.Parse(tbl.Compute("Sum(sl_duyet)", string.Empty).ToString());
+        tbl.Columns.Add("sum_tonkho", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_theobom", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_dutru", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_yeucau", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_duyet", Type.GetType("System.Double"));
+        //Header
 
-            var sum_tonkho = report.Report.FindControl("sum_tonkho", true);
-            sum_tonkho.DataBindings[0].FormatString = sothapphan;
-            var sum_theobom = report.Report.FindControl("sum_theobom", true);
-            sum_theobom.DataBindings[0].FormatString = sothapphan;
-            var sum_dutru = report.Report.FindControl("sum_dutru", true);
-            sum_dutru.DataBindings[0].FormatString = sothapphan;
-            var sum_yeucau = report.Report.FindControl("sum_yeucau", true);
-            sum_yeucau.DataBindings[0].FormatString = sothapphan;
-            var sum_duyet = report.Report.FindControl("sum_duyet", true);
-            sum_duyet.DataBindings[0].FormatString = sothapphan;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_tonkho"] = double.Parse(tbl.Compute("Sum(sl_tonkho)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_theobom"] = double.Parse(tbl.Compute("Sum(sl_theobom)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_dutru"] = double.Parse(tbl.Compute("Sum(sl_dutru)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_yeucau"] = double.Parse(tbl.Compute("Sum(sl_yeucau)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_duyet"] = double.Parse(tbl.Compute("Sum(sl_duyet)", string.Empty).ToString());
+
+        var sum_tonkho = ReportViewer1.Report.Report.FindControl("sum_tonkho", true);
+        sum_tonkho.DataBindings[0].FormatString = sothapphan;
+        var sum_theobom = ReportViewer1.Report.Report.FindControl("sum_theobom", true);
+        sum_theobom.DataBindings[0].FormatString = sothapphan;
+        var sum_dutru = ReportViewer1.Report.Report.FindControl("sum_dutru", true);
+        sum_dutru.DataBindings[0].FormatString = sothapphan;
+        var sum_yeucau = ReportViewer1.Report.Report.FindControl("sum_yeucau", true);
+        sum_yeucau.DataBindings[0].FormatString = sothapphan;
+        var sum_duyet = ReportViewer1.Report.Report.FindControl("sum_duyet", true);
+        sum_duyet.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)

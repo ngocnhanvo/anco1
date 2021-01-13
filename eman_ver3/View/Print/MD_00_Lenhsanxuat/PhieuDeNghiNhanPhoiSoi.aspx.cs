@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using DataAcess;
 using System.Linq;
-public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhanHangTon : System.Web.UI.Page
+public partial class PrintControllers_MD_00_LenhSanXuat_PhieuDeNghiNhanPhoiSoi : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
@@ -13,56 +13,36 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Phiếu Đề Nghị Nhận Phôi Sợi.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Phiếu Đề Nghị Nhận Phôi Sợi.repx";
+        string nameRpt = "Phiếu Đề Nghị Nhận Phôi Sợi {donhang}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = tbl.Rows[0]["donhang"] + "-RP016";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
-            if (string.IsNullOrEmpty(sum_soluong))
-                tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
-            else
-                tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sum_soluong);
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
+        //Header
 
-            var sum_soluong_cell = report.Report.FindControl("sum_soluong", true);
-            sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
-            var soluong_cell = report.Report.FindControl("soluong", true);
-            soluong_cell.DataBindings[0].FormatString = sothapphan;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        var sum_soluong = tbl.Compute("Sum(soluong)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_soluong))
+            tbl.Rows[lastRow]["sum_soluong"] = DBNull.Value;
         else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+            tbl.Rows[lastRow]["sum_soluong"] = double.Parse(sum_soluong);
+
+        var sum_soluong_cell = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
+        sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
+        var soluong_cell = ReportViewer1.Report.Report.FindControl("soluong", true);
+        soluong_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -84,7 +84,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         //var check_kho = db.md_xuatkhonb_cdh.Where(s => s.check_kho == true & s.md_xuatkhonb_id == xk.md_xuatkhonb_id);
                         //var check_ma = db.md_xuatkhonb_cdh.Where(s => s.md_sanpham_id != null & s.md_xuatkhonb_id == xk.md_xuatkhonb_id);
                         var md_xuatkhonb_cdhs = db.md_xuatkhonb_cdh.
-                                Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id).ToList();
+                                Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id & s.sl_thucxuat != null).ToList();
 
                         var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
                         foreach (var dh in md_xuatkhonb_cdhs)
@@ -212,6 +212,12 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         value_nguoitao = us.ma_user
                                                         ,
                                                         mota = lsx.sochungtu
+                                                        ,
+                                                        stclienquan = lsx.sochungtu
+                                                        ,
+                                                        dongxuatkhoId = dh.md_xuatkhonb_cdh_id
+                                                        ,
+                                                        ngaydenghi = xk.ngaychuyen
                                                     });
                                                 }
 
@@ -367,6 +373,12 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     value_nguoitao = us.ma_user
                                                     ,
                                                     mota = ldg.sochungtu
+                                                    ,
+                                                    stclienquan = ldg.sochungtu
+                                                    ,
+                                                    dongxuatkhoId = dh.md_xuatkhonb_cdh_id
+                                                    ,
+                                                    ngaydenghi = xk.ngaychuyen
                                                 });
                                             }
 
@@ -942,40 +954,47 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string[] id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < id_del.Length; i++)
+            try
             {
-                var id_del_ = id_del[i];
-                var object_ = db.md_xuatkhonb.Where(p => p.md_xuatkhonb_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy đối tượng cần xóa.", i + 1);
+                    var object_ = db.md_xuatkhonb.Where(p => p.md_xuatkhonb_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần trả.", id_del_);
+                    }
+                    else if (object_.trangthai == "HIEULUC")
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Đã được ""Hiệu Lực"".", object_.sochungtu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "PXKNB:" + object_.sochungtu, db);
+                        object_.trangthai = "SOANTHAO";
+                        db.SaveChanges();
+                    }
                 }
-                else if (object_.trangthai == "HIEULUC")
-                {
-                    msg += string.Format(@"Lỗi dòng {0}: Dòng {1} đã hiệu lực, không thể xóa.", i + 1, object_.sochungtu);
-                }
-                else
-                {
-                    object_.trangthai = "SOANTHAO";
-                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                transaction.Commit();
+                msg = @"true#Trả phiếu xuất kho dã chọn về ""Soạn Thảo"" thành công.";
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = @"true#Trả trạng thái về ""Soạn Thảo"" thành công.";
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

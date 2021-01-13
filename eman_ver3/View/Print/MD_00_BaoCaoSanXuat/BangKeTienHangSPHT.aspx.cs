@@ -10,96 +10,75 @@ using DataAcess;
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.repx";
+        string nameRpt = "Bảng kê tiền hàng SPHT {thang_nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_slxuat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        tbl.Columns.Add("tongtientt", Type.GetType("System.Double"));
+        tbl.Columns.Add("sotienbangchu", Type.GetType("System.String"));
+        //Header
+
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        var tongtt = tbl.Compute("sum(thanhtien)", string.Empty).ToString();
+        var tienvtkhoan = tbl.Rows[lastRow]["tienvtkhoan"].ToString();
+        var tienvtvipham = tbl.Rows[lastRow]["tienvtvipham"].ToString();
+        var tienhangton = tbl.Rows[lastRow]["tienhangton"].ToString();
+
+        tbl.Rows[lastRow]["sum_thanhtien"] = tongtt;
+        tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
+
+        var tongtientt = Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
+            - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
+            - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham)
+            - Convert.ToDouble(string.IsNullOrEmpty(tienhangton) ? "0" : tienhangton);
+
+        tbl.Rows[lastRow]["tongtientt"] = tongtientt;
+
+        var kqDic = VNN_ConvertMoney.convert(tongtientt, "VND").FirstOrDefault();
+        tbl.Rows[lastRow]["sotienbangchu"] = kqDic.Key;
+
+        var slxuat_cell = ReportViewer1.Report.Report.FindControl("slxuat", true);
+        slxuat_cell.DataBindings[0].FormatString = sothapphan;
+
+        var sum_slxuat_cell = ReportViewer1.Report.Report.FindControl("slxuat", true);
+        sum_slxuat_cell.DataBindings[0].FormatString = sothapphan;
+
+        var ma_to = tbl.Rows[lastRow]["ma_to"].ToString();
+        if (ma_to != "HT1" & ma_to != "HTS1")
         {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+            var cellTTHT = ReportViewer1.Report.Report.FindControl("cellTTHT", true);
+            cellTTHT.Text = "";
 
-            tbl.Columns.Add("sum_slxuat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("tongtientt", Type.GetType("System.Double"));
-            tbl.Columns.Add("sotienbangchu", Type.GetType("System.String"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Bảng kê tiền hàng SPHT - " + tbl.Rows[0]["thang_nam"];
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            var tongtt = tbl.Compute("sum(thanhtien)", string.Empty).ToString();
-            var tienvtkhoan = tbl.Rows[lastRow]["tienvtkhoan"].ToString();
-            var tienvtvipham = tbl.Rows[lastRow]["tienvtvipham"].ToString();
-            var tienhangton = tbl.Rows[lastRow]["tienhangton"].ToString();
+            //var celltienhangton = report.Report.FindControl("tienhangton", true);
+            //celltienhangton.Dispose();
 
-            tbl.Rows[lastRow]["sum_thanhtien"] = tongtt;
-            tbl.Rows[lastRow]["sum_slxuat"] = tbl.Compute("sum(slxuat)", string.Empty);
-
-            var tongtientt = Convert.ToDouble(string.IsNullOrEmpty(tongtt) ? "0" : tongtt)
-                - Convert.ToDouble(string.IsNullOrEmpty(tienvtkhoan) ? "0" : tienvtkhoan)
-                - Convert.ToDouble(string.IsNullOrEmpty(tienvtvipham) ? "0" : tienvtvipham)
-                - Convert.ToDouble(string.IsNullOrEmpty(tienhangton) ? "0" : tienhangton);
-
-            tbl.Rows[lastRow]["tongtientt"] = tongtientt;
-
-            var kqDic = VNN_ConvertMoney.convert(tongtientt, "VND").FirstOrDefault();
-            tbl.Rows[lastRow]["sotienbangchu"] = kqDic.Key;
-
-            var slxuat_cell = report.Report.FindControl("slxuat", true);
-            slxuat_cell.DataBindings[0].FormatString = sothapphan;
-
-            var sum_slxuat_cell = report.Report.FindControl("slxuat", true);
-            sum_slxuat_cell.DataBindings[0].FormatString = sothapphan;
-
-            var ma_to = tbl.Rows[lastRow]["ma_to"].ToString();
-            if (ma_to != "HT1" & ma_to != "HTS1")
-            {
-                var cellTTHT = report.Report.FindControl("cellTTHT", true);
-                cellTTHT.Text = "";
-
-                //var celltienhangton = report.Report.FindControl("tienhangton", true);
-                //celltienhangton.Dispose();
-
-                //var xrTableCell65 = report.Report.FindControl("xrTableCell65", true);
-                //xrTableCell65.Dispose();
-            }
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
+            //var xrTableCell65 = report.Report.FindControl("xrTableCell65", true);
+            //xrTableCell65.Dispose();
         }
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
         string nam = context.Request.QueryString["nam"];

@@ -15,9 +15,10 @@ using DataAcess;
 
 public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
+
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -866,54 +867,52 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        var db = new EntityContext();
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_banggia";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.md_banggia.Where(p => p.md_banggia_id == id_del_).Select(s => s.md_banggia_id).Take(1).FirstOrDefault();
+                string id_del = context.Request.Form["id"];
+
+                var object_ = db.md_banggia.Where(p => p.md_banggia_id == id_del).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    var pbgs = db.md_phienbangia.Where(s => s.md_banggia_id == object_.md_banggia_id).Count();
+                    if(pbgs > 0)
+                        msg = "Lỗi:Bảng giá đã tồn tại phiên bản giá";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    VNN_Function.Write_log(context, ma_module, null, oper, object_.ten_banggia, db);
+                    db.md_banggia.Remove(object_);
+                    db.SaveChanges();
                 }
             }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = string.Format("true#{0}", "Xóa bảng giá thành công");
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format("false#{0}", msg);
             }
         }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+
         context.Response.Write(msg);
     }
 

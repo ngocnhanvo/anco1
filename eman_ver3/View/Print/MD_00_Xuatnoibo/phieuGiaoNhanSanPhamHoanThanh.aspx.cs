@@ -13,52 +13,35 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.repx";
+        string nameRpt = "Phiếu Giao Nhận Sản Phẩm Hoàn Thành {sochungtu}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            tbl.Columns.Add("sum_giao", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
-            tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
-            tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
-            tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
-            report.DisplayName = tbl.Rows[0]["sochungtu"] + "-RP000";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_giao"] = double.Parse(tbl.Compute("Sum(giao)", string.Empty).ToString());
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_giao", Type.GetType("System.Double"));
+        //Header
+        var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+        tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+        tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+        tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_giao"] = double.Parse(tbl.Compute("Sum(giao)", string.Empty).ToString());
 
-            var giao = report.Report.FindControl("giao", true);
-            giao.DataBindings[0].FormatString = sothapphan;
-            var sum_giao = report.Report.FindControl("sum_giao", true);
-            sum_giao.DataBindings[0].FormatString = sothapphan;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        var giao = ReportViewer1.Report.Report.FindControl("giao", true);
+        giao.DataBindings[0].FormatString = sothapphan;
+        var sum_giao = ReportViewer1.Report.Report.FindControl("sum_giao", true);
+        sum_giao.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)

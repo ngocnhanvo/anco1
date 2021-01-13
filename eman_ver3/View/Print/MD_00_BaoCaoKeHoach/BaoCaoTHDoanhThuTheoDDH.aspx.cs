@@ -15,66 +15,44 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[KH] Báo Cáo Tổng Hợp Doanh Thu Theo ĐĐH.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[KH] Báo Cáo Tổng Hợp Doanh Thu Theo ĐĐH.repx";
+        string nameRpt = "Báo Cáo Tổng Hợp Doanh Thu Theo ĐĐH {thang_nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        //Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
 
-            tbl.Columns.Add("sum_c51", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_c52", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_c53", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_c81CH", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_c81BG", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_c99", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Đơn hàng chưa xuất";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["dd"] = infoPrint.dd;
-            tbl.Rows[lastRow]["MM"] = infoPrint.MM;
-            tbl.Rows[lastRow]["yyyy"] = infoPrint.yyyy;
-            tbl.Rows[lastRow]["sum_c51"] = tbl.Compute("sum(c51)", string.Empty);
-            tbl.Rows[lastRow]["sum_c52"] = tbl.Compute("sum(c52)", string.Empty);
-            tbl.Rows[lastRow]["sum_c53"] = tbl.Compute("sum(c53)", string.Empty);
-            tbl.Rows[lastRow]["sum_c81CH"] = tbl.Compute("sum(c81CH)", string.Empty);
-            tbl.Rows[lastRow]["sum_c81BG"] = tbl.Compute("sum(c81BG)", string.Empty);
-            tbl.Rows[lastRow]["sum_c99"] = tbl.Compute("sum(c99)", string.Empty);
-            tbl.Rows[lastRow]["sum_tongcong"] = tbl.Compute("sum(tongcong)", string.Empty);
+        tbl.Columns.Add("sum_c51", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_c52", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_c53", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_c81CH", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_c81BG", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_c99", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
+        //Header
 
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_c51"] = tbl.Compute("sum(c51)", string.Empty);
+        tbl.Rows[lastRow]["sum_c52"] = tbl.Compute("sum(c52)", string.Empty);
+        tbl.Rows[lastRow]["sum_c53"] = tbl.Compute("sum(c53)", string.Empty);
+        tbl.Rows[lastRow]["sum_c81CH"] = tbl.Compute("sum(c81CH)", string.Empty);
+        tbl.Rows[lastRow]["sum_c81BG"] = tbl.Compute("sum(c81BG)", string.Empty);
+        tbl.Rows[lastRow]["sum_c99"] = tbl.Compute("sum(c99)", string.Empty);
+        tbl.Rows[lastRow]["sum_tongcong"] = tbl.Compute("sum(tongcong)", string.Empty);
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string tungay = context.Request.QueryString["tu"];
         string denngay = context.Request.QueryString["den"];
         string donhang = context.Request.QueryString["donhang"];
@@ -132,6 +110,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
 					            and sp.ma_sanpham not like N'%F%'
+                                and sp.mota_tiengviet like N'Chậu%'
 			            ) as c81CH
 			            , (
 				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
@@ -141,7 +120,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
                                 1=1
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '81'
-					            and sp.ma_sanpham like N'%F%'
+					            and (sp.ma_sanpham like N'%F%' or sp.mota_tiengviet like N'Kệ%')
 			            ) as c81BG
 			            , (
 				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)

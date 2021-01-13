@@ -93,7 +93,7 @@ public static class VNN_JQGridver2
 	
 	public static string get_layout_face(){
 		string kq = "";
-		kq += "if(Browser == 'Firefox'){$('.sub_mainpage').css('height', window.innerHeight - 100);$('#input_docaogrid').val('107');}else {$('.sub_mainpage').css('height', window.innerHeight - 98);$('#input_docaogrid').val('102');}\n";
+		kq += "if(Browser == 'FirefoxCanCel'){$('.sub_mainpage').css('height', window.innerHeight - 100);$('#input_docaogrid').val('107');}else {$('.sub_mainpage').css('height', window.innerHeight - 98);$('#input_docaogrid').val('102');}\n";
 		kq += "$('.ui-layout-north').tabs();\n";
 		kq += "$('.ui-layout-center').tabs();\n";
 		kq += "$('.ui-layout-south').tabs();\n";

@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] Thẻ giao việc sản xuất</title>
+    <title>[eMan] <%=ReportViewer1.Report.DisplayName %></title>
     <style type="text/css">
         .reportDEX > .dxmLite.dxm-ltr{
             display:table;

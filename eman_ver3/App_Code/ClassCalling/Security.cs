@@ -97,6 +97,34 @@ public static class Security
         return "/anco1/";
     }
 
+    public static Dictionary<string, object> all_taikhoan(HttpContext context)
+    {
+        try
+        {
+            string token = context.User.Identity.Name;
+            Dictionary<string, object> tokenJson = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(token);
+            string ad_user_id = tokenJson["ad_user_id"].ToString();
+            if (ad_user_id != null & ad_user_id != "")
+            {
+                if (!tokenJson.ContainsKey("chuyenCachInBTSangPDF"))
+                    tokenJson["chuyenCachInBTSangPDF"] = false;
+                if (!tokenJson.ContainsKey("tuDongNhanDienCachIn"))
+                    tokenJson["tuDongNhanDienCachIn"] = false;
+                if (!tokenJson.ContainsKey("mauBackground"))
+                    tokenJson["mauBackground"] = "mau_01";
+                return tokenJson;
+            }
+            else
+            {
+                return new Dictionary<string, object>();
+            }
+        }
+        catch
+        {
+            return new Dictionary<string, object>();
+        }
+    }
+
     public static string id_taikhoan(HttpContext context)
     {
         try
@@ -200,30 +228,45 @@ public static class Security
     //Phân quyền dựa trên id của chức năng
     public static bool PhanQuyen_ChucNang(HttpContext context, string ma_module, string ad_case_id)
     {
-        ADmin_JSON json = new ADmin_JSON();
-        var modules = json.ad_moduleJSON();
-        var cases = json.ad_caseJSON();
-        var role_mmcs = json.ad_role_mmcJSON();
         bool quyen = false;
-        string ad_role_id = id_vaitro(context);
-        string ad_module_id = modules.Where(s => s.ma_module.Equals(ma_module)).Select(s => s.ad_module_id).Take(1).FirstOrDefault();
-        if (ad_role_id != null & ad_role_id != "")
-        {
-            if (ad_module_id != null & ad_module_id != "")
-            {
-                string ad_case_id_ = cases.Where(s => s.ma_case.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
-                if (ad_case_id_ == "" | ad_case_id_ == null)
-                {
-                    ad_case_id_ = cases.Where(s => s.ad_case_id.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
-                }
 
-                if (ad_case_id_ != "" & ad_case_id_ != null)
+        string ad_role_id = id_vaitro(context);
+        string ad_user_id = id_taikhoan(context);
+
+        ADmin_JSON json = new ADmin_JSON();
+
+        var user_mmcs = json.ad_user_mmcJSON();
+
+        var cnMMC = user_mmcs.Where(s => s.ad_case_id == ad_case_id & s.ad_user_id == ad_user_id).FirstOrDefault();
+        if (cnMMC == null)
+        {
+            var modules = json.ad_moduleJSON();
+            var cases = json.ad_caseJSON();
+            var role_mmcs = json.ad_role_mmcJSON();
+
+            string ad_module_id = modules.Where(s => s.ma_module.Equals(ma_module)).Select(s => s.ad_module_id).Take(1).FirstOrDefault();
+            if (ad_role_id != null & ad_role_id != "")
+            {
+                if (ad_module_id != null & ad_module_id != "")
                 {
-                    string pq_chucnang = role_mmcs.Where(s => s.ad_role_id.Equals(ad_role_id) & s.ad_module_id.Equals(ad_module_id) & s.ad_case_id.Equals(ad_case_id_)).Select(s => s.ad_role_mmc_id).Take(1).FirstOrDefault();
-                    if (pq_chucnang != null & pq_chucnang != "")
-                        quyen = true;
+                    string ad_case_id_ = cases.Where(s => s.ma_case.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
+                    if (ad_case_id_ == "" | ad_case_id_ == null)
+                    {
+                        ad_case_id_ = cases.Where(s => s.ad_case_id.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
+                    }
+
+                    if (ad_case_id_ != "" & ad_case_id_ != null)
+                    {
+                        string pq_chucnang = role_mmcs.Where(s => s.ad_role_id.Equals(ad_role_id) & s.ad_module_id.Equals(ad_module_id) & s.ad_case_id.Equals(ad_case_id_)).Select(s => s.ad_role_mmc_id).Take(1).FirstOrDefault();
+                        if (pq_chucnang != null & pq_chucnang != "")
+                            quyen = true;
+                    }
                 }
             }
+        }
+        else
+        {
+            quyen = string.IsNullOrEmpty(cnMMC.ad_role_id) ? true : (cnMMC.ad_role_id == ad_role_id ? true : false);
         }
         return quyen;
     }

@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
 
@@ -74,7 +74,7 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
 
                 db.SaveChanges();
                 lst = lst.Where(s => !idDels.Contains(s.ad_role_mmc_id)).ToList();
-                
+
                 List<ad_role_mmc> idAdds = new List<ad_role_mmc>();
                 foreach (var r_m in db.ad_role_mmc.Where(s => s.ad_role_id == sel_vaitro_copy).ToList())
                 {
@@ -192,51 +192,49 @@ public class JQGridMD_00_VtroPquyenModify : IHttpHandler, System.Web.SessionStat
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.ad_role.Where(p => p.ad_role_id == id_del_).Select(s => s.ad_role_id).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    var object_ = db.ad_role.Where(p => p.ad_role_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else
+                    {
+                        var checkUse = db.ad_user_role.Where(s => s.ad_role_id == object_.ad_role_id).Take(1).Count();
+                        if (checkUse > 0)
+                            msg += string.Format(@"<br><b>{0}</b>: Có liên kết với Tài Khoản.", object_.ten_role);
+                        else
+                        {
+                            VNN_Function.Write_log(context, ma_module, null, oper, "MVT:" + object_.ma_role + ", TVT:" + object_.ten_role, db);
+                            db.ad_role.Remove(object_);
+                            db.SaveChanges();
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
 
-                if (msg_del.Length <= 0)
-                {
-                    string action = context.Request.Params["oper"];
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, "ad_role", action, column_ex, db);
-                }
-            }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
+            if(msg.Length <= 0)
             {
-                msg = "true#Xóa thành công.";
+                msg = @"true#Xóa vai trò đã chọn thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

@@ -10,67 +10,46 @@ using DataAcess;
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangDeNghiTruTienCongKhoanHangTon : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public InfoPrint infoPrint = PrintAnco2.GetInfoPrint();
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Bảng Đề Nghị Trừ Tiền Công Khoán Hàng Tồn.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Bảng Đề Nghị Trừ Tiền Công Khoán Hàng Tồn.repx";
+        string nameRpt = "Bảng đề nghị trừ tiền hàng tồn {thang_nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_sltru", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        //Header
 
-            tbl.Columns.Add("sum_sltru", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            report.DisplayName = "Bảng đề nghị trừ tiền hàng tồn - " + tbl.Rows[0]["thang_nam"];
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
-            tbl.Rows[lastRow]["sum_sltru"] = tbl.Compute("sum(sltru)", string.Empty);
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        tbl.Rows[lastRow]["sum_thanhtien"] = tbl.Compute("sum(thanhtien)", string.Empty);
+        tbl.Rows[lastRow]["sum_sltru"] = tbl.Compute("sum(sltru)", string.Empty);
 
-            var sltru_cell = report.Report.FindControl("sltru", true);
-            sltru_cell.DataBindings[0].FormatString = sothapphan;
+        var sltru_cell = ReportViewer1.Report.Report.FindControl("sltru", true);
+        sltru_cell.DataBindings[0].FormatString = sothapphan;
 
-            var sum_sltru_cell = report.Report.FindControl("sum_sltru", true);
-            sum_sltru_cell.DataBindings[0].FormatString = sothapphan;
-
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        var sum_sltru_cell = ReportViewer1.Report.Report.FindControl("sum_sltru", true);
+        sum_sltru_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
 		string nam = context.Request.QueryString["nam"];

@@ -253,24 +253,16 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
 					</tr>
 
                     <tr>
-                        <td colspan="2"> 
-                            <select id="sothapphan" class="FormElement">
-                                <option value="0">Không lấy số thập phân</option>
-                                <option value="1">Lấy 1 số thập phân</option>
-                                <option value="2">Lấy 2 số thập phân</option>
-                                <option value="3">Lấy 3 số thập phân</option>
-                                <option value="4">Lấy 4 số thập phân</option>
-                                <option selected value="5">Lấy số thập phân tự động</option>
-                            </select>
+                        <td colspan="2">
+                            <p class ="pTitlePublic">Chọn cách hiển thị số thập phân</p>
+                            ${getHTMLSelectSoThapPhan()}
                         </td>
                     </tr>
 
                     <tr style="height: 30px;">
-                        <td>
-                            <input id="inPDF" type="checkbox" style="outline:none;transform: scale(1.5);" value="1">
-                        </td>
-                        <td>
-                            <label for="inPDF" style="font-size: 13px;font-weight: bold;">In trực tiếp PDF</label>
+                        <td colspan=2>
+                            <p class ="pTitlePublic">Chọn cách in</p>
+                            ${getHTMLSelectKieuIn(0)}
                         </td>
                     </tr>
 				</table>
@@ -399,24 +391,16 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
 					</tr>
 
                     <tr>
-                        <td colspan="2"> 
-                            <select id="sothapphan" class="FormElement">
-                                <option value="0">Không lấy số thập phân</option>
-                                <option value="1">Lấy 1 số thập phân</option>
-                                <option value="2">Lấy 2 số thập phân</option>
-                                <option value="3">Lấy 3 số thập phân</option>
-                                <option value="4">Lấy 4 số thập phân</option>
-                                <option selected value="5">Lấy số thập phân tự động</option>
-                            </select>
+                        <td colspan="2">
+                            <p class ="pTitlePublic">Hiển thị số thập phân</p>
+                            ${getHTMLSelectSoThapPhan()}
                         </td>
                     </tr>
 
                     <tr style="height: 30px;">
-                        <td>
-                            <input id="inPDF" type="checkbox" style="outline:none;transform: scale(1.5);" value="1">
-                        </td>
-                        <td>
-                            <label for="inPDF" style="font-size: 13px;font-weight: bold;">In trực tiếp PDF</label>
+                        <td colspan=2>
+                            <p class ="pTitlePublic">Chọn cách in</p>
+                            ${getHTMLSelectKieuIn(0)}
                         </td>
                     </tr>
 				</table>
@@ -442,7 +426,7 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                         let sel_val = $("input:radio[name=rdo_SLVC]:checked").val();
                         let CLform_infor = new get_Forminfor(ma_case, Form_infor);
                         let ma_module = tengrid.replace('grid', '');
-                        let inPDF = $("#inPDF").prop('checked') ? "1" : "";
+                        let inPDF = $("#kieuInBaoCao").val();
                         if (sel_val == 1) {
                             let url = url_org_sys + "View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu"+
                                 "&ma_module=" + ma_module +

@@ -193,6 +193,12 @@
                         public string sochungtu { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_tiencongDG_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_tiencongDG_wintaFN
+                        public Decimal? tiencongDG { get; set; }
+                
+						
                         #region md_vanchuyennoibo_tukho_wintaFN
                         
                         #endregion md_vanchuyennoibo_tukho_wintaFN

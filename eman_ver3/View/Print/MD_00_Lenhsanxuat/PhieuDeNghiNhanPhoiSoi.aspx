@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="PhieuDeNghiNhanPhoiSoi.aspx.cs" Inherits="PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhanHangTon" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="PhieuDeNghiNhanPhoiSoi.aspx.cs" Inherits="PrintControllers_MD_00_LenhSanXuat_PhieuDeNghiNhanPhoiSoi" %>
 
 <%@ Register assembly="DevExpress.XtraReports.v16.1.Web, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
 
@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
 	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] Phiếu đề nghị nhận phôi sợi</title>
+    <title>[eMan] <%=ReportViewer1.Report.DisplayName %></title>
     <style type="text/css">
         .reportDEX > .dxmLite.dxm-ltr{
             display:table;

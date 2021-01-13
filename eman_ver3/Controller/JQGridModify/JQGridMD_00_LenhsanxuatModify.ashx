@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -527,65 +527,62 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string[] id_del = context.Request.Form["id"].Split(',');
-            int count = id_del.Count();
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                md_lenhsanxuat object_ = db.md_lenhsanxuat.Where(p => p.md_lenhsanxuat_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + ",";
-                }
-                else if (object_.md_trangthai_id != "CHUAHOANTHANH")
-                {
-                    msg_del = "Lỗi:Lệnh sản xuất \"" + object_.sochungtu + "\" đã hiệu lực.";
-                    msg += msg_del + ",";
-                }
-                else if (db.md_lenhsanxuat_tosx.Where(s=>s.md_lenhsanxuat_id == object_.md_lenhsanxuat_id
-                    & !string.IsNullOrEmpty(s.phieulayht)).Count() > 0)
-                {
-                    msg_del = "Lỗi:Lệnh sản xuất này đã được lấy hàng tồn.";
-                    msg += msg_del + ",";
-                }
-                else
-                {
-                    db.md_lenhsanxuat.Remove(object_);
-                    var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
-                    if (dhpx != null)
+                    var object_ = db.md_lenhsanxuat.Where(p => p.md_lenhsanxuat_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
                     {
-                        dhpx.md_trangthai_id = "SOANTHAO";
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if (object_.md_trangthai_id != "CHUAHOANTHANH")
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Đã được triển khai sản xuất.", object_.sochungtu);
+                    }
+                    else if (db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == object_.md_lenhsanxuat_id
+                        & !string.IsNullOrWhiteSpace(s.phieulayht) & s.phieulayht != "-").Count() > 0)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Đã thực hiện lấy tồn.", object_.sochungtu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "LSX:" + object_.sochungtu, db);
+                        db.md_lenhsanxuat.Remove(object_);
+                        var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).Take(1).FirstOrDefault();
+                        if (dhpx != null)
+                        {
+                            dhpx.md_trangthai_id = "SOANTHAO";
+                        }
+
+                        db.SaveChanges();
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa lệnh sản xuất đã chọn thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+
         context.Response.Write(msg);
     }
 

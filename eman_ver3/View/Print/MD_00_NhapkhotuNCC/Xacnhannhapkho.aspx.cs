@@ -17,87 +17,72 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_Xacnhannhapkho : System
         inPDF = context.Request.QueryString["inPDF"];
         string c_danhsachdathang_id = context.Request.QueryString["id"];
         string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Phiếu xác nhận nhập kho vật tư.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[VT] Phiếu xác nhận nhập kho vật tư.repx";
+        string nameRpt = "Phiếu xác nhận nhập kho vật tư {sochungtu}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        SqlDataAdapter da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        DataSet ds = new DataSet();
-        da.Fill(ds);
-        report.DataSource = ds;
-        report.DataAdapter = da;
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
+        tbl.Columns.Add("sum_duocnhap", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_slsct", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thucnhap", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
+        //Header
+        var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
+        tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+        tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+        tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
+        var ngaygiaohang = tbl.Rows[0]["ngaygiaohang"] as DateTime?;
+        if (ngaygiaohang != null)
         {
-            var infoPrint = PrintAnco2.GetInfoPrint();
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
-            tbl.Columns.Add("sum_duocnhap", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_slsct", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thucnhap", Type.GetType("System.Double"));
-            tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-            //Header
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            var ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
-            tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
-            tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
-            tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
-            var ngaygiaohang = tbl.Rows[0]["ngaygiaohang"] as DateTime?;
-            if (ngaygiaohang != null)
-            {
-                tbl.Rows[0]["dd_yeucau"] = ngaygiaohang.Value.ToString("dd");
-                tbl.Rows[0]["MM_yeucau"] = ngaygiaohang.Value.ToString("MM");
-                tbl.Rows[0]["yyyy_yeucau"] = ngaygiaohang.Value.ToString("yyyy");
-            }
-            report.DisplayName = tbl.Rows[0]["sochungtu"] + "-RP009";
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
-            double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
-            double sum_slsct = double.Parse(tbl.Compute("Sum(slsct)", string.Empty).ToString());
-            double sum_thucnhap = double.Parse(tbl.Compute("Sum(thucnhap)", string.Empty).ToString());
-            double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
-            tbl.Rows[lastRow]["sum_duocnhap"] = sum_duocnhap;
-            tbl.Rows[lastRow]["sum_slsct"] = sum_slsct;
-            tbl.Rows[lastRow]["sum_thucnhap"] = sum_thucnhap;
-            tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
-            //FormatString
-            var duocnhap_cell = report.Report.FindControl("duocnhap", true);
-            duocnhap_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_duocnhap_cell = report.Report.FindControl("sum_duocnhap", true);
-            sum_duocnhap_cell.DataBindings[0].FormatString = sothapphan;
-
-            var slsct_cell = report.Report.FindControl("slsct", true);
-            slsct_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_slsct_cell = report.Report.FindControl("sum_slsct", true);
-            sum_slsct_cell.DataBindings[0].FormatString = sothapphan;
-
-            var thucnhap_cell = report.Report.FindControl("thucnhap", true);
-            thucnhap_cell.DataBindings[0].FormatString = sothapphan;
-            var sum_thucnhap_cell = report.Report.FindControl("sum_thucnhap", true);
-            sum_thucnhap_cell.DataBindings[0].FormatString = sothapphan;
-
-            var kho_cell = report.Report.FindControl("kho", true);
-            var withF = kho_cell.WidthF;
-            kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)10.5, true);
-            var theochitietsau_cell = report.Report.FindControl("theochitietsau", true);
-            theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
+            tbl.Rows[0]["dd_yeucau"] = ngaygiaohang.Value.ToString("dd");
+            tbl.Rows[0]["MM_yeucau"] = ngaygiaohang.Value.ToString("MM");
+            tbl.Rows[0]["yyyy_yeucau"] = ngaygiaohang.Value.ToString("yyyy");
         }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
+        double sum_duocnhap = double.Parse(tbl.Compute("Sum(duocnhap)", string.Empty).ToString());
+        double sum_slsct = double.Parse(tbl.Compute("Sum(slsct)", string.Empty).ToString());
+        double sum_thucnhap = double.Parse(tbl.Compute("Sum(thucnhap)", string.Empty).ToString());
+        double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
+        tbl.Rows[lastRow]["sum_duocnhap"] = sum_duocnhap;
+        tbl.Rows[lastRow]["sum_slsct"] = sum_slsct;
+        tbl.Rows[lastRow]["sum_thucnhap"] = sum_thucnhap;
+        tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
+        //FormatString
+        var duocnhap_cell = ReportViewer1.Report.Report.FindControl("duocnhap", true);
+        duocnhap_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_duocnhap_cell = ReportViewer1.Report.Report.FindControl("sum_duocnhap", true);
+        sum_duocnhap_cell.DataBindings[0].FormatString = sothapphan;
+
+        var slsct_cell = ReportViewer1.Report.Report.FindControl("slsct", true);
+        slsct_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_slsct_cell = ReportViewer1.Report.Report.FindControl("sum_slsct", true);
+        sum_slsct_cell.DataBindings[0].FormatString = sothapphan;
+
+        var thucnhap_cell = ReportViewer1.Report.Report.FindControl("thucnhap", true);
+        thucnhap_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_thucnhap_cell = ReportViewer1.Report.Report.FindControl("sum_thucnhap", true);
+        sum_thucnhap_cell.DataBindings[0].FormatString = sothapphan;
+
+        var kho_cell = ReportViewer1.Report.Report.FindControl("kho", true);
+        var withF = kho_cell.WidthF;
+        kho_cell.WidthF = VNN_VariablePublic.GetWidthOfString(tbl.Rows[0]["kho"].ToString(), "Tahoma", (float)10.5, true);
+        var theochitietsau_cell = ReportViewer1.Report.Report.FindControl("theochitietsau", true);
+        theochitietsau_cell.LeftF = theochitietsau_cell.LeftF + kho_cell.WidthF - withF;
     }
 
     public String CreateSql(HttpContext context)

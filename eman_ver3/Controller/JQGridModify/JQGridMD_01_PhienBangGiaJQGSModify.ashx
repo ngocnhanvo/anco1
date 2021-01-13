@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.IO;
 public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -45,16 +45,24 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
     {
         var db = new EntityContext();
         string msg = "";
+        string type = context.Request.Form["type"];
+        var scts = context.Request.Form["scts"].Split(';');
+        var doiPBGMoiNhat = context.Request.Form["doiPBGMoiNhat"];
         using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
                 string id = context.Request.Form["id"];
                 var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == id).FirstOrDefault();
+                md_phienbangia pbgMoiNhat = null;
+
+
                 if (pbg == null)
                     msg = "Không tìm thấy phiên bản giá";
-                else if (pbg.hoatdong == false)
+                else if (pbg.hoatdong == false & doiPBGMoiNhat != "1")
+                {
                     msg = "Phiên bản giá không hoạt động";
+                }
                 else if (
                     db.md_banggia.Where(s =>
                         s.md_banggia_id == pbg.md_banggia_id
@@ -63,81 +71,147 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     msg = "Phiên bản giá không thuộc bảng giá nhân công";
                 else
                 {
-                    var ngaygoihan = DateTime.Now.AddDays(-120);
-                    var xnbIds = db.md_xuatkhonb
-                            .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan)
-                            .Select(s => s.md_xuatkhonb_id).ToList();
-                    foreach (var cdh in db.md_xuatkhonb_cdh.Where(s =>
-                        xnbIds.Contains(s.md_xuatkhonb_id)
-                        & db.c_danhsachdathang.Where(t => t.so_po == s.tenhang & t.trangthai != "KETTHUC").Count() > 0
-                    ).ToList())
+                    if (doiPBGMoiNhat == "1")
                     {
-                        var gsp = db.md_giasanpham
-                                .Where(s =>
-                                    s.md_phienbangia_id == id
-                                    & s.md_sanpham_id == cdh.md_sanpham_id
-                                    & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
-                                    & s.gia != cdh.gianhancong)
-                                .FirstOrDefault();
+                        pbgMoiNhat = db.md_phienbangia.Where(s =>
+                            s.md_banggia_id == pbg.md_banggia_id
+                            & s.hoatdong == true
+                            & s.md_phienbangia_id != pbg.md_phienbangia_id
+                            ).OrderByDescending(s => s.ngay_hieuluc).FirstOrDefault();
+                        if (pbgMoiNhat == null)
+                            msg = "Không tìm thấy phiên bản giá nào mới hơn phiên bản giá đang chọn";
+                    }
+                }
 
-                        if (gsp != null)
+                if(msg.Length <= 0)
+                {
+                    var ngaygoihan = DateTime.Now.AddDays(-120);
+                    var xnbss = db.md_xuatkhonb.Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan);
+                    if (type == "2")
+                        xnbss = xnbss.Where(s => scts.Contains(s.sochungtu));
+                    var xnbs = xnbss.ToList();
+
+                    foreach (var xnb in xnbs) {
+                        if (doiPBGMoiNhat == "1")
+                            xnb.phienbangiaNC = pbgMoiNhat.md_phienbangia_id;
+
+                        foreach (var cdh in db.md_xuatkhonb_cdh.Where(s =>
+                            s.md_xuatkhonb_id == xnb.md_xuatkhonb_id
+                            & db.c_danhsachdathang.Where(t => t.so_po == s.tenhang & t.trangthai != "KETTHUC").Count() > 0
+                        ).ToList())
                         {
-                            cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
-                            var lsx = db.md_lenhsanxuat.Where(s => cdh.lsx_to.StartsWith(s.sochungtu)).FirstOrDefault();
-                            if (lsx != null)
-                            {
-                                var tsx = db.md_lenhsanxuat_tosx.Where(s =>
-                                    s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                                    & s.md_phanxuong_to_id == cdh.tuto).FirstOrDefault();
-                                if (tsx != null)
-                                {
-                                    var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                            var gsp = db.md_giasanpham
+                                    .Where(s =>
+                                        s.md_phienbangia_id == xnb.phienbangiaNC
                                         & s.md_sanpham_id == cdh.md_sanpham_id
-                                    ).FirstOrDefault();
-                                    if (cdhLSX != null)
-                                        cdhLSX.gianhancong = cdh.gianhancong;
+                                        & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                        & s.gia != cdh.gianhancong)
+                                    .FirstOrDefault();
+
+                            if (gsp != null)
+                            {
+                                cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                                var lsx = db.md_lenhsanxuat.Where(s => cdh.lsx_to.StartsWith(s.sochungtu)).FirstOrDefault();
+                                if (lsx != null)
+                                {
+                                    var tsx = db.md_lenhsanxuat_tosx.Where(s =>
+                                        s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                                        & s.md_phanxuong_to_id == cdh.tuto).FirstOrDefault();
+                                    if (tsx != null)
+                                    {
+                                        var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                            & s.md_sanpham_id == cdh.md_sanpham_id
+                                        ).FirstOrDefault();
+                                        if (cdhLSX != null)
+                                            cdhLSX.gianhancong = cdh.gianhancong;
+                                    }
                                 }
+                            }
+                        }
+
+                        foreach (var cdh in db.md_kho_giaodich.Where(s =>
+                            s.dongnhapxuat == xnb.sochungtu
+                        ).ToList())
+                        {
+                            var gsp = db.md_giasanpham
+                                    .Where(s =>
+                                        s.md_phienbangia_id == xnb.phienbangiaNC
+                                        & s.md_sanpham_id == cdh.md_sanpham_id
+                                        & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                        & s.gia != cdh.gianhancong)
+                                    .FirstOrDefault();
+
+                            if (gsp != null)
+                            {
+                                cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
                             }
                         }
                     }
 
-                    var vcnbIds = db.md_vanchuyennoibo
-                            .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan)
-                            .Select(s => s.md_vanchuyennoibo_id).ToList();
-                    foreach (var cdh in db.md_vanchuyennoibo_cdvc.Where(s =>
-                        vcnbIds.Contains(s.md_vanchuyennoibo_id)
-                    ).ToList())
-                    {
-                        var gsp = db.md_giasanpham
-                                .Where(s =>
-                                    s.md_phienbangia_id == id
-                                    & s.md_sanpham_id == cdh.md_sanpham_id
-                                    & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
-                                    & s.gia != cdh.gianhancong)
-                                .FirstOrDefault();
+                    var vcnbss = db.md_vanchuyennoibo
+                            .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan);
+                    if (type == "2")
+                        vcnbss = vcnbss.Where(s => scts.Contains(s.sochungtu));
+                    var vcnbs = vcnbss.ToList();
 
-                        if (gsp != null)
+                    foreach (var xnb in vcnbs)
+                    {
+                        if (doiPBGMoiNhat == "1")
+                            xnb.phienbangiaNC = pbgMoiNhat.md_phienbangia_id;
+
+                        foreach (var cdh in db.md_vanchuyennoibo_cdvc.Where(s =>
+                            s.md_vanchuyennoibo_id == xnb.md_vanchuyennoibo_id
+                        ).ToList())
                         {
-                            cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                            var gsp = db.md_giasanpham
+                                    .Where(s =>
+                                        s.md_phienbangia_id == xnb.phienbangiaNC
+                                        & s.md_sanpham_id == cdh.md_sanpham_id
+                                        & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                        & s.gia != cdh.gianhancong)
+                                    .FirstOrDefault();
+
+                            if (gsp != null)
+                            {
+                                cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                            }
                         }
-                    }
-					
-					foreach (var cdh in db.md_vanchuyennoibo_dalayton.Where(s =>
-                        vcnbIds.Contains(s.md_vanchuyennoibo_id)
-                    ).ToList())
-                    {
-                        var gsp = db.md_giasanpham
-                                .Where(s =>
-                                    s.md_phienbangia_id == id
-                                    & s.md_sanpham_id == cdh.md_sanpham_id
-                                    & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
-                                    & s.gia != cdh.gianhancong)
-                                .FirstOrDefault();
 
-                        if (gsp != null)
+                        foreach (var cdh in db.md_vanchuyennoibo_dalayton.Where(s =>
+                            s.md_vanchuyennoibo_id == xnb.md_vanchuyennoibo_id
+                        ).ToList())
                         {
-                            cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                            var gsp = db.md_giasanpham
+                                    .Where(s =>
+                                        s.md_phienbangia_id == xnb.phienbangiaNC
+                                        & s.md_sanpham_id == cdh.md_sanpham_id
+                                        & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                        & s.gia != cdh.gianhancong)
+                                    .FirstOrDefault();
+
+                            if (gsp != null)
+                            {
+                                cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                            }
+                        }
+
+                        foreach (var cdh in db.md_kho_giaodich.Where(s =>
+                            s.dongvanchuyen == xnb.sochungtu
+                        ).ToList())
+                        {
+                            var gsp = db.md_giasanpham
+                                    .Where(s =>
+                                        s.md_phienbangia_id == xnb.phienbangiaNC
+                                        & s.md_sanpham_id == cdh.md_sanpham_id
+                                        & s.md_donvitinhsanpham_id == cdh.md_donvitinhsanpham_id
+                                        & s.gia != cdh.gianhancong)
+                                    .FirstOrDefault();
+
+                            if (gsp != null)
+                            {
+                                cdh.gianhancong = gsp.gia.GetValueOrDefault(0);
+                            }
                         }
                     }
                     db.SaveChanges();
@@ -280,62 +354,58 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        var db = new EntityContext();
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_phienbangia";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            string id = "";
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = ""; var id_del_ = id_del[i];
-                md_phienbangia object_ = db.md_phienbangia.Where(p => p.md_phienbangia_id == id_del_).Take(1).FirstOrDefault();
+                string id_del = context.Request.Form["id"];
+
+                var object_ = db.md_phienbangia.Where(p => p.md_phienbangia_id == id_del).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
-                    id = object_.md_banggia_id;
-                    db.md_phienbangia.Remove(object_);
+                    var pbg001s = db.md_vanchuyennoibo.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
+                    var pbg002s = db.md_xuatkhonb.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
+                    var pbg003s = db.c_donmuahang.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id).Take(1).Count();
+                    if(pbg001s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho phiếu chuyển kho";
+                    else if(pbg002s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho phiếu xuất kho nội bộ";
+                    else if(pbg003s > 0)
+                        msg = "Lỗi:Phiên bảng giá đã được áp dụng cho đơn mua hàng hóa vật tư";
                 }
-            }
-            if (msg.Length <= 0)
-            {
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
-                var pbgs = db.md_phienbangia.Where(s => s.md_banggia_id == id);
-                foreach (md_phienbangia pbg in pbgs)
-                {
-                    pbg.md_trangthai_id = "SOANTHAO";
-                }
-                md_phienbangia pbg_edit = pbgs.OrderByDescending(s => s.ngay_hieuluc).Take(1).FirstOrDefault();
-                if (pbg_edit != null)
-                    pbg_edit.md_trangthai_id = "HIEULUC";
 
-                db.SaveChanges();
+                if (msg.Length <= 0)
+                {
+                    VNN_Function.Write_log(context, ma_module, null, oper, object_.ten_phienbangia, db);
+                    db.md_phienbangia.Remove(object_);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = string.Format("true#{0}", "Xóa phiên bảng giá thành công");
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format("false#{0}", msg);
             }
         }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+
         context.Response.Write(msg);
     }
 

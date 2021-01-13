@@ -189,6 +189,7 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
             string ma_column = context.Request.Form["ma_column"];
             bool focus = bool.Parse(context.Request.Form["focus"]);
             bool frozen = bool.Parse(context.Request.Form["frozen"]);
+            bool not_order = string.IsNullOrWhiteSpace(context.Request.Form["not_order"]) ? false : bool.Parse(context.Request.Form["not_order"]);
             string edittype_ = context.Request.Form["edittype"];
             ad_editstyle edit_type = db.ad_editstyle.Where(s => s.ma_editstyle == edittype_).FirstOrDefault();
             string ma_editstyle = "", value_editstyle = "";
@@ -233,6 +234,7 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
                     cot.disable_modify = context.Request.Form["disable_modify"];
                     cot.sopt = sopt;
                     cot.frozen = frozen;
+                    cot.not_order = not_order;
 
                     cot.nguoicapnhat = Security.id_taikhoan(context);
                     cot.vaitrocapnhat = Security.id_vaitro(context);
@@ -423,7 +425,7 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
                     disable_modify = cot.@disable_modify,
                     sopt = cot.@sopt,
                     frozen = cot.@frozen,
-
+                    not_order = cot.@not_order,
                     nguoitao = cot.@nguoitao,
                     vaitrotao = cot.@vaitrotao,
                     bophantao = cot.@bophantao,
@@ -471,6 +473,7 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
                     cot_tk.disable_modify = cot.@disable_modify;
                     cot_tk.sopt = cot.sopt;
                     cot_tk.frozen = cot.frozen;
+                    cot_tk.not_order = cot.not_order;
                     cot_tk.sapxep = cot.@sapxep;
                     if (context.Request.Form["loaicapnhat"] == "updatehidden")
                     {

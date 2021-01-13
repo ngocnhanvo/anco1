@@ -8,9 +8,9 @@ using DataAcess;
 
 public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         string cookie = Security.id_taikhoan(context);
         if (cookie != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
@@ -178,52 +178,48 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
             Security.id_vaitro(context),
             Security.id_phongban(context));
         var db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string[] id_del = context.Request.Form["id"].Split(',');
-            int count = id_del.Length;
-            for (int i = 0; i < count; i++)
-            {
-                msg_del = ""; var id_del_ = id_del[i];
-                var object_ = db.ad_user.Where(p => p.ad_user_id == id_del_).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                else if (object_.nguoitao != us.ad_user_id)
-                {
-                    msg_del = "Lỗi:Không phải chủ sở hửu";
-                    msg += msg_del + "\n";
-                }
 
-                if (msg_del.Length <= 0)
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    db.ad_user.Remove(object_);
+                    var object_ = db.ad_user.Where(p => p.ad_user_id == id_del_).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else if (object_.nguoitao != us.ad_user_id)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không thuộc sở hửu của {1}.", object_.ma_user, us.ma_user);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "MTK:" + object_.ma_user + ", TTK:" + object_.hoten, db);
+                        db.ad_user.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Xóa tài khoản đã chọn thành công.";
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);
@@ -231,11 +227,12 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
 
     public void save(HttpContext context, string cookie)
     {
+        EntityContext db = new EntityContext();
+        string msg = "";
+        bool error = false;
+
         try
         {
-            EntityContext db = new EntityContext();
-            string msg = "";
-            bool error = false;
             string ad_role_id = context.Request.Form["ad_role_id"];
             bool vaitro_macdinh = bool.Parse(context.Request.Form["vaitro_macdinh"]);
             ad_user tk_dangnhap = db.ad_user.Where(s => s.ad_user_id == cookie).Take(1).FirstOrDefault();
@@ -262,7 +259,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                             if (newPassword.Equals(confirmPassword))
                             {
                                 if (!string.IsNullOrEmpty(newPassword)
-                                        & string.IsNullOrEmpty(confirmPassword))
+                                        & !string.IsNullOrEmpty(confirmPassword))
                                 {
                                     tk_dangnhap.matkhau = Security.EncodeMd5Hash(newPassword);
                                     db.SaveChanges();
@@ -304,7 +301,7 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
 
                 if (msg == "")
                 {
-                    Dictionary<string, object> userJSon = new Dictionary<string, object>();
+                    var userJSon = Security.all_taikhoan(context);
                     userJSon["ad_user_id"] = tk_dangnhap.ad_user_id;
                     userJSon["user_role"] = ad_role_id;
                     userJSon["user_part"] = tk_vtr.md_phongban_id;
@@ -315,17 +312,16 @@ public class JQGridMD_00_TaiKhoanModify : IHttpHandler, System.Web.SessionState.
                     msg = "Chỉnh sửa thông tin thành công!!!";
                     error = true;
                 }
-
-                if (msg != "")
-                {
-                    context.Response.Write(error + "(##)" + Security.UrlBase() + "(##)<div class='nhan-thanhcong'>" + msg + "</div>");
-                }
             }
         }
         catch (Exception ex)
         {
-            context.Response.Write(false + "(##)" + Security.UrlBase() + "(##)<div class='nhan-loi'>" + ex.Message + "</div>");
+            msg = ex.Message;
+            error = false;
         }
+
+        context.Response.Write(string.Format(@"{0}(##){1}(##)<div class='{3}'>{2}</div>", error.ToString().ToLower(), Security.UrlBase(), msg, error ? "nhan-thanhcong" : "nhan-loi"));
+
     }
 
     public void LoadTaiKhoan(HttpContext context, string cookie)

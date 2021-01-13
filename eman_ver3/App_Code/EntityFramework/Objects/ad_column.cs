@@ -199,6 +199,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region ad_column_not_order_wintaFN
+                        
+                        #endregion ad_column_not_order_wintaFN
+                        public bool? not_order { get; set; }
+                
+						
                         #region ad_column_reset_modify_wintaFN
                         
                         #endregion ad_column_reset_modify_wintaFN

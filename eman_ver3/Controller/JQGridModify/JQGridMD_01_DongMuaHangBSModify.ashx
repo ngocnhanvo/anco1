@@ -73,8 +73,10 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
                     giachuan = gsp.gia.GetValueOrDefault(0);
                     thanhtien = dongiamua * sl_dadat;
                 }
+                else
+                    dongiamua = -1;
 
-                if (dongiamua <= 0)
+                if (dongiamua < 0)
                     msg = "false#Bảng giá của đơn mua hàng \"" + dmh.sochungtu + "\" không có giá cho sản phẩm \"" + sp.ma_sanpham + "\".";
                 else if (dongiamua > giachuan)
                     msg = string.Format(@"false#Giá mua không thể lớn hơn giá chuẩn. ({0} > {1})", dongiamua, giachuan);

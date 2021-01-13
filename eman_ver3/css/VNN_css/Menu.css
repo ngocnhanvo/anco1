@@ -30,7 +30,7 @@
 }
 
 .cl_table_menu, .cl_table_noidung {
-    background: #F7F7F7;
+    /*background: #F7F7F7;*/
     box-shadow: 0 -1px 3px 1px #DADADA;
     border-collapse: collapse
 }
@@ -142,7 +142,8 @@ tr.khoangtrang_tr {
 
 #xemchitietcv tr td label {
     color: #033786;
-    font-size: 14px
+    font-size: 13px;
+    margin-left: 8px;
 }
 
 .nhan_sendmail {

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -359,6 +359,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     dongvanchuyen = vcnb.sochungtu,
                                     dongsanxuat = " ",
                                     sapxep = "",
+                                    sanxuat = sanxuat,
                                     mota = vcnb_cdvc.tenhang,
                                     nguoitao = us.ad_user_id,
                                     vaitrotao = us.ad_role_id,
@@ -618,44 +619,50 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
     public void del(HttpContext context)
     {
         var db = new EntityContext();
-        var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string[] id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < id_del.Length; i++)
+            try
             {
-                var id_del_ = id_del[i];
-                var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id_del_).Take(1).FirstOrDefault();
-                var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg += string.Format(@"Lỗi dòng {0}:Không tìm thấy đối tượng cần xóa.", i + 1);
+                    var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id_del_).Take(1).FirstOrDefault();
+                    var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần trả.", id_del_);
+                    }
+                    else if (object_.md_trangthai_id == "HIEULUC")
+                    {
+                        msg += string.Format(@"<br><b>{0} ({1})</b>: Đã được ""Hiệu Lực"".", object_.sochungtu, object_.donhang_thamchieu);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "PVCNB:" + object_.sochungtu + " DHTC:" + object_.donhang_thamchieu , db);
+                        object_.md_trangthai_id = "SOANTHAO";
+                        db.SaveChanges();
+                    }
                 }
-                else if (object_.md_trangthai_id == "HIEULUC")
-                {
-                    msg += string.Format(@"Lỗi dòng {0}: Dòng {1} đã hiệu lực, không thể xóa.", i + 1, object_.sochungtu);
-                }
-                else
-                {
-                    object_.md_trangthai_id = "SOANTHAO";
-                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Trả phiếu đã chọn về ""Soạn Thảo"" thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = @"true#Trả trạng thái về ""Soạn Thảo"" thành công.";
             }
             else
             {
-                msg = "false#" + msg;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#Lỗi: " + ex.Message;
         }
         context.Response.Write(msg);
     }

@@ -608,6 +608,10 @@ modelBuilder.Entity<ad_column>().HasKey<string>(p => p.ad_column_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_column>()
+                            .Property(p => p.not_order)
+                            .HasColumnName("not_order")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<ad_column>()
                             .Property(p => p.reset_modify)
                             .HasColumnName("reset_modify")
                             .HasColumnType("bit");

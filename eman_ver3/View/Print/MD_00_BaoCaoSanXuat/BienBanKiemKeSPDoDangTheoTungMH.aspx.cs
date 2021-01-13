@@ -8,109 +8,86 @@ using System.Data;
 public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangTheoTungMH : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
+    public InfoPrint infoPrint = PrintAnco2.GetInfoPrint();
+    public HttpContext context = HttpContext.Current;
     protected void Page_Load(object sender, EventArgs e)
     {
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         sothapphan = PrintAnco2.Replace0ToHyphen(sothapphan);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[SX] Biên Bản Kiểm Kê SP Dở Dang Theo Từng Mặt Hàng.repx");
-        var report = XtraReport.FromFile(file, true);
+        string nameTemp = "[SX] Biên Bản Kiểm Kê SP Dở Dang Theo Từng Mặt Hàng.repx";
+        string nameRpt = "Biên Bản Kiểm Kê SP Dở Dang Theo Từng Mặt Hàng {thang}-{nam}";
         string sql = CreateSql(context);
-        viewReport(report, sql);
-        // Response.Write(sql);
+
+        var task = new System.Threading.Tasks.Task(() =>
+        {
+            viewReport(sql);
+        });
+
+        PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
-    public void viewReport(XtraReport report, String SqlQuery)
+    public void viewReport(String SqlQuery)
     {
-        var da = new SqlDataAdapter(SqlQuery, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
-        if (tbl.Rows.Count > 0)
-        {
-            var infoPrint = PrintAnco2.GetInfoPrint();
+        var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sumTongSL", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumChuaSX", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumTKDuc", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumTKBanCat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumTKMai", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumTKHoanTat", Type.GetType("System.Double"));
+        tbl.Columns.Add("sumSoSach", Type.GetType("System.Double"));
+        //Header
+        var thang = tbl.Rows[0]["thang"] + "";
+        var nam = tbl.Rows[0]["nam"] + "";
+        //Footer
+        int lastRow = tbl.Rows.Count - 1;
 
-            tbl.Columns.Add("sumTongSL", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumChuaSX", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumTKDuc", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumTKBanCat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumTKMai", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumTKHoanTat", Type.GetType("System.Double"));
-            tbl.Columns.Add("sumSoSach", Type.GetType("System.Double"));
+        tbl.Rows[lastRow]["sumTongSL"] = tbl.Compute("sum(tongSL)", string.Empty);
+        tbl.Rows[lastRow]["sumChuaSX"] = tbl.Compute("sum(chuaSX)", string.Empty);
+        tbl.Rows[lastRow]["sumTKDuc"] = tbl.Compute("sum(tKDuc)", string.Empty);
+        tbl.Rows[lastRow]["sumTKBanCat"] = tbl.Compute("sum(tKBanCat)", string.Empty);
+        tbl.Rows[lastRow]["sumTKMai"] = tbl.Compute("sum(tKMai)", string.Empty);
+        tbl.Rows[lastRow]["sumTKHoanTat"] = tbl.Compute("sum(tKHoanTat)", string.Empty);
+        tbl.Rows[lastRow]["sumSoSach"] = tbl.Compute("sum(soSach)", string.Empty);
 
-            tbl.Columns.Add("logo", Type.GetType("System.String"));
-            tbl.Columns.Add("dd", Type.GetType("System.String"));
-            tbl.Columns.Add("MM", Type.GetType("System.String"));
-            tbl.Columns.Add("yyyy", Type.GetType("System.String"));
-            //Header
-            var thang = tbl.Rows[0]["thang"] + "";
-            var nam = tbl.Rows[0]["nam"] + "";
-            tbl.Rows[0]["logo"] = infoPrint.logo;
-            report.DisplayName = "Biên Bản Kiểm Kê SP Dở Dang Theo Từng Mặt Hàng - " + thang + "-" + nam;
-            tbl.Rows[0]["dd"] = infoPrint.dd;
-            tbl.Rows[0]["MM"] = infoPrint.MM;
-            tbl.Rows[0]["yyyy"] = infoPrint.yyyy;
-            //Footer
-            int lastRow = tbl.Rows.Count - 1;
+        var tongSL_cell = ReportViewer1.Report.Report.FindControl("tongSL", true);
+        var chuaSX_cell = ReportViewer1.Report.Report.FindControl("chuaSX", true);
+        var tKDuc_cell = ReportViewer1.Report.Report.FindControl("tKDuc", true);
+        var tKBanCat_cell = ReportViewer1.Report.Report.FindControl("tKBanCat", true);
+        var tKMai_cell = ReportViewer1.Report.Report.FindControl("tKMai", true);
+        var tKHoanTat_cell = ReportViewer1.Report.Report.FindControl("tKHoanTat", true);
+        var soSach_cell = ReportViewer1.Report.Report.FindControl("soSach", true);
+        var sumTongSL_cell = ReportViewer1.Report.Report.FindControl("sumTongSL", true);
+        var sumChuaSX_cell = ReportViewer1.Report.Report.FindControl("sumChuaSX", true);
+        var sumTKDuc_cell = ReportViewer1.Report.Report.FindControl("sumTKDuc", true);
+        var sumTKBanCat_cell = ReportViewer1.Report.Report.FindControl("sumTKBanCat", true);
+        var sumTKMai_cell = ReportViewer1.Report.Report.FindControl("sumTKMai", true);
+        var sumTKHoanTat_cell = ReportViewer1.Report.Report.FindControl("sumTKHoanTat", true);
+        var sumSoSach_cell = ReportViewer1.Report.Report.FindControl("sumSoSach", true);
 
-            tbl.Rows[lastRow]["sumTongSL"] = tbl.Compute("sum(tongSL)", string.Empty);
-            tbl.Rows[lastRow]["sumChuaSX"] = tbl.Compute("sum(chuaSX)", string.Empty);
-            tbl.Rows[lastRow]["sumTKDuc"] = tbl.Compute("sum(tKDuc)", string.Empty);
-            tbl.Rows[lastRow]["sumTKBanCat"] = tbl.Compute("sum(tKBanCat)", string.Empty);
-            tbl.Rows[lastRow]["sumTKMai"] = tbl.Compute("sum(tKMai)", string.Empty);
-            tbl.Rows[lastRow]["sumTKHoanTat"] = tbl.Compute("sum(tKHoanTat)", string.Empty);
-            tbl.Rows[lastRow]["sumSoSach"] = tbl.Compute("sum(soSach)", string.Empty);
+        tongSL_cell.DataBindings[0].FormatString =
+        chuaSX_cell.DataBindings[0].FormatString =
+        tKDuc_cell.DataBindings[0].FormatString =
+        tKBanCat_cell.DataBindings[0].FormatString =
+        tKMai_cell.DataBindings[0].FormatString =
+        tKHoanTat_cell.DataBindings[0].FormatString =
+        soSach_cell.DataBindings[0].FormatString =
+        sumTongSL_cell.DataBindings[0].FormatString =
+        sumChuaSX_cell.DataBindings[0].FormatString =
+        sumTKDuc_cell.DataBindings[0].FormatString =
+        sumTKBanCat_cell.DataBindings[0].FormatString =
+        sumTKMai_cell.DataBindings[0].FormatString =
+        sumTKHoanTat_cell.DataBindings[0].FormatString =
+        sumSoSach_cell.DataBindings[0].FormatString = sothapphan;
 
-            var tongSL_cell = report.Report.FindControl("tongSL", true);
-            var chuaSX_cell = report.Report.FindControl("chuaSX", true);
-            var tKDuc_cell = report.Report.FindControl("tKDuc", true);
-            var tKBanCat_cell = report.Report.FindControl("tKBanCat", true);
-            var tKMai_cell = report.Report.FindControl("tKMai", true);
-            var tKHoanTat_cell = report.Report.FindControl("tKHoanTat", true);
-            var soSach_cell = report.Report.FindControl("soSach", true);
-            var sumTongSL_cell = report.Report.FindControl("sumTongSL", true);
-            var sumChuaSX_cell = report.Report.FindControl("sumChuaSX", true);
-            var sumTKDuc_cell = report.Report.FindControl("sumTKDuc", true);
-            var sumTKBanCat_cell = report.Report.FindControl("sumTKBanCat", true);
-            var sumTKMai_cell = report.Report.FindControl("sumTKMai", true);
-            var sumTKHoanTat_cell = report.Report.FindControl("sumTKHoanTat", true);
-            var sumSoSach_cell = report.Report.FindControl("sumSoSach", true);
-
-            tongSL_cell.DataBindings[0].FormatString =
-            chuaSX_cell.DataBindings[0].FormatString =
-            tKDuc_cell.DataBindings[0].FormatString =
-            tKBanCat_cell.DataBindings[0].FormatString =
-            tKMai_cell.DataBindings[0].FormatString =
-            tKHoanTat_cell.DataBindings[0].FormatString =
-            soSach_cell.DataBindings[0].FormatString =
-            sumTongSL_cell.DataBindings[0].FormatString =
-            sumChuaSX_cell.DataBindings[0].FormatString =
-            sumTKDuc_cell.DataBindings[0].FormatString =
-            sumTKBanCat_cell.DataBindings[0].FormatString =
-            sumTKMai_cell.DataBindings[0].FormatString =
-            sumTKHoanTat_cell.DataBindings[0].FormatString =
-            sumSoSach_cell.DataBindings[0].FormatString = sothapphan;
-
-            var Title_cell = report.Report.FindControl("xrTableCell11", true);
-            Title_cell.Text = string.Format(Title_cell.Text, thang, nam);
-
-            report.DataSource = ds;
-            report.DataAdapter = da;
-            if (string.IsNullOrEmpty(inPDF))
-                ReportViewer1.Report = report;
-            else
-                Helper.viewFile(report);
-        }
-        else
-        {
-            Response.Write("<h1>Không có dữ liệu</h1>");
-        }
+        var Title_cell = ReportViewer1.Report.Report.FindControl("xrTableCell11", true);
+        Title_cell.Text = string.Format(Title_cell.Text, thang, nam);
     }
 
     public string CreateSql(HttpContext context)
     {
-        var infoPrint = PrintAnco2.GetInfoPrint();
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
         string nam = context.Request.QueryString["nam"];
@@ -132,7 +109,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
             
             select
                 A.*,
-                A.tongSL - A.slDaDuc - A.tKDuc as chuaSX,
+                A.tongSL - A.slDaDuc - A.slDaLTDuc - A.slDaLTHT as chuaSX,
 	            (A.tKDuc + A.tKBanCat + A.tKMai + A.tKHoanTat) as soSach,
                 @thang as thang,
                 @nam as nam,
@@ -143,6 +120,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
                     A.dvt,
                     sum(A.tongSL) as tongSL,
                     sum(A.slDaDuc) as slDaDuc,
+                    sum(A.slDaLTDuc) as slDaLTDuc,
+                    sum(A.slDaLTHT) as slDaLTHT,
                     sum(A.tKDuc) as tKDuc,
                     sum(A.tKBanCat) as tKBanCat,
                     sum(A.tKMai) as tKMai,
@@ -154,23 +133,17 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
                         A.dvt,
                         A.tongSL,
                         sum(A.slDaDuc) as slDaDuc,
+                        sum(A.slDaLTDuc) as slDaLTDuc,
+                        sum(A.slDaLTHT) as slDaLTHT,
                         sum(A.tKDuc) as tKDuc,
                         sum(A.tKBanCat) as tKBanCat,
                         sum(A.tKMai) as tKMai,
                         sum(A.tKHoanTat) as tKHoanTat
                     from (
 		                select A.*,
-		                (
-                            case when A.stt = 0 
-                            then (
-                                case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
-                                then A.sl_chiato + isnull(A.sl_nhapkho, 0)
-                                else isnull(A.sl_dahoanthanh, 0) + isnull(A.sl_nhapkho, 0)
-                                end
-                            ) 
-                            else 0 
-                            end
-                        ) as slDaDuc,
+		                (case when A.stt = 0 then (case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato then A.sl_chiato else isnull(A.sl_dahoanthanh, 0) end) else 0 end) as slDaDuc,
+                        (case when A.stt = 0 then isnull(A.sl_nhapkho, 0) else 0 end) as slDaLTDuc,
+                        (case when A.stt = 9999 then isnull(A.sl_nhapkho, 0) else 0 end) as slDaLTHT,
 		                (case when A.stt = 0 
                             then
                                 (case when isnull(A.sl_dahoanthanh, 0) > A.sl_chiato
@@ -230,6 +203,8 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
 				                dvtsp.ten_dvt as dvt,
 				                tsx.stt,
 				                cdh.sl_chiato,	
+                                cdh.sl_danhapkho,
+                                cdh.ngayhoanthanh,
 				                isnull((
 					                select 
 						                sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
@@ -279,14 +254,23 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BienBanKiemKeSPDoDangT
 			                where 
 				                1=1
 				                and lsx.md_phanxuong_id = @px
-				                and lsx.md_trangthai_id not in ('CHUAHOANTHANH', 'KHDXL')
                                 and (
-                                    isnull(cdh.sl_danhapkho, 0) < cdh.sl_dat
-                                    or
-                                    (isnull(cdh.sl_danhapkho, 0) >= cdh.sl_dat and isnull(cdh.ngayhoanthanh, @denngay) >= @denngay)
-                                )
+                                    select 1 
+                                    where 
+                                        (isnull(lsx.ngayhoanthanh, @denngay) >= @denngay and lsx.md_trangthai_id in ('HOANTHANH', 'KETTHUC'))
+                                        or 
+                                        lsx.md_trangthai_id = 'DAXL'
+                                ) = 1
                                 {3} {4}
 		                )A
+                        where
+                            1=1
+                            and A.tongSL > 0
+                            and (
+                                isnull(A.sl_danhapkho, 0) < A.tongSL
+                                or
+                                (isnull(A.sl_danhapkho, 0) >= A.tongSL and isnull(A.ngayhoanthanh, @denngay) >= @denngay)
+                            )
                     )A
                     group by A.theGiaoViec, A.mahang, A.dvt, A.tongSL
                 )A

@@ -127,6 +127,18 @@
                         public string sochungtu { get; set; }
                 
 						
+                        #region md_xuatban_tiencongghep_wintaFN
+                        
+                        #endregion md_xuatban_tiencongghep_wintaFN
+                        public Decimal? tiencongghep { get; set; }
+                
+						
+                        #region md_xuatban_tienlencong_wintaFN
+                        
+                        #endregion md_xuatban_tienlencong_wintaFN
+                        public Decimal? tienlencong { get; set; }
+                
+						
                         #region md_xuatban_trangthai_wintaFN
                         
                         #endregion md_xuatban_trangthai_wintaFN

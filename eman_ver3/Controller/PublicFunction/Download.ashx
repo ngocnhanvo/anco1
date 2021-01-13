@@ -31,7 +31,7 @@ public class Download : IHttpHandler
         {
             int j = md_taptin_id.LastIndexOf("/");
             string filename = md_taptin_id.Substring(j+1);
-            string path = context.Server.MapPath("/" + md_taptin_id);
+            string path = ExcuteSignalRStatic.mapPathSignalR("~/" + md_taptin_id);
             if (File.Exists(path))
             {
                 context.Response.Clear();

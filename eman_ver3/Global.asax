@@ -14,7 +14,7 @@
         var response = context.Response;
 		var urlstr = Request.Url.ToString();
 		var urlhost = Request.Url.Host;
-        if (!urlhost.StartsWith("www") & !Request.Url.IsLoopback & !urlhost.StartsWith("1") & !urlhost.StartsWith(".local"))
+        if (!urlhost.StartsWith("www") & !Request.Url.IsLoopback & !urlhost.StartsWith("1") & !urlhost.StartsWith(".local") & urlhost.IndexOf(".") < 2)
         {
 			UriBuilder builder = new UriBuilder(Request.Url);
 			builder.Host = "www." + Request.Url.Host;

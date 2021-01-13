@@ -6,8 +6,8 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_LoaiHHJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
         switch (oper)
@@ -87,48 +87,48 @@ public class JQGridMD_00_LoaiHHJQGSModify : IHttpHandler, System.Web.SessionStat
     public void del(HttpContext context)
     {
         EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_chungloai";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                md_chungloai object_ = db.md_chungloai.Where(p => p.md_chungloai_id == id_del_).Take(1).FirstOrDefault();
+                string id_del = context.Request.Form["id"];
+
+                var object_ = db.md_chungloai.Where(p => p.md_chungloai_id == id_del).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
+                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
                 }
-                if (msg_del.Length <= 0)
+                else
                 {
+                    var pbg001s = db.md_sanpham.Where(s => s.md_nhomnangluc_id == object_.md_chungloai_id).Take(1).Count();
+
+                    if(pbg001s > 0)
+                        msg = "Lỗi: Nhóm HHVT đã được sử dụng trong sản phẩm";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    VNN_Function.Write_log(context, ma_module, null, oper, "MNHHVT:" + object_.code_cl + ", TNHHVT:" + object_.tv_ngan, db);
                     db.md_chungloai.Remove(object_);
+                    db.SaveChanges();
                 }
             }
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                transaction.Commit();
+                msg = string.Format("true#{0}", "Xóa loại đối tác thành công");
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format("false#{0}", msg);
             }
         }
         context.Response.Write(msg);
