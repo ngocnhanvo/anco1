@@ -25,16 +25,20 @@ namespace GenerateModels.Controllers
         public JsonResult WriteObject000()
         {
             string msg = "", link = "";
-            List<string> modules = new List<string>();
+            var modules = new List<string>();
             modules.Add("ad_menu");
             modules.Add("ad_module");
             modules.Add("ad_column");
             modules.Add("ad_case");
             modules.Add("ad_systemconfig");
+            modules.Add("ad_user_mmc");
+            modules.Add("ad_role_mmc");
+            modules.Add("ad_selectoption");
+
             int status = 0;
             try
             {
-                foreach(var module in modules)
+                foreach (var module in modules)
                 {
                     if (!string.IsNullOrEmpty(module))
                     {
@@ -43,7 +47,8 @@ namespace GenerateModels.Controllers
                 }
 
                 string action = "/Controller/PublicFunction/CacheAction.ashx?oper=clear";
-                callEMan(action);
+                string formData = string.Format(@"modules={0}", string.Join(",", modules));
+                callEMan(action, formData);
                 string urlEMan = WebConfigurationManager.AppSettings["urlEMan"];
                 action = "/Controller/PublicFunction/CacheAction.aspx";
                 link = urlEMan + action;
@@ -60,7 +65,7 @@ namespace GenerateModels.Controllers
             return Json(result);
         }
 
-        public void callEMan(string action)
+        public void callEMan(string action, string formData)
         {
             string urlEMan = WebConfigurationManager.AppSettings["urlEMan"];
             string url = urlEMan + action;
@@ -68,8 +73,7 @@ namespace GenerateModels.Controllers
             // Set the Method property of the request to POST.
             request.Method = "POST";
             // Create POST data and convert it to a byte array.
-            string postData = "This is a test that posts this string to a Web server.";
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+            byte[] byteArray = Encoding.UTF8.GetBytes(formData);
             // Set the ContentType property of the WebRequest.
             request.ContentType = "application/x-www-form-urlencoded";
             // Set the ContentLength property of the WebRequest.
