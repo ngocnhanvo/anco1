@@ -484,6 +484,8 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         ADmin_JSON json = new ADmin_JSON();
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
+        var user_mmcs = json.ad_user_mmcJSON();
+
         string result_module = "";
         string ma_menu = context.Request.QueryString["ma_menu"];
         string url_menu = context.Request.QueryString["url_menu"];
@@ -528,7 +530,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                     (modules.Where(s => s.ad_module_id == mod.thuake & p.ma_modulecha == s.ad_module_id).Take(1).Count() > 0)
                     )).OrderBy(p => p.sapxep).ToList())
                 {
-                    if (Security.PhanQuyen_Module(context, role_mmcs, mod_lv1.ad_module_id))
+                    if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_lv1.ad_module_id))
                     {
                         dem++;
                         module_lv1 += "<span style='margin: -2px 0 0 -8px;' class='span_modulelv0_first fas fa-angle-double-right'></span>";
@@ -544,7 +546,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                             (modules.Where(s => s.ad_module_id == mod_lv1.thuake & p.ma_modulecha == s.ad_module_id).Take(1).Count() > 0)
                             )).OrderBy(p => p.sapxep).ToList())
                         {
-                            if (Security.PhanQuyen_Module(context, role_mmcs, mod_lv2.ad_module_id))
+                            if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_lv2.ad_module_id))
                             {
                                 if (i_module2 == 0)
                                 {

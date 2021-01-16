@@ -9,6 +9,7 @@ public static class VNN_JQGridver2
         ADmin_JSON json = new ADmin_JSON();
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
+        var user_mmcs = json.ad_user_mmcJSON();
         var mod = modules.Where(s=>s.ma_module == ma_module).FirstOrDefault();
 		
 		string li_mod0 = "", li_mod1 = "", li_mod2 = "";
@@ -18,7 +19,7 @@ public static class VNN_JQGridver2
 		int dem_mod0 = 0, dem_mod1 = 0;
 		foreach(var mod_0 in modules.Where(s=> s.ad_menu_id == mod.ad_menu_id & s.capmodule == 0 & s.hoatdong == true
 		).OrderBy(s=>s.sapxep)) {
-            if (Security.PhanQuyen_Module(context, role_mmcs, mod_0.ad_module_id))
+            if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_0.ad_module_id))
             {
 				if(mod_0.thuake != ""){
 					arr_mod0_tk[dem_mod0] = mod_0.thuake;
@@ -39,7 +40,7 @@ public static class VNN_JQGridver2
 		
 		foreach(var mod_1 in modules.Where( s=> s.capmodule == 1 & arr_mod0_tk.Contains(s.ma_modulecha)
 		& s.hoatdong == true).OrderBy(s=>s.sapxep)) {
-			if (Security.PhanQuyen_Module(context, role_mmcs, mod_1.ad_module_id))
+			if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_1.ad_module_id))
             {
 				if(mod_1.thuake != ""){
 					arr_mod1_tk[dem_mod1] = mod_1.thuake;
@@ -56,7 +57,7 @@ public static class VNN_JQGridver2
 		
 		foreach(var mod_2 in modules.Where(s=> s.capmodule == 2 & arr_mod1_tk.Contains(s.ma_modulecha) 
 		& s.hoatdong == true).OrderBy(s=>s.sapxep)) {
-			if (Security.PhanQuyen_Module(context, role_mmcs, mod_2.ad_module_id))
+			if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_2.ad_module_id))
             {
 				li_mod2 += "<li sel_mod='"+ mod_2.ad_module_id +"' class='modcha_"+ mod_2.ma_modulecha +"'><a mod_parent='"+ mod_2.ma_modulecha +"' onclick=\"load_detail(0,'"+ mod_2.ma_module +"',0, '" + mod_2.ad_module_id + "',2)\" href=\"#tabs_"+ mod_2.ma_module +"\">" + mod_2.ten_module +"</a></li>";
 				div_mod2 += "<div class='modcha_"+ mod_2.ma_modulecha +"' id=\"tabs_"+ mod_2.ma_module +"\"></div>";

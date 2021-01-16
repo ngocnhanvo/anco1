@@ -429,6 +429,7 @@ public static class VNN_Config
         var cases = json.ad_caseJSON().Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList();
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
+        var user_mmcs = json.ad_user_mmcJSON();
         //--
         string class_btnclick = "";
         if (VNN_VariablePublic.view_origination == true) { class_btnclick = "btn_click"; }
@@ -463,7 +464,7 @@ public static class VNN_Config
         {
             if (cn.thuake == null | cn.thuake == "")
             {
-                if (Security.PhanQuyen_ChucNang(context, cases, modules, role_mmcs, ma_module, cn.ad_case_id) == true & cn.hamxuly != null & cn.hamxuly != "")
+                if (Security.PhanQuyen_ChucNang(context, cases, modules, role_mmcs, user_mmcs, ma_module, cn.ad_case_id) == true & cn.hamxuly != null & cn.hamxuly != "")
                 {
                     string hamxuly = cn.hamxuly.Replace("ma_case", "\\'" + cn.ma_case + "\\'");
                     if (cn.id_parent == true) { hamxuly = hamxuly.Replace("id_parent", "null"); }
@@ -510,6 +511,7 @@ public static class VNN_Config
         var cases = json.ad_caseJSON().Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList();
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
+        var user_mmcs = json.ad_user_mmcJSON();
         //--
         string class_btnclick = "";
         if (VNN_VariablePublic.view_origination == true) { class_btnclick = "btn_click"; }
@@ -550,7 +552,7 @@ public static class VNN_Config
         {
             if (cn.thuake == null | cn.thuake == "")
             {
-                if (Security.PhanQuyen_ChucNang(context, cases, modules, role_mmcs, ma_module, cn.ad_case_id) == true & cn.hamxuly != null & cn.hamxuly != "")
+                if (Security.PhanQuyen_ChucNang(context, cases, modules, role_mmcs, user_mmcs, ma_module, cn.ad_case_id) == true & cn.hamxuly != null & cn.hamxuly != "")
                 {
                     string hamxuly = cn.hamxuly.Replace("ma_case", "\\'" + cn.ma_case + "\\'");
                     if (cn.id_parent == true) { hamxuly = hamxuly.Replace("id_parent", "null"); }
