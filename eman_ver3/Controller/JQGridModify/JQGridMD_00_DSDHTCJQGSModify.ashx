@@ -602,7 +602,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
+        string md_dtk_id = context.Request.Form["khachhang"];
         string so_po = context.Request.Form["so_po"].Trim();
 
         try
@@ -637,7 +637,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             if (msg.Length <= 0)
             {
                 string action = "add";
-                string[] column_ex = { "md_trangthai_id", "sochungtu", "ngaybatdau", "ngayhoanthanh", "anco_check" };
+                string[] column_ex = { "md_trangthai_id", "md_doitackinhdoanh_id", "sochungtu", "ngaybatdau", "ngayhoanthanh", "anco_check" };
                 VNN_Function.SetFormValue("md_doitackinhdoanh_id", dtk_id);
                 VNN_Function.SetFormValue("ngaybatdau", ngaybatdau.ToString(VNN_Config.get_FormatDate()));
                 VNN_Function.SetFormValue("ngayhoanthanh", ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));

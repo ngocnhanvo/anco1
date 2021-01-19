@@ -29,11 +29,12 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
+            string bangGiaID = "";
             string id = context.Request.Form["id_parent"];
             string ma_sanpham = context.Request.Form["md_sanpham_id"];
             string donvitinh = context.Request.Form["md_donvitinhsanpham_id"];
@@ -45,26 +46,40 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
             }
             else
             {
-                string chk_sp = db.md_giasanpham.
-                        Where(s => s.md_sanpham_id == sp.md_sanpham_id &
-                        s.md_phienbangia_id == id &
-                        s.md_donvitinhsanpham_id == donvitinh
-                        ).Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
-                if (chk_sp != null & chk_sp != "")
+                var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == id).FirstOrDefault();
+                if (pbg == null)
+                    msg = "false#Lỗi: Phiên bản giá không tồn tại.";
+                else
                 {
-                    msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                    bangGiaID = pbg.md_banggia_id;
+                    string chk_sp = db.md_giasanpham.
+                            Where(s => s.md_sanpham_id == sp.md_sanpham_id &
+                            s.md_phienbangia_id == id &
+                            s.md_donvitinhsanpham_id == donvitinh
+                            ).Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
+                    if (chk_sp != null & chk_sp != "")
+                    {
+                        msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                    }
                 }
             }
 
             if (msg.Length <= 0)
             {
-                string action = "add";
-                string[] column_ex = { "md_phienbangia_id" };
-                string ten_table = "md_giasanpham";
-                VNN_Function.SetFormValue("md_phienbangia_id", id);
-                VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                var gsp = new md_giasanpham();
+                gsp.md_giasanpham_id = id_new;
+                gsp.md_banggia_id = bangGiaID;
+                gsp.md_phienbangia_id = id;
+                gsp.md_sanpham_id = sp.md_sanpham_id;
+                gsp.gia = decimal.Parse(context.Request.Form["gia"]);
+                gsp.md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
+                gsp.ngaytao = DateTime.Now;
+                gsp.ngaycapnhat = DateTime.Now;
+                gsp.nguoitao = Security.id_taikhoan(context);
+                gsp.nguoicapnhat = gsp.nguoitao;
+                gsp.mota = context.Request.Form["mota"];
+                gsp.hoatdong = true;
+                db.md_giasanpham.Add(gsp);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Thêm thành công." + "#" + id_new;
             }
