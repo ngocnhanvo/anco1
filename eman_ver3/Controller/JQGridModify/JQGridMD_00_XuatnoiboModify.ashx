@@ -6,11 +6,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -50,11 +58,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_XuatKhoNB(HttpContext context)
     {
-        var db = new EntityContext();
-        var pub = new Public();
         var json = new ADmin_JSON();
         var ghinos = json.md_ghinotrunoJSON();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -129,13 +134,13 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                         ? dh.tong_sl_xuat.GetValueOrDefault(0) : dh.sl_thucxuat.GetValueOrDefault(0)
                                         , sl_xuat2 = dh.sl_thucxuat.GetValueOrDefault(0);
                                 //--cap nhat so luong xuat
-                                string xk_id = edit_xuat(db, dh, us);
+                                string xk_id = edit_xuat(db, dh, userTK);
                                 db.SaveChanges();
                                 //--cap nhat vao kho
-                                string khospId = xuat_kho(db, dh, xk, nhanvoi, us);
+                                string khospId = xuat_kho(db, dh, xk, nhanvoi, userTK);
                                 db.SaveChanges();
                                 //--cap nhat han su dung
-                                msg += add_kho_hsd(db, dh, xk, us, khospId);
+                                msg += add_kho_hsd(db, dh, xk, userTK, khospId);
                                 db.SaveChanges();
                                 //--tao lich su nhap kho
                                 string sctLSX = "", tentoLSX = "";
@@ -150,7 +155,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                 var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId
                                                                 & s.md_phanxuong_to_id == xk.md_to_id).FirstOrDefault();
 
-                                add_kho_ls(db, dh, xk, nhanvoi, us, lsx, lsxTSX, kho.md_to_id);
+                                add_kho_ls(db, dh, xk, nhanvoi, userTK, lsx, lsxTSX, kho.md_to_id);
                                 db.SaveChanges();
 
                                 decimal sl_xuat_cuoi = sl_xuat * nhanvoi;
@@ -189,7 +194,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                 //--ghi nợ / có
                                                 if (ghino == true)
                                                 {
-                                                    add_kho_no(db, dh, xk, lsxTo, us, lsx.md_phanxuong_id, tentoLSX, dh.ghino);
+                                                    add_kho_no(db, dh, xk, lsxTo, userTK, lsx.md_phanxuong_id, tentoLSX, dh.ghino);
                                                     ghino = false;
                                                     ghinos.Add(new md_ghinotruno()
                                                     {
@@ -207,9 +212,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                         ,
                                                         ngaytao = DateTime.Now
                                                         ,
-                                                        nguoitao = us.ad_user_id
+                                                        nguoitao = userTK.ad_user_id
                                                         ,
-                                                        value_nguoitao = us.ma_user
+                                                        value_nguoitao = userTK.ma_user
                                                         ,
                                                         mota = lsx.sochungtu
                                                         ,
@@ -257,9 +262,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                 lsxKho.ngaygiao = xk.ngaychuyen;
 
                                             string khoNext = Helper.layKhoCuaTo(lsx.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
-                                            string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, us);
-                                            add_nhapkho_hsd(db, dh, khoNext, us, KSPID);
-                                            add_nhapkho_ls(db, dh, khoNext, xk, 1, us, lsx, lsxTSX, xk.md_to_id);
+                                            string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, userTK);
+                                            add_nhapkho_hsd(db, dh, khoNext, userTK, KSPID);
+                                            add_nhapkho_ls(db, dh, khoNext, xk, 1, userTK, lsx, lsxTSX, xk.md_to_id);
                                             db.SaveChanges();
                                             foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                                     s.md_lenhsanxuat_tosx_id == lsxTSX.md_lenhsanxuat_tosx_id
@@ -350,7 +355,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                             //--ghi nợ / có
                                             if (ghino == true)
                                             {
-                                                add_kho_no(db, dh, xk, null, us, null, xk.xuatden, dh.ghino);
+                                                add_kho_no(db, dh, xk, null, userTK, null, xk.xuatden, dh.ghino);
                                                 ghino = false;
                                                 ghinos.Add(new md_ghinotruno()
                                                 {
@@ -368,9 +373,9 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                                     ,
                                                     ngaytao = DateTime.Now
                                                     ,
-                                                    nguoitao = us.ad_user_id
+                                                    nguoitao = userTK.ad_user_id
                                                     ,
-                                                    value_nguoitao = us.ma_user
+                                                    value_nguoitao = userTK.ma_user
                                                     ,
                                                     mota = ldg.sochungtu
                                                     ,
@@ -457,7 +462,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         db.SaveChanges();
                         if (xk.bosung == 3)
                         {
-                            pub.capnhatGiuCho_XKVatTuTon(xk.sochungtu, xk.chungtuthamchieu, xk.tukho, xk.md_xuatkhonb_id, xk.trangthai, db);
+                            //pub.capnhatGiuCho_XKVatTuTon(xk.sochungtu, xk.chungtuthamchieu, xk.tukho, xk.md_xuatkhonb_id, xk.trangthai, db);
                             db.SaveChanges();
                         }
                     }
@@ -826,8 +831,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
     public void edit(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string chungtu_lenhsx = context.Request.Form["chungtu_lenhsx"];
@@ -868,10 +871,10 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                     object_.chungtu_lenhsx = chungtu_lenhsx;
                     object_.md_lenhsanxuat_tosx_id = md_lenhsanxuat_tosx_id;
                     object_.ngaychuyen = ngaychuyen;
-                    object_.nguoitao = us.ad_user_id;
-                    object_.nguoicapnhat = us.ad_user_id;
-                    object_.value_nguoitao = us.ma_user;
-                    object_.value_nguoicapnhat = us.ma_user;
+                    object_.nguoitao = userTK.ad_user_id;
+                    object_.nguoicapnhat = userTK.ad_user_id;
+                    object_.value_nguoitao = userTK.ma_user;
+                    object_.value_nguoicapnhat = userTK.ma_user;
                     object_.ngaytao = DateTime.Now;
                     object_.ngaycapnhat = DateTime.Now;
 
@@ -908,10 +911,10 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                     vcnb_cdh.sl_toida_trongLSXTo = item.soluong_giucho;
                                     vcnb_cdh.sl_toida_trongLSXTo2 = sltd;
                                     vcnb_cdh.lsx_to = lsxTSXId;
-                                    vcnb_cdh.nguoitao = us.ad_user_id;
-                                    vcnb_cdh.nguoicapnhat = us.ad_user_id;
-                                    vcnb_cdh.value_nguoitao = us.ma_user;
-                                    vcnb_cdh.value_nguoicapnhat = us.ma_user;
+                                    vcnb_cdh.nguoitao = userTK.ad_user_id;
+                                    vcnb_cdh.nguoicapnhat = userTK.ad_user_id;
+                                    vcnb_cdh.value_nguoitao = userTK.ma_user;
+                                    vcnb_cdh.value_nguoicapnhat = userTK.ma_user;
                                     vcnb_cdh.ngaytao = DateTime.Now;
                                     vcnb_cdh.ngaycapnhat = DateTime.Now;
                                     db.md_xuatkhonb_cdh.Add(vcnb_cdh);
@@ -950,8 +953,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
-        var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

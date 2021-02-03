@@ -6,11 +6,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -41,9 +49,6 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_XuLyVanChuyen(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 
@@ -284,24 +289,24 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         pbgNC = vcnb.phienbangiaNC,
 
                                         mota = vcnb_cdvc.tenhang,
-                                        nguoitao = us.ad_user_id,
-                                        vaitrotao = us.ad_role_id,
-                                        bophantao = us.md_phongban_id,
-                                        value_nguoitao = us.ma_user,
-                                        value_vaitrotao = us.ten_role,
-                                        value_bophantao = us.ten_phongban,
-                                        nguoicapnhat = us.ad_user_id,
-                                        vaitrocapnhat = us.ad_role_id,
-                                        bophancapnhat = us.md_phongban_id,
-                                        value_nguoicapnhat = us.ma_user,
-                                        value_vaitrocapnhat = us.ten_role,
-                                        value_bophancapnhat = us.ten_phongban,
+                                        nguoitao = userTK.ad_user_id,
+                                        vaitrotao = userTK.ad_role_id,
+                                        bophantao = userTK.md_phongban_id,
+                                        value_nguoitao = userTK.ma_user,
+                                        value_vaitrotao = userTK.ten_role,
+                                        value_bophantao = userTK.ten_phongban,
+                                        nguoicapnhat = userTK.ad_user_id,
+                                        vaitrocapnhat = userTK.ad_role_id,
+                                        bophancapnhat = userTK.md_phongban_id,
+                                        value_nguoicapnhat = userTK.ma_user,
+                                        value_vaitrocapnhat = userTK.ten_role,
+                                        value_bophancapnhat = userTK.ten_phongban,
                                         ngaytao = DateTime.Now,
                                         ngaycapnhat = DateTime.Now,
                                         hoatdong = true
                                     };
                                     db.md_kho_giaodich.Add(kho_gd);
-                                    add_kho_hsd(db, null, kho_sp.md_sanpham_id, sl_dichchuyen_thucte, vcnb, 0, us, kho_sp.md_kho_sanpham_id);
+                                    add_kho_hsd(db, null, kho_sp.md_sanpham_id, sl_dichchuyen_thucte, vcnb, 0, userTK, kho_sp.md_kho_sanpham_id);
                                 }
                                 //Cap nhat lai kho_gd
                                 kho_sp.soluong = kho_sp.soluong.Value - sl_xuatkho;
@@ -322,18 +327,18 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                         md_kho_id = vcnb.denkho,
                                         md_sanpham_id = vcnb_cdvc.md_sanpham_id,
                                         soluong = vcnb_cdvc.soluong_dichchuyen.Value,
-                                        nguoitao = us.ad_user_id,
-                                        vaitrotao = us.ad_role_id,
-                                        bophantao = us.md_phongban_id,
-                                        value_nguoitao = us.ma_user,
-                                        value_vaitrotao = us.ten_role,
-                                        value_bophantao = us.ten_phongban,
-                                        nguoicapnhat = us.ad_user_id,
-                                        vaitrocapnhat = us.ad_role_id,
-                                        bophancapnhat = us.md_phongban_id,
-                                        value_nguoicapnhat = us.ma_user,
-                                        value_vaitrocapnhat = us.ten_role,
-                                        value_bophancapnhat = us.ten_phongban,
+                                        nguoitao = userTK.ad_user_id,
+                                        vaitrotao = userTK.ad_role_id,
+                                        bophantao = userTK.md_phongban_id,
+                                        value_nguoitao = userTK.ma_user,
+                                        value_vaitrotao = userTK.ten_role,
+                                        value_bophantao = userTK.ten_phongban,
+                                        nguoicapnhat = userTK.ad_user_id,
+                                        vaitrocapnhat = userTK.ad_role_id,
+                                        bophancapnhat = userTK.md_phongban_id,
+                                        value_nguoicapnhat = userTK.ma_user,
+                                        value_vaitrocapnhat = userTK.ten_role,
+                                        value_bophancapnhat = userTK.ten_phongban,
                                         ngaytao = DateTime.Now,
                                         ngaycapnhat = DateTime.Now,
                                         hoatdong = true
@@ -361,24 +366,24 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     sapxep = "",
                                     sanxuat = sanxuat,
                                     mota = vcnb_cdvc.tenhang,
-                                    nguoitao = us.ad_user_id,
-                                    vaitrotao = us.ad_role_id,
-                                    bophantao = us.md_phongban_id,
-                                    value_nguoitao = us.ma_user,
-                                    value_vaitrotao = us.ten_role,
-                                    value_bophantao = us.ten_phongban,
-                                    nguoicapnhat = us.ad_user_id,
-                                    vaitrocapnhat = us.ad_role_id,
-                                    bophancapnhat = us.md_phongban_id,
-                                    value_nguoicapnhat = us.ma_user,
-                                    value_vaitrocapnhat = us.ten_role,
-                                    value_bophancapnhat = us.ten_phongban,
+                                    nguoitao = userTK.ad_user_id,
+                                    vaitrotao = userTK.ad_role_id,
+                                    bophantao = userTK.md_phongban_id,
+                                    value_nguoitao = userTK.ma_user,
+                                    value_vaitrotao = userTK.ten_role,
+                                    value_bophantao = userTK.ten_phongban,
+                                    nguoicapnhat = userTK.ad_user_id,
+                                    vaitrocapnhat = userTK.ad_role_id,
+                                    bophancapnhat = userTK.md_phongban_id,
+                                    value_nguoicapnhat = userTK.ma_user,
+                                    value_vaitrocapnhat = userTK.ten_role,
+                                    value_bophancapnhat = userTK.ten_phongban,
                                     ngaytao = DateTime.Now,
                                     ngaycapnhat = DateTime.Now,
                                     hoatdong = true
                                 };
                                 db.md_kho_giaodich.Add(kho_gd_nhapkho);
-                                add_kho_hsd(db, null, vcnb_cdvc.md_sanpham_id, sl_dichchuyen_thucte, vcnb, 1, us, kho_sp_nhapkho.md_kho_sanpham_id);
+                                add_kho_hsd(db, null, vcnb_cdvc.md_sanpham_id, sl_dichchuyen_thucte, vcnb, 1, userTK, kho_sp_nhapkho.md_kho_sanpham_id);
                                 //end Nhap kho
                             }
 
@@ -490,7 +495,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         {
                             vcnb.md_trangthai_id = "HIEULUC";
                             db.SaveChanges();
-                            pub.capnhatGiuCho_VCNB(vcnb.sochungtu, vcnb.chungtuthamchieu, vcnb.tukho, vcnb.md_vanchuyennoibo_id, vcnb.md_trangthai_id, db);
+                            //pub.capnhatGiuCho_VCNB(vcnb.sochungtu, vcnb.chungtuthamchieu, vcnb.tukho, vcnb.md_vanchuyennoibo_id, vcnb.md_trangthai_id, db);
                             db.SaveChanges();
                         }
                     }
@@ -565,60 +570,73 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string tukho = context.Request.Form["tukho"];
         string denkho = context.Request.Form["denkho"];
         string id = context.Request.Form["id"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            var ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
-            var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id).Take(1).FirstOrDefault();
-            denkho = db.md_kho.Where(s => s.md_kho_id == denkho).Select(s => s.md_kho_id).FirstOrDefault();
-            tukho = db.md_kho.Where(s => s.md_kho_id == tukho).Select(s => s.md_kho_id).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                var ngaychuyen = VNN_Config.setDateTime(context.Request.Form["ngaychuyen"]);
+                var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id).Take(1).FirstOrDefault();
+                denkho = db.md_kho.Where(s => s.md_kho_id == denkho).Select(s => s.md_kho_id).FirstOrDefault();
+                tukho = db.md_kho.Where(s => s.md_kho_id == tukho).Select(s => s.md_kho_id).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = string.Format(@"Lỗi:Không tìm thấy đối tượng cần sửa.");
+                }
+                else if (object_.md_trangthai_id == "HIEULUC")
+                {
+                    msg = string.Format(@"Lỗi:Dòng {0} đã Hiệu lực", object_.sochungtu);
+                }
+                else if (tukho == denkho)
+                {
+                    msg = string.Format(@"Lỗi: Kho chuyển không được giống với kho đến");
+                }
+                else if (string.IsNullOrEmpty(tukho) | string.IsNullOrEmpty(denkho))
+                {
+                    msg = string.Format(@"Lỗi:Bạn phải chọn Kho chuyển và kho đến");
+                }
+                else if (ngaychuyen.IsDate() == false)
+                {
+                    msg = string.Format(@"Lỗi:Ngày chuyển không đúng định dạng");
+                }
+
+                if (msg.Length <= 0)
+                {
+                    if (object_.loaichuyen == "VANCNBCTKGH")
+                        object_.denkho = denkho;
+                    object_.ngaychuyen = ngaychuyen;
+                    object_.ngaycapnhat = DateTime.Now;
+                    object_.mota = context.Request.Form["mota"];
+                    db.SaveChanges();
+                }
             }
-            else if (object_.md_trangthai_id == "HIEULUC")
+            catch (Exception ex)
             {
-                msg = "false#Lỗi:Dòng " + object_.sochungtu + " đã Hiệu lực";
-            }
-            else if (tukho == denkho)
-            {
-                msg = "false#Lỗi: Kho chuyển không được giống với kho đến";
-            }
-            else if (string.IsNullOrEmpty(tukho) | string.IsNullOrEmpty(denkho))
-            {
-                msg = "false#Lỗi:Bạn phải chọn Kho chuyển và kho đến";
-            }
-            else if (ngaychuyen.IsDate() == false)
-            {
-                msg = "false#Lỗi:Ngày chuyển không đúng định dạng";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                if (object_.loaichuyen == "VANCNBCTKGH")
-                    object_.denkho = denkho;
-                object_.ngaychuyen = ngaychuyen;
-                object_.ngaycapnhat = DateTime.Now;
-                object_.mota = context.Request.Form["mota"];
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

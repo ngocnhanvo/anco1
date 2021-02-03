@@ -5,6 +5,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Linq.Expressions;
 
 /// <summary>
 /// Summary description for Extension
@@ -34,6 +37,18 @@ public static class Extension
             }
         }
         return t.ToString();
+    }
+
+    public static String nameof<T, TT>(this T obj, Expression<Func<T, TT>> propertyAccessor)
+    {
+        if (propertyAccessor.Body.NodeType == ExpressionType.MemberAccess)
+        {
+            var memberExpression = propertyAccessor.Body as MemberExpression;
+            if (memberExpression == null)
+                return null;
+            return memberExpression.Member.Name;
+        }
+        return null;
     }
 
     public static void CopyPropertiesTo<T, TU>(this T source, TU dest)
@@ -347,6 +362,67 @@ public static class Extension
         }, null, time, time);
 
         task.Wait();
+    }
+
+    public static int? ToNullableInt(this string s)
+    {
+        if (s != null)
+            return int.Parse(s);
+        else
+            return null;
+    }
+
+    public static long? ToNullableLong(this string s)
+    {
+        if (s != null)
+            return long.Parse(s);
+        else
+            return null;
+    }
+
+    public static decimal? ToNullableDecimal(this string s)
+    {
+        if (s != null)
+            return decimal.Parse(s);
+        else
+            return null;
+    }
+
+    public static double? ToNullableDouble(this string s)
+    {
+        if (s != null)
+            return double.Parse(s);
+        else
+            return null;
+    }
+
+    public static bool? ToNullableBool(this string s)
+    {
+        if (s != null)
+            return s.ToLower() == "true";
+        else
+            return null;
+    }
+
+    public static string ToUnSign(this string input)
+    {
+        if (input == null)
+        {
+            input = "";
+        }
+        input = input.Trim();
+        for (int i = 0x20; i < 0x30; i++)
+        {
+            input = input.Replace(((char)i).ToString(), " ");
+        }
+        Regex regex = new Regex(@"\p{IsCombiningDiacriticalMarks}+");
+        string str = input.Normalize(NormalizationForm.FormD);
+        string str2 = regex.Replace(str, string.Empty).Replace('đ', 'd').Replace('Đ', 'D');
+        while (str2.IndexOf("?") >= 0)
+        {
+            str2 = str2.Remove(str2.IndexOf("?"), 1);
+        }
+        return str2;
     }
 }
 

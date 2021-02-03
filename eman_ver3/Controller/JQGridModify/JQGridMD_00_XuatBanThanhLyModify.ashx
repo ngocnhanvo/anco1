@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -37,10 +45,9 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
     }
     public void CA_01_XacNhanXuatKho(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string md_xuatban_id = context.Request.QueryString["id"];
         string msg = "";
-        md_xuatban xb = db.md_xuatban.Where(s=>s.md_xuatban_id == md_xuatban_id).Take(1).FirstOrDefault();
+        var xb = db.md_xuatban.Where(s=>s.md_xuatban_id == md_xuatban_id).Take(1).FirstOrDefault();
         if(xb != null) {
             if (xb.phieuXNNK == null | xb.phieuXNNK == "")
             {
@@ -54,12 +61,10 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
     public void CA01CopytuDonHang_MD00XuatBanThanhLy(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string sct_dsdh = context.Request.Form["value_donhang"];
         string sochungtu = VNN_VariablePublic.sochungtu(db, "PXKT", 1);
         string msg = "";
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        c_danhsachdathang dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == sct_dsdh).Take(1).FirstOrDefault();
+        var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == sct_dsdh).Take(1).FirstOrDefault();
         string id = Helper.getNewId();
         if (dsdh == null)
         {
@@ -72,12 +77,11 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                 msg = "<div style='color:red'>Lỗi: Phiếu xuất kho \""+ check_lsx_kho +"\" chưa hiệu lực.</div>";
             }
             else {
-                c_dongdsdh don = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == don.md_sanpham_id).Take(1).FirstOrDefault();
-                md_doitackinhdoanh dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "ANCO TRADING").Take(1).FirstOrDefault();
+                var don = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == don.md_sanpham_id).Take(1).FirstOrDefault();
+                var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == "ANCO TRADING").Take(1).FirstOrDefault();
 
-
-                md_xuatban xb = new md_xuatban();
+                var xb = new md_xuatban();
                 xb.md_xuatban_id = id;
                 xb.sochungtu = sochungtu;
                 xb.donhang_thamchieu = dsdh.so_po;
@@ -90,19 +94,19 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                 xb.trangthai = "SOANTHAO";
                 xb.tukho = sp.khomacdinh;
                 xb.sctdathang = dsdh.sochungtu;
-                xb.nguoitao = us.ad_user_id;
-                xb.vaitrotao = us.ad_role_id;
-                xb.bophantao = us.md_phongban_id;
-                xb.value_nguoitao = us.ma_user;
-                xb.value_vaitrotao = us.ten_role;
-                xb.value_bophantao = us.ten_phongban;
+                xb.nguoitao = userTK.ad_user_id;
+                xb.vaitrotao = userTK.ad_role_id;
+                xb.bophantao = userTK.md_phongban_id;
+                xb.value_nguoitao = userTK.ma_user;
+                xb.value_vaitrotao = userTK.ten_role;
+                xb.value_bophantao = userTK.ten_phongban;
 
-                xb.nguoicapnhat = us.ad_user_id;
-                xb.vaitrocapnhat = us.ad_role_id;
-                xb.bophancapnhat = us.md_phongban_id;
-                xb.value_nguoicapnhat = us.ma_user;
-                xb.value_vaitrocapnhat = us.ten_role;
-                xb.value_bophancapnhat = us.ten_phongban;
+                xb.nguoicapnhat = userTK.ad_user_id;
+                xb.vaitrocapnhat = userTK.ad_role_id;
+                xb.bophancapnhat = userTK.md_phongban_id;
+                xb.value_nguoicapnhat = userTK.ma_user;
+                xb.value_vaitrocapnhat = userTK.ten_role;
+                xb.value_bophancapnhat = userTK.ten_phongban;
 
                 xb.ngaytao = DateTime.Now;
                 xb.ngaycapnhat = DateTime.Now;
@@ -110,11 +114,11 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                 xb.hoatdong = true;
 
                 int count = 0;
-                foreach (c_dongdsdh ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id & s.sl_dathang > s.sl_hanngach))
+                foreach (var ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id & s.sl_dathang > s.sl_hanngach).ToList())
                 {
                     count++;
-                    md_sanpham sp1 = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).Take(1).FirstOrDefault();
-                    md_xuatban_cdh cdh_xb = new md_xuatban_cdh
+                    var sp1 = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).Take(1).FirstOrDefault();
+                    var cdh_xb = new md_xuatban_cdh
                     {
                         md_xuatban_cdh_id = Helper.getNewId(),
                         md_xuatban_id = id,
@@ -124,19 +128,19 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                         sl_xuat = 0,
                         md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
                         tenhang = sp1.mota_tiengviet,
-                        nguoitao = us.ad_user_id,
-                        vaitrotao = us.ad_role_id,
-                        bophantao = us.md_phongban_id,
-                        value_nguoitao = us.ma_user,
-                        value_vaitrotao = us.ten_role,
-                        value_bophantao = us.ten_phongban,
+                        nguoitao = userTK.ad_user_id,
+                        vaitrotao = userTK.ad_role_id,
+                        bophantao = userTK.md_phongban_id,
+                        value_nguoitao = userTK.ma_user,
+                        value_vaitrotao = userTK.ten_role,
+                        value_bophantao = userTK.ten_phongban,
 
-                        nguoicapnhat = us.ad_user_id,
-                        vaitrocapnhat = us.ad_role_id,
-                        bophancapnhat = us.md_phongban_id,
-                        value_nguoicapnhat = us.ma_user,
-                        value_vaitrocapnhat = us.ten_role,
-                        value_bophancapnhat = us.ten_phongban,
+                        nguoicapnhat = userTK.ad_user_id,
+                        vaitrocapnhat = userTK.ad_role_id,
+                        bophancapnhat = userTK.md_phongban_id,
+                        value_nguoicapnhat = userTK.ma_user,
+                        value_vaitrocapnhat = userTK.ten_role,
+                        value_bophancapnhat = userTK.ten_phongban,
 
                         ngaytao = DateTime.Now,
                         ngaycapnhat = DateTime.Now,
@@ -163,8 +167,6 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
     public void CA01XuatBan_MD00XuatBanThanhLy(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -190,8 +192,8 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                     foreach (md_xuatban_cdh dh in count.ToList())
                     {
                         //--
-                        md_kho_sanpham kho = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-                        md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                        var kho = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
 
                         if (dh.check_kho != true)
                         {
@@ -222,11 +224,11 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
                             count_slxuat++;
                             soluong_xuat = "" + dh.sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
                             //--cap nhat so luong xuat
-                            edit_xuat(db, dh, us);
+                            edit_xuat(db, dh, userTK);
                             //--cap nhat vao kho
-                            xuat_kho(db, dh, px, us);
+                            xuat_kho(db, dh, px, userTK);
                             //--tao lich su nhap kho
-                            add_kho_ls(db, dh, px, us);
+                            add_kho_ls(db, dh, px, userTK);
                             msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + soluong_xuat + "\"</div>";
                         }
                     }
@@ -347,47 +349,56 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            //md_doitackinhdoanh dtk = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).FirstOrDefault();
-            string id = context.Request.Form["id"];
-            md_xuatban object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                //md_doitackinhdoanh dtk = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).FirstOrDefault();
+                string id = context.Request.Form["id"];
+                var object_ = db.md_xuatban.Where(p => p.md_xuatban_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (object_.trangthai == "HIEULUC")
+                {
+                    msg = "Lỗi:phiếu xuất kho đã Hiệu lực.";
+                }
+                else
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.sochungtu), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.trangthai), "VNN_notpost");
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.SaveChanges();
+                }
             }
-            else if (object_.trangthai == "HIEULUC")
+            catch (Exception ex)
             {
-                msg = "false#Lỗi:phiếu xuất kho đã Hiệu lực.";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_xuatban";
-                VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
-                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công.");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = "false#" + msg;
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

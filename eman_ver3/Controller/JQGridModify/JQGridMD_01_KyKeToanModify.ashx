@@ -6,10 +6,18 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_01_KyKeToanModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
-           oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+        {
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -28,106 +36,126 @@ public class JQGridMD_01_KyKeToanModify : IHttpHandler, System.Web.SessionState.
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "",id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
+            try
+            {
+                string id = context.Request.Form["id"];
+                if (msg.Length <= 0)
+                {
+                    var object_ = new md_namtaichinh_ky();
+                    object_.md_namtaichinh_ky_id = id_new;
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_namtaichinh_id), id);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.md_namtaichinh_ky.Add(object_);
+                    db.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                msg = ex.Message;
+            }
+
             if (msg.Length <= 0)
             {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "md_namtaichinh_ky";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
             }
-        }
-        catch(Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            md_namtaichinh_ky object_ = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
             }
-            
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_namtaichinh_ky";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch(Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_namtaichinh_ky";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                 msg_del = ""; var id_del_ = id_del[i];
-                md_namtaichinh_ky object_ = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                     db.md_namtaichinh_ky.Remove(object_);
+                    var object_ = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else
+                    {
+                        VNN_Function.Write_log(context, ma_module, null, oper, "", db);
+                        db.md_namtaichinh_ky.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
-            	 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Xóa thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

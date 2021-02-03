@@ -7,11 +7,19 @@ using DataAcess;
 using System.Data;
 public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -33,12 +41,9 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_MoDongKy(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
         var mdk = db.md_modongky.Where(s => s.md_modongky_id == id).FirstOrDefault();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-
         using (var transaction = db.Database.BeginTransaction())
         {
             try
@@ -61,7 +66,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                         var kdong = db.md_namtaichinh_ky.Where(p => p.ngayketthuc.Value == nbd_kt).FirstOrDefault();
                         if (type == "KHO" | type == "")
                         {
-                            moky_Kho(db, us, mdk, kmo, kdong);
+                            moky_Kho(db, userTK, mdk, kmo, kdong);
                         }
 
                         //if (type == "CNKH" | type == "")
@@ -80,7 +85,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                         var kdong = db.md_namtaichinh_ky.Where(p => p.md_namtaichinh_ky_id == mdk.md_namtaichinh_ky_id).FirstOrDefault();
                         if (type == "KHO" | type == "")
                         {
-                            dongky_Kho(db, us, mdk, kdong);
+                            dongky_Kho(db, userTK, mdk, kdong);
                         }
 
                         //if (type == "CNKH" | type == "")
@@ -578,191 +583,225 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
     /*-----------------------------------------------------------------------------------------------------*/
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"], md_namtaichinh_id = context.Request.Form["md_namtaichinh_id"];
-        int soky = int.Parse(context.Request.Form["ky"]);
+
         string ky_hoatdong = context.Request.Form["ky_hoatdong"];
-        md_namtaichinh ntc = db.md_namtaichinh.FirstOrDefault(s => s.md_namtaichinh_id == md_namtaichinh_id);
-        md_namtaichinh_ky ntc_ky = null;
+
         string loai_baocao = context.Request.Form["loai_baocao"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            if (ntc == null) {
-                msg = "false#Không tìm thấy năm đã chọn.";
+            try
+            {
+                int soky = int.Parse(context.Request.Form["ky"]);
+                var ntc = db.md_namtaichinh.FirstOrDefault(s => s.md_namtaichinh_id == md_namtaichinh_id);
+                md_namtaichinh_ky ntc_ky = null;
+                string id = context.Request.Form["id"];
+                if (ntc == null)
+                {
+                    msg = "Không tìm thấy năm đã chọn.";
+                }
+                else
+                {
+                    ntc_ky = db.md_namtaichinh_ky.Where(s => s.soky == soky & s.md_namtaichinh_id == md_namtaichinh_id).FirstOrDefault();
+                    if (ntc_ky == null)
+                    {
+                        msg = "Không tìm thấy kỳ \"" + soky + "\" trong năm \"" + ntc.giatri + "\".";
+                    }
+                    else if (loai_baocao == "")
+                    {
+                        int mdk2 = db.md_modongky.Where(s => s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id &
+                        s.ky_hoatdong == ky_hoatdong).Count();
+                        if (mdk2 > 0)
+                        {
+                            msg = "Không thể tạo kỳ tổng của tháng " + soky + " năm " + ntc.giatri + " khi đã có kỳ tương ứng được tạo.";
+                        }
+                    }
+                    else
+                    {
+                        int mdk2 = db.md_modongky.Where(s => s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id &
+                        (s.loai_baocao == loai_baocao) & s.ky_hoatdong == ky_hoatdong).Count();
+                        if (mdk2 > 0)
+                        {
+                            msg = "Không thể " + ky_hoatdong.ToLower() + " của tháng " + soky + " năm " + ntc.giatri + " khi đã có kỳ tương ứng được " + ky_hoatdong.ToLower().Replace(" kỳ", "") + ".";
+                        }
+                        else if (db.md_modongky.Where(s => s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id & s.loai_baocao == "").Count() > 0)
+                        {
+                            msg = "Không thể " + ky_hoatdong.ToLower() + " của tháng " + soky + " năm " + ntc.giatri + " khi đã có kỳ tổng được tạo.";
+                        }
+                    }
+                }
+
+                if (msg.Length <= 0)
+                {
+                    var object_ = new md_modongky();
+                    object_.md_modongky_id = id_new;
+                    VNN_Function.SetFormValue(object_.nameof(s => s.nam), ntc.giatri.ToString());
+                    VNN_Function.SetFormValue(object_.nameof(s => s.ky), soky.ToString());
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_namtaichinh_ky_id), ntc_ky.md_namtaichinh_ky_id);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.md_modongky.Add(object_);
+                    db.SaveChanges();
+                }
             }
-            else {
-                ntc_ky = db.md_namtaichinh_ky.Where(s => s.soky == soky & s.md_namtaichinh_id == md_namtaichinh_id).FirstOrDefault();
-                if (ntc_ky == null) {
-                    msg = "false#Không tìm thấy kỳ \"" + soky + "\" trong năm \"" + ntc.giatri + "\".";
-                }
-                else if(loai_baocao == "") {
-                    int mdk2 = db.md_modongky.Where(s=>s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id &
-                    s.ky_hoatdong == ky_hoatdong).Count();
-                    if(mdk2 > 0) {
-                        msg = "false#Không thể tạo kỳ tổng của tháng "+ soky + " năm " + ntc.giatri +" khi đã có kỳ tương ứng được tạo.";
-                    }
-                }
-                else {
-                    int mdk2 = db.md_modongky.Where(s=>s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id &
-                    (s.loai_baocao == loai_baocao) & s.ky_hoatdong == ky_hoatdong).Count();
-                    if(mdk2 > 0) {
-                        msg = "false#Không thể "+ ky_hoatdong.ToLower() +" của tháng "+ soky + " năm " + ntc.giatri +" khi đã có kỳ tương ứng được "+ ky_hoatdong.ToLower().Replace(" kỳ","") +".";
-                    }
-                    else if(db.md_modongky.Where(s=>s.md_namtaichinh_ky_id == ntc_ky.md_namtaichinh_ky_id & s.loai_baocao == "").Count() > 0) {
-                        msg = "false#Không thể "+ ky_hoatdong.ToLower() +" của tháng "+ soky + " năm " + ntc.giatri +" khi đã có kỳ tổng được tạo.";
-                    }
-                }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "add";
-                string[] column_ex = { "nam", "ky", "md_namtaichinh_ky_id" };
-                string ten_table = "md_modongky";
-                VNN_Function.SetFormValue("nam", ntc.giatri.ToString());
-                VNN_Function.SetFormValue("ky", soky.ToString());
-                VNN_Function.SetFormValue("md_namtaichinh_ky_id", ntc_ky.md_namtaichinh_ky_id);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"], md_namtaichinh_id = context.Request.Form["md_namtaichinh_id"];
-        int soky = int.Parse(context.Request.Form["ky"]);
-        md_namtaichinh ntc = db.md_namtaichinh.FirstOrDefault(s => s.md_namtaichinh_id == md_namtaichinh_id);
-        md_namtaichinh_ky ntc_ky = null;
-        try
-        {
-            string id = context.Request.Form["id"];
-            md_modongky object_ = db.md_modongky.Where(p => p.md_modongky_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-            else if (object_.hieuluc == true)
-            {
-                msg = "false#Lỗi: Đã hiệu lực, không thể chỉnh sửa ";
-            }
 
-            if (ntc == null) {
-                msg = "false#Không tìm thấy năm đã chọn.";
-            }
-            else {
-                ntc_ky = db.md_namtaichinh_ky.FirstOrDefault(s => s.soky == soky & s.md_namtaichinh_id == md_namtaichinh_id);
-                if (ntc_ky == null) {
-                    msg = "false#Không tìm thấy kỳ \"" + soky + "\" trong năm \"" + ntc.giatri + "\".";
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                int soky = int.Parse(context.Request.Form["ky"]);
+                var ntc = db.md_namtaichinh.FirstOrDefault(s => s.md_namtaichinh_id == md_namtaichinh_id);
+                md_namtaichinh_ky ntc_ky = null;
+                string id = context.Request.Form["id"];
+                var object_ = db.md_modongky.Where(p => p.md_modongky_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
                 }
+                else if (object_.hieuluc == true)
+                {
+                    msg = "Lỗi: Đã hiệu lực, không thể chỉnh sửa ";
+                }
+
+                if (ntc == null)
+                {
+                    msg = "Không tìm thấy năm đã chọn.";
+                }
+                else
+                {
+                    ntc_ky = db.md_namtaichinh_ky.FirstOrDefault(s => s.soky == soky & s.md_namtaichinh_id == md_namtaichinh_id);
+                    if (ntc_ky == null)
+                    {
+                        msg = "Không tìm thấy kỳ \"" + soky + "\" trong năm \"" + ntc.giatri + "\".";
+                    }
+                }
+
+                if (msg.Length <= 0)
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s => s.nam), ntc.giatri.ToString());
+                    VNN_Function.SetFormValue(object_.nameof(s => s.ky), soky.ToString());
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_namtaichinh_ky_id), ntc_ky.md_namtaichinh_ky_id);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { "nam", "ky", "md_namtaichinh_ky_id" };
-                string ten_table = "md_modongky";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.SetFormValue("nam", ntc.giatri.ToString());
-                VNN_Function.SetFormValue("ky", soky.ToString());
-                VNN_Function.SetFormValue("md_namtaichinh_ky_id", ntc_ky.md_namtaichinh_ky_id);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "",  msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string ten_table = "md_modongky";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
+            try
             {
-                msg_del = "";
-                var id_del_ = id_del[i];
-                md_modongky object_ = db.md_modongky.Where(p => p.md_modongky_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                else if (object_.hieuluc == true)
-                {
-                    foreach (md_modongky mdk in db.md_modongky.Where(s => s.ky == object_.ky & s.nam == object_.nam & s.loai_baocao == object_.loai_baocao))
+                    var object_ = db.md_modongky.Where(p => p.md_modongky_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
                     {
-                        db.md_modongky.Remove(mdk);
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
-
-                    if(object_.loai_baocao == "KHO" | object_.loai_baocao == "") {
-                        foreach (md_tonghopkho thk in db.md_tonghopkho.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id))
+                    else
+                    {
+                        if (object_.hieuluc == true)
                         {
-                            db.md_tonghopkho.Remove(thk);
-                        }
-                    }
+                            foreach (var mdk in db.md_modongky.Where(s => s.ky == object_.ky & s.nam == object_.nam & s.loai_baocao == object_.loai_baocao).ToList())
+                            {
+                                db.md_modongky.Remove(mdk);
+                            }
 
-                    if(object_.loai_baocao == "CNKH" | object_.loai_baocao == "") {
-                        foreach (md_tonghopcongno thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.iskh == true))
-                        {
-                            db.md_tonghopcongno.Remove(thcn);
-                        }
-                    }
+                            if (object_.loai_baocao == "KHO" | object_.loai_baocao == "")
+                            {
+                                foreach (var thk in db.md_tonghopkho.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id).ToList())
+                                {
+                                    db.md_tonghopkho.Remove(thk);
+                                }
+                            }
 
-                    if(object_.loai_baocao == "CNNCC" | object_.loai_baocao == "") {
-                        foreach (md_tonghopcongno thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.isncc == true))
-                        {
-                            db.md_tonghopcongno.Remove(thcn);
-                        }
-                    }
-                }
+                            if (object_.loai_baocao == "CNKH" | object_.loai_baocao == "")
+                            {
+                                foreach (var thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.iskh == true).ToList())
+                                {
+                                    db.md_tonghopcongno.Remove(thcn);
+                                }
+                            }
 
-                if (msg_del.Length <= 0)
-                {
-                    db.md_modongky.Remove(object_);
+                            if (object_.loai_baocao == "CNNCC" | object_.loai_baocao == "")
+                            {
+                                foreach (var thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.isncc == true).ToList())
+                                {
+                                    db.md_tonghopcongno.Remove(thcn);
+                                }
+                            }
+                        }
+
+                        db.md_modongky.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
             }
-            if (msg.Length <= 0)
+            catch (Exception ex)
             {
+                msg = ex.Message;
+            }
+
+            if(msg.Length <= 0)
+            {
+                msg = @"true#Xóa thành công.";
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

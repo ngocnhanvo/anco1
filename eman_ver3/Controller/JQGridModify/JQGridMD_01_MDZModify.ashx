@@ -485,7 +485,6 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
         var user_mmcs = json.ad_user_mmcJSON();
-
         string result_module = "";
         string ma_menu = context.Request.QueryString["ma_menu"];
         string url_menu = context.Request.QueryString["url_menu"];

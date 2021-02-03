@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -32,7 +40,6 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void CA_01_CapnhatSLNKNCC(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string sel_val = context.Request.Form["sel_val"];
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
@@ -98,149 +105,77 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "md_nhapkho_ncc_dh";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         decimal tong_sl_dat = decimal.Parse(context.Request.Form["tong_sl_dat"]);
         decimal sl_nhap = decimal.Parse(context.Request.Form["sl_nhap"]);
         decimal sl_nhap2 = sl_nhap;
-        
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            var object_ = db.md_nhapkho_ncc_dh.Where(p => p.md_nhapkho_ncc_dh_id == id).Take(1).FirstOrDefault();
-            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
-            var vcnb = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.md_nhapkho_ncc_dh.Where(p => p.md_nhapkho_ncc_dh_id == id).Take(1).FirstOrDefault();
+                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
+                var vcnb = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (vcnb.trangthai != "DANHAN")
+                {
+                    msg = string.Format(@"Phiếu nhập kho không ở trạng thái ""Đã xác nhận""");
+                }
+                else if (sl_nhap < 0)
+                {
+                    msg = "Số lượng nhập không được âm";
+                }
+                else if (sl_nhap > tong_sl_dat)
+                {
+                    msg = "Số lượng thực nhập không được lớn hơn tổng số lượng";
+                }
+                else
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_id), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.md_donvitinhsanpham_id), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_muonnhap), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_nhap), sl_nhap.ToString());
+                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_nhap2), sl_nhap2.ToString());
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
             }
-            else if (vcnb.trangthai != "DANHAN")
+            catch (Exception ex)
             {
-                msg = string.Format(@"false#Phiếu nhập kho không ở trạng thái ""Đã xác nhận""");
-            }
-            else if (sl_nhap < 0)
-            {
-                msg = "false#Số lượng nhập không được âm";
-            }
-            else if (sl_nhap > tong_sl_dat)
-            {
-                msg = "false#Số lượng thực nhập không được lớn hơn tổng số lượng";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { "sl_muonnhap2", "sl_nhap2" };
-                string ten_table = "md_nhapkho_ncc_dh";
-                VNN_Function.SetFormValue("md_sanpham_id", "VNN_notpost");
-                VNN_Function.SetFormValue("tenhang", "VNN_notpost");
-                VNN_Function.SetFormValue("sl_muonnhap", "VNN_notpost");
-                VNN_Function.SetFormValue("sl_nhap", sl_nhap.ToString());
-                VNN_Function.SetFormValue("sl_nhap2", sl_nhap2.ToString());
-                VNN_Function.SetFormValue("md_donvitinhsanpham_id", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string ten_table = "md_nhapkho_ncc_dh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
-            {
-                msg_del = ""; var id_del_ = id_del[i];
-                md_nhapkho_ncc_dh object_ = db.md_nhapkho_ncc_dh.Where(p => p.md_nhapkho_ncc_dh_id == id_del_).Take(1).FirstOrDefault();
-                md_nhapkho_ncc nk_ncc = null;
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                else
-                {
-                    nk_ncc = db.md_nhapkho_ncc.Where(s => s.md_nhapkho_ncc_id == object_.md_nhapkho_ncc_id).Take(1).FirstOrDefault();
-                    if (nk_ncc.phieuXNNK != null & nk_ncc.phieuXNNK != "")
-                    {
-                        msg_del = "Lỗi:Phiếu nhập kho \"" + nk_ncc.sochungtu + "\" đã in xác nhận nhập hàng, không thể chỉnh sửa.";
-                        msg += msg_del + "\n";
-                        break;
-                    }
-                }
-
-                if (msg_del.Length <= 0)
-                {
-
-                    c_donmuahang_cdmh dmh_cdmh = db.c_donmuahang_cdmh.Where(s => s.md_sanpham_id == object_.md_sanpham_id & s.c_donmuahang_id == nk_ncc.c_donmuahang_id).Take(1).FirstOrDefault();
-                    if (dmh_cdmh != null)
-                        dmh_cdmh.sl_hanngach += object_.tong_sl_dat;
-
-                    db.md_nhapkho_ncc_dh.Remove(object_);
-                }
-            }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
-            {
-                msg = "true#Xóa thành công.";
-            }
-            else
-            {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 

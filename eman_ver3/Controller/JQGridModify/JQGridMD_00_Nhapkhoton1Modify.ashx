@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -32,8 +40,6 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
 
     public void CA01NhapKho_MD00Nhapkhoton1(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -70,10 +76,10 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
                             count_slnhap = 1;
                             decimal sl_nhap = dh.sl_nhap.Value;
                             //--cap nhat vao kho
-                            nhap_kho(db, dh, nk, nhanvoi, us);
+                            nhap_kho(db, dh, nk, nhanvoi, userTK);
                             db.SaveChanges();
                             //--tao lich su nhap kho
-                            add_kho_ls(db, dh, nk, nhanvoi, us);
+                            add_kho_ls(db, dh, nk, nhanvoi, userTK);
                             db.SaveChanges();
                             msg_success += "<div style='color:blue'>Dòng \"" + nk.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" + sl_nhap.DropTrailingZeros() + "\"</div>";
                         }
@@ -195,118 +201,64 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        //string md_lenhsanxuat_id = context.Request.Form["md_lenhsanxuat_id"];
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "PNKT", 1);
-        // string lenhsanxuat_id = "", lenhsanxuat_tosx_id = "";
-        //md_lenhsanxuat lsx = null;
-        try
-        {
-            /*if (md_lenhsanxuat_id != null & md_lenhsanxuat_id != "" & md_lenhsanxuat_id != " ")
-            {
-                lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == md_lenhsanxuat_id).FirstOrDefault();
-                if (lsx != null)
-                {
-                    //md_lenhsanxuat_tosx sx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id).FirstOrDefault();
-                    //lenhsanxuat_tosx_id = sx.md_lenhsanxuat_tosx_id;
-                    lenhsanxuat_id = lsx.md_lenhsanxuat_id;
-                    // msg = lsx.md_lenhsanxuat_id + "<>" + lenhsanxuat_id;
-                }
-                else
-                    msg = "false#Lỗi: Lệnh sản xuất \"" + md_lenhsanxuat_id + "\" đã nhập không tồn tại";
-            }*/
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                //if(lsx == null) 				
-                //    msg = "false#Phải chọn 1 lệnh sản xuất.";
-                // }
-                //else {
-                if( 1 + 1 ==2 ){
-                    /* string check_lsx_kho = db.md_nhapkhoton.Where(s=>s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.trangthai == "SOANTHAO").Select(s=>s.sochungtu).FirstOrDefault();
-                     if(check_lsx_kho != null & check_lsx_kho != "") {
-                            msg = "false#Phiếu nhập kho \""+ check_lsx_kho +"\" chưa hiệu lực.";
-                     }
-                     else {*/
-
-                    string action = "add";
-                    string[] column_ex = { "md_lenhsanxuat_tosx_id" };
-                    string ten_table = "md_nhapkhoton";
-                    //VNN_Function.SetFormValue("md_lenhsanxuat_id", lenhsanxuat_id);
-                    VNN_Function.SetFormValue("sochungtu", sochungtu);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                    msg = "true#Thêm thành công." + "#" + id_new;
-                    db.SaveChanges();
-                    //}
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_dtk_id = context.Request.Form["md_doitackinhdoanh_id"];
         string md_lenhsanxuat_id = context.Request.Form["md_lenhsanxuat_id"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            md_nhapkhoton object_ = db.md_nhapkhoton.Where(p => p.md_nhapkhoton_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.md_nhapkhoton.Where(p => p.md_nhapkhoton_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (object_.trangthai == "HIEULUC")
+                {
+                    msg = "Lỗi:Đối tượng đã nhập kho";
+                }
+                else
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_lenhsanxuat_id), md_lenhsanxuat_id);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s => s.nhaptu), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s => s.trangthai), "VNN_notpost");
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.SaveChanges();
+                }
             }
-            else if (object_.trangthai == "HIEULUC")
+            catch (Exception ex)
             {
-                msg = "false#Lỗi:Đối tượng đã nhập kho";
+                msg = ex.Message;
             }
-
-            /*if (md_lenhsanxuat_id != null & md_lenhsanxuat_id != "")
-            {
-                md_lenhsanxuat lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == md_lenhsanxuat_id).FirstOrDefault();
-                md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
-            }
-            else {
-                msg = "false#Không tìm thấy lệnh sản xuất \"" + md_lenhsanxuat_id + "\"";
-            }*/
-
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_nhapkhoton";
-                VNN_Function.SetFormValue("md_lenhsanxuat_id", md_lenhsanxuat_id);
-                VNN_Function.SetFormValue("sochungtu", "VNN_notpost");
-                VNN_Function.SetFormValue("nhaptu", "VNN_notpost");
-                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = "false#" + msg;
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())

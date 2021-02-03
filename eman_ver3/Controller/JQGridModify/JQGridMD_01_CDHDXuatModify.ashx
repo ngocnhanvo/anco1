@@ -7,11 +7,19 @@ using DataAcess;
 using Newtonsoft.Json;
 public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -391,169 +399,175 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "";
+        string msg = "", msgSuccess = "";
         string ma_module = context.Request.QueryString["ma_module"];
         var pbvt = context.Request.Form["pbVT"] != null;
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            decimal sl_xuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
-            decimal ghino = decimal.Parse(context.Request.Form["ghino"]);
-            string id = context.Request.Form["id"];
-            var object_ = db.md_xuatkhonb_cdh.Where(p => p.md_xuatkhonb_cdh_id == id).Take(1).FirstOrDefault();
-            var xnb = db.md_xuatkhonb.Where(p => p.md_xuatkhonb_id == object_.md_xuatkhonb_id).Take(1).FirstOrDefault();
-            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
+            try
+            {
+                decimal sl_xuat = decimal.Parse(context.Request.Form["sl_thucxuat"]);
+                decimal ghino = decimal.Parse(context.Request.Form["ghino"]);
+                string id = context.Request.Form["id"];
+                var object_ = db.md_xuatkhonb_cdh.Where(p => p.md_xuatkhonb_cdh_id == id).Take(1).FirstOrDefault();
+                var xnb = db.md_xuatkhonb.Where(p => p.md_xuatkhonb_id == object_.md_xuatkhonb_id).Take(1).FirstOrDefault();
+                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).FirstOrDefault();
 
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-            else if (sl_xuat <= 0)
-            {
-                msg = "false#Số lượng xuất phải lớn hớn 0";
-            }
-            else if (sl_xuat > object_.sl_muonxuat)
-            {
-                msg = "false#Số lượng xuất tối đa là " + object_.sl_muonxuat.GetValueOrDefault(0).DropTrailingZeros();
-            }
-            else if (xnb.trangthai == "HIEULUC")
-            {
-                msg = @"false#Phiếu xuất kho đã ""Hiệu Lực""!";
-            }
-            else
-            {
-                var slST = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id
-                    & s.md_sanpham_id == object_.md_sanpham_id
-                    & s.md_xuatkhonb_cdh_id != object_.md_xuatkhonb_cdh_id).ToList().Sum(s => s.sl_thucxuat.GetValueOrDefault(0));
-
-                var tongSLMX = slST + sl_xuat;
-                var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, sp.md_sanpham_id, db);
-                if (sltkTT < tongSLMX)
+                if (object_ == null)
                 {
-                    if (pbvt == false)
-                    {
-                        msg = @"false#Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
-                        msg += string.Format(@"<br>SL muốn xuất ở dòng đang chọn: {0}", sl_xuat.DropTrailingZeros());
-                        msg += string.Format(@"<br>SL muốn xuất ở các dòng khác: {0}", slST.DropTrailingZeros());
-                        msg += string.Format(@"<br>Tổng SL muốn xuất: {0}", tongSLMX.DropTrailingZeros());
-                    }
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
                 }
-                else if (xnb.bosung == 4)
+                else if (sl_xuat <= 0)
                 {
-                    var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
-                    var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
-                    var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
-                        s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                    msg = "Số lượng xuất phải lớn hớn 0";
+                }
+                else if (sl_xuat > object_.sl_muonxuat)
+                {
+                    msg = "Số lượng xuất tối đa là " + object_.sl_muonxuat.GetValueOrDefault(0).DropTrailingZeros();
+                }
+                else if (xnb.trangthai == "HIEULUC")
+                {
+                    msg = @"Phiếu xuất kho đã ""Hiệu Lực""!";
+                }
+                else
+                {
+                    var slST = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id
                         & s.md_sanpham_id == object_.md_sanpham_id
-                        ).FirstOrDefault();
+                        & s.md_xuatkhonb_cdh_id != object_.md_xuatkhonb_cdh_id).ToList().Sum(s => s.sl_thucxuat.GetValueOrDefault(0));
 
-                    foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                            s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
-                            & s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                    var tongSLMX = slST + sl_xuat;
+                    var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, sp.md_sanpham_id, db);
+                    if (sltkTT < tongSLMX)
                     {
-                        var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
-                        if (sltdChuyen < sl_xuat)
+                        if (pbvt == false)
                         {
-                            msg = string.Format(@"false#
+                            msg = @"Số lượng tồn kho thực tế là: " + sltkTT.DropTrailingZeros();
+                            msg += string.Format(@"<br>SL muốn xuất ở dòng đang chọn: {0}", sl_xuat.DropTrailingZeros());
+                            msg += string.Format(@"<br>SL muốn xuất ở các dòng khác: {0}", slST.DropTrailingZeros());
+                            msg += string.Format(@"<br>Tổng SL muốn xuất: {0}", tongSLMX.DropTrailingZeros());
+                        }
+                    }
+                    else if (xnb.bosung == 4)
+                    {
+                        var lsxTsx = Extension.getLSXToId2(object_.lsx_to, db);
+                        var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                        var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                            s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                            & s.md_sanpham_id == object_.md_sanpham_id
+                            ).FirstOrDefault();
+
+                        foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                                & s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                        {
+                            var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
+                            if (sltdChuyen < sl_xuat)
+                            {
+                                msg = string.Format(@"
                                 Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
                                 <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
                                 <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
                             ",
-                            sp.ma_sanpham
-                            , sl_xuat.DropTrailingZeros()
-                            , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
-                            , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
-                            , object_.tenhang
-                            );
-                            break;
-                        }
-                    };
+                                sp.ma_sanpham
+                                , sl_xuat.DropTrailingZeros()
+                                , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                                , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                                , object_.tenhang
+                                );
+                                break;
+                            }
+                        };
 
-                    if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
-                        msg = @"false#Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
-                }
+                        if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < sl_xuat)
+                            msg = @"Số lượng nhập của công đoạn trước chỉ có: " + spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros();
+                    }
 
-                if (msg.Length <= 0)
-                {
-                    object_.ghino = (sl_xuat - object_.tong_sl_xuat + object_.truno).GetValueOrDefault(0).Set0WhenlessThan0();
-                    object_.sl_thucxuat = sl_xuat;
-                    db.SaveChanges();
-                    VNN_Function.loaddulieu_Auto(db, ma_module);
-                    msg = "true#Cập nhật thành công.(--)" + object_.sl_xuat2;
+                    if (msg.Length <= 0)
+                    {
+                        object_.ghino = (sl_xuat - object_.tong_sl_xuat + object_.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                        object_.sl_thucxuat = sl_xuat;
+                        db.SaveChanges();
+                        msgSuccess = "Cập nhật thành công.(--)" + object_.sl_xuat2;
+                    }
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"true#{0}", msgSuccess);
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
+            }
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string ten_table = "md_xuatkhonb_cdh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
-            {
-                msg_del = ""; var id_del_ = id_del[i];
-                md_xuatkhonb_cdh object_ = db.md_xuatkhonb_cdh.Where(p => p.md_xuatkhonb_cdh_id == id_del_).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "<br>";
-                }
-                else
-                {
-                    md_xuatkhonb nb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id).FirstOrDefault();
-                    var xnb_cdhs = from a in db.md_vanchuyennoibo_cdvc
-                                   join b in db.md_vanchuyennoibo on a.md_vanchuyennoibo_id equals b.md_vanchuyennoibo_id
-                                   where b.chungtuthamchieu == nb.sochungtu & a.md_sanpham_id == object_.md_sanpham_id
-                                   select new { a.md_vanchuyennoibo_cdvc_id };
-                    if (nb.trangthai == "HIEULUC")
-                    {
-                        msg_del = "false#Lỗi: Số chứng từ : " + nb.sochungtu + " đã hiệu lực,";
-                        msg += msg_del + "<br>";
-                    }
-                    else if (xnb_cdhs.Count() > 0)
-                    {
-                        msg_del = "Lỗi:\"" + nb.sochungtu + "\" có phiếu vận chuyển nội bộ đang sử dụng dòng hàng này.";
-                        msg += msg_del + "<br>";
-                    }
-                }
 
-                if (msg_del.Length <= 0)
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                foreach (var id_del_ in ids)
                 {
-                    db.md_xuatkhonb_cdh.Remove(object_);
+                    var object_ = db.md_xuatkhonb_cdh.Where(p => p.md_xuatkhonb_cdh_id == id_del_).Take(1).FirstOrDefault();
+                    if (object_ == null)
+                    {
+                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                    }
+                    else
+                    {
+                        var nb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == object_.md_xuatkhonb_id).FirstOrDefault();
+                        var xnb_cdhs = from a in db.md_vanchuyennoibo_cdvc
+                                       join b in db.md_vanchuyennoibo on a.md_vanchuyennoibo_id equals b.md_vanchuyennoibo_id
+                                       where b.chungtuthamchieu == nb.sochungtu & a.md_sanpham_id == object_.md_sanpham_id
+                                       select new { a.md_vanchuyennoibo_cdvc_id };
+                        if (nb.trangthai == "HIEULUC")
+                        {
+                            msg += string.Format(@"<br><b>{0}</b>: Đã được ""Hiệu Lực"".", nb.sochungtu);
+                        }
+                        else if (xnb_cdhs.Count() > 0)
+                        {
+                            msg += string.Format(@"<br><b>{0}</b>: có phiếu vận chuyển nội bộ đang sử dụng dòng hàng này.", nb.sochungtu);
+                        }
+                    }
+
+                    if (msg.Length <= 0)
+                    {
+                        db.md_xuatkhonb_cdh.Remove(object_);
+                        db.SaveChanges();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
+                msg = string.Format(@"true#Xóa thành công.");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Xóa thành công.";
             }
             else
             {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = string.Format(@"false#{0}", msg.Substring(4));
+                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

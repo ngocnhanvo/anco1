@@ -6,11 +6,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -41,8 +49,6 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
     public void CA_01_XLNKNCC(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -80,19 +86,19 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                             count_slnhap++;
                             decimal soluong_nhap = dh.sl_nhap.Value;
                             //--cap nhat so luong nhap
-                            edit_nhap(db, dh, px, us);
+                            edit_nhap(db, dh, px, userTK);
                             db.SaveChanges();
                             //--cap nhat vao kho
-                            string khospId = add_kho(db, dh, px, us);
+                            string khospId = add_kho(db, dh, px, userTK);
                             db.SaveChanges();
                             //--cap nhat vao kho hạn sử dụng
-                            add_kho_hsd(db, dh, px, us, khospId);
+                            add_kho_hsd(db, dh, px, userTK, khospId);
                             db.SaveChanges();
                             //--tao lich su nhap kho
-                            add_kho_ls(db, dh, px, us);
+                            add_kho_ls(db, dh, px, userTK);
                             db.SaveChanges();
                             //--cap nhat gia tri binh quan gia quyen của sản phẩm
-                            add_kho_bqgq(db, dh, sp, px.kho, us);
+                            add_kho_bqgq(db, dh, sp, px.kho, userTK);
                             db.SaveChanges();
 
                             msg_success += "<div>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã nhập kho thành công, số lượng nhập là: \"" + soluong_nhap.DropTrailingZeros() + "\"</div>";
@@ -328,70 +334,57 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "md_nhapkho_ncc";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            md_nhapkho_ncc object_ = db.md_nhapkho_ncc.Where(p => p.md_nhapkho_ncc_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.md_nhapkho_ncc.Where(p => p.md_nhapkho_ncc_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (!new string[] { "SOANTHAO", "DANHAN" }.Contains(object_.trangthai))
+                {
+                    msg = "Lỗi:Đã nhập kho";
+                }
+                else
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s => s.trangthai), "VNN_notpost");
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
             }
-            else if (!new string[] { "SOANTHAO", "DANHAN"}.Contains(object_.trangthai))
+            catch (Exception ex)
             {
-                msg = "false#Lỗi:Đã nhập kho";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_nhapkho_ncc";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.SetFormValue("trangthai", "VNN_notpost");
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

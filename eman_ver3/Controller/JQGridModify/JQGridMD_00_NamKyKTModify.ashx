@@ -6,10 +6,18 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_NamKyKTModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -31,10 +39,8 @@ public class JQGridMD_00_NamKyKTModify : IHttpHandler, System.Web.SessionState.I
 
     public void CA_01_Tao12kychoNam(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id = context.Request.Form["id"];
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
-        md_namtaichinh ntc = db.md_namtaichinh.FirstOrDefault(s=>s.md_namtaichinh_id == id);
+        var ntc = db.md_namtaichinh.FirstOrDefault(s=>s.md_namtaichinh_id == id);
         if(ntc == null) {
             msg = "<div style='color:red'>Lỗi: Không tìm thấy năm tài chính đã chọn.</div>";
         }
@@ -51,7 +57,7 @@ public class JQGridMD_00_NamKyKTModify : IHttpHandler, System.Web.SessionState.I
                     ngayketthuc = String.Format("{0}/{1}/{2} 23:59", DateTime.DaysInMonth(ntc.giatri.Value, i), i, ntc.giatri.Value);
                 }
 
-                md_namtaichinh_ky ntc_ky = new md_namtaichinh_ky{
+                var ntc_ky = new md_namtaichinh_ky {
                     md_namtaichinh_ky_id = Helper.getNewId(),
                     md_namtaichinh_id = ntc.md_namtaichinh_id,
 
@@ -63,19 +69,19 @@ public class JQGridMD_00_NamKyKTModify : IHttpHandler, System.Web.SessionState.I
                     ngaybatdau = DateTime.ParseExact(ngaybatdau, "dd/MM/yyyy HH:mm", null),
                     ngayketthuc = DateTime.ParseExact(ngayketthuc, "dd/MM/yyyy HH:mm", null),
 
-                    nguoitao = us.ad_user_id,
-                    vaitrotao = us.ad_role_id,
-                    bophantao = us.md_phongban_id,
-                    value_nguoitao = us.ma_user,
-                    value_vaitrotao = us.ten_role,
-                    value_bophantao = us.ten_phongban,
+                    nguoitao = userTK.ad_user_id,
+                    vaitrotao = userTK.ad_role_id,
+                    bophantao = userTK.md_phongban_id,
+                    value_nguoitao = userTK.ma_user,
+                    value_vaitrotao = userTK.ten_role,
+                    value_bophantao = userTK.ten_phongban,
 
-                    nguoicapnhat = us.ad_user_id,
-                    vaitrocapnhat = us.ad_role_id,
-                    bophancapnhat = us.md_phongban_id,
-                    value_nguoicapnhat = us.ma_user,
-                    value_vaitrocapnhat = us.ten_role,
-                    value_bophancapnhat = us.ten_phongban,
+                    nguoicapnhat = userTK.ad_user_id,
+                    vaitrocapnhat = userTK.ad_role_id,
+                    bophancapnhat = userTK.md_phongban_id,
+                    value_nguoicapnhat = userTK.ma_user,
+                    value_vaitrocapnhat = userTK.ten_role,
+                    value_bophancapnhat = userTK.ten_phongban,
                     ngaytao = DateTime.Now,
                     ngaycapnhat = DateTime.Now,
                     hoatdong = true
@@ -90,65 +96,88 @@ public class JQGridMD_00_NamKyKTModify : IHttpHandler, System.Web.SessionState.I
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "",id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
+            try
+            {
+                string id = context.Request.Form["id"];
+                if (msg.Length <= 0)
+                {
+                    var object_ = new md_namtaichinh();
+                    object_.md_namtaichinh_id = id_new;
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.md_namtaichinh.Add(object_);
+                    db.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                msg = ex.Message;
+            }
+
             if (msg.Length <= 0)
             {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "md_namtaichinh";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
             }
-        }
-        catch(Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            md_namtaichinh object_ = db.md_namtaichinh.Where(p => p.md_namtaichinh_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.md_namtaichinh.Where(p => p.md_namtaichinh_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_namtaichinh";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch(Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())

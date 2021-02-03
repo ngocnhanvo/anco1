@@ -25,7 +25,7 @@ namespace InfoDB
                 Dictionary<string, object> item = new Dictionary<string, object>();
                 foreach (DataColumn column_ in tables.Columns)
                 {
-                    item[column_.ColumnName] = row_[column_.ColumnName].ToString();
+                    item[column_.ColumnName] = row_[column_.ColumnName];
                 }
                 lst.Add(item);
             }
