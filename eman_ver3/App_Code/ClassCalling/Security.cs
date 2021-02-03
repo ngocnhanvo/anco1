@@ -94,7 +94,7 @@ public static class Security
 	
     public static string UrlBase()
     {
-        return "/v01/";
+        return "/anco1/";
     }
 
     public static Dictionary<string, object> all_taikhoan(HttpContext context)
