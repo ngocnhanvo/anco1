@@ -7,17 +7,10 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Web;
 using NPOI.HSSF.UserModel;
-
+using MainHubObjects;
 [HubName("mainhub")]
 public class MainHub : Hub
 {
-    public partial class FileExcel
-    {
-        public string data { get; set; }
-        public string fileName { get; set; }
-        public string mime { get; set; }
-    }
-
     public void ChinhSuaMauExcel(FileExcel fileExcel)
     {
         var taskExcute = new System.Threading.Tasks.Task(() =>
@@ -159,5 +152,11 @@ public class MainHub : Hub
         try { taskExcute.Dispose(); } catch { }
         if ((DateTime.Now - timeFist).Seconds >= 120)
             Clients.Caller.ChinhSuaMauExcel(new { end = true, mess = @"Time out, please retry." });
+    }
+
+    public void sendReportToClient(string data)
+    {
+        var context = GlobalHost.ConnectionManager.GetHubContext<MainHub>();
+        context.Clients.All.sendReportToClient(new { end = true, mess = data });
     }
 }

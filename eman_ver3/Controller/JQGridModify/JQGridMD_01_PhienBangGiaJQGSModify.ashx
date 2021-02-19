@@ -11,11 +11,19 @@ using System.Collections.Generic;
 using System.IO;
 public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -26,9 +34,6 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                 break;
             case "del":
                 this.del(context);
-                break;
-            case "CA_01_ExportPBanGia":
-                this.CA_01_ExportPBanGia(context);
                 break;
             case "select_phienbangia":
                 this.select_phienbangia(context);
@@ -43,7 +48,6 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
 
     public void CA_01_CapNhatLaiGSP(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string type = context.Request.Form["type"];
         var scts = context.Request.Form["scts"].Split(';');
@@ -239,122 +243,121 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
 
     public void select_phienbangia(HttpContext context)
     {
-        var db = new EntityContext();
         bool firstnull = bool.Parse(context.Request.QueryString["firstnull"]);
         string str = "";
         string id = context.Request.QueryString["id"];
         str += firstnull ? string.Format("<option value=\"\"></option>") : "";
         var lstPBG = new List<string>();
-        foreach (md_phienbangia object_ in db.md_phienbangia.OrderByDescending(s => s.ngay_hieuluc))
+        foreach (var object_ in db.md_phienbangia.OrderByDescending(s => s.ngay_hieuluc).ToList())
         {
-            //if (!lstPBG.Contains(object_.md_banggia_id))
+            if (object_.hoatdong == true)
             {
-                if (object_.hoatdong == true)
-                {
-                    str += string.Format("<option bg='{2}' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
-                    lstPBG.Add(object_.md_banggia_id);
-                }
-                else
-                    str += string.Format("<option bg='{2}' class='notsel_option' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
+                str += string.Format("<option bg='{2}' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
+                lstPBG.Add(object_.md_banggia_id);
             }
+            else
+                str += string.Format("<option bg='{2}' class='notsel_option' value='{0}'>{1}</option>", object_.md_phienbangia_id, object_.ten_phienbangia, object_.md_banggia_id);
         }
         context.Response.Write("<select>" + str + "</select>");
     }
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
-        try
-        {
-            string id = context.Request.Form["id_parent"];
-            string ten_pbg = context.Request.Form["ten_phienbangia"];
+        string id = context.Request.Form["id_parent"];
+        string ten_pbg = context.Request.Form["ten_phienbangia"];
 
-            if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0)
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
             {
-                msg = "false#Lỗi: đã tồn tại phiên bản giá \"" + ten_pbg + "\"";
+                if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0)
+                {
+                    msg = "Lỗi: đã tồn tại phiên bản giá \"" + ten_pbg + "\"";
+                }
+                else
+                {
+                    var object_ = new md_phienbangia();
+                    object_.md_phienbangia_id = id_new;
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), id);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    db.md_phienbangia.Add(object_);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "add";
-                string[] column_ex = { "md_banggia_id" };
-                string ten_table = "md_phienbangia";
-                VNN_Function.SetFormValue("md_banggia_id", id);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-                /*db = new EntityContext();
-				if(md_trangthai_id == "HIEULUC"){
-					foreach(md_phienbangia pbg in db.md_phienbangia.Where(
-					s=>s.md_phienbangia_id != id_new & s.md_trangthai_id == "HIEULUC" & s.md_banggia_id == id)){
-						pbg.md_trangthai_id = "SOANTHAO";
-					}
-				}
-				db.SaveChanges();*/
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
-        try
+        string id = context.Request.Form["id"];
+        string ten_pbg = context.Request.Form["ten_phienbangia"];
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            string ten_pbg = context.Request.Form["ten_phienbangia"];
-
-
-            md_phienbangia object_ = db.md_phienbangia.Where(p => p.md_phienbangia_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                var object_ = db.md_phienbangia.Where(p => p.md_phienbangia_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0 & object_.ten_phienbangia != ten_pbg)
+                {
+                    msg = "Lỗi: đã tồn tại phiên bản giá \"" + ten_pbg + "\"";
+                }
+                else
+                {
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
             }
-            else if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0 & object_.ten_phienbangia != ten_pbg)
+            catch (Exception ex)
             {
-                msg = "false#Lỗi: đã tồn tại phiên bản giá \"" + ten_pbg + "\"";
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_phienbangia";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
-                /*db = new EntityContext();
-				if(md_trangthai_id == "HIEULUC"){
-					foreach(md_phienbangia pbg in db.md_phienbangia.Where(
-					s=>s.md_phienbangia_id != object_.md_phienbangia_id & s.md_trangthai_id == "HIEULUC" & s.md_banggia_id == object_.md_banggia_id)){
-						pbg.md_trangthai_id = "SOANTHAO";
-					}
-				}
-				db.SaveChanges();*/
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 
@@ -407,11 +410,6 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
         }
 
         context.Response.Write(msg);
-    }
-
-    public void CA_01_ExportPBanGia(HttpContext context)
-    {
-
     }
 
     public bool IsReusable

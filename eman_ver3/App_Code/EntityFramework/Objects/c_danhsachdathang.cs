@@ -13,6 +13,18 @@
                         public bool? anco_check { get; set; }
                 
 						
+                        #region c_danhsachdathang_bophancapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_bophantao_wintaFN
+                        
+                        #endregion c_danhsachdathang_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region c_danhsachdathang_c_danhsachdathang_id_wintaFN
                         
                         #endregion c_danhsachdathang_c_danhsachdathang_id_wintaFN
@@ -203,6 +215,54 @@
                         
                         #endregion c_danhsachdathang_trangthai_wintaFN
                         public string trangthai { get; set; }
+                
+						
+                        #region c_danhsachdathang_vaitrocapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_vaitrotao_wintaFN
+                        
+                        #endregion c_danhsachdathang_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_bophancapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_bophantao_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_nguoicapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_nguoitao_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_value_vaitrotao_wintaFN
+                        
+                        #endregion c_danhsachdathang_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

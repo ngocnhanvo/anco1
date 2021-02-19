@@ -1,38 +1,32 @@
-﻿<table class="cl_table_menu" >
+﻿<table class="cl_table_menu">
     <!-- thong tin tai khoan -->
-    <tr style="width:100%" height="34px">
-        <td colspan = "6" style="cursor:pointer">
-            <img  id="Img2" height="18px" style="  margin: 0px 0 0 9px;"  alt="" src="images/Menu/menu_user.png"/>
-                <a id="a_user" title="xem chi tiết" class="cl_a_btnthongtinnguoidung" onclick="xemthongtinchitiet()"></a>
-                <img class="cl_img_btncanhbao" id="Img4" style="  margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png"/>
-                <a onclick="chatbox_vu()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
-                <span title="Thoát chương trình" onclick="logout()" class="span_logout glyphicon glyphicon-off"></span>
+    <tr id="trFirstUser" style="width:100%" height="34px">
+        <td colspan="6" style="cursor:pointer; position: relative">
+            <img id="Img2" height="18px" style="margin: 0px 0 0 9px;" alt="" src="images/Menu/menu_user.png" />
+            <a id="a_user" title="xem chi tiết" class="cl_a_btnthongtinnguoidung" onclick="xemthongtinchitiet()"></a>
+            <img class="cl_img_btncanhbao" id="Img4" style="margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png" />
+            <a onclick="link_report()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
+            <span title="Thoát chương trình" onclick="logout()" class="span_logout glyphicon glyphicon-off"></span>
         </td>
     </tr>
 
     <tr>
         <!--menu -->
-        <td class="menu_td_menuchinh" style="max-width: 220px;" colspan="6" valign = "top">
-        <div class = "cl_div_menu">
-            <div class="menu_div_dongkhung">
-            <table style="width: 100%;margin: 7 0 0 0; border-collapse: collapse; ">
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-            </table>
-            </div>
+        <td class="menu_td_menuchinh" style="max-width: 220px;" colspan="6" valign="top">
+            <div class="cl_div_menu">
+                <div class="menu_div_dongkhung">
+                    <table style="width: 100%;margin: 7px 0 0 0; border-collapse: collapse; ">
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </td>
         <!--#menu -->
@@ -94,14 +88,12 @@
         else {
 			$('#div_' + e).css('padding', '4px 0 3px 0');
 			$('#div_' + e + ' > a').css('text-shadow','1px 1px 1px #F16B6B');
-			
+
 			$(this_sel).addClass('menu_btndanhan');
 			$(this_sel).fadeIn( 200, function(){
 				$(this).removeAttr('style');
-				//$(this).parent().css('background-color','#FFF');
 			});
         }
-        //$('.menu_td_menuchinh tr td table tr td div table tr td span').css('font-weight', 'normal');
     }
 
 
@@ -123,7 +115,7 @@
         //lam moi gia tri ten cho su kien url of clicking events
         $('#input_tenmenu0').val(q);
         $('#input_tenmenu1').val(c);
-        $('.cl_td_urlmenu').empty();
+        $('.cl_td_urlmenu > div').empty();
 
         $('#input_tenmodule1').val("");
         $('#input_tenmodule2').val("");
@@ -131,7 +123,7 @@
         $('#input_trovetrangtruoc').val($('#input_trovetrangtruoc').val() + '/' + 'td_' + e);
 		document.title = "eMan-" + c;
         loadPage('Menu/Content/Content.aspx');
-       
+
     }
 
     function overmouse_menu_lv0(e) {
@@ -152,14 +144,14 @@
         }
     }
 
-
     $('#a_user').append(ma_tk);
-    $('.cl_table_menu').height($('.menu').height() - 6);
-    $('.menu_div_dongkhung').css('height', $('.menu').height() - 36);
 
-    var margin_img = 30 + Number($('#a_user').width()) - 14;
+    click_refreshPage();
+
+    let margin_img = 30 + Number($('#a_user').width()) - 18;
     $('#Img4').css('margin', '0px 3px 0 ' + margin_img + 'px');
-    
+
+    checkNewReport();
 </script>
 
 

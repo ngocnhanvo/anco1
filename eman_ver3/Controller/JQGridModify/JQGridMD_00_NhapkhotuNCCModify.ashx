@@ -192,12 +192,12 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         {
             sp = new md_kho_sanpham();
             sp.md_kho_sanpham_id = id_new;
-            sp.soluong = dh.sl_nhap2;
+            sp.soluong = dh.sl_nhap;
         }
         else
         {
             id_new = sp.md_kho_sanpham_id;
-            sp.soluong = dh.sl_nhap2 + sp.soluong;
+            sp.soluong = dh.sl_nhap + sp.soluong;
         }
         sp.md_kho_id = px.kho;
         sp.md_sanpham_id = dh.md_sanpham_id;
@@ -241,13 +241,13 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         {
             spHSD = new md_kho_sanpham_hansudung();
             spHSD.md_kho_sanpham_hansudung_id = id_new;
-            spHSD.soluong = dh.sl_nhap2;
+            spHSD.soluong = dh.sl_nhap;
             spHSD.ngay_hethan = dh.ngay_hethan;
         }
         else
         {
             id_new = spHSD.md_kho_sanpham_hansudung_id;
-            spHSD.soluong = dh.sl_nhap2 + spHSD.soluong;
+            spHSD.soluong = dh.sl_nhap + spHSD.soluong;
         }
         spHSD.md_kho_sanpham_id = khospId;
         spHSD.md_sanpham_id = dh.md_sanpham_id;
@@ -282,7 +282,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
     {
         string id_new = Helper.getNewId();
         string abc = "";
-        if (dh.sl_nhap2 == 0)
+        if (dh.sl_nhap == 0)
         {
             abc = "abc";
         }
@@ -293,7 +293,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             giao.md_kho_giaodich_id = id_new;
             giao.md_kho_id = px.kho;
             giao.md_sanpham_id = dh.md_sanpham_id;
-            giao.soluong_dichchuyen = dh.sl_nhap2;
+            giao.soluong_dichchuyen = dh.sl_nhap;
             giao.ngaychuyen = px.ngaychuyen;
             giao.kieuchuyen = "Nhập kho";
             giao.dongnhapxuat = px.sochungtu;
@@ -326,8 +326,8 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         //if (sp != null)
         //{
         //    decimal? tsl_trongkho = db.md_kho_sanpham.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.md_kho_id == kho).Select(s => s.soluong).Sum();
-        //    decimal ve1 = (tsl_trongkho.GetValueOrDefault(0) - dh.sl_nhap2.GetValueOrDefault(0)) * sp.giabinhquan.GetValueOrDefault(0);
-        //    decimal ve2 = dh.sl_nhap2.GetValueOrDefault(0) * dh.giatriVND.GetValueOrDefault(0);
+        //    decimal ve1 = (tsl_trongkho.GetValueOrDefault(0) - dh.sl_nhap.GetValueOrDefault(0)) * sp.giabinhquan.GetValueOrDefault(0);
+        //    decimal ve2 = dh.sl_nhap.GetValueOrDefault(0) * dh.giatriVND.GetValueOrDefault(0);
         //    sp.giabinhquan = Math.Ceiling(((ve1 + ve2) / tsl_trongkho).GetValueOrDefault(0));
         //}
     }

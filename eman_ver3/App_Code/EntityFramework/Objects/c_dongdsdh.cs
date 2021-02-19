@@ -13,6 +13,18 @@
                         public bool? anco_check { get; set; }
                 
 						
+                        #region c_dongdsdh_bophancapnhat_wintaFN
+                        
+                        #endregion c_dongdsdh_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region c_dongdsdh_bophantao_wintaFN
+                        
+                        #endregion c_dongdsdh_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region c_dongdsdh_c_danhsachdathang_id_wintaFN
                         
                         #endregion c_dongdsdh_c_danhsachdathang_id_wintaFN
@@ -263,6 +275,54 @@
                         
                         #endregion c_dongdsdh_v2_wintaFN
                         public Decimal? v2 { get; set; }
+                
+						
+                        #region c_dongdsdh_vaitrocapnhat_wintaFN
+                        
+                        #endregion c_dongdsdh_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region c_dongdsdh_vaitrotao_wintaFN
+                        
+                        #endregion c_dongdsdh_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region c_dongdsdh_value_bophancapnhat_wintaFN
+                        
+                        #endregion c_dongdsdh_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region c_dongdsdh_value_bophantao_wintaFN
+                        
+                        #endregion c_dongdsdh_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region c_dongdsdh_value_nguoicapnhat_wintaFN
+                        
+                        #endregion c_dongdsdh_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region c_dongdsdh_value_nguoitao_wintaFN
+                        
+                        #endregion c_dongdsdh_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region c_dongdsdh_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion c_dongdsdh_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region c_dongdsdh_value_vaitrotao_wintaFN
+                        
+                        #endregion c_dongdsdh_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                         #region c_dongdsdh_vd_wintaFN

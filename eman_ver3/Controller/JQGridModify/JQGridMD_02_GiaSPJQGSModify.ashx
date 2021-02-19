@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -29,125 +37,151 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
 
     public void add(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string bangGiaID = "";
-            string id = context.Request.Form["id_parent"];
-            string ma_sanpham = context.Request.Form["md_sanpham_id"];
-            string donvitinh = context.Request.Form["md_donvitinhsanpham_id"];
-            var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
 
-            if (sp == null)
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
             {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
-            }
-            else
-            {
-                var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == id).FirstOrDefault();
-                if (pbg == null)
-                    msg = "false#Lỗi: Phiên bản giá không tồn tại.";
+                string bangGiaID = "";
+                string id = context.Request.Form["id_parent"];
+                string ma_sanpham = context.Request.Form["md_sanpham_id"];
+                string donvitinh = context.Request.Form["md_donvitinhsanpham_id"];
+                var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
+
+                if (sp == null)
+                {
+                    msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
+                }
                 else
                 {
-                    bangGiaID = pbg.md_banggia_id;
-                    string chk_sp = db.md_giasanpham.
-                            Where(s => s.md_sanpham_id == sp.md_sanpham_id &
-                            s.md_phienbangia_id == id &
-                            s.md_donvitinhsanpham_id == donvitinh
-                            ).Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
-                    if (chk_sp != null & chk_sp != "")
+                    var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == id).FirstOrDefault();
+                    if (pbg == null)
+                        msg = "false#Lỗi: Phiên bản giá không tồn tại.";
+                    else
                     {
-                        msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                        bangGiaID = pbg.md_banggia_id;
+                        string chk_sp = db.md_giasanpham.
+                                Where(s => s.md_sanpham_id == sp.md_sanpham_id &
+                                s.md_phienbangia_id == id &
+                                s.md_donvitinhsanpham_id == donvitinh
+                                ).Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
+                        if (chk_sp != null & chk_sp != "")
+                        {
+                            msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                        }
                     }
                 }
+
+                if (msg.Length <= 0)
+                {
+                    var gsp = new md_giasanpham();
+                    gsp.md_giasanpham_id = id_new;
+                    gsp.md_banggia_id = bangGiaID;
+                    gsp.md_phienbangia_id = id;
+                    gsp.md_sanpham_id = sp.md_sanpham_id;
+                    gsp.gia = decimal.Parse(context.Request.Form["gia"]);
+                    gsp.md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
+                    gsp.ngaytao = DateTime.Now;
+                    gsp.ngaycapnhat = DateTime.Now;
+                    gsp.nguoitao = Security.id_taikhoan(context);
+                    gsp.nguoicapnhat = gsp.nguoitao;
+                    gsp.mota = context.Request.Form["mota"];
+                    gsp.hoatdong = true;
+                    db.md_giasanpham.Add(gsp);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                var gsp = new md_giasanpham();
-                gsp.md_giasanpham_id = id_new;
-                gsp.md_banggia_id = bangGiaID;
-                gsp.md_phienbangia_id = id;
-                gsp.md_sanpham_id = sp.md_sanpham_id;
-                gsp.gia = decimal.Parse(context.Request.Form["gia"]);
-                gsp.md_donvitinhsanpham_id = context.Request.Form["md_donvitinhsanpham_id"];
-                gsp.ngaytao = DateTime.Now;
-                gsp.ngaycapnhat = DateTime.Now;
-                gsp.nguoitao = Security.id_taikhoan(context);
-                gsp.nguoicapnhat = gsp.nguoitao;
-                gsp.mota = context.Request.Form["mota"];
-                gsp.hoatdong = true;
-                db.md_giasanpham.Add(gsp);
+                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            string ma_sanpham = context.Request.Form["md_sanpham_id"];
-            string donvitinh = context.Request.Form["md_donvitinhsanpham_id"];
-            var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
-            var object_ = db.md_giasanpham.Where(p => p.md_giasanpham_id == id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-            else if (sp == null)
-            {
-                msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
-            }
-            else
-            {
-                string chk_sp = db.md_giasanpham.
-                        Where(s =>
-                        s.md_sanpham_id == sp.md_sanpham_id &
-                        s.md_phienbangia_id == id &
-                        s.md_donvitinhsanpham_id == donvitinh &
-                        s.md_sanpham_id != object_.md_sanpham_id)
-                        .Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
-                if (chk_sp != null & chk_sp != "")
+                string id = context.Request.Form["id"];
+                string ma_sanpham = context.Request.Form["md_sanpham_id"];
+                string donvitinh = context.Request.Form["md_donvitinhsanpham_id"];
+                var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
+                var object_ = db.md_giasanpham.Where(p => p.md_giasanpham_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
                 {
-                    msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                    msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
                 }
+                else if (sp == null)
+                {
+                    msg = "false#Lỗi: Sản phâm \"" + ma_sanpham + "\" không tồn tại.";
+                }
+                else
+                {
+                    string chk_sp = db.md_giasanpham.
+                            Where(s =>
+                            s.md_sanpham_id == sp.md_sanpham_id &
+                            s.md_phienbangia_id == id &
+                            s.md_donvitinhsanpham_id == donvitinh &
+                            s.md_sanpham_id != object_.md_sanpham_id)
+                            .Select(s => s.md_sanpham_id).Take(1).FirstOrDefault();
+                    if (chk_sp != null & chk_sp != "")
+                    {
+                        msg = "false#Lỗi: Mã \"" + ma_sanpham + "\" với đơn vị tính đã tồn tại.";
+                    }
+                }
+
+                if (msg.Length <= 0)
+                {
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_id), sp.md_sanpham_id);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), "VNN_notpost");
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_phienbangia_id), "VNN_notpost");
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_giasanpham";
-                VNN_Function.SetFormValue("md_sanpham_id", sp.md_sanpham_id);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

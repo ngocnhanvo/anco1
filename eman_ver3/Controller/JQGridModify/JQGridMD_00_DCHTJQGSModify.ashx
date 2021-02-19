@@ -10,10 +10,19 @@ using System.Data.SqlClient;
 public class JQGridMD_00_DCHTJQGSModify : IHttpHandler,
 System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        if (Security.id_taikhoan(context) != "") oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+        if (Security.id_taikhoan(context) != "")
+        {
+            oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -44,15 +53,11 @@ System.Web.SessionState.IRequiresSessionState
 
     private void CA_01_HLPLHTJQGS(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
-        Security.id_phongban(context));
         string msg = "";
         var ids = new List<string>();
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
-
 
         using (var transaction = db.Database.BeginTransaction())
         {
@@ -170,7 +175,7 @@ System.Web.SessionState.IRequiresSessionState
                                     if (md_kho_id != khoId)
                                     {
                                         md_kho_id = khoId;
-                                        kq = tao_phieu(db, dcht, md_kho_id, md_sanpham_id, us);
+                                        kq = tao_phieu(db, dcht, md_kho_id, md_sanpham_id, userTK);
                                         id_new = kq[0];
                                         sochungtu = kq[1];
                                         ids.Add(id_new);
@@ -188,18 +193,18 @@ System.Web.SessionState.IRequiresSessionState
                                         soluong_dichchuyen = slLayCP,
                                         dachuyenhet = false,
                                         sapxep = "",
-                                        nguoitao = us.ad_user_id,
-                                        vaitrotao = us.ad_role_id,
-                                        bophantao = us.md_phongban_id,
-                                        value_nguoitao = us.ma_user,
-                                        value_vaitrotao = us.ten_role,
-                                        value_bophantao = us.ten_phongban,
-                                        nguoicapnhat = us.ad_user_id,
-                                        vaitrocapnhat = us.ad_role_id,
-                                        bophancapnhat = us.md_phongban_id,
-                                        value_nguoicapnhat = us.ma_user,
-                                        value_vaitrocapnhat = us.ten_role,
-                                        value_bophancapnhat = us.ten_phongban,
+                                        nguoitao = userTK.ad_user_id,
+                                        vaitrotao = userTK.ad_role_id,
+                                        bophantao = userTK.md_phongban_id,
+                                        value_nguoitao = userTK.ma_user,
+                                        value_vaitrotao = userTK.ten_role,
+                                        value_bophantao = userTK.ten_phongban,
+                                        nguoicapnhat = userTK.ad_user_id,
+                                        vaitrocapnhat = userTK.ad_role_id,
+                                        bophancapnhat = userTK.md_phongban_id,
+                                        value_nguoicapnhat = userTK.ma_user,
+                                        value_vaitrocapnhat = userTK.ten_role,
+                                        value_bophancapnhat = userTK.ten_phongban,
                                         ngaytao = DateTime.Now,
                                         ngaycapnhat = DateTime.Now,
                                         hoatdong = true
@@ -214,14 +219,14 @@ System.Web.SessionState.IRequiresSessionState
                                     giucho.soluong_giucho = slLayCP;
                                     giucho.sctlienquan = sochungtu;
                                     giucho.ngaygiu = DateTime.Now;
-                                    giucho.nguoitao = us.ad_user_id;
-                                    giucho.nguoicapnhat = us.ad_user_id;
+                                    giucho.nguoitao = userTK.ad_user_id;
+                                    giucho.nguoicapnhat = userTK.ad_user_id;
                                     giucho.ngaytao = DateTime.Now;
                                     giucho.ngaycapnhat = DateTime.Now;
-                                    giucho.bophantao = us.md_phongban_id;
-                                    giucho.bophancapnhat = us.md_phongban_id;
-                                    giucho.vaitrotao = us.ad_role_id;
-                                    giucho.vaitrocapnhat = us.ad_role_id;
+                                    giucho.bophantao = userTK.md_phongban_id;
+                                    giucho.bophancapnhat = userTK.md_phongban_id;
+                                    giucho.vaitrotao = userTK.ad_role_id;
+                                    giucho.vaitrocapnhat = userTK.ad_role_id;
                                     giucho.hoatdong = true;
                                     giucho.mota = "";
                                     giucho.lydo = "";
@@ -356,9 +361,6 @@ System.Web.SessionState.IRequiresSessionState
 
     private void CA_01_LKHDHJQGS(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
-        Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -397,18 +399,18 @@ System.Web.SessionState.IRequiresSessionState
                             kh.ngaykehoach = dcht.ngaykehoach;
                             kh.donhang_thamchieu = dcht.donhang_thamchieu;
                             kh.trangthai = "SOANTHAO";
-                            kh.nguoitao = us.ad_user_id;
-                            kh.vaitrotao = us.ad_role_id;
-                            kh.bophantao = us.md_phongban_id;
-                            kh.value_nguoitao = us.ma_user;
-                            kh.value_vaitrotao = us.ten_role;
-                            kh.value_bophantao = us.ten_phongban;
-                            kh.nguoicapnhat = us.ad_user_id;
-                            kh.vaitrocapnhat = us.ad_role_id;
-                            kh.bophancapnhat = us.md_phongban_id;
-                            kh.value_nguoicapnhat = us.ma_user;
-                            kh.value_vaitrocapnhat = us.ten_role;
-                            kh.value_bophancapnhat = us.ten_phongban;
+                            kh.nguoitao = userTK.ad_user_id;
+                            kh.vaitrotao = userTK.ad_role_id;
+                            kh.bophantao = userTK.md_phongban_id;
+                            kh.value_nguoitao = userTK.ma_user;
+                            kh.value_vaitrotao = userTK.ten_role;
+                            kh.value_bophantao = userTK.ten_phongban;
+                            kh.nguoicapnhat = userTK.ad_user_id;
+                            kh.vaitrocapnhat = userTK.ad_role_id;
+                            kh.bophancapnhat = userTK.md_phongban_id;
+                            kh.value_nguoicapnhat = userTK.ma_user;
+                            kh.value_vaitrocapnhat = userTK.ten_role;
+                            kh.value_bophancapnhat = userTK.ten_phongban;
                             kh.ngaytao = DateTime.Now;
                             kh.ngaycapnhat = DateTime.Now;
                             kh.hoatdong = true;
@@ -453,18 +455,18 @@ System.Web.SessionState.IRequiresSessionState
                                         md_phanxuong_id = sp.md_phanxuong_id,
                                         noigiaohang = sp.noigiaohang,
 
-                                        nguoitao = us.ad_user_id,
-                                        vaitrotao = us.ad_role_id,
-                                        bophantao = us.md_phongban_id,
-                                        value_nguoitao = us.ma_user,
-                                        value_vaitrotao = us.ten_role,
-                                        value_bophantao = us.ten_phongban,
-                                        nguoicapnhat = us.ad_user_id,
-                                        vaitrocapnhat = us.ad_role_id,
-                                        bophancapnhat = us.md_phongban_id,
-                                        value_nguoicapnhat = us.ma_user,
-                                        value_vaitrocapnhat = us.ten_role,
-                                        value_bophancapnhat = us.ten_phongban,
+                                        nguoitao = userTK.ad_user_id,
+                                        vaitrotao = userTK.ad_role_id,
+                                        bophantao = userTK.md_phongban_id,
+                                        value_nguoitao = userTK.ma_user,
+                                        value_vaitrotao = userTK.ten_role,
+                                        value_bophantao = userTK.ten_phongban,
+                                        nguoicapnhat = userTK.ad_user_id,
+                                        vaitrocapnhat = userTK.ad_role_id,
+                                        bophancapnhat = userTK.md_phongban_id,
+                                        value_nguoicapnhat = userTK.ma_user,
+                                        value_vaitrocapnhat = userTK.ten_role,
+                                        value_bophancapnhat = userTK.ten_phongban,
                                         ngaytao = DateTime.Now,
                                         ngaycapnhat = DateTime.Now,
                                         hoatdong = true
@@ -500,14 +502,10 @@ System.Web.SessionState.IRequiresSessionState
 
     public void CA_01_UpdateTHDH(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
-        Security.id_phongban(context));
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
-        bool commit = true;
         try
         {
             foreach (var dcht in db.c_doichieuhangton.
@@ -525,7 +523,7 @@ System.Web.SessionState.IRequiresSessionState
                     foreach (var dkdh in db.c_doichieuhangton_dkdh.
                             Where(s => s.c_doichieuhangton_id == dcht.c_doichieuhangton_id).ToList())
                     {
-                        add_thdh(db, dkdh, us);
+                        add_thdh(db, dkdh, userTK);
                     }
                     db.SaveChanges();
 
@@ -657,8 +655,6 @@ System.Web.SessionState.IRequiresSessionState
 
     public void CA_01_DCHTJQGS(HttpContext context)
     {
-        var db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -733,19 +729,19 @@ System.Web.SessionState.IRequiresSessionState
                                 add_dongtonkho(db, cddh.c_doichieuhangton_id, sanpham.md_sanpham_id,
                                 sanpham.md_donvitinhsanpham_id, sanpham.mota_tiengviet, sanpham.mota_tienganh,
                                 sl_ThanhPham, sanpham.mota, issanpham, sanpham.md_sanpham_id, cddh.sl_dathang.Value,
-                                1, sanpham.md_kho_id, sanpham.ten_kho, us,
+                                1, sanpham.md_kho_id, sanpham.ten_kho, userTK,
                                 cddh.sl_giamhanngach.GetValueOrDefault(0), sl_ThanhPham2);
                             }
 
                             //Neu hang hoa ko co trog kho hoac it hon so luong dat hang thi tach BOM
                             decimal slkho_tru_dathang = sl_ThanhPham - cddh.sl_dathang.Value;
-                            find_BOM(db, cddh, us, cddh.md_sanpham_id, spBomId);
+                            find_BOM(db, cddh, userTK, cddh.md_sanpham_id, spBomId);
                             //end tinh ton kho
 
                             //start tinh du kien dat hang
                             add_dongdukiendathang(db, cddh.c_doichieuhangton_id, cddh.md_sanpham_id,
                                 cddh.md_sanpham_id, cddh.sl_dathang.Value,
-                                cddh.sl_dathang.Value, cddh.sl_giamhanngach.GetValueOrDefault(0), 1, us);
+                                cddh.sl_dathang.Value, cddh.sl_giamhanngach.GetValueOrDefault(0), 1, userTK);
                             //end tinh du kien dat hang
 
                             //start tinh ton kho kieu dang
@@ -756,7 +752,7 @@ System.Web.SessionState.IRequiresSessionState
                             {
                                 trangthai_tkkd = "Có";
                             }
-                            add_tonkhokieudang(db, cddh.c_doichieuhangton_id, ma_sanpham, trangthai_tkkd, us);
+                            add_tonkhokieudang(db, cddh.c_doichieuhangton_id, ma_sanpham, trangthai_tkkd, userTK);
                             //end tinh ton kho kieu dang
                         }
 
@@ -790,20 +786,20 @@ System.Web.SessionState.IRequiresSessionState
                                 sl_dalay = 0,
                                 sl_lay = sllay - dcht_tk.sl_giamhanngach.GetValueOrDefault(0),
 
-                                nguoitao = us.ad_user_id,
-                                vaitrotao = us.ad_role_id,
-                                bophantao = us.md_phongban_id,
+                                nguoitao = userTK.ad_user_id,
+                                vaitrotao = userTK.ad_role_id,
+                                bophantao = userTK.md_phongban_id,
 
-                                value_nguoitao = us.ma_user,
-                                value_vaitrotao = us.ten_role,
-                                value_bophantao = us.ten_phongban,
+                                value_nguoitao = userTK.ma_user,
+                                value_vaitrotao = userTK.ten_role,
+                                value_bophantao = userTK.ten_phongban,
 
-                                nguoicapnhat = us.ad_user_id,
-                                vaitrocapnhat = us.ad_role_id,
-                                bophancapnhat = us.md_phongban_id,
-                                value_nguoicapnhat = us.ma_user,
-                                value_vaitrocapnhat = us.ten_role,
-                                value_bophancapnhat = us.ten_phongban,
+                                nguoicapnhat = userTK.ad_user_id,
+                                vaitrocapnhat = userTK.ad_role_id,
+                                bophancapnhat = userTK.md_phongban_id,
+                                value_nguoicapnhat = userTK.ma_user,
+                                value_vaitrocapnhat = userTK.ten_role,
+                                value_bophancapnhat = userTK.ten_phongban,
 
                                 ngaytao = DateTime.Now,
                                 ngaycapnhat = DateTime.Now,
@@ -871,7 +867,7 @@ System.Web.SessionState.IRequiresSessionState
                                         1,
                                         "",
                                         "",
-                                        us,
+                                        userTK,
                                         0,
                                         sl.GetValueOrDefault(0));
                                     }
@@ -1207,65 +1203,18 @@ System.Web.SessionState.IRequiresSessionState
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id_parent = context.Request.Form["id_parent"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "c_doichieuhangton";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id_parent = context.Request.Form["id_parent"];
-            string object_ = db.c_doichieuhangton.Where(p => p.c_doichieuhangton_id.Equals(context.Request.Form["id"])).Select(s => s.c_doichieuhangton_id).Take(1).FirstOrDefault();
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-
-            if (msg.Length <= 0)
-            {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_doichieuhangton";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())

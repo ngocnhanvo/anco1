@@ -28,7 +28,7 @@
 
 <script type="text/javascript">
     var loaddautien_content = 0;
-    $('.cl_table_noidung').height($('.noidung').height());
+    //$('.cl_table_noidung').height($('.noidung').height());
 
     $('.cl_td_module').addClass('loading');
     enable_timer = false;
@@ -41,7 +41,7 @@
             $('.cl_td_module').removeClass('loading');
             $('.cl_td_module').html(msg);
 
-            $('.cl_td_urlmenu').empty();
+            $('.cl_td_urlmenu > div').empty();
             $('.cl_td_noidungmodule').html('<div class="div_noidung_menu loading"></div>');
 
             if ($("#input_nhanback").val('false'))
@@ -76,7 +76,7 @@
         if ($("#input_nhanback").val() == 'false') { 
             $('.div_noidung_menu').css('height', '50px');
             $('.div_noidung_menu').addClass('loading');
-            try { xhr_content.abort(); } catch (r) { console.log(r); }
+            try { xhr_content.abort(); } catch (r) { }
             enable_timer = false;
             xhr_content = $.ajax({
                 type: "GET",
@@ -92,6 +92,7 @@
     }
 
     function loadModule(e, d, c, q) {
+        let divClTdUrlmenu = $('.cl_td_urlmenu > div');
         // tao hieu ung loading
         $('.border_div_modulelv1').removeAttr('style');
         var congthem = -12;
@@ -152,13 +153,15 @@
             $('#input_tenmodule0').val(q);
 
             // load duong dan
-            $('.cl_td_urlmenu').html('<span class="cl_span_urlmenu">' +
-                $('#input_tenmenu0').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
-                $('#input_tenmenu1').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' + 
-                ' <span>' + $('#input_tenmodule0').val() + '</span>' +
-                ' </span>');
+            divClTdUrlmenu.html(
+                '<span class="cl_span_urlmenu">' +
+                    ' <span>' + $('#input_tenmenu0').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
+                    ' <span>' + $('#input_tenmenu1').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' + 
+                    ' <span>' + $('#input_tenmodule0').val() + '</span>' +
+                '</span>');
+            divClTdUrlmenu.attr('title', divClTdUrlmenu.text());
 
         }
         // Neu nhap vao module thu 1
@@ -197,15 +200,17 @@
             // lay ten mod cua mod thu 2
             $('#input_tenmodule1').val(q);
 
-            $('.cl_td_urlmenu').html('<span class="cl_span_urlmenu">' +
-                $('#input_tenmenu0').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
-                $('#input_tenmenu1').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
-                ' <span>' + $('#input_tenmodule0').val() + '</span>' +
-                ' <span class="span_muiten">&rarr;</span>' +
-                ' <span>' + $('#input_tenmodule1').val() + '</span>' +
-                '  </span>');
+            divClTdUrlmenu.html(
+                '<span class="cl_span_urlmenu">' +
+                    ' <span>' + $('#input_tenmenu0').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
+                    ' <span>' + $('#input_tenmenu1').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
+                    ' <span>' + $('#input_tenmodule0').val() + '</span>' +
+                    ' <span class="span_muiten">&rarr;</span>' +
+                    ' <span>' + $('#input_tenmodule1').val() + '</span>' +
+                '</span>');
+            divClTdUrlmenu.attr('title', divClTdUrlmenu.text());
         }
         // Neu nhap vao module thu 2
         else if (c == 2) {
@@ -218,29 +223,25 @@
             // lay ten mod cua mod thu 3
             $('#input_tenmodule2').val(q);
 
-            $('.cl_td_urlmenu').empty();
-            $('.cl_td_urlmenu').append('<span class="cl_span_urlmenu">' +
-                $('#input_tenmenu0').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
-                $('#input_tenmenu1').val() +
-                ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
-                ' <span>' + $('#input_tenmodule0').val() + '</span>' +
-                ' <span class="span_muiten">&rarr;</span> ' +
-                ' <span>' + $('#input_tenmodule1').val() + '</span>' +
-                ' <span class="span_muiten">&rarr;</span> ' +
-                ' <span>' + $('#input_tenmodule2').val() + '</span>' +
-                '  </span>');
+            divClTdUrlmenu.html(
+                '<span class="cl_span_urlmenu">' +
+                    ' <span>' + $('#input_tenmenu0').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
+                    ' <span>' + $('#input_tenmenu1').val() + '</span>' +
+                    ' <span class="span_muiten">&rsaquo;&rsaquo;</span>' +
+                    ' <span>' + $('#input_tenmodule0').val() + '</span>' +
+                    ' <span class="span_muiten">&rarr;</span> ' +
+                    ' <span>' + $('#input_tenmodule1').val() + '</span>' +
+                    ' <span class="span_muiten">&rarr;</span> ' +
+                    ' <span>' + $('#input_tenmodule2').val() + '</span>' +
+                '</span>');
+            divClTdUrlmenu.attr('title', divClTdUrlmenu.text());
 
             $('.cl_td_module').css('height', td2_0);
             $('.div_noidung_menu').css('margin', margin_nd2_0);
             $('#input_docaogrid').val(cap2_0 + Number(congthem));
 
         }
-
-        //if (Browser == 'Firefox' & c > 0) {
-        //    var dodaimoi = Number($('#input_docaogrid').val()) + 8;
-        //    $('#input_docaogrid').val(dodaimoi);
-        //}
 
         loadnoidung(d);
 		$('.span_' + e).addClass('module_spanselect');

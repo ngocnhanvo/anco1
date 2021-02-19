@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_01_DDHPXModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -29,65 +37,18 @@ public class JQGridMD_01_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "c_nhucauvattu_ddhpx";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            string object_ = db.c_nhucauvattu_ddhpx.Where(p => p.c_nhucauvattu_ddhpx_id == id).Select(s => s.c_nhucauvattu_ddhpx_id).Take(1).FirstOrDefault();
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-
-            if (msg.Length <= 0)
-            {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_nhucauvattu_ddhpx";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "", msg_del = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = "";
@@ -152,11 +113,11 @@ public class JQGridMD_01_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 msg = msg_success;
                 transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
             }
             else
                 transaction.Rollback();
         }
-        VNN_Function.loaddulieu_Auto(db, ma_module);
         context.Response.Write(msg);
     }
 

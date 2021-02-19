@@ -7,6 +7,18 @@
                     public partial class md_tygia
                     {
                         
+                        #region md_tygia_bophancapnhat_wintaFN
+                        
+                        #endregion md_tygia_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_tygia_bophantao_wintaFN
+                        
+                        #endregion md_tygia_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_tygia_chia_cho_wintaFN
                         
                         #endregion md_tygia_chia_cho_wintaFN
@@ -89,6 +101,54 @@
                         
                         #endregion md_tygia_tu_dongtien_id_wintaFN
                         public string tu_dongtien_id { get; set; }
+                
+						
+                        #region md_tygia_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_tygia_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_tygia_vaitrotao_wintaFN
+                        
+                        #endregion md_tygia_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_tygia_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_tygia_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_tygia_value_bophantao_wintaFN
+                        
+                        #endregion md_tygia_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_tygia_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_tygia_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_tygia_value_nguoitao_wintaFN
+                        
+                        #endregion md_tygia_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_tygia_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_tygia_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_tygia_value_vaitrotao_wintaFN
+                        
+                        #endregion md_tygia_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

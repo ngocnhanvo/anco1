@@ -1,5 +1,7 @@
-﻿let mainhub = $.connection.mainhub;
+﻿let keySignalR = window.location.origin.replace(/\//g, '_').replace(/:/g, '_').replace(/\./g, '_');
+let mainhub = $.connection.mainhub;
 mainhub.vnnObj = { };
+mainhub.channelB = new BroadcastChannel(keySignalR);
 
 let retrySignalR = function (type, func) {
     let text = '';
@@ -102,33 +104,33 @@ mainhub.client["ChinhSuaMauExcel"] = function (data) {
     $('#dlg_gridSmallgridMD_00_QuanLyMauInExcel').parent().dialogCenter()
 };
 
+mainhub.client["sendReportToClient"] = function (data) {
+    if (data.end == true) {
+        let thongbao = JSON.parse(data.mess);
+        let nguoinhans = JSON.parse(thongbao.nguoinhan);
+        let checkExist = nguoinhans.filter(function (a) { return a.user == ma_tk }).length > 0;
+        if (checkExist) {
+            checkNewReport();
+            mainhub.channelB.postMessage({ checkNewReport: true });
+        }
+    }
+};
 
+mainhub.channelB.onmessage = function (e) {
+    if (e.data.checkNewReport) {
+        checkNewReport();
+    }
+    else if (e.data.stopHub) {
+        $.connection.hub.stop();
+    }
+};
 
 window.addEventListener('focus', function () {
     if ($.connection.hub.state !== 1) {
+        mainhub.channelB.postMessage({ stopHub: true });
         $.connection.hub.start();
-        console.error("hub: start");
     }
 });
-
-window.addEventListener('blur', function () {
-    if ($.connection.hub.state == 1) {
-        $.connection.hub.stop();
-        console.error("hub: stop");
-    }
-});
-
-//setInterval(function () {
-//    if ($.connection.hub.state !== 1) {
-//        $.connection.hub.start()
-//            .done(function () {
-
-//            })
-//            .fail(function () {
-
-//            });
-//    }
-//}, 5000);
 
 
 

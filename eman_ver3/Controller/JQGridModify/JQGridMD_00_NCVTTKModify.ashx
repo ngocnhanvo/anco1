@@ -6,12 +6,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -24,7 +31,6 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 this.del(context);
                 break;
             case "CA_01_TinhNhuCauVatTu":
-                var db = new EntityContext();
                 this.CA_01_TinhNhuCauVatTu(context, db, null);
                 break;
             case "CA_01_TaoYCMuaVT":
@@ -36,9 +42,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
     }
     public void CA_01_TaoYCMuaVT(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", msg_success = "";
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string[] vnn = context.Request.Form["id"].Split(',');
         int i = 1;
 
@@ -92,18 +96,18 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                 ncvt_name = ncvt.ten_nhucau,
                                 nguoiyeucau = "",
                                 ngaycan = ncvt.ngayyeucau,
-                                nguoitao = us.ad_user_id,
-                                vaitrotao = us.ad_role_id,
-                                bophantao = us.md_phongban_id,
-                                value_nguoitao = us.ma_user,
-                                value_vaitrotao = us.ten_role,
-                                value_bophantao = us.ten_phongban,
-                                nguoicapnhat = us.ad_user_id,
-                                vaitrocapnhat = us.ad_role_id,
-                                bophancapnhat = us.md_phongban_id,
-                                value_nguoicapnhat = us.ma_user,
-                                value_vaitrocapnhat = us.ten_role,
-                                value_bophancapnhat = us.ten_phongban,
+                                nguoitao = userTK.ad_user_id,
+                                vaitrotao = userTK.ad_role_id,
+                                bophantao = userTK.md_phongban_id,
+                                value_nguoitao = userTK.ma_user,
+                                value_vaitrotao = userTK.ten_role,
+                                value_bophantao = userTK.ten_phongban,
+                                nguoicapnhat = userTK.ad_user_id,
+                                vaitrocapnhat = userTK.ad_role_id,
+                                bophancapnhat = userTK.md_phongban_id,
+                                value_nguoicapnhat = userTK.ma_user,
+                                value_vaitrocapnhat = userTK.ten_role,
+                                value_bophancapnhat = userTK.ten_phongban,
                                 ngaytao = DateTime.Now,
                                 ngaycapnhat = DateTime.Now,
                                 mota = "",
@@ -121,18 +125,18 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                     md_sanpham_id = ncvt_ycmvt.md_sanpham_id,
                                     md_donvitinhsanpham_id = ncvt_ycmvt.md_donvitinhsanpham_id,
                                     soluong_yeucau = ncvt_ycmvt.soluong.Value,
-                                    nguoitao = us.ad_user_id,
-                                    vaitrotao = us.ad_role_id,
-                                    bophantao = us.md_phongban_id,
-                                    value_nguoitao = us.ma_user,
-                                    value_vaitrotao = us.ten_role,
-                                    value_bophantao = us.ten_phongban,
-                                    nguoicapnhat = us.ad_user_id,
-                                    vaitrocapnhat = us.ad_role_id,
-                                    bophancapnhat = us.md_phongban_id,
-                                    value_nguoicapnhat = us.ma_user,
-                                    value_vaitrocapnhat = us.ten_role,
-                                    value_bophancapnhat = us.ten_phongban,
+                                    nguoitao = userTK.ad_user_id,
+                                    vaitrotao = userTK.ad_role_id,
+                                    bophantao = userTK.md_phongban_id,
+                                    value_nguoitao = userTK.ma_user,
+                                    value_vaitrotao = userTK.ten_role,
+                                    value_bophantao = userTK.ten_phongban,
+                                    nguoicapnhat = userTK.ad_user_id,
+                                    vaitrocapnhat = userTK.ad_role_id,
+                                    bophancapnhat = userTK.md_phongban_id,
+                                    value_nguoicapnhat = userTK.ma_user,
+                                    value_vaitrocapnhat = userTK.ten_role,
+                                    value_bophancapnhat = userTK.ten_phongban,
                                     ngaytao = DateTime.Now,
                                     ngaycapnhat = DateTime.Now,
                                     mota = "",
@@ -167,7 +171,6 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
     public void CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, System.Data.Entity.DbContextTransaction transaction)
     {
         string msg = "", msg_success = "";
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string[] vnn = context.Request.Form["id"].Split(',');
         bool SingleFunc = false;
         if (transaction == null)
@@ -239,19 +242,19 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                     c_nhucauvattu_dhpx_id = Helper.getNewId(),
                                     c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
                                     md_dondathangphanxuong_id = ddhpx.c_kehoachdathang_dhcpx_id,
-                                    nguoitao = us.ad_user_id,
-                                    vaitrotao = us.ad_role_id,
-                                    bophantao = us.md_phongban_id,
-                                    value_nguoitao = us.ma_user,
-                                    value_vaitrotao = us.ten_role,
-                                    value_bophantao = us.ten_phongban,
+                                    nguoitao = userTK.ad_user_id,
+                                    vaitrotao = userTK.ad_role_id,
+                                    bophantao = userTK.md_phongban_id,
+                                    value_nguoitao = userTK.ma_user,
+                                    value_vaitrotao = userTK.ten_role,
+                                    value_bophantao = userTK.ten_phongban,
 
-                                    nguoicapnhat = us.ad_user_id,
-                                    vaitrocapnhat = us.ad_role_id,
-                                    bophancapnhat = us.md_phongban_id,
-                                    value_nguoicapnhat = us.ma_user,
-                                    value_vaitrocapnhat = us.ten_role,
-                                    value_bophancapnhat = us.ten_phongban,
+                                    nguoicapnhat = userTK.ad_user_id,
+                                    vaitrocapnhat = userTK.ad_role_id,
+                                    bophancapnhat = userTK.md_phongban_id,
+                                    value_nguoicapnhat = userTK.ma_user,
+                                    value_vaitrocapnhat = userTK.ten_role,
+                                    value_bophancapnhat = userTK.ten_phongban,
 
                                     ngaytao = DateTime.Now,
                                     ngaycapnhat = DateTime.Now,
@@ -294,18 +297,18 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                         {
                             ncvt_ddhpx.soluong += dhpx_cdh.soluong.Value;
                         }
-                        ncvt_ddhpx.nguoitao = us.ad_user_id;
-                        ncvt_ddhpx.vaitrotao = us.ad_role_id;
-                        ncvt_ddhpx.bophantao = us.md_phongban_id;
-                        ncvt_ddhpx.value_nguoitao = us.ma_user;
-                        ncvt_ddhpx.value_vaitrotao = us.ten_role;
-                        ncvt_ddhpx.value_bophantao = us.ten_phongban;
-                        ncvt_ddhpx.nguoicapnhat = us.ad_user_id;
-                        ncvt_ddhpx.vaitrocapnhat = us.ad_role_id;
-                        ncvt_ddhpx.bophancapnhat = us.md_phongban_id;
-                        ncvt_ddhpx.value_nguoicapnhat = us.ma_user;
-                        ncvt_ddhpx.value_vaitrocapnhat = us.ten_role;
-                        ncvt_ddhpx.value_bophancapnhat = us.ten_phongban;
+                        ncvt_ddhpx.nguoitao = userTK.ad_user_id;
+                        ncvt_ddhpx.vaitrotao = userTK.ad_role_id;
+                        ncvt_ddhpx.bophantao = userTK.md_phongban_id;
+                        ncvt_ddhpx.value_nguoitao = userTK.ma_user;
+                        ncvt_ddhpx.value_vaitrotao = userTK.ten_role;
+                        ncvt_ddhpx.value_bophantao = userTK.ten_phongban;
+                        ncvt_ddhpx.nguoicapnhat = userTK.ad_user_id;
+                        ncvt_ddhpx.vaitrocapnhat = userTK.ad_role_id;
+                        ncvt_ddhpx.bophancapnhat = userTK.md_phongban_id;
+                        ncvt_ddhpx.value_nguoicapnhat = userTK.ma_user;
+                        ncvt_ddhpx.value_vaitrocapnhat = userTK.ten_role;
+                        ncvt_ddhpx.value_bophancapnhat = userTK.ten_phongban;
                         ncvt_ddhpx.ngaytao = DateTime.Now;
                         ncvt_ddhpx.ngaycapnhat = DateTime.Now;
                         ncvt_ddhpx.mota = "";
@@ -340,18 +343,18 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                             {
                                 ncvt_ycmvt.soluong += sltd;
                             }
-                            ncvt_ycmvt.nguoitao = us.ad_user_id;
-                            ncvt_ycmvt.vaitrotao = us.ad_role_id;
-                            ncvt_ycmvt.bophantao = us.md_phongban_id;
-                            ncvt_ycmvt.value_nguoitao = us.ma_user;
-                            ncvt_ycmvt.value_vaitrotao = us.ten_role;
-                            ncvt_ycmvt.value_bophantao = us.ten_phongban;
-                            ncvt_ycmvt.nguoicapnhat = us.ad_user_id;
-                            ncvt_ycmvt.vaitrocapnhat = us.ad_role_id;
-                            ncvt_ycmvt.bophancapnhat = us.md_phongban_id;
-                            ncvt_ycmvt.value_nguoicapnhat = us.ma_user;
-                            ncvt_ycmvt.value_vaitrocapnhat = us.ten_role;
-                            ncvt_ycmvt.value_bophancapnhat = us.ten_phongban;
+                            ncvt_ycmvt.nguoitao = userTK.ad_user_id;
+                            ncvt_ycmvt.vaitrotao = userTK.ad_role_id;
+                            ncvt_ycmvt.bophantao = userTK.md_phongban_id;
+                            ncvt_ycmvt.value_nguoitao = userTK.ma_user;
+                            ncvt_ycmvt.value_vaitrotao = userTK.ten_role;
+                            ncvt_ycmvt.value_bophantao = userTK.ten_phongban;
+                            ncvt_ycmvt.nguoicapnhat = userTK.ad_user_id;
+                            ncvt_ycmvt.vaitrocapnhat = userTK.ad_role_id;
+                            ncvt_ycmvt.bophancapnhat = userTK.md_phongban_id;
+                            ncvt_ycmvt.value_nguoicapnhat = userTK.ma_user;
+                            ncvt_ycmvt.value_vaitrocapnhat = userTK.ten_role;
+                            ncvt_ycmvt.value_bophancapnhat = userTK.ten_phongban;
                             ncvt_ycmvt.ngaytao = DateTime.Now;
                             ncvt_ycmvt.ngaycapnhat = DateTime.Now;
                             ncvt_ycmvt.mota = "";
@@ -388,7 +391,6 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())
@@ -452,39 +454,48 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        try
+
+        using (var transaction = db.Database.BeginTransaction())
         {
-            string id = context.Request.Form["id"];
-            string object_ = db.c_nhucauvattu.Where(p => p.c_nhucauvattu_id == id).Select(s => s.c_nhucauvattu_id).Take(1).FirstOrDefault();
-            if (object_ == null)
+            try
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                string id = context.Request.Form["id"];
+                var object_ = db.c_nhucauvattu.Where(p => p.c_nhucauvattu_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa.";
+                }
+                else
+                {
+                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_nhucauvattu";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
             }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

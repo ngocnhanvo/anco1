@@ -40,7 +40,7 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
 
                 if (us != null)
                 {
-                    Dictionary<string, object> userJSon = new Dictionary<string, object>();
+                    var userJSon = new Dictionary<string, object>();
                     userJSon["ad_user_id"] = us.ad_user_id;
                     userJSon["ma_user"] = us.ma_user;
                     userJSon["mauBackground"] = us.mauBackground;

@@ -6,11 +6,19 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -38,203 +46,63 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_KH_ThayDoiTT(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
         string check_1 = context.Request.Form["check"];
         string[] vnn = id.Split(',');
-        try
-        {
-            foreach (var dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
-            {
-                if (dsdh.trangthai != "DAHET")
-                {
-                    if (check_1 == "1")
-                    {
-                        dsdh.trangthai = "DAHET";
 
-                    }
-                    else if (check_1 == "2")
-                    {
-                        dsdh.trangthai = "KETTHUC";
-                    }
-                    msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
-                }
-                else if (dsdh.trangthai != "KETTHUC")
-                {
-                    dsdh.trangthai = "SOANTHAO";
-                    msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
-                }
-                else
-                {
-                    msg = "<div style='color:red'> Chuyển đổi thất bại, kế hoạch này đã kết thúc</div>";
-                }
-            }
-            if (msg.Length <= 0)
-            {
-                db.SaveChanges();
-                msg = msg_success;
-            }
-        }
-        catch (Exception ex)
+        using (var transaction = db.Database.BeginTransaction())
         {
-            msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
+            try
+            {
+                foreach (var dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
+                {
+                    if (dsdh.trangthai != "DAHET")
+                    {
+                        if (check_1 == "1")
+                        {
+                            dsdh.trangthai = "DAHET";
+
+                        }
+                        else if (check_1 == "2")
+                        {
+                            dsdh.trangthai = "KETTHUC";
+                        }
+                        msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
+                    }
+                    else if (dsdh.trangthai != "KETTHUC")
+                    {
+                        dsdh.trangthai = "SOANTHAO";
+                        msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
+                    }
+                    else
+                    {
+                        msg = "<div style='color:red'> Chuyển đổi thất bại, kế hoạch này đã kết thúc</div>";
+                    }
+                }
+                if (msg.Length <= 0)
+                {
+                    db.SaveChanges();
+                    msg = msg_success;
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
+            }
         }
         context.Response.Write(msg);
     }
 
     private void CA_01_TYeuCau(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
-        Security.id_phongban(context));
-        string msg = "", msg_success = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        string id = context.Request.Form["id"];
-        string[] vnn = id.Split(',');
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", 1);
-        string id_new = Helper.getNewId();
-        string sct_donhang = "", donhang_thamchieu = "";
-        try
-        {
-            foreach (c_kehoachdathang kh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)))
-            {
-                int a = 0, b = 0;
-                var check_dhcpx = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kh.c_kehoachdathang_id);
-                if (kh.trangthai != "HIEULUC")
-                {
-                    msg += "<div style='color:red'>Dòng \"" + kh.ten_kh + "\" chưa hiệu lực.</div>";
-                    break;
-                }
-                else if (check_dhcpx.Count() <= 0)
-                {
-                    msg += "<div style='color:red'>Dòng \"" + kh.ten_kh + "\"không có dòng đặt hàng phân xưởng.</div>";
-                    break;
-                }
-                foreach (c_yeucaumuavt ycmvt in db.c_yeucaumuavt.Where(s => s.c_kehoachdathang_id.Contains(kh.c_kehoachdathang_id)))
-                {
-                    b = 1;
-                    msg += "<div style='color:red'>Dòng \"" + kh.ten_kh + "\" đã tạo yêu cầu mua vật tư \"" + ycmvt.sochungtu + "\".</div>";
-                    break;
-                }
-
-                if (b == 0)
-                {
-                    foreach (c_kehoachdathang_dhcpx dhcpx in check_dhcpx)
-                    {
-                        foreach (c_kehoachdathang_dhcpx_cdh cdh in db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id))
-                        {
-                            md_sanpham_bom bom = db.md_sanpham_bom.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.trangthai == "HIEULUC").FirstOrDefault();
-                            if (bom == null)
-                            {
-                                //msg += "<div style='color:red'>Dòng \"" + kh.ten_kh + "\" có sản phẩm không có BOM.</div>";
-                                //break;
-                            }
-                            else
-                            {
-                                md_sanpham_bom_vattu vattu = db.md_sanpham_bom_vattu.Where(s => s.md_sanpham_bom_id == bom.md_sanpham_bom_id).FirstOrDefault();
-                                if (a == 0)
-                                {
-                                    sct_donhang = kh.sodonhang + ", " + sct_donhang;
-                                    donhang_thamchieu = kh.donhang_thamchieu + ", " + donhang_thamchieu;
-                                    a = 1;
-                                }
-                                c_yeucaumuavt_cdh check = db.c_yeucaumuavt_cdh.Where(s => s.c_yeucaumuavt_id == id_new & s.md_sanpham_id == vattu.md_sanpham_id).FirstOrDefault();
-                                c_yeucaumuavt_cdh vt_cdh = check;
-                                if (vt_cdh == null)
-                                {
-                                    vt_cdh = new c_yeucaumuavt_cdh();
-                                    vt_cdh.c_yeucaumuavt_cdh_id = Helper.getNewId();
-                                    vt_cdh.soluong_yeucau = (decimal)vattu.soluong.Value * cdh.soluong.Value;
-                                }
-                                else
-                                {
-                                    vt_cdh.soluong_yeucau = vt_cdh.soluong_yeucau + ((decimal)vattu.soluong.Value * cdh.soluong.Value);
-                                }
-                                vt_cdh.c_yeucaumuavt_id = id_new;
-                                vt_cdh.md_sanpham_id = vattu.md_sanpham_id;
-
-                                vt_cdh.nguoitao = us.ad_user_id;
-                                vt_cdh.vaitrotao = us.ad_role_id;
-                                vt_cdh.bophantao = us.md_phongban_id;
-                                vt_cdh.value_nguoitao = us.ma_user;
-                                vt_cdh.value_vaitrotao = us.ten_role;
-                                vt_cdh.value_bophantao = us.ten_phongban;
-                                vt_cdh.nguoicapnhat = us.ad_user_id;
-                                vt_cdh.vaitrocapnhat = us.ad_role_id;
-                                vt_cdh.bophancapnhat = us.md_phongban_id;
-                                vt_cdh.value_nguoicapnhat = us.ma_user;
-                                vt_cdh.value_vaitrocapnhat = us.ten_role;
-                                vt_cdh.value_bophancapnhat = us.ten_phongban;
-                                vt_cdh.hoatdong = true;
-                                if (check == null)
-                                {
-                                    vt_cdh.ngaytao = DateTime.Now;
-                                    vt_cdh.ngaycapnhat = DateTime.Now;
-                                    db.c_yeucaumuavt_cdh.Add(vt_cdh);
-                                }
-                                else
-                                {
-                                    vt_cdh.ngaycapnhat = DateTime.Now;
-                                }
-                                db.SaveChanges();
-                            }
-                            msg_success = "<div style='color:blue'>Tạo yêu cầu thành công</div>";
-                        }
-                    }
-                }
-            }
-            if (msg.Length <= 0)
-            {
-                c_yeucaumuavt ycm = new c_yeucaumuavt();
-                ycm.c_kehoachmuavt_id = " ";
-                ycm.md_trangthai_id = "SOANTHAO";
-                ycm.nguoiyeucau = "";
-                ycm.sochungtu = sochungtu;
-                ycm.c_yeucaumuavt_id = id_new;
-                ycm.c_kehoachdathang_id = id;
-                ycm.sct_donhang = sct_donhang;
-                ycm.donhang_thamchieu = donhang_thamchieu;
-                //ycm.sapxep = "";
-                ycm.nguoitao = us.ad_user_id;
-                ycm.vaitrotao = us.ad_role_id;
-                ycm.bophantao = us.md_phongban_id;
-                ycm.value_nguoitao = us.ma_user;
-                ycm.value_vaitrotao = us.ten_role;
-                ycm.value_bophantao = us.ten_phongban;
-                ycm.nguoicapnhat = us.ad_user_id;
-                ycm.vaitrocapnhat = us.ad_role_id;
-                ycm.bophancapnhat = us.md_phongban_id;
-                ycm.value_nguoicapnhat = us.ma_user;
-                ycm.value_vaitrocapnhat = us.ten_role;
-                ycm.value_bophancapnhat = us.ten_phongban;
-                ycm.hoatdong = true;
-                ycm.ngaytao = DateTime.Now;
-                ycm.ngaycapnhat = DateTime.Now;
-                db.c_yeucaumuavt.Add(ycm);
-
-                db.SaveChanges();
-                msg += msg_success + msg;
-            }
-            else
-            {
-                db.c_yeucaumuavt_cdh.RemoveRange(db.c_yeucaumuavt_cdh.Where(s => s.c_yeucaumuavt_id == id_new));
-                db.SaveChanges();
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
+
     private void CA_01_KHDHJQGS(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         var pb = new Public();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context),
-        Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -328,7 +196,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             //--Them moi dong dat hang nha cung cap
                             add_mmuangoai(db, khdh.c_kehoachdathang_id, item.md_doitackinhdoanh_id,
                                 item.donhang_thamchieu, item.ngayhoanthanh.Value, item.mota, item.sodonhang, thoigianht,
-                                1, us);
+                                1, userTK);
                         }
 
                         foreach (var item in candat.Where(s =>
@@ -338,7 +206,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             //--Them moi dong dat hang cho phan xuong
                             add_phanxuong(db, khdh.c_kehoachdathang_id, item.md_phanxuong_id,
                             item.donhang_thamchieu, item.ngayhoanthanh.Value, item.mota, item.sodonhang, thoigianht,
-                            1, us);
+                            1, userTK);
                         }
 
                         //end
@@ -354,7 +222,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 //--Them moi cac dong hang cua phan xuong
                                 add_phanxuong_cdh(db, dhcpx.c_kehoachdathang_id, dhcpx.c_kehoachdathang_dhcpx_id,
                                     item.md_sanpham_id, item.macuoi, item.md_donvitinhsanpham_id, item.sl_phanphoi.Value, item.mota,
-                                    item.noigiaohang, 1, us, item.sodonhang);
+                                    item.noigiaohang, 1, userTK, item.sodonhang);
                             }
                             var count = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
                             if (count.Count() == 0)
@@ -366,7 +234,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).OrderBy(s => s.md_sanpham_id).ToList())
                             {
                                 //--them cac dong dat hang phan xuong
-                                pb.add_px_vattu(db, cdh, 1, us);
+                                pb.add_px_vattu(db, cdh, 1, userTK);
                             }
                         }
                         //end
@@ -384,7 +252,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                     item.md_sanpham_id,
                                     item.macuoi, item.md_donvitinhsanpham_id, item.sl_candat.Value, item.ngayhoanthanh.Value,
                                     item.mota, item.sl_phanphoi.Value,
-                                    1, us);
+                                    1, userTK);
                             }
                             var count = db.c_kehoachdathang_dhncc_cdh.Where(s => s.c_kehoachdathang_dhncc_id == dhnc.c_kehoachdathang_dhncc_id);
                             if (count.Count() == 0)
@@ -684,65 +552,18 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "c_kehoachdathang";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            string object_ = db.c_kehoachdathang.Where(p => p.c_kehoachdathang_id == id).Select(s => s.c_kehoachdathang_id).Take(1).FirstOrDefault();
-            if (object_ == null)
-            {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-
-            if (msg.Length <= 0)
-            {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "c_kehoachdathang";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
         context.Response.Write(msg);
     }
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         using (var transaction = db.Database.BeginTransaction())

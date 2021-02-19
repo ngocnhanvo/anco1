@@ -13,6 +13,18 @@
                         public bool? anco_check { get; set; }
                 
 						
+                        #region md_doitackinhdoanh_bophancapnhat_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_bophantao_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_doitackinhdoanh_chucvu_wintaFN
                         
                         #endregion md_doitackinhdoanh_chucvu_wintaFN
@@ -179,6 +191,54 @@
                         
                         #endregion md_doitackinhdoanh_url_wintaFN
                         public string url { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_vaitrotao_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_bophantao_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_nguoitao_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_value_vaitrotao_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

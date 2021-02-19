@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" %>
-<%var version = 14; %>
+<%var version = 4; %>
 <html>
 <head>
     <link rel="shortcut icon" href="images/logo/anco_logo.ico" />
@@ -11,9 +11,9 @@
     <link rel="stylesheet" href="css/docsupport/prism.css">
     <link rel="stylesheet" href="css/chosen.css">
     <!-- Css VNN -->
-    <link href="css/VNN_css/Default.css" rel="stylesheet" type="text/css" />
-    <link href="css/VNN_css/Menu.css" rel="stylesheet" type="text/css" />
-    <link href="css/VNN_css/Content.css" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Default.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Menu.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Content.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
     <!-- Css bootstrap -->
     <link href="css/bootstrap-awesome.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="css/FontAwesome/fontawesome_all.css">
@@ -38,33 +38,49 @@
     <script async src="js/jqxwidgets/jqxscrollbar.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxlistbox.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxdragdrop.js" type="text/javascript"></script>
-   
+    <script async src="js/jqxwidgets/jqxtree.js" type="text/javascript"></script>
+    <script async src="js/jqxwidgets/jqxcheckbox.js" type="text/javascript"></script>
     <!--/ layout -->
     <!--Script Module-->
     <%=kq_script[0]%>
 </head>
 <body class="main_body" id="main_body">
+    <div class="overlay-dark"></div>
+    <img alt="" class="img-overlay" />
+    <div class="ckeditorPublic hidden">
+        <iframe style="width:100%;height:100%" loaded="false"></iframe>
+    </div>
     <div id="mainpane">
         <!-- head_page -->
         <table class="nhan_header">
             <tr>
                 <td style="width: 10%; min-width: 222px" align="center">
                     <div style="height:30px">
-                        <img height="25px" width="70px" id="nhan_image" alt="" src="images/logo/emanAnco.png?ver1" />
+                        <img id="nhan_image" alt="" src="images/logo/emanAnco.png" 
+							style="
+								height: 24px;
+                                padding: 0px;
+                                margin-top: 1.3px;
+							"
+						/>
                     </div>
                 </td>
                 <td style="width: 12px; min-width: 12px"></td>
 
                 <td style="width: 138px; min-width: 138px">
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 12px;" onclick="click_back()" alt="" title="trở về trang trước" src="images/Menu/header_back2.png" />
-                    <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0" onclick="click_refreshPage()" alt="" title="làm mới trang hiện tại" src="images/Menu/header_frefesh2.png" />
+                    <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0" onclick="click_refreshPage(true)" alt="" title="làm mới trang hiện tại" src="images/Menu/header_frefesh2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="click_doimau()" alt="" title="đổi màu" src="images/Menu/header_idea2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="loadContent('MN_01_HT1','','Hướng dẫn sử dụng','Trợ Giúp')" alt="" title="giúp đỡ" src="images/Menu/header_ask2.png" />
                 </td>
-                <td align="right" class="cl_td_urlmenu" style="font-size: 10px !important"><span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span></td>
-                <td style="display:none; min-width: 110px; width: 110px" align="right">
-                    <div id="logo_right" class="cl_div_chiadiv2" onclick="fix_loi_screen()">
-                        <img height="30" width="60" style='margin: 0 0 0 20px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
+                <td class="cl_td_urlmenu">
+                    <div>
+                        <span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span>
+                    </div>
+                </td>
+                <td style="width: 1px">
+                    <div id="logo_right" onclick="fix_loi_screen()">
+                        <img height="0" width="0" style='margin: 0 0 0 0px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
                     </div>
                 </td>
 
@@ -133,11 +149,24 @@
     </div>
 
     <script type="text/javascript">
+        var transformAll = 1;
+        var ratePercentTransform = 1/transformAll;
+        var ratePercentTransform100 = ratePercentTransform * 100;
+        let bodyAll = document.getElementsByTagName('body')[0];
+        //bodyAll.style.transform = "scale(" + transformAll + ")";
+        //bodyAll.style.width = ratePercentTransform100 + "%";
+        //bodyAll.style.height = ratePercentTransform100 + "%";
+        //bodyAll.style.transformOrigin = "left top";
+        //bodyAll.style.zoom = transformAll*100 + "%";
+
         <%=kq_script[2]%>
-        $('#mainpane').css('height', window.innerHeight - 15); 
-		let height_menu_noidung = $('#mainpane').height() - $('.nhan_header').height();
-		$('.menu').css('height', height_menu_noidung - 6);
-        $('.noidung').css('height', height_menu_noidung);
+        //$('#mainpane').css('height', window.innerHeight - 15); 
+        var heightBody = getSizeBrowser().height;
+        var heightHeader = $('.nhan_header').height();
+        var heightFooter = $('.footer').height();
+        var height_menu_noidung = heightBody - (heightHeader + heightFooter) * ratePercentTransform;
+        $('.menu').height(height_menu_noidung);
+
         setTimeout(function () {
             loadMenu('Menu/Menu.htm');
         }, 10);
@@ -514,20 +543,10 @@
 		$.jqm.params.closeoverlay = false;
 		$.jgrid.no_legacy_api = true; 
 		$.jgrid.useJSON = true; 
-		// extension:
-		$.fn.scrollEnd = function(callback, timeout) {          
-		  $(this).scroll(function(){
-			let $this = $(this);
-			if ($this.data('scrollTimeout')) {
-			  clearTimeout($this.data('scrollTimeout'));
-			}
-			$this.data('scrollTimeout', setTimeout(callback,timeout));
-		  });
-		};
-		//
+		
 		function load_sct(ma_sct) {
 			let kq = '';
-			<%=VNN_VariablePublic.get_mauhienthi_sochungtu(db)%>
+			<%=get_mauhienthi_sochungtu%>
 			return kq;
 		}
 
@@ -595,6 +614,22 @@
 		window.onresize = function() {
 		    click_refreshPage2();
 		}; 
+
+		window.addEventListener('message', function(e) {
+		    const data = e.data;
+
+		    if(data.closeIframe) {
+		        let divCKeditor = $('.ckeditorPublic');
+		        let iframeCKeditor = divCKeditor.children('iframe');
+		        iframeCKeditor.removeAttr('src');
+		        divCKeditor.addClass('hidden');
+		    }
+
+		    if(data.saveVal) {
+		        $(data.elem).val(encodeHTML(data.saveVal));
+		        $(data.elem).next().next().val(data.files);
+		    }
+		});
     </script>
 </body>
 </html>

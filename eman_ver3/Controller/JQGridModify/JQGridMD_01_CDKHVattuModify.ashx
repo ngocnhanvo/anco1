@@ -7,11 +7,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -42,8 +50,6 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_DuýetLMuaVT(HttpContext context)
     {
-
-        var db = new EntityContext();
         string data = context.Request.Form["data"];
         string msg = "";
         using (var transaction = db.Database.BeginTransaction())
@@ -107,7 +113,6 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_LamMoiHangTonKho(HttpContext context)
     {
-        var db = new EntityContext();
         string idparent = context.Request.Form["id"];
         string msg = "";
         using (var transaction = db.Database.BeginTransaction())
@@ -195,12 +200,11 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_khmvt_DOINCC(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "";
         string md_doitackinhdoanh_id = context.Request.Form["md_doitackinhdoanh_id"];
         string[] vnn = context.Request.Form["id"].Split(',');
         md_doitackinhdoanh_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_doitackinhdoanh_id).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
-        foreach (c_kehoachmuavt_cdh khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => vnn.Contains(s.c_kehoachmuavt_cdh_id)))
+        foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => vnn.Contains(s.c_kehoachmuavt_cdh_id)).ToList())
         {
             khmvt_cdh.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
         }
@@ -211,7 +215,6 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_YeuCauSoluongKHMVT(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string sel_val = context.Request.Form["sel_val"];
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
@@ -244,34 +247,12 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", id_new = Helper.getNewId();
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "c_kehoachmuavt_cdh";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = "false#" + ex.Message;
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 
     public void edit(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string mota_tiengviet = context.Request.Form["mota_tiengviet"];
@@ -319,8 +300,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                 object_.sl_denghi = sldn;
                 object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
                 object_.ngayphaico = ngayPhaiCo;
-                object_.nguoicapnhat = us.ad_user_id;
-                object_.value_nguoicapnhat = us.ma_user;
+                object_.nguoicapnhat = userTK.ad_user_id;
+                object_.value_nguoicapnhat = userTK.ma_user;
                 object_.ngaycapnhat = DateTime.Now;
 
                 var dklhts = db.c_kehoachmuavt_dklht.Where(s =>
@@ -344,54 +325,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
     public void del(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        string msg = "", msg_del = "";
-        string ma_module = context.Request.QueryString["ma_module"];
-        try
-        {
-            string ten_table = "c_kehoachmuavt_cdh";
-            int count = context.Request.Form["id"].Split(',').Count();
-            string[] id_del = new string[count];
-            id_del = context.Request.Form["id"].Split(',');
-            for (int i = 0; i < count; i++)
-            {
-                msg_del = ""; var id_del_ = id_del[i];
-                string object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id_del_).Select(s => s.c_kehoachmuavt_cdh_id).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                    msg += msg_del + "\n";
-                }
-                if (msg_del.Length <= 0)
-                {
-                    string action = "del";
-                    string[] column_ex = { };
-                    VNN_Function.SetFormValue("id", object_);
-                    VNN_Function.Set_DefaultvalueColumn(context, action);
-                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                }
-            }
-            VNN_Function.loaddulieu_Auto(db, ma_module);
-            if (msg.Length <= 0)
-            {
-                msg = "true#Xóa thành công.";
-            }
-            else
-            {
-                msg = "false#" + msg;
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.ToUpper().Contains("REFERENCE"))
-            {
-                msg = "false#Lỗi: Đang được sử dụng, không thể xóa";
-            }
-            else
-            {
-                msg = "false#Lỗi: " + ex.Message;
-            }
-        }
+        string msg = "";
         context.Response.Write(msg);
     }
 

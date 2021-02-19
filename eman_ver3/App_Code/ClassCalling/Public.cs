@@ -118,7 +118,6 @@ public class Public
         }
     }
 
-
     public DataTable TinhNangLuc(c_danhsachdathang dsdh, EntityContext db)
     {
         var tbl = new DataTable();
@@ -336,5 +335,22 @@ public class Public
                         orderby a.ngay_hieuluc descending
                         select a.md_sanpham_bom_id).FirstOrDefault();
         return bomId;
+    }
+
+    public decimal getGiaBanSP(string sanphamId, string khachhang, EntityContext db)
+    {
+        
+        var giaBanSP = from a in db.md_giasanpham
+                       join b in db.md_phienbangia on a.md_phienbangia_id equals b.md_phienbangia_id
+                       join c in db.md_banggia on b.md_banggia_id equals c.md_banggia_id
+                        where a.md_sanpham_id == sanphamId
+                        & c.lienket_bg == khachhang
+                        & c.tuychon == "BANTP"
+                        & c.hoatdong == true
+                        orderby b.ngay_hieuluc descending
+                        select a.gia;
+
+
+        return giaBanSP.Take(1).FirstOrDefault().GetValueOrDefault(0);
     }
 }

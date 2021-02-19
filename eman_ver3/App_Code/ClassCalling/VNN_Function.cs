@@ -326,14 +326,14 @@ public static class VNN_Function
         EntityContext db = new EntityContext();
         if (ad_case_id == null | ad_case_id == "")
         {
-            foreach (ad_role_mmc pq in db.ad_role_mmc.ToList().Where(s => s.ad_module_id == ad_module_id))
+            foreach (var pq in db.ad_role_mmc.Where(s => s.ad_module_id == ad_module_id).ToList())
             {
                 db.ad_role_mmc.Remove(pq);
             }
         }
         else
         {
-            foreach (ad_role_mmc pq in db.ad_role_mmc.ToList().Where(s => s.ad_module_id == ad_module_id & s.ad_case_id == ad_case_id))
+            foreach (var pq in db.ad_role_mmc.Where(s => s.ad_module_id == ad_module_id & s.ad_case_id == ad_case_id).ToList())
             {
                 db.ad_role_mmc.Remove(pq);
             }

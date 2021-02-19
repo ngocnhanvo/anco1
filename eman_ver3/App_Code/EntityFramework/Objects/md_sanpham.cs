@@ -19,6 +19,18 @@
                         public bool? ban_thanhpham { get; set; }
                 
 						
+                        #region md_sanpham_bophancapnhat_wintaFN
+                        
+                        #endregion md_sanpham_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_sanpham_bophantao_wintaFN
+                        
+                        #endregion md_sanpham_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_sanpham_co_ngayhethan_wintaFN
                         
                         #endregion md_sanpham_co_ngayhethan_wintaFN
@@ -299,6 +311,54 @@
                         
                         #endregion md_sanpham_v2_wintaFN
                         public Decimal? v2 { get; set; }
+                
+						
+                        #region md_sanpham_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_sanpham_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_sanpham_vaitrotao_wintaFN
+                        
+                        #endregion md_sanpham_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_sanpham_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_sanpham_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_sanpham_value_bophantao_wintaFN
+                        
+                        #endregion md_sanpham_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_sanpham_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_sanpham_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_sanpham_value_nguoitao_wintaFN
+                        
+                        #endregion md_sanpham_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_sanpham_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_sanpham_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_sanpham_value_vaitrotao_wintaFN
+                        
+                        #endregion md_sanpham_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                         #region md_sanpham_vattu_wintaFN

@@ -362,8 +362,8 @@ public static class VNN_Config
 			}
         }
 
-        kq[1] = colspan_kq + editoption_kq;
-        kq[2] = colspan_kq + addoption_kq;
+        kq[1] = colspan_kq + editoption_kq + "\n$('.changeValueToActiveFunc').change();";
+        kq[2] = colspan_kq + addoption_kq + "\n$('.changeValueToActiveFunc').change();";
         VNN_VariablePublic.Model_infor = model_infor;
         return kq;
     }
@@ -404,7 +404,7 @@ public static class VNN_Config
 
         if(kq == "")
         {
-            foreach (ad_column cot in db.ad_column.Where(s=>s.ma_module == ma_module).OrderBy(p => p.key_cot).OrderBy(p => p.sapxep))
+            foreach (var cot in db.ad_column.Where(s=>s.ma_module == ma_module).OrderBy(p => p.key_cot).OrderBy(p => p.sapxep).ToList())
             {
                 if (cot.mota != null & cot.mota != "")
                 {
@@ -742,9 +742,6 @@ public static class VNN_Config
                 //Check data
                 if (i >= 0)
                 {
-					if(i == 3) {
-						kq[i][0] += "\n viewform(tengrid);";
-					}
                     //Width of form
                     if (cn.dodaiForm != null & cn.dodaiForm != "")
                     {
@@ -783,10 +780,14 @@ public static class VNN_Config
                     kq[i][4] = "$('.ui-state-error').css('display','none');";
                     if (cn.hidden_modify == true)
                         kq[i][4] += "$.jgrid.hideModal('" + default_WH + "' + tengrid, { gbox: '#gbox_'+tengrid});";
-					
-					if(i == 3) {
-						kq[i][3] += "\n hideform(tengrid);";
-					}
+
+                    if (i == 3)
+                    {
+                        kq[i][0] = "";
+                        kq[i][1] = "";
+                        kq[i][2] = "";
+                        kq[i][3] = "";
+                    }
                 }
                 else
                 {
@@ -893,9 +894,11 @@ public static class VNN_Config
                         kq[i][4] += "$.jgrid.hideModal('" + default_WH + "' + "+ tengrid +", { gbox: '#gbox_'+ "+ tengrid +"});";
 					
 					if(i == 3) {
-						kq[i][0] = "\nviewform("+ tengrid +");" + kq[i][0];
-						kq[i][3] += "\n hideform("+ tengrid +");";
-					}
+                        kq[i][0] = "";
+                        kq[i][1] = "";
+                        kq[i][2] = "";
+                        kq[i][3] = "";
+                    }
 					else if(i == 1){
 						kq[i][4] += "load_grid"+ capmod + " = 3;";
 					}

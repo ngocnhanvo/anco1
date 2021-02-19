@@ -7,6 +7,18 @@
                     public partial class md_donvitinhsanpham
                     {
                         
+                        #region md_donvitinhsanpham_bophancapnhat_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_bophantao_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_donvitinhsanpham_hoatdong_wintaFN
                         
                         #endregion md_donvitinhsanpham_hoatdong_wintaFN
@@ -59,6 +71,54 @@
                         
                         #endregion md_donvitinhsanpham_ten_dvt_wintaFN
                         public string ten_dvt { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_vaitrotao_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_bophantao_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_nguoitao_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_donvitinhsanpham_value_vaitrotao_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

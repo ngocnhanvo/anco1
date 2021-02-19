@@ -637,9 +637,9 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
                 {
                     var object_ = new md_modongky();
                     object_.md_modongky_id = id_new;
-                    VNN_Function.SetFormValue(object_.nameof(s => s.nam), ntc.giatri.ToString());
+                    object_.md_namtaichinh_ky_id = ntc_ky.md_namtaichinh_ky_id;
+                    object_.nam = ntc.giatri;
                     VNN_Function.SetFormValue(object_.nameof(s => s.ky), soky.ToString());
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_namtaichinh_ky_id), ntc_ky.md_namtaichinh_ky_id);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     db.md_modongky.Add(object_);
@@ -704,9 +704,9 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 
                 if (msg.Length <= 0)
                 {
-                    VNN_Function.SetFormValue(object_.nameof(s => s.nam), ntc.giatri.ToString());
+                    object_.md_namtaichinh_ky_id = ntc_ky.md_namtaichinh_ky_id;
+                    object_.nam = ntc.giatri;
                     VNN_Function.SetFormValue(object_.nameof(s => s.ky), soky.ToString());
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_namtaichinh_ky_id), ntc_ky.md_namtaichinh_ky_id);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();

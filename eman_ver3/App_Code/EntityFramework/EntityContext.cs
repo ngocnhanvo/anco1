@@ -161,6 +161,7 @@ public virtual DbSet<md_sochungtudaxoa> md_sochungtudaxoa { get; set; }
 public virtual DbSet<md_taphopgia> md_taphopgia { get; set; }
 public virtual DbSet<md_taphopgia_cdh> md_taphopgia_cdh { get; set; }
 public virtual DbSet<md_taptin> md_taptin { get; set; }
+public virtual DbSet<md_thongbao> md_thongbao { get; set; }
 public virtual DbSet<md_thue_sanpham> md_thue_sanpham { get; set; }
 public virtual DbSet<md_tonghopcongno> md_tonghopcongno { get; set; }
 public virtual DbSet<md_tonghopkho> md_tonghopkho { get; set; }

@@ -3,11 +3,84 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Web;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 /// <summary>
 /// Summary description for Helper
 /// </summary>
 public static class Helper
 {
+    public static void removeFileWithPath(string path)
+    {
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+    }
+
+    public static void removeDirectoryWithPath(string path)
+    {
+        if (System.IO.Directory.Exists(path))
+        {
+            var filesLost = new System.IO.DirectoryInfo(path).GetFiles("*");
+            foreach (var file in filesLost)
+                System.IO.File.Delete(file.FullName);
+            System.IO.Directory.Delete(path);
+        }
+    }
+    public static string convertJsonStringToImage(string json, string folder, string name)
+    {
+        if (!(json.StartsWith("{") & json.EndsWith("}")))
+        {
+            if (json == "removeImage")
+            {
+                string pathimg = ExcuteSignalRStatic.mapPathSignalR(string.Format("~/{0}/{1}.jpg", folder, name));
+                removeFileWithPath(pathimg);
+                return pathimg;
+            }
+            else
+                return "";
+        }
+
+        var jsonHA = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+        string mimeType = jsonHA["name"];
+        var indexMimeType = mimeType.LastIndexOf(".");
+        mimeType = indexMimeType <= -1 ? "" : mimeType.Substring(indexMimeType).ToLower();
+        if (!new string[] { ".png", ".jpg" }.Contains(mimeType))
+            throw new FormatException("Chỉ chấp nhận hình ảnh có định dạng .jpg hoặc .png");
+
+        string imageBase64 = jsonHA["data"];
+        var indexBase64 = imageBase64.IndexOf(",");
+        imageBase64 = indexBase64 <= -1 ? "" : imageBase64.Substring(indexBase64 + 1);
+
+        string path = "";
+        if (!string.IsNullOrWhiteSpace(mimeType))
+        {
+            var bytes = Convert.FromBase64String(imageBase64);
+            path = ExcuteSignalRStatic.mapPathSignalR("~/" + folder + "/" + name);
+            using (var imageFile = new System.IO.FileStream(path + mimeType, System.IO.FileMode.Create))
+            {
+                imageFile.Write(bytes, 0, bytes.Length);
+                imageFile.Flush();
+
+                var isJPEG = mimeType == ".jpg";
+                if (!isJPEG)
+                {
+                    var myImage = System.Drawing.Image.FromStream(imageFile);
+                    myImage.Save(path + ".jpg");
+                    myImage.Dispose();
+                }
+
+                imageFile.Close();
+                imageFile.Dispose();
+
+                if (!isJPEG)
+                {
+                    System.IO.File.Delete(path + mimeType);
+                }
+            }
+        }
+        return path;
+    }
+
     public static string getNewId()
     {
         return Guid.NewGuid().ToString().Replace("-", "");

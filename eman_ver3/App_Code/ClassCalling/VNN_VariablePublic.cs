@@ -27,9 +27,9 @@ public class VNN_VariablePublic
     public static string[] Module_script(ADmin_JSON json)
     {
         string[] kq = new string[3];
-        List<ad_module> modules = json.ad_moduleJSON();
+        var modules = json.ad_moduleJSON();
         var systemconfig = json.ad_systemconfigJSON().FirstOrDefault();
-        foreach (ad_module mod in modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")))
+        foreach (var mod in modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")))
         {
             kq[0] += "<script async src=\"" + Security.UrlBase() + "js/Module_script/"+ mod.ma_module +".js?ver="+ systemconfig.fax + "\" type=\"text/javascript\"></script>";
 			kq[1] += "<input type='hidden' id=\"org_grid"+ mod.ma_module +"\"/>";
@@ -67,7 +67,7 @@ public class VNN_VariablePublic
     }
 	
 	public static string sochungtu(EntityContext db, string ma_sochungtu, int congthem){
-		md_sochungtu sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
+		var sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
         // get Year from md_modongky
         //md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
         string nam = DateTime.Now.Year.ToString().Substring(2, 2);
@@ -89,7 +89,7 @@ public class VNN_VariablePublic
 	}
 	
 	public static string sochungtu_(EntityContext db, string ma_sochungtu, int trura){
-		md_sochungtu sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
+		var sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
 		string gttd = sct.giatri_thaydoi;
 		int count_gttd = gttd.Length;
 		trura = trura * sct.buocnhay.Value;
@@ -102,12 +102,11 @@ public class VNN_VariablePublic
 	
 	public static string get_mauhienthi_sochungtu(EntityContext db) {
 		string msg = "if(1 == 2) { }";
-		foreach(var sct in db.md_sochungtu.Where(s=>s.md_trangthai_id == "HIEULUC")) {
+		foreach(var sct in db.md_sochungtu.Where(s=>s.md_trangthai_id == "HIEULUC").ToList()) {
 			msg += "\nelse if(ma_sct == '"+ sct.ma_sochungtu +"'){";
 			msg += "	kq = '" + sct.mau_hienthi + "';";
 			msg += "\n}";
 		}
-        db.Dispose();
 		return msg;
 	}
 	

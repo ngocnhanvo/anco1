@@ -13,8 +13,8 @@ public class Admin_CreateBasicFile
     {
         string kq = "";
         //Tao id trong file GridVariables.js
-		if(mod.loai_module == "JQG" | mod.loai_module == "JQGS")
-			EditFileGridVariables(context, mod);
+        if (mod.loai_module == "JQG" | mod.loai_module == "JQGS")
+            EditFileGridVariables(context, mod);
 
         string sql = "Select " + mod.select_sql + " from " + mod.from_sql + " where 1=1 " + mod.where_sql;
         if (mod.orderby_sql != null & mod.orderby_sql != "")
@@ -103,13 +103,13 @@ public class Admin_CreateBasicFile
                     w.WriteLine("                orderby = sidx + \" \" + sord;");
                     w.WriteLine("            }");
                     w.WriteLine("\n");
-					w.WriteLine("            string ROW_NUMBER = \"ROW_NUMBER() OVER (  ORDER BY \"+ orderby +\")\";");
-					w.WriteLine("            string sql = string.Format(@\"sELeCt * fRoM (");
-					w.WriteLine("            sELeCt \" + select_sql + ");
-					w.WriteLine("            @\" (case when '{4}' = '{5}' and (\" + ROW_NUMBER +\" <= \" + start + \" or \" + ROW_NUMBER + \" >= \" + end + \")  then -1 else \" + ROW_NUMBER + \" end) as RowNum\" +");
-					w.WriteLine("            @\" fRoM {1}"); 
-					w.WriteLine("            WHeRe 1=1 {2} {3} {6} {7} {8} ) P WHeRe RowNum > \" + start + \" AND RowNum < \" + end + \" or (RowNum = -1) order by RowNum asc\",");
-					w.WriteLine("            orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);");
+                    w.WriteLine("            string ROW_NUMBER = \"ROW_NUMBER() OVER (  ORDER BY \"+ orderby +\")\";");
+                    w.WriteLine("            string sql = string.Format(@\"sELeCt * fRoM (");
+                    w.WriteLine("            sELeCt \" + select_sql + ");
+                    w.WriteLine("            @\" (case when '{4}' = '{5}' and (\" + ROW_NUMBER +\" <= \" + start + \" or \" + ROW_NUMBER + \" >= \" + end + \")  then -1 else \" + ROW_NUMBER + \" end) as RowNum\" +");
+                    w.WriteLine("            @\" fRoM {1}");
+                    w.WriteLine("            WHeRe 1=1 {2} {3} {6} {7} {8} ) P WHeRe RowNum > \" + start + \" AND RowNum < \" + end + \" or (RowNum = -1) order by RowNum asc\",");
+                    w.WriteLine("            orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);");
                     w.WriteLine("\n");
                     w.WriteLine("            sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace(\"'\", \"''\");");
                     w.WriteLine("\n");
@@ -169,10 +169,18 @@ public class Admin_CreateBasicFile
 
             w.WriteLine("public class JQGrid" + mod.ma_module + "Modify : IHttpHandler, System.Web.SessionState.IRequiresSessionState");
             w.WriteLine("{");
+            w.WriteLine("    public EntityContext db = new EntityContext();");
+            w.WriteLine("    public EntityFunction entityFunc = new EntityFunction();");
+            w.WriteLine("    public User_TK userTK = null;");
+            w.WriteLine("    public string oper = \"vnn\";");
+
             w.WriteLine("    public void ProcessRequest (HttpContext context) {");
-            w.WriteLine("        string oper = \"vnn\";");
             w.WriteLine("        if (Security.id_taikhoan(context) != \"\")");
+            w.WriteLine("        {");
             w.WriteLine("           oper = context.Request.QueryString[\"oper\"] == null ? context.Request.Form[\"oper\"] : context.Request.QueryString[\"oper\"];");
+            w.WriteLine("           userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);");
+            w.WriteLine("        }");
+
             w.WriteLine("        switch (oper)");
             w.WriteLine("        {");
             if (mod.loai_module == "JQG" | mod.loai_module == "JQGS")
@@ -200,121 +208,135 @@ public class Admin_CreateBasicFile
             w.WriteLine("        }");
             w.WriteLine("    }\n");
 
-            if (mod.loai_module == "JQG"| mod.loai_module == "JQGS")
+            if (mod.loai_module == "JQG" | mod.loai_module == "JQGS")
             {
                 //doi tuong
                 int j = mod.from_sql.Split(' ')[0].Length;
                 string md_object = mod.from_sql.Substring(0, j);
                 string id_object = ADmin_UpdateLinq.get_KeyOfTable(md_object);
-				string getMember_object = ADmin_UpdateLinq.getMember(md_object);
+                string getMember_object = ADmin_UpdateLinq.getMember(md_object);
                 //add
-                
+
                 w.WriteLine("    public void add(HttpContext context)");
                 w.WriteLine("    {");
-                w.WriteLine("        EntityContext db = new EntityContext();");
                 w.WriteLine("        string msg = \"\",id_new = Helper.getNewId();");
                 w.WriteLine("        string ma_module = context.Request.QueryString[\"ma_module\"];");
-                w.WriteLine("        try");
+                w.WriteLine("        using (var transaction = db.Database.BeginTransaction())");
                 w.WriteLine("        {");
-                w.WriteLine("            string id_parent = context.Request.Form[\"id_parent\"];");
+                w.WriteLine("            try");
+                w.WriteLine("            {");
+                w.WriteLine("                string id_parent = context.Request.Form[\"id_parent\"];");
+                w.WriteLine("                var object_ = new " + md_object + "();");
+                w.WriteLine("                object_." + id_object + " = id_new;");
+                w.WriteLine("                object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);");
+                w.WriteLine("                object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);");
+                w.WriteLine("                db." + md_object + ".Add(object_);");
+                w.WriteLine("                VNN_Function.Write_log(context, ma_module, null, oper, \"\", db);");
+                w.WriteLine("                db.SaveChanges();");
+                w.WriteLine("            }");
+                w.WriteLine("            catch(Exception ex)");
+                w.WriteLine("            {");
+                w.WriteLine("                msg = ex.Message;");
+                w.WriteLine("            }");
+                w.WriteLine("");
                 w.WriteLine("            if (msg.Length <= 0)");
                 w.WriteLine("            {");
-                w.WriteLine("                string action = \"add\";");
-                w.WriteLine("                string[] column_ex = { };");
-                w.WriteLine("                string ten_table = \"" + md_object + "\";");
-                w.WriteLine("                VNN_Function.Set_DefaultvalueColumn(context, action);");
-                w.WriteLine("                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);");
+                w.WriteLine("                msg = string.Format(@\"true#Thêm mới thành công#{0}\", id_new);");
+                w.WriteLine("                transaction.Commit();");
                 w.WriteLine("                VNN_Function.loaddulieu_Auto(db, ma_module);");
-                w.WriteLine("                msg = \"true#Thêm thành công.\" + \"#\" + id_new;");
                 w.WriteLine("            }");
-                w.WriteLine("        }");
-                w.WriteLine("        catch(Exception ex)");
-                w.WriteLine("        {");
-                w.WriteLine("            msg = \"false#\" + ex.Message;");
+                w.WriteLine("            else");
+                w.WriteLine("            {");
+                w.WriteLine("                msg = string.Format(@\"false#{0}\", msg);");
+                w.WriteLine("                transaction.Rollback();");
+                w.WriteLine("            }");
                 w.WriteLine("        }");
                 w.WriteLine("        context.Response.Write(msg);");
                 w.WriteLine("    }\n");
                 //edit
                 w.WriteLine("    public void edit(HttpContext context)");
                 w.WriteLine("    {");
-                w.WriteLine("        EntityContext db = new EntityContext();");
                 w.WriteLine("        string msg = \"\";");
                 w.WriteLine("        string ma_module = context.Request.QueryString[\"ma_module\"];");
-                w.WriteLine("        try");
+                w.WriteLine("        using (var transaction = db.Database.BeginTransaction())");
                 w.WriteLine("        {");
-                w.WriteLine("            string id_parent = context.Request.Form[\"id_parent\"];");
-                w.WriteLine("            string id = context.Request.Form[\"id\"];");
-                w.WriteLine("            "+ md_object +" object_ = db." + getMember_object + ".Where(p => p." + id_object + " == id ).Take(1).FirstOrDefault();");
-                w.WriteLine("            if (object_ == null)");
+                w.WriteLine("            try");
                 w.WriteLine("            {");
-                w.WriteLine("                msg = \"false#Lỗi:Không tìm thấy đối tượng cần sửa \";");
+                w.WriteLine("                string id_parent = context.Request.Form[\"id_parent\"];");
+                w.WriteLine("                string id = context.Request.Form[\"id\"];");
+                w.WriteLine("                var object_ = db." + getMember_object + ".Where(p => p." + id_object + " == id).Take(1).FirstOrDefault();");
+                w.WriteLine("                if (object_ == null)");
+                w.WriteLine("                {");
+                w.WriteLine("                   msg = \"Lỗi:Không tìm thấy đối tượng cần sửa \";");
+                w.WriteLine("                }");
+                w.WriteLine("                else");
+                w.WriteLine("                {");
+                w.WriteLine("                   object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);");
+                w.WriteLine("                   object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);");
+                w.WriteLine("                   VNN_Function.Write_log(context, ma_module, null, oper, \"\", db);");
+                w.WriteLine("                   db.SaveChanges();");
+                w.WriteLine("                }");
                 w.WriteLine("            }");
-                w.WriteLine("            ");
+                w.WriteLine("            catch(Exception ex)");
+                w.WriteLine("            {");
+                w.WriteLine("                msg = ex.Message;");
+                w.WriteLine("            }");
+                w.WriteLine("");
                 w.WriteLine("            if (msg.Length <= 0)");
                 w.WriteLine("            {");
-                w.WriteLine("                string action = \"edit\";");
-                w.WriteLine("                string[] column_ex = { };");
-                w.WriteLine("                string ten_table = \"" + md_object + "\";");
-                w.WriteLine("                VNN_Function.Set_DefaultvalueColumn(context, action);");
-                w.WriteLine("                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);");
+                w.WriteLine("                msg = string.Format(@\"true#Cập nhật thành công\");");
+                w.WriteLine("                transaction.Commit();");
                 w.WriteLine("                VNN_Function.loaddulieu_Auto(db, ma_module);");
-                w.WriteLine("                msg = \"true#Cập nhật thành công.\";");
                 w.WriteLine("            }");
-                w.WriteLine("        }");
-                w.WriteLine("        catch(Exception ex)");
-                w.WriteLine("        {");
-                w.WriteLine("            msg = \"false#\" + ex.Message;");
+                w.WriteLine("            else");
+                w.WriteLine("            {");
+                w.WriteLine("                msg = string.Format(@\"false#{0}\", msg);");
+                w.WriteLine("                transaction.Rollback();");
+                w.WriteLine("            }");
                 w.WriteLine("        }");
                 w.WriteLine("        context.Response.Write(msg);");
                 w.WriteLine("    }\n");
                 //del
                 w.WriteLine("    public void del(HttpContext context)");
                 w.WriteLine("    {");
-                w.WriteLine("        EntityContext db = new EntityContext();");
-                w.WriteLine("        string msg = \"\", msg_del = \"\";");
+                w.WriteLine("        string msg = \"\";");
                 w.WriteLine("        string ma_module = context.Request.QueryString[\"ma_module\"];");
-                w.WriteLine("        try");
-                w.WriteLine("        {");
-                w.WriteLine("            string ten_table = \"" + md_object + "\";");
-                w.WriteLine("            int count = context.Request.Form[\"id\"].Split(',').Count();");
-                w.WriteLine("            string[] id_del = new string[count];");
-                w.WriteLine("            id_del = context.Request.Form[\"id\"].Split(',');");
-                w.WriteLine("            for (int i = 0; i < count; i++)");
-                w.WriteLine("            {");
-                w.WriteLine("                msg_del = \"\";");
-                w.WriteLine("                string id_del_ = id_del[i]; ");
-                w.WriteLine("                " + md_object + " object_ = db."+ getMember_object +".Where(p => p."+ id_object + " == id_del_ ).Take(1).FirstOrDefault();");
-                w.WriteLine("                if (object_ == null)");
-                w.WriteLine("                {");
-                w.WriteLine("                    msg_del = \"Lỗi:Không tìm thấy đối tượng cần xóa \" + i;");
-                w.WriteLine("                    msg += msg_del + \"\\n\";");
-                w.WriteLine("                }");
 
-                w.WriteLine("                if (msg_del.Length <= 0)");
+                w.WriteLine("        using (var transaction = db.Database.BeginTransaction())");
+                w.WriteLine("        {");
+                w.WriteLine("            try");
+                w.WriteLine("            {");
+                w.WriteLine("                var ids = context.Request.Form[\"id\"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();");
+                w.WriteLine("                foreach (var id_del_ in ids)");
                 w.WriteLine("                {");
-                w.WriteLine("                     db."+ getMember_object +".Remove(object_);");
+                w.WriteLine("                    var object_ = db." + getMember_object + ".Where(p => p." + id_object + " == id_del_).FirstOrDefault();");
+                w.WriteLine("                    if (object_ == null)");
+                w.WriteLine("                    {");
+                w.WriteLine("                        msg += string.Format(@\"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.\", id_del_);");
+                w.WriteLine("                    }");
+                w.WriteLine("                    else");
+                w.WriteLine("                    {");
+                w.WriteLine("                        VNN_Function.Write_log(context, ma_module, null, oper, \"\", db);");
+                w.WriteLine("                        db." + getMember_object + ".Remove(object_);");
+                w.WriteLine("                        db.SaveChanges();");
+                w.WriteLine("                    }");
                 w.WriteLine("                }");
                 w.WriteLine("            }");
-                
+                w.WriteLine("            catch (Exception ex)");
+                w.WriteLine("            {");
+                w.WriteLine("                msg = ex.Message;");
+                w.WriteLine("            }");
+
                 w.WriteLine("            if (msg.Length <= 0)");
                 w.WriteLine("            {");
-				w.WriteLine("            	 VNN_Function.loaddulieu_Auto(db, ma_module);");
-                w.WriteLine("                msg = \"true#Xóa thành công.\";");
+                w.WriteLine("                msg = string.Format(@\"true#Xóa thành công.\");");
+                w.WriteLine("                transaction.Commit();");
+                w.WriteLine("                VNN_Function.loaddulieu_Auto(db, ma_module);");
                 w.WriteLine("            }");
                 w.WriteLine("            else");
                 w.WriteLine("            {");
-                w.WriteLine("                msg = \"false#\" + msg;");
-                w.WriteLine("            }");
-                w.WriteLine("        }");
-                w.WriteLine("        catch (Exception ex)");
-                w.WriteLine("        {");
-                w.WriteLine("            if (ex.Message.ToUpper().Contains(\"REFERENCE\"))");
-                w.WriteLine("            {");
-                w.WriteLine("                msg = \"false#Lỗi: Đang được sử dụng, không thể xóa\";");
-                w.WriteLine("            }");
-                w.WriteLine("            else");
-                w.WriteLine("            {");
-                w.WriteLine("                msg = \"false#Lỗi: \" + ex.Message;");
+                w.WriteLine("                msg = string.Format(@\"false#{0}\", msg.Substring(4));");
+                w.WriteLine("                transaction.Rollback();");
                 w.WriteLine("            }");
                 w.WriteLine("        }");
                 w.WriteLine("        context.Response.Write(msg);");
@@ -371,7 +393,7 @@ public class Admin_CreateBasicFile
         string module_select = "";
         if (so_select < 0) { module_select = "1"; }
         else { module_select = "module_select[" + so_select + "]"; }
-        
+
         if (!File.Exists(filepath))
         {
             StreamWriter w = new StreamWriter(filepath, false, Encoding.Unicode);
@@ -438,8 +460,8 @@ public class Admin_CreateBasicFile
                 w.WriteLine("        rowList: <%=get_records[1] %>,");
                 w.WriteLine("        pager: '#pager'+tengrid,");
                 w.WriteLine("        onSelectRow: function (ids) {");
-				w.WriteLine("			 //checkbox customize");
-				w.WriteLine("			 checkbox_JQgrid(tengrid, 0);");
+                w.WriteLine("			 //checkbox customize");
+                w.WriteLine("			 checkbox_JQgrid(tengrid, 0);");
                 w.WriteLine("            var value_header = '', cell = $('#'+ tengrid).getRowData(ids);");
                 w.WriteLine("            if (id_parent != null) { ");
                 w.WriteLine("                    value_header = <%=get_STTaID[1].Replace(\"id_\",\"header_\") %>;");
@@ -449,10 +471,10 @@ public class Admin_CreateBasicFile
                 w.WriteLine("                header_<%=ma_module %> = value_header + <%=get_STTaID[2] %>;");
                 w.WriteLine("            }");
                 w.WriteLine("            set_headerJQG(tengrid, header_<%=ma_module %>);");
-				
-				w.WriteLine("            // public id da chon");
+
+                w.WriteLine("            // public id da chon");
                 w.WriteLine("            if(ids != null & ids !='' & ids !='0'){");
-				w.WriteLine("            	 id_<%=" + ma_module_display + " %> = ids;");
+                w.WriteLine("            	 id_<%=" + ma_module_display + " %> = ids;");
                 w.WriteLine("                module_select[" + capmodule + "] = 1;");
                 w.WriteLine("            }");
                 w.WriteLine("        },");
@@ -510,7 +532,7 @@ public class Admin_CreateBasicFile
                     w.WriteLine("            else {");
                     w.WriteLine("            //click vào dòng vừa tạo mới");
                     w.WriteLine("                if(id_new == '0' | id_new == null)");
-                    w.WriteLine("                { /*$('#'+tengrid).jqGrid('setSelection', id_<%=ma_moduletk %>);*/ }");
+                    w.WriteLine("                { }");
                     w.WriteLine("                else ");
                     w.WriteLine("                { resetSelection(tengrid); clickSelection(tengrid, id_new); id_new = '0';}");
                     w.WriteLine("                Focus_Selection(tengrid);");
@@ -520,17 +542,17 @@ public class Admin_CreateBasicFile
                 {
                     w.WriteLine("            if(id_<%=ma_module %> != null & id_<%=ma_module %> != '0')");
                     w.WriteLine("                $('#' + tengrid).jqGrid('setSelection', id_<%=ma_module %>);");
-                    w.WriteLine("            module_select["+ capmodule +"] = 1;");
+                    w.WriteLine("            module_select[" + capmodule + "] = 1;");
                     w.WriteLine("            var b = $('#' + tengrid).jqGrid ('getGridParam', 'selrow');");
                     w.WriteLine("            if (b == null | b == '' | b=='0') {");
                     w.WriteLine("                if(top_rowid != null & top_rowid != 0)");
                     w.WriteLine("                    $('#' + tengrid).jqGrid('setSelection', top_rowid);");
                     w.WriteLine("                else");
-                    w.WriteLine("                    module_select["+ capmodule +"] = 2;");
+                    w.WriteLine("                    module_select[" + capmodule + "] = 2;");
                     w.WriteLine("            }");
                     w.WriteLine("            else {");
                     w.WriteLine("                if(id_new == '0' | id_new == null)");
-                    w.WriteLine("                {	/*$('#'+tengrid).jqGrid('setSelection', id_<%=ma_module %>);*/ }");
+                    w.WriteLine("                { }");
                     w.WriteLine("                else");
                     w.WriteLine("                { resetSelection(tengrid); clickSelection(tengrid, id_new); id_new = '0';}");
                     w.WriteLine("                Focus_Selection(tengrid);");
@@ -561,8 +583,8 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            {");
                 w.WriteLine("                filterVal_<%=ma_module %> = get_ValueFilter(tengrid);");
                 w.WriteLine("            }");
-				w.WriteLine("			 //checkbox customize");
-				w.WriteLine("			 checkbox_JQgrid(tengrid, 1);");
+                w.WriteLine("			 //checkbox customize");
+                w.WriteLine("			 checkbox_JQgrid(tengrid, 1);");
                 w.WriteLine("            //giữ focus end");
                 w.WriteLine("            $('.'+input_focus).focus();");
                 w.WriteLine("        },");
@@ -587,7 +609,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            Change_Value(Avariable(),'edit');");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent;");
+                w.WriteLine("            postdata.id_parent = id_parent;");
                 w.WriteLine("            formid.prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -622,7 +644,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            countRows(tengrid, 'sapxep');");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent;");
+                w.WriteLine("            postdata.id_parent = id_parent;");
                 w.WriteLine("            formid.prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -653,7 +675,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("        afterShowForm: function (formid) {");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent;");
+                w.WriteLine("            postdata.id_parent = id_parent;");
                 w.WriteLine("            $('#DelTbl_'+tengrid).prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -690,7 +712,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("    });");
                 w.WriteLine("    jQuery('#'+tengrid).jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });");
                 w.WriteLine("    jQuery('#pager'+ tengrid +'_left table').css('display','none');");
-				w.WriteLine("    jQuery('#'+tengrid).jqGrid('setFrozenColumns');");
+                w.WriteLine("    jQuery('#'+tengrid).jqGrid('setFrozenColumns');");
                 w.WriteLine("    \n");
                 w.WriteLine("    //Start Ham ho tro them cho Grid (sẽ tự update nếu module chính update)");
                 w.WriteLine("    function Avariable() {");
@@ -729,8 +751,9 @@ public class Admin_CreateBasicFile
                 w.WriteLine("</script>");
                 //--1>
             }
-			else if(mod.loai_module == "JQGS"){
-				string id_parent = "null";
+            else if (mod.loai_module == "JQGS")
+            {
+                string id_parent = "null";
                 string ma_module_display = "ma_module";
                 if (mod.ma_modulecha != null & mod.ma_modulecha != "")
                 {
@@ -751,17 +774,19 @@ public class Admin_CreateBasicFile
                 w.WriteLine("    string[] colModel = VNN_Config.get_colModel(Context, ma_module);");
                 w.WriteLine("    string[][] modifyForm = VNN_Config.get_ModifyFormInfor2(ma_module, " + capmodule + ");");
                 w.WriteLine("%>");
-				
+
                 w.WriteLine("\n");
-				if(capmodule == 0){
-					w.WriteLine("<div class='sub_mainpage'>");
-					w.WriteLine("	<%=VNN_JQGridver2.get_layout(Context ,ma_module) %>"); 
-					w.WriteLine("</div>");
-				}
-				else {
-					w.WriteLine("<table id='grid<%=ma_module %>'></table>");
-					w.WriteLine("<div id='pagergrid<%=ma_module %>'></div>");
-				}
+                if (capmodule == 0)
+                {
+                    w.WriteLine("<div class='sub_mainpage'>");
+                    w.WriteLine("	<%=VNN_JQGridver2.get_layout(Context ,ma_module) %>");
+                    w.WriteLine("</div>");
+                }
+                else
+                {
+                    w.WriteLine("<table id='grid<%=ma_module %>'></table>");
+                    w.WriteLine("<div id='pagergrid<%=ma_module %>'></div>");
+                }
                 w.WriteLine("\n");
                 w.WriteLine("<script type=\"text/javascript\">");
                 w.WriteLine("    //bien load grid");
@@ -776,17 +801,17 @@ public class Admin_CreateBasicFile
                 w.WriteLine("    var Model_infor" + capmodule + " = '<%=VNN_VariablePublic.Model_infor %>' ;");
                 w.WriteLine("    //--#bien bat buoc");
                 w.WriteLine("    //#Cac bien can truyen vao truoc khi load chuc nang");
-				w.WriteLine("    //Load chức năng");
-				w.WriteLine("    <%=VNN_Config.get_NavFunc2(Context, ma_module, "+ capmodule +") %>");
-				w.WriteLine("    //#Load chức năng");
+                w.WriteLine("    //Load chức năng");
+                w.WriteLine("    <%=VNN_Config.get_NavFunc2(Context, ma_module, " + capmodule + ") %>");
+                w.WriteLine("    //#Load chức năng");
                 w.WriteLine("</script>");
                 w.WriteLine("\n");
                 w.WriteLine("<script type=\"text/javascript\">");
-				w.WriteLine("<%=VNN_JQGridver2.get_layout_face() %>");
+                w.WriteLine("<%=VNN_JQGridver2.get_layout_face() %>");
                 w.WriteLine("    jQuery('#'+tengrid" + capmodule + ").jqGrid({");
                 w.WriteLine("        url: 'Controller/JqGrid/JQGrid<%=ma_module%>Load.ashx?ma_module=<%=ma_module%>&ma_menu='+$('#input_idmenu').val(),");
                 w.WriteLine("        editurl: 'Controller/JQGridModify/JQGrid<%=" + ma_module_display + "%>Modify.ashx?ma_module=<%=ma_module%>&ma_menu='+$('#input_idmenu').val(),");
-                w.WriteLine("        height: $('#div_getdt_"+ capmodule +"').height() - $('#input_docaogrid').val(),");
+                w.WriteLine("        height: $('#div_getdt_" + capmodule + "').height() - $('#input_docaogrid').val(),");
                 w.WriteLine("        datatype: 'json',");
                 w.WriteLine("        autowidth: true,");
                 w.WriteLine("        shrinkToFit: true,");
@@ -794,16 +819,16 @@ public class Admin_CreateBasicFile
                 w.WriteLine("        viewrecords: true,");
                 w.WriteLine("        search: true,");
                 w.WriteLine("        scroll:false,");
-                w.WriteLine("        rowNum: rownum"+ capmodule +",");
+                w.WriteLine("        rowNum: rownum" + capmodule + ",");
                 w.WriteLine("        multiselect: <%=get_STTaID[3] %>,");
                 w.WriteLine("        multiboxonly: <%=get_STTaID[3] %>,");
                 w.WriteLine("        rowList: <%=get_records[1] %>,");
                 w.WriteLine("        pager: '#pager'+tengrid" + capmodule + ",");
                 w.WriteLine("        onSelectRow: function (ids) {");
-				w.WriteLine("			 //checkbox customize");
-				w.WriteLine("			 checkbox_JQgrid(tengrid" + capmodule + ", 0);");
+                w.WriteLine("			 //checkbox customize");
+                w.WriteLine("			 checkbox_JQgrid(tengrid" + capmodule + ", 0);");
                 w.WriteLine("            var value_header = '', cell = $('#'+ tengrid" + capmodule + ").getRowData(ids);");
-                w.WriteLine("            if (id_parent"+ capmodule +" != null) { ");
+                w.WriteLine("            if (id_parent" + capmodule + " != null) { ");
                 w.WriteLine("                    value_header = <%=get_STTaID[1].Replace(\"id_\",\"header_\") %>;");
                 w.WriteLine("                    header_<%=ma_module %> = value_header + header_sep + <%=get_STTaID[2] %>;");
                 w.WriteLine("            }");
@@ -811,24 +836,25 @@ public class Admin_CreateBasicFile
                 w.WriteLine("                header_<%=ma_module %> = value_header + <%=get_STTaID[2] %>;");
                 w.WriteLine("            }");
                 w.WriteLine("            set_headerJQG(tengrid" + capmodule + ", header_<%=ma_module %>);");
-				
-				w.WriteLine("            // public id da chon");
+
+                w.WriteLine("            // public id da chon");
                 w.WriteLine("            if(ids != null & ids !='' & ids !='0'){");
-				w.WriteLine("            	 id_<%=" + ma_module_display + " %> = ids;");
+                w.WriteLine("            	 id_<%=" + ma_module_display + " %> = ids;");
                 w.WriteLine("                module_select[" + capmodule + "] = 1;");
                 w.WriteLine("            }");
-				if(capmodule < 2){
-					w.WriteLine("            load_detail(load_grid" + capmodule + ", "+ (capmodule + 1) +", "+ capmodule +");");
-				}
+                if (capmodule < 2)
+                {
+                    w.WriteLine("            load_detail(load_grid" + capmodule + ", " + (capmodule + 1) + ", " + capmodule + ");");
+                }
                 w.WriteLine("        },");
                 w.WriteLine("        colModel: [");
                 w.WriteLine("            <%=colModel[0] %>");
                 w.WriteLine("        ],");
                 w.WriteLine("        beforeRequest: function() {");
                 w.WriteLine("            //giữ focus");
-                w.WriteLine("            input_focus"+ capmodule +" = $('input:focus').attr('class');");
+                w.WriteLine("            input_focus" + capmodule + " = $('input:focus').attr('class');");
                 w.WriteLine("            //giữ filter start");
-                w.WriteLine("            if (id_oper[load_stt"+ capmodule +"] == null)");
+                w.WriteLine("            if (id_oper[load_stt" + capmodule + "] == null)");
                 w.WriteLine("                $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').id_sel = id_<%=" + ma_module_display + " %>;");
                 w.WriteLine("            $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').module_select = " + module_select + ";");
                 w.WriteLine("            if(load_grid" + capmodule + " == 0){");
@@ -844,19 +870,21 @@ public class Admin_CreateBasicFile
                 w.WriteLine("                sord_<%=ma_module %> = $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').sord;");
                 w.WriteLine("                sidx_<%=ma_module %> = $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').sidx;");
                 w.WriteLine("            }");
-				 w.WriteLine("           $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').id = id_parent" + capmodule);
+                w.WriteLine("           $('#' + tengrid" + capmodule + ").jqGrid('getGridParam', 'postData').id = id_parent" + capmodule);
                 w.WriteLine("        },");
                 w.WriteLine("        ondblClickRow: function(){");
                 w.WriteLine("            <%=get_STTaID[4] %>;");
                 w.WriteLine("        },");
                 w.WriteLine("        gridComplete: function () {");
                 w.WriteLine("            $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());");
-                if(capmodule == 0){
-					w.WriteLine("            if(load_grid"+ capmodule +" == 0){taonut_header(tengrid"+ capmodule +"); $('#gview_' + tengrid"+ capmodule +" + ' .ui-jqgrid-bdiv').click(); };");
-				}
-				else {
-					w.WriteLine("            if(load_grid"+ capmodule +" == 0){taonut_header"+ capmodule +"(tengrid"+ capmodule +")};");
-				}
+                if (capmodule == 0)
+                {
+                    w.WriteLine("            if(load_grid" + capmodule + " == 0){taonut_header(tengrid" + capmodule + "); $('#gview_' + tengrid" + capmodule + " + ' .ui-jqgrid-bdiv').click(); };");
+                }
+                else
+                {
+                    w.WriteLine("            if(load_grid" + capmodule + " == 0){taonut_header" + capmodule + "(tengrid" + capmodule + ")};");
+                }
                 w.WriteLine("        },");
                 w.WriteLine("        loadComplete: function (data) {");
                 w.WriteLine("            //chia màu chẵn lẻ");
@@ -875,16 +903,17 @@ public class Admin_CreateBasicFile
                     w.WriteLine("                    module_select[" + capmodule + "] = 2;");
                     w.WriteLine("                }");
                     w.WriteLine("                else {");
-					if(capmodule < 2){
-						w.WriteLine("                    load_detail(load_grid"+ capmodule +", "+ (capmodule+1) +", "+ capmodule +");");
-					}
+                    if (capmodule < 2)
+                    {
+                        w.WriteLine("                    load_detail(load_grid" + capmodule + ", " + (capmodule + 1) + ", " + capmodule + ");");
+                    }
                     w.WriteLine("	                 module_select[" + capmodule + "] = 2;");
                     w.WriteLine("                }");
                     w.WriteLine("            }");
                     w.WriteLine("            else {");
                     w.WriteLine("            //click vào dòng vừa tạo mới");
                     w.WriteLine("                if(id_new == '0' | id_new == null)");
-                    w.WriteLine("                { /*$('#'+tengrid" + capmodule + ").jqGrid('setSelection', id_<%=ma_moduletk %>);*/ }");
+                    w.WriteLine("                { }");
                     w.WriteLine("                else ");
                     w.WriteLine("                { resetSelection(tengrid" + capmodule + "); $('#'+tengrid" + capmodule + ").jqGrid('setSelection', id_new); id_new = '0';}");
                     w.WriteLine("                Focus_Selection(tengrid" + capmodule + ");");
@@ -894,23 +923,24 @@ public class Admin_CreateBasicFile
                 {
                     w.WriteLine("            if(id_<%=ma_module %> != null & id_<%=ma_module %> != '0')");
                     w.WriteLine("                $('#' + tengrid" + capmodule + ").jqGrid('setSelection', id_<%=ma_module %>);");
-                    w.WriteLine("            module_select["+ capmodule +"] = 1;");
+                    w.WriteLine("            module_select[" + capmodule + "] = 1;");
                     w.WriteLine("            var b = $('#' + tengrid" + capmodule + ").jqGrid ('getGridParam', 'selrow');");
                     w.WriteLine("            if (b == null | b == '' | b=='0') {");
                     w.WriteLine("                if(top_rowid != null & top_rowid != 0) {");
                     w.WriteLine("                    $('#' + tengrid" + capmodule + ").jqGrid('setSelection', top_rowid);");
                     w.WriteLine("                } else {");
-					if(capmodule < 2){
-						w.WriteLine("                    load_detail(load_grid"+ capmodule +", "+ (capmodule+1) +", "+ capmodule +");");
-					}
-                    w.WriteLine("                    module_select["+ capmodule +"] = 2;");
-					w.WriteLine("                }");
+                    if (capmodule < 2)
+                    {
+                        w.WriteLine("                    load_detail(load_grid" + capmodule + ", " + (capmodule + 1) + ", " + capmodule + ");");
+                    }
+                    w.WriteLine("                    module_select[" + capmodule + "] = 2;");
+                    w.WriteLine("                }");
                     w.WriteLine("            }");
                     w.WriteLine("            else {");
                     w.WriteLine("                if(id_new == '0' | id_new == null)");
-                    w.WriteLine("                {	/*$('#'+tengrid" + capmodule + ").jqGrid('setSelection', id_<%=ma_module %>);*/ }");
+                    w.WriteLine("                { }");
                     w.WriteLine("                else");
-                    w.WriteLine("                {  resetSelection(tengrid" + capmodule + "); clickSelection(tengrid"+ capmodule +", id_new); id_new = '0';}");
+                    w.WriteLine("                {  resetSelection(tengrid" + capmodule + "); clickSelection(tengrid" + capmodule + ", id_new); id_new = '0';}");
                     w.WriteLine("                Focus_Selection(tengrid" + capmodule + ");");
                     w.WriteLine("            }");
                 }
@@ -936,8 +966,8 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            {");
                 w.WriteLine("                filterVal_<%=ma_module %> = get_ValueFilter(tengrid" + capmodule + ");");
                 w.WriteLine("            }");
-				w.WriteLine("			 //checkbox customize");
-				w.WriteLine("			 checkbox_JQgrid(tengrid" + capmodule + ", 1);");
+                w.WriteLine("			 //checkbox customize");
+                w.WriteLine("			 checkbox_JQgrid(tengrid" + capmodule + ", 1);");
                 w.WriteLine("            //giữ focus end");
                 w.WriteLine("            $('.'+input_focus" + capmodule + ").focus();");
                 w.WriteLine("        },");
@@ -962,7 +992,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            Change_Value" + capmodule + "(Avariable" + capmodule + "(),'edit');");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent"+ capmodule +";");
+                w.WriteLine("            postdata.id_parent = id_parent" + capmodule + ";");
                 w.WriteLine("            formid.prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -997,7 +1027,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("            countRows(tengrid" + capmodule + ", 'sapxep');");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent"+ capmodule +";");
+                w.WriteLine("            postdata.id_parent = id_parent" + capmodule + ";");
                 w.WriteLine("            formid.prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -1028,7 +1058,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("        afterShowForm: function (formid) {");
                 w.WriteLine("        },");
                 w.WriteLine("        beforeSubmit: function (postdata, formid) {");
-				w.WriteLine("            postdata.id_parent = id_parent"+ capmodule +";");
+                w.WriteLine("            postdata.id_parent = id_parent" + capmodule + ";");
                 w.WriteLine("            $('#DelTbl_'+tengrid" + capmodule + ").prepend('<div class=\"nhan_loading\">&nbsp;</div>');");
                 w.WriteLine("            return [true, ''];");
                 w.WriteLine("        },");
@@ -1065,7 +1095,7 @@ public class Admin_CreateBasicFile
                 w.WriteLine("    });");
                 w.WriteLine("    jQuery('#'+tengrid" + capmodule + ").jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });");
                 w.WriteLine("    jQuery('#pager'+ tengrid" + capmodule + " +'_left table').css('display','none');");
-				w.WriteLine("    jQuery('#'+tengrid" + capmodule + ").jqGrid('setFrozenColumns');");
+                w.WriteLine("    jQuery('#'+tengrid" + capmodule + ").jqGrid('setFrozenColumns');");
                 w.WriteLine("    \n");
                 w.WriteLine("    //Start Ham ho tro them cho Grid (sẽ tự update nếu module chính update)");
                 w.WriteLine("    function Avariable" + capmodule + "() {");
@@ -1103,8 +1133,8 @@ public class Admin_CreateBasicFile
                 w.WriteLine("    //#End Ham ho tro them cho Grid (sẽ tự update nếu module chính update)");
                 w.WriteLine("</script>");
                 //--1>
-			}
-			else
+            }
+            else
             {
                 w.WriteLine("<%@ Page Language=\"C#\" %>");
                 w.WriteLine("<%");

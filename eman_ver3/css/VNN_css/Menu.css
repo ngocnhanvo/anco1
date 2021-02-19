@@ -320,7 +320,7 @@ button#nhan_uidialog_mini {
 
 .span_muiten {
     font-size: 14px !important;
-    padding: 0 6 0 5;
+    padding: 0 2px 0 2px;
     font-weight: 700;
     color: #ccc
 }
@@ -413,7 +413,7 @@ span.image_menu0.glyphicon + span {
     background-image: url(../../images/Menu/Menu_bordertop.png);
     background-repeat: repeat-x;
     border-right: 1px solid rgba(157,159,180,.35);
-    border-top: 2px solid rgba(157,159,180,.58);
+    /*border-top: 2px solid rgba(157,159,180,.58);*/
     border-radius: 0 4px 0 0
 }
 
@@ -422,7 +422,8 @@ span.image_menu0.glyphicon + span {
 }
 
 .cl_a_btnthongtinnguoidung {
-    margin: 4px 0 0 3px;
+    margin: 2px 0 0 -2px;
+    padding: 2px 5px 2px 5px;
     position: absolute;
     font-size: 10.5px !important;
     white-space: pre;
@@ -433,7 +434,14 @@ span.image_menu0.glyphicon + span {
         opacity: .8;
         cursor: pointer
     }
-
+.cl_timkiem{
+    width: 100px;
+    margin: 0 0 0 3px;
+    position: absolute;
+    font-size: 10.5px !important;
+    white-space: pre;
+    color: #2D538D !important
+}
 .display_visible {
     display: inherit
 }
@@ -446,8 +454,13 @@ span.image_menu0.glyphicon + span {
 
 .image_menu1 {
     height: 13px;
-    font-size: 14px;
-    color: rgba(0,0,0,.65098)
+    font-size: 120% !important;
+    color: rgba(0,0,0,.65098);
+    position: relative;
+}
+
+.image_menu1.fa.fa-envelope-open {
+    top: -2px;
 }
 
 .span_logout {
@@ -464,4 +477,22 @@ span.image_menu0.glyphicon + span {
 
 div.div_scroll_chrome {
     -webkit-backface-visibility: hidden
+}
+
+#a_canhbao[numrpt] {
+    -webkit-animation: thumb 2s linear infinite;
+    animation: thumb .5s linear infinite;
+    user-select: none;
+    border-radius: 10px;
+    margin-left: 1px;
+}
+
+.cl_img_btncanhbao {
+    width: 20px;
+}
+
+@keyframes thumb {
+    0% { top: 4px; background-color: #e5faff; }
+    50% { top: 6px; background-color: #d7eef3; }
+    100% { top: 4px; background-color: #e5faff; }
 }
