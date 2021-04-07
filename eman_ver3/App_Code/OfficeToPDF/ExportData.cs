@@ -82,7 +82,7 @@ namespace OfficeToPDF
 
                     lstTextReplace.Add(new AvariablePrj.lstTextReplace()
                     {
-                        oldT = "{"+ column.ColumnName + "}",
+                        oldT = "{" + column.ColumnName + "}",
                         newT = dt.Rows[0][column.ColumnName].ToString()
                     });
                 }
@@ -96,10 +96,10 @@ namespace OfficeToPDF
 
                 var infoExcel = new PrintAnco2.InfoExcel();
 
-                
+
                 var area = hssfwb.GetPrintArea(0);
-                var columnText = area.Substring(area.Length - 1);
-                var maxColumn = Array.IndexOf(infoExcel.Alphabet, columnText);          
+                var columnText = area.Split(':')[1];
+                var maxColumn = Array.IndexOf(infoExcel.Alphabet, columnText);
 
                 lstTextReplace.Add(new AvariablePrj.lstTextReplace()
                 {
@@ -119,7 +119,20 @@ namespace OfficeToPDF
                     newT = config.yyyy
                 });
 
-                var logoCell = cellRangeAddressAll.Where(s => s1.GetRow(s.FirstRow).GetCell(s.FirstColumn).StringCellValue.StartsWith("{logo}")).FirstOrDefault();
+                CellRangeAddress logoCell = null;
+                foreach (var item in cellRangeAddressAll)
+                {
+                    var cell = s1.GetRow(item.FirstRow).GetCell(item.FirstColumn);
+                    if (cell.CellType == CellType.String)
+                    {
+                        if (cell.StringCellValue.StartsWith("{logo}"))
+                        {
+                            logoCell = item;
+                            break;
+                        }
+                    }
+                }
+
                 var findlogo = false;
                 if (logoCell != null)
                 {

@@ -84,6 +84,10 @@ String.prototype.insert = function (index, string) {
         return string + this;
 };
 
+function getModuleCodeFromSpanSelect() {
+    return $('span.module_spanselect').attr('id').replace('span_', '');
+}
+
 function boolconvert(string) {
     switch (string.toLowerCase()) {
         case "true": case "yes": case "1": return true;
@@ -1056,11 +1060,130 @@ function NumberESC(e) {
 function logout() { $("#mainpane").append('<div id="dlg_gridSmall" title="Thoát chương trình"><a>Bạn có chắc chắn muốn thoát khỏi chương trình?</a></div>'), $("#dlg_gridSmall").dialog({ modal: !0, height: 110, open: function () { Logo_Center("glyphicon glyphicon-log-out", !0) }, close: function () { $(this).dialog("destroy").remove() }, buttons: [{ id: "btn-ok", text: "Đồng ý", click: function () { reload_page = !0, enable_timer = !1, window.location.href = "Controller/PublicFunction/LogOut.ashx" } }, { id: "btn-close", text: "Thoát", click: function () { $(this).dialog("destroy").remove() } }] }) }
 //GridShow.js
 function phanmauchogrid(a) { return a % 2 == 0 ? " myAltRowClass" : " " }
-function colspanedit(a, e) { var i = $("#" + a), t = (i.children("td.CaptionTD"), i.children("td.DataTD")); t.attr("colspan", e), t.children("textarea").css("width", "99%") }
+function colspanedit(a, e) {
+    let i = $("#" + a.replace('tr_', ''));
+    let t = i.parent();
+    t.attr("colspan", e);
+
+    for (let ii = 1; ii < Number(e); ii++) {
+        t.next().hide();
+        t = t.next();
+    }
+}
 function clearSearchOptions(a) { $("#refresh_" + a).click(function () { $("#gview_" + a + " .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input input").val("") }) }
 function multiSelectHandler(a, e) { var i = $(e.target).closest("table.ui-jqgrid-btable"), t = i[0], s = e.target, n = $(s).hasClass("cbox"); if ("INPUT" == s.tagName && !n || "A" == s.tagName) return !0; var c = i.getGridParam("selarrrow"), r = $.inArray(a, c) >= 0; if (e.ctrlKey || n && (r || !e.shiftKey)) i.setSelection(a, !0); else { if (e.shiftKey) { var l = i.getInd(a), d = l, o = l; for ($.each(c, function () { var a = i.getInd(this); d > a && (d = a), a > o && (o = a) }) ; o >= d;) { var u = t.rows[d++], h = u.id; h != a && $.inArray(h, c) < 0 && i.setSelection(u.id, !1) } } else r || i.resetSelection(); if (r) { var g = i.getGridParam("onSelectRow"); $.isFunction(g) && g(a, !0) } else i.setSelection(a, !0) } } function setbackgroundforgrid(a, e, i) { var t, s, n, c = (getColumnIndexByName($(a), "closed"), a.rows.length); for (t = 0; c > t; t++) s = a.rows[t], n = s.className.replace(/ VNN_css_rows/g, ""), s.cells.item(e).innerHTML != i ? s.className = n + " VNN_css_rows" : s.className = n.replace(/ VNN_css_rows/g, "") } function Remove(a, e, i) { return a.substr(0, e) + a.substr(e + i) } function countRows(a, e) { var i = jQuery("#" + a).jqGrid("getGridParam", "records"); if (null == e | "" == e) return i; var t = $("#" + a + " tr:nth-child(2)").attr("id"); null != t & "0" != t & "-" != t ? $("#" + e).val(i) : $("#" + e).val(0) } function Focus_Selection(a) { var e = $("#" + a).jqGrid("getGridParam", "selrow"); scrollToRow($("#" + a), e) } function getGridRowHeight(a, e) { var i = null; try { var t = jQuery(a).find("tbody").find("tr"); $(t).each(function (a) { return e > a ? void (i += $(this).outerHeight()) : !1 }) } catch (s) { } return i } function scrollToRow(a, e) { var i = jQuery(a).getInd(e), t = getGridRowHeight(a, i) || 23; jQuery(a).closest(".ui-jqgrid-bdiv").scrollTop(t - 20) } function SetWidth_BtnHeader(a) { var e = a - 3, i = e, t = $(".cl_div_chuathanhcongcu div"), s = $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh"); $(s).length > a && ($(s).each(function (a) { a > e && $(this).addClass("case_hidden") }), $(t).prepend('<img src="images/Content/content_quatrai2.png" id="case_quatrai" class="img_btnmacdinh2" title="Qua trái" />'), $(t).append('<img src="images/Content/content_quaphai2.png" id="case_quaphai" class="img_btnmacdinh2" title="Qua phải" />'), $("#case_quatrai").click(function () { $("#case_quatrai").hasClass("case_disable") || (i > e && (i -= e), $(s).each(function (a) { i >= a ? $(this).removeClass("case_hidden") : $(this).addClass("case_hidden") }), $("#case_quaphai").removeClass("case_disable"), $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh:first").hasClass("case_hidden") || $("#case_quatrai").addClass("case_disable")) }), $("#case_quaphai").click(function () { $("#case_quaphai").hasClass("case_disable") || ($(s).each(function (a) { a > i ? $(this).removeClass("case_hidden") : $(this).addClass("case_hidden") }), i < $(s).length && (i += e), $("#case_quatrai").removeClass("case_disable"), $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh:last").hasClass("case_hidden") || $("#case_quaphai").addClass("case_disable")) }), $("#case_quatrai").click()) } var getColumnIndexByName = function (a, e) { for (var i = a.jqGrid("getGridParam", "colModel"), t = 0, s = i.length; s > t; t++) if (i[t].name === e) return t; return -1 };
 //JQGridver2.js
-function check_click_rutgon(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).hasClass(e) ? ($(t).removeClass(e), $(t).removeClass("glyphicon-plus"), $(t).addClass(i), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus")) : ($(t).removeClass(i), $(t).removeClass("glyphicon-minus"), $(t).addClass(e), $(t).hasClass("glyphicon-plus") || $(t).addClass("glyphicon-plus")) } function check_click_rutgon2(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).removeClass(e), $(t).hasClass(i) || $(t).addClass(i), $(t).removeClass("glyphicon-plus"), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus") } function check_click_rutgon3(t) { for (var a = 0; 3 > a; a++) { var i = "unclick_div" + a, e = "click_div" + a; $(t + a).hasClass(e) && ($(t + a).removeClass(e), $(t + a).addClass(i), $(t + a).removeClass("glyphicon-plus"), $(t + a).hasClass("glyphicon-minus") || $(t + a).addClass("glyphicon-minus")) } } function click_rutgon_div(t) { var a = $("#div_getdt_2").outerHeight(); $("#div_getdt_1").outerHeight(), $("#div_getdt_0").outerHeight(); 0 == t ? $(".btn_check_div0").hasClass("click_div0") ? 5 >= a ? layout_vnn.sizePane("north", "50%") : (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("north", "4%"), a > 5 && layout_vnn.sizePane("south", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div1"), 1), check_click_rutgon2($(".btn_check_div2"), 2) }, 100)) : 1 == t ? $(".btn_check_div1").hasClass("click_div1") ? 5 >= a ? layout_vnn.sizePane("north", "49%") : layout_vnn.sizePane("north", "33%") : 5 >= a ? layout_vnn.sizePane("north", "95%") : 27 >= a ? layout_vnn.sizePane("north", "92%") : layout_vnn.sizePane("north", "63%") : 2 == t && ($(".btn_check_div2").hasClass("click_div2") ? (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("south", "4%"), layout_vnn.sizePane("north", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div0"), 0), check_click_rutgon2($(".btn_check_div1"), 1) }, 100))), check_click_rutgon($(".btn_check_div" + t), t) } function load_detail(t, a, i, e, n) { var s = ".ui-layout-center > .ui-tabs-nav > .ui-state-active", l = ".ui-layout-south > .ui-tabs-nav > .ui-state-active", r = ""; if (1 == a ? $(s).each(function () { return null == $(this).attr("style") ? (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) : $(this).attr("style").indexOf("display: none;") <= -1 ? (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) : void 0 }) : 2 == a ? $(l).each(function () { return null == $(this).attr("style") ? (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) : $(this).attr("style").indexOf("display: none;") <= -1 ? (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) : void 0 }) : (r = a, display_hidden(n, e, r)), 0 == t) { if (1 == a) { var o = ".ui-layout-north > .ui-tabs-nav > .ui-state-active"; display_hidden(0, $(o).attr("sel_mod"), r) } else if (2 == a) { var o = ".ui-layout-center > .ui-tabs-nav > .ui-state-active"; display_hidden(1, $(o).attr("sel_mod"), r) } if ("" != r) { 1 == n && $("div.modcha_" + e).html(""), $("#tabs_" + r).html('<div class="nhan_loading0"></div>'); try { xhr_menu.abort() } catch (c) { } enable_timer = !1, xhr_menu = $.get("View/Menu/Content/Module/" + r + ".aspx", function (t) { $("#tabs_" + r).html(t), 2 != n && check_click_rutgon3(".btn_check_div"), enable_timer = !0 }) } } else try { if (0 == i) { var u = $("#" + tengrid0).jqGrid("getGridParam", "selrow"); if (id_parent1 != u | 1 == load_grid0) { switch (id_parent1 = u, load_grid0) { case "3": $("#" + tengrid1).trigger("reloadGrid"); break; default: $("#" + tengrid1)[0].triggerToolbar() } load_grid0 = 2 } } else if (1 == i) { var u = $("#" + tengrid1).jqGrid("getGridParam", "selrow"); id_parent2 != u | 1 == load_grid1 && (id_parent2 = u, load_grid1 = 2, $("#" + tengrid2)[0].triggerToolbar()) } } catch (c) { } } function display_hidden(t, a) { var i = ".ui-layout-center > .ui-tabs-nav > ", e = ".ui-layout-south > .ui-tabs-nav > ", n = ".ui-layout-center > ", s = ".ui-layout-south > "; if (0 == t) { var l = i + ".ui-state-default", r = i + ".modcha_" + a, o = n + ".ui-tabs-panel", c = n + ".modcha_" + a; $(l).hide(), $(o).hide(), $(r).show(), $(c).show(), $(r).each(function () { if ($(this).hasClass("ui-state-active")) { var t = $("#" + $(this).attr("aria-controls")); return $(t).insertAfter(".ul_mod_1"), !1 } }), null == $(r).first().attr("class") && (layout_vnn.sizePane("south", "1%"), layout_vnn.sizePane("north", "99%")) } else if (1 == t) { var u = e + ".ui-state-default", h = e + ".modcha_" + a, d = s + ".ui-tabs-panel", _ = s + ".modcha_" + a; $(u).hide(), $(d).hide(), $(h).show(), $(_).show(); var v = 0, y = null, g = null; $(h).each(function (t) { return $(this).hasClass("ui-state-active") ? (g = $("#" + $(this).attr("aria-controls")), $(g).insertAfter(".ul_mod_2"), !1) : void (0 == t ? (y = $(this), g = $("#" + $(this).attr("aria-controls")), v++) : v++) }), v >= $(h).length && null != y & null != g && ($(y).addClass("ui-state-active"), $(g).insertAfter(".ul_mod_2")), null == $(h).first().attr("class") ? (layout_vnn.sizePane("north", "49%"), layout_vnn.sizePane("south", "1%")) : (layout_vnn.sizePane("north", "35%"), layout_vnn.sizePane("south", "33%")) } }
+function check_click_rutgon(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).hasClass(e) ? ($(t).removeClass(e), $(t).removeClass("glyphicon-plus"), $(t).addClass(i), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus")) : ($(t).removeClass(i), $(t).removeClass("glyphicon-minus"), $(t).addClass(e), $(t).hasClass("glyphicon-plus") || $(t).addClass("glyphicon-plus")) } function check_click_rutgon2(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).removeClass(e), $(t).hasClass(i) || $(t).addClass(i), $(t).removeClass("glyphicon-plus"), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus") } function check_click_rutgon3(t) { for (var a = 0; 3 > a; a++) { var i = "unclick_div" + a, e = "click_div" + a; $(t + a).hasClass(e) && ($(t + a).removeClass(e), $(t + a).addClass(i), $(t + a).removeClass("glyphicon-plus"), $(t + a).hasClass("glyphicon-minus") || $(t + a).addClass("glyphicon-minus")) } } function click_rutgon_div(t) { var a = $("#div_getdt_2").outerHeight(); $("#div_getdt_1").outerHeight(), $("#div_getdt_0").outerHeight(); 0 == t ? $(".btn_check_div0").hasClass("click_div0") ? 5 >= a ? layout_vnn.sizePane("north", "50%") : (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("north", "4%"), a > 5 && layout_vnn.sizePane("south", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div1"), 1), check_click_rutgon2($(".btn_check_div2"), 2) }, 100)) : 1 == t ? $(".btn_check_div1").hasClass("click_div1") ? 5 >= a ? layout_vnn.sizePane("north", "49%") : layout_vnn.sizePane("north", "33%") : 5 >= a ? layout_vnn.sizePane("north", "95%") : 27 >= a ? layout_vnn.sizePane("north", "92%") : layout_vnn.sizePane("north", "63%") : 2 == t && ($(".btn_check_div2").hasClass("click_div2") ? (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("south", "4%"), layout_vnn.sizePane("north", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div0"), 0), check_click_rutgon2($(".btn_check_div1"), 1) }, 100))), check_click_rutgon($(".btn_check_div" + t), t) }
+
+function load_detail(t, a, i, e, n) {
+    let s = ".ui-layout-center > .ui-tabs-nav > .ui-state-active",
+        l = ".ui-layout-south > .ui-tabs-nav > .ui-state-active",
+        r = "";
+
+    if (
+        1 == a ?
+            $(s).each(function () {
+                return null == $(this).attr("style") ?
+                    (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) :
+                        $(this).attr("style").indexOf("display: none;") <= -1 ?
+                            (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) :
+                                void 0
+    }) :
+        2 == a ?
+            $(l).each(function () {
+                return null == $(this).attr("style") ?
+                    (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) :
+                        $(this).attr("style").indexOf("display: none;") <= -1 ?
+                            (r = $(this).attr("aria-controls").replace("tabs_", ""), !1) : void 0
+    }) :
+        (r = a, display_hidden(n, e, r)), 0 == t
+    ) {
+        if (1 == a) {
+            var o = ".ui-layout-north > .ui-tabs-nav > .ui-state-active";
+            display_hidden(0, $(o).attr("sel_mod"), r)
+        }
+        else if (2 == a) {
+            var o = ".ui-layout-center > .ui-tabs-nav > .ui-state-active";
+            display_hidden(1, $(o).attr("sel_mod"), r)
+        }
+
+        if ("" != r) {
+            1 == n && $("div.modcha_" + e).html(""),
+            $("#tabs_" + r).html('<div class="nhan_loading0"></div>');
+
+            try { xhr_menu.abort() } catch (c) { }
+            enable_timer = !1,
+            xhr_menu = $.get("View/Menu/Content/Module/" + r + ".aspx", function (t) {
+                $("#tabs_" + r).html(t),
+                2 != n && check_click_rutgon3(".btn_check_div"),
+                enable_timer = !0
+            })
+        }
+    } else {
+        try {
+            if (0 == i) {
+                var u = $("#" + tengrid0).jqGrid("getGridParam", "selrow");
+                if (id_parent1 != u | 1 == load_grid0) {
+                    switch (id_parent1 = u, load_grid0) {
+                        case "3": $("#" + tengrid1).trigger("reloadGrid"); break;
+                        default: $("#" + tengrid1)[0].triggerToolbar()
+                    }
+                    load_grid0 = 2
+                }
+            } else if (1 == i) {
+                var u = $("#" + tengrid1).jqGrid("getGridParam", "selrow");
+                id_parent2 != u | 1 == load_grid1 && (id_parent2 = u, load_grid1 = 2, $("#" + tengrid2)[0].triggerToolbar())
+            }
+        } catch (c) { }
+    }
+}
+function display_hidden(t, a) {
+    var i = ".ui-layout-center > .ui-tabs-nav > ",
+        e = ".ui-layout-south > .ui-tabs-nav > ",
+        n = ".ui-layout-center > ",
+        s = ".ui-layout-south > ";
+
+    if (0 == t) {
+        var l = i + ".ui-state-default",
+            r = i + ".modcha_" + a, o = n + ".ui-tabs-panel",
+            c = n + ".modcha_" + a; $(l).hide(),
+            $(o).hide(), $(r).show(), $(c).show(),
+            $(r).each(function () {
+                if ($(this).hasClass("ui-state-active")) {
+                    var t = $("#" + $(this).attr("aria-controls"));
+                    return $(t).insertAfter(".ul_mod_1"), !1
+                }
+            }),
+            null == $(r).first().attr("class") && (layout_vnn.sizePane("south", "1%"), layout_vnn.sizePane("north", "99%"))
+    }
+    else if (1 == t) {
+        var u = e + ".ui-state-default",
+            h = e + ".modcha_" + a,
+            d = s + ".ui-tabs-panel",
+            _ = s + ".modcha_" + a;
+        $(u).hide(), $(d).hide(), $(h).show(), $(_).show();
+        var v = 0, y = null, g = null;
+        $(h).each(function (t) {
+            return $(this).hasClass("ui-state-active") ?
+                (g = $("#" + $(this).attr("aria-controls")),
+                    $(g).insertAfter(".ul_mod_2"), !1) :
+                        void (0 == t ? (y = $(this), g = $("#" + $(this).attr("aria-controls")), v++) : v++)
+        }),
+        v >= $(h).length && null != y & null != g && ($(y).addClass("ui-state-active"), $(g).insertAfter(".ul_mod_2"));
+
+        let getLayoutSize = layoutSize.filter(function (a) { return a.module == getModuleCodeFromSpanSelect() })[0];
+
+        null == $(h).first().attr("class") ?
+            (
+                layout_vnn.sizePane("north", (getLayoutSize == null ? 49 : getLayoutSize.size1[0]) + '%'),
+                layout_vnn.sizePane("south", (getLayoutSize == null ? 1 : getLayoutSize.size1[2]) + '%')
+            ) :
+            (
+                layout_vnn.sizePane("north", (getLayoutSize == null ? 35 : getLayoutSize.size2[0]) + '%'),
+                layout_vnn.sizePane("south", (getLayoutSize == null ? 33 : getLayoutSize.size2[2]) + '%')
+            )
+    }
+}
 //CheckBrowser.js
 function check_zoom() { }
 var Browser = navigator.userAgent; Browser = Browser.indexOf("MSIE") >= 0 ? "MSIE" : Browser.indexOf("Firefox") >= 0 ? "Firefox" : Browser.indexOf("Chrome") >= 0 ? "Chrome" : Browser.indexOf("Safari") >= 0 ? "Safari" : Browser.indexOf("Opera") >= 0 ? "Opera" : "UNKNOWN";

@@ -124,11 +124,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                     var object_ = new c_dongdsdh();
                     object_.c_dongdsdh_id = id_new;
                     object_.c_danhsachdathang_id = id;
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_conlai), sl_dathang.ToString());
+                    object_.sl_conlai = sl_dathang;
+                    object_.sl_dagiao = 0;
+                    object_.sl_hanngach = 0;
+                    object_.sl_giamhanngach = 0;
                     VNN_Function.SetFormValue(object_.nameof(s=>s.gianhap), gianhap.ToString());
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_dagiao), "0");
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_hanngach), "0");
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_giamhanngach), "0");
                     VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_id), sp.md_sanpham_id);
                     VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_bom_id), bom_sp == null ? ten_phienban : bom_sp.md_sanpham_bom_id);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
@@ -217,9 +217,9 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
 
                 if (msg.Length <= 0)
                 {
-                    VNN_Function.SetFormValue(object_.nameof(s => s.sl_conlai), sl_dathang.ToString());
+                    object_.sl_conlai = sl_dathang;
+                    object_.sl_dagiao = 0;
                     VNN_Function.SetFormValue(object_.nameof(s => s.gianhap), gianhap.ToString());
-                    VNN_Function.SetFormValue(object_.nameof(s => s.sl_dagiao), "0");
                     VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_id), sp.md_sanpham_id);
                     VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_bom_id), bom_sp.md_sanpham_bom_id);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);

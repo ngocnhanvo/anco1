@@ -42,7 +42,7 @@ public static class VNN_Function
 
     public static User_TK get_user(string ad_user_id, string ad_role_id, string md_phongban_id, EntityContext db)
     {
-        var tk = db.ad_user.FirstOrDefault(s => s.ad_user_id == ad_user_id);
+        var tk = db.ad_user.Where(s => s.ad_user_id == ad_user_id).Take(1).FirstOrDefault();
         var vtr = db.ad_role.Where(s => s.ad_role_id == ad_role_id).Take(1).FirstOrDefault();
         var pb = db.ad_department.Where(s => s.md_phongban_id == md_phongban_id).Take(1).FirstOrDefault();
         var user = new User_TK();
@@ -169,6 +169,70 @@ public static class VNN_Function
             if(jsonData.Replace("\n","").Replace(" ","").Length > 0) 
             { 
 	            json.urlData = typeof(ad_selectoption).Name;
+                json.WriteJson(jsonData);
+            }
+        }
+        return "";
+    }
+
+    public static string ADUpdateSelect_Auto(System.Web.HttpContext context, EntityContext db, ADmin_JSON json)
+    {
+        if(db == null)
+            db = new EntityContext();
+        if(json == null)
+            json = new ADmin_JSON();
+
+        json.urlData = typeof(ad_selectoption).Name;
+        json.ClearCache(context, json.urlData);
+        var selectoptions = json.ad_selectoptionJSON();
+        string table = "";
+        var ad_selectop_saves = db.ad_selectop_save.Select(s => new { s.ten_table }).Distinct().ToList();
+        foreach (var sel_save in ad_selectop_saves)
+        {
+            if (sel_save.ten_table != table)
+            {
+                table = sel_save.ten_table;
+                foreach (var sel in db.ad_selectoption.Where(s => s.from_sql.Contains(table + " ")).ToList())
+                {
+                    string id_count = sel.select_sql.Split(',')[0];
+                    id_count = id_count.Replace("distinct", "");
+                    id_count = Regex.Replace(id_count, "top [0-9999]", "", RegexOptions.IgnoreCase);
+                    if (id_count.Contains(" as "))
+                    {
+                        int j_index = id_count.IndexOf(" as ");
+                        id_count = id_count.Substring(0, j_index);
+                    }
+
+                    string orderby = id_count;
+                    if (sel.orderby_sql != null)
+                    {
+                        if (sel.orderby_sql.Replace(" ", "").Length > 0)
+                        {
+                            orderby = sel.orderby_sql;
+                        }
+                    }
+                    string sql = string.Format(@"sELeCt * fRoM ( 
+                    sELeCt " + sel.select_sql +
+                    @", ROW_NUMBER() OVER ( ORDER BY {0}) as RowNum " +
+                    @"fRoM {1}
+                    WHeRe 1=1 {2} {3} ) P WHeRe 1=1 order by RowNum asc",
+                    orderby, sel.from_sql, sel.where_sql, "", id_count, "");
+                    sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, null, null, db).Replace("'", "''");
+                    sql = string.Format("exec [dbo].[{3}] '{0}','{1}',{2}", sql, "", 1, "admin_excutesql");
+                    sel.value_selectoption = ADUpdateSelect(sql, sel.display_member);
+                    selectoptions = selectoptions.Where(s => s.ad_selectoption_id != sel.ad_selectoption_id).ToList();
+                    selectoptions.Add(sel);
+                }
+            }
+            db.ad_selectop_save.RemoveRange(db.ad_selectop_save.Where(s => s.ten_table == sel_save.ten_table));
+        }
+        db.SaveChanges();
+        string jsonData = JsonConvert.SerializeObject(selectoptions, Formatting.Indented);
+        if (jsonData != null)
+        {
+            if (jsonData.Replace("\n", "").Replace(" ", "").Length > 0)
+            {
+                json.urlData = typeof(ad_selectoption).Name;
                 json.WriteJson(jsonData);
             }
         }
@@ -572,21 +636,26 @@ public static class VNN_Function
     //    return kq;
     //}
 
+    public static string loaddulieu_Auto(string ma_module)
+    {
+        string kq = "";
+        ADUpdateSelect_Auto(System.Web.HttpContext.Current, null, null);
+        return kq;
+    }
+
     public static string loaddulieu_Auto(EntityContext db, string ma_module)
     {
         string kq = "";
         db.SaveChanges();
-        //ad_autoload_mmc au_mod = db.ad_autoload_mmc.Where(s => s.ma_module == ma_module).Take(1).FirstOrDefault();
-        //if (au_mod != null)
-        //{
-        //    ad_autoload au_load = db.ad_autoload.Where(s => s.ad_autoload_id == au_mod.ad_autoload_id).Take(1).FirstOrDefault();
-        //    int stt = int.Parse(au_load.sapxep);
-        //    kq = au_load.tanso = Helper.getNewId();
-        //    VNN_VariablePublic.session_bd[stt] = kq;
-        //    db.SaveChanges();
-        //}
-        ADUpdateSelect_Auto(System.Web.HttpContext.Current);
-        //db.Dispose();
+        ADUpdateSelect_Auto(System.Web.HttpContext.Current, db, null);
+        return kq;
+    }
+
+    public static string loaddulieu_Auto(EntityContext db, ADmin_JSON json, string ma_module)
+    {
+        string kq = "";
+        db.SaveChanges();
+        ADUpdateSelect_Auto(System.Web.HttpContext.Current, db, json);
         return kq;
     }
 

@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" %>
-<%var version = 4; %>
+<%var version = 6; %>
 <html>
 <head>
     <link rel="shortcut icon" href="images/logo/anco_logo.ico" />
@@ -150,6 +150,7 @@
 
     <script type="text/javascript">
         var transformAll = 1;
+        var layoutSize = <%=layoutSize%>;
         var ratePercentTransform = 1/transformAll;
         var ratePercentTransform100 = ratePercentTransform * 100;
         let bodyAll = document.getElementsByTagName('body')[0];
@@ -322,9 +323,36 @@
             let listShow = models.filter(function(a){ return a.hidden == false });
             let listHide = models.filter(function(a){ return a.hidden == true });
 
+            let options = '';
+            for(let i = 1; i <= 99; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+
             $('#mainpane').append(`
                 <div id="dlg_gridSmall" style="overflow: hidden;" title="Cấu hình lưới dữ liệu">
                     <table>
+                        <tr>
+                            <td colspan=3>
+                                <input type="radio" style="position: relative;top: 1.5px;left: -1px;" id="thayDoiKichThuocLuoiDuLieu" name="tuyChonCauHinhLuoi"/>
+                                <label for="thayDoiKichThuocLuoiDuLieu"><b>Thay đổi kích thước lưới dữ liệu</b></label>
+                            </td>
+                        </tr>
+                        <tr class="thayDoiKichThuocLuoiDuLieu">
+                            <td colspan=3>
+                                <label style='padding-left:15px;'>- Trường hợp có 2 lưới:</label>
+                                <select id="th2luoi1">${options}</select>
+                                <select id="th2luoi2">${options}</select>
+                                <select id="th2luoi3" disabled>${options}</select>
+                            </td>
+                        </tr>
+                        <tr class="thayDoiKichThuocLuoiDuLieu">
+                            <td colspan=3>
+                                <label style='padding-left:15px;'>- Trường hợp có 3 lưới:</label>
+                                <select id="th3luoi1">${options}</select>
+                                <select id="th3luoi2">${options}</select>
+                                <select id="th3luoi3" disabled>${options}</select>
+                            </td>
+                        </tr>
                         <tr>
                             <td colspan=3>
                                 <input type="radio" style="position: relative;top: 1.5px;left: -1px;" id="macDinhChieuDaiTungCot" name="tuyChonCauHinhLuoi"/>
@@ -368,13 +396,54 @@
                 width: 540,
                 height: 485,
                 open: function (event, ui) {
-                    
-                    $("#listShow").jqxListBox({ allowDrop: true, allowDrag: true, source: listShow, width: 250, height: 300, 
+                    let getLayoutSize = layoutSize.filter(function(a){ return a.module == getModuleCodeFromSpanSelect() })[0];
+                    let listSizeTH1 = $('#div_getdt_1').attr('sizeTH1').split(',');
+                    let listSizeTH2 = $('#div_getdt_1').attr('sizeTH2').split(',');
+                    if(getLayoutSize != null) {
+                        listSizeTH1 = getLayoutSize.size1;
+                        listSizeTH2 = getLayoutSize.size2;
+                    }
+
+                    let th2luoi1 = $('#th2luoi1');
+                    let th2luoi2 = $('#th2luoi2');
+                    let th2luoi3 = $('#th2luoi3');
+
+                    th2luoi1.val(listSizeTH1[0]);
+                    th2luoi2.val(listSizeTH1[1]);
+                    th2luoi3.val(listSizeTH1[2]);
+
+                    th2luoi1.change(function() {
+                        th2luoi2.val(100 - Number($(this).val()) - 1);
+                    });
+
+                    th2luoi2.change(function() {
+                        th2luoi1.val(100 - Number($(this).val()) - 1);
+                    });
+
+                    let th3luoi1 = $('#th3luoi1');
+                    let th3luoi2 = $('#th3luoi2');
+                    let th3luoi3 = $('#th3luoi3');
+
+                    th3luoi1.val(listSizeTH2[0]);
+                    th3luoi2.val(listSizeTH2[1]);
+                    th3luoi3.val(listSizeTH2[2]);
+
+                    th3luoi1.change(function() {
+                        let slcl = 100 - Number(th3luoi1.val()) - Number(th3luoi3.val());
+                        th3luoi2.val(slcl);
+                    });
+
+                    th3luoi2.change(function() {
+                        let slcl = 100 - Number(th3luoi1.val()) - Number(th3luoi2.val());
+                        th3luoi3.val(slcl);
+                    });
+
+                    $("#listShow").jqxListBox({ allowDrop: true, allowDrag: true, source: listShow, width: 250, height: 280, 
                         renderer: function (index, label, value) {
                             return "<span style='cursor:pointer' onclick='clickToShowOrHideElement(this)' class='clickToShowOrHideElement glyphicon glyphicon-minus'></span><label style='margin-left:5px'>" + label + "</label>";
                         } 
                     });
-                    $("#listHide").jqxListBox({ allowDrop: true, allowDrag: true, source: listHide, width: 250, height: 300, 
+                    $("#listHide").jqxListBox({ allowDrop: true, allowDrag: true, source: listHide, width: 250, height: 280, 
                         renderer: function (index, label, value) {
                             return "<span style='cursor:pointer' onclick='clickToShowOrHideElement(this)' class='clickToShowOrHideElement glyphicon glyphicon-plus'></span><label style='margin-left:5px'>" + label + "</label>";
                         } 
@@ -409,10 +478,15 @@
                         let checked = $(this).prop('checked');
                         if(checked) {
                             let id =  $(this).attr('id');
-                            if(id =='macDinhChieuDaiTungCot')
-                                moKhoaOrKhoaList(true);
-                            else
+                            $('tr.thayDoiKichThuocLuoiDuLieu').hide();
+                            if(id =='sapXepCotHoacAnHienCot')
                                 moKhoaOrKhoaList(false);
+                            else {
+                                moKhoaOrKhoaList(true);
+                                if(id == 'thayDoiKichThuocLuoiDuLieu') {
+                                    $('tr.thayDoiKichThuocLuoiDuLieu').show();
+                                }
+                            }
                         }
                     });
 
@@ -428,6 +502,7 @@
                         }
                     });
 
+                    $('input[name="tuyChonCauHinhLuoi"]:checked').change();
                     Logo_Center("glyphicon glyphicon-cog", true);
                 },
                 close: function () {
@@ -439,9 +514,19 @@
                         text: 'Đồng ý',
                         click: function () {
                             let khoiPhucCaiDatMacDinh = $('#khoiPhucCaiDatMacDinh').prop('checked');
+                            let thayDoiKichThuocLuoiDuLieu = $('#thayDoiKichThuocLuoiDuLieu').prop('checked');
                             let macDinhChieuDaiTungCot = $('#macDinhChieuDaiTungCot').prop('checked');
                             let sapXepCotHoacAnHienCot = $('#sapXepCotHoacAnHienCot').prop('checked');
-                            let type = khoiPhucCaiDatMacDinh ? 3 : (sapXepCotHoacAnHienCot ? 2 : (macDinhChieuDaiTungCot ? 1 : 0));
+                            let type =
+                                thayDoiKichThuocLuoiDuLieu ? 4 : (
+                                    khoiPhucCaiDatMacDinh ? 3 : (
+                                        sapXepCotHoacAnHienCot ? 2 : (
+                                            macDinhChieuDaiTungCot ? 1 : 0
+                                        )
+                                    )
+                                );
+
+                            let oper = 'configColumns';
 
                             let itemModels = [];
 
@@ -484,17 +569,42 @@
                                     });
                                 }
                             }
+                            else if(type == 4) {
+                                oper = 'configSizeLayout';
+                                itemModels = {
+                                    size1: [],
+                                    size2: [],
+                                    module: getModuleCodeFromSpanSelect()
+                                };
+                                itemModels.size1.push($('#th2luoi1').val());
+                                itemModels.size1.push($('#th2luoi2').val());
+                                itemModels.size1.push($('#th2luoi3').val());
+
+                                itemModels.size2.push($('#th3luoi1').val());
+                                itemModels.size2.push($('#th3luoi2').val());
+                                itemModels.size2.push($('#th3luoi3').val());
+                            }
 
                             $('.nhan-loi').remove();
                             $('#dlg_gridSmall').prepend(`<div class="nhan_loading0"></div>`);
                             let thisSav = this;
-                            $.post('Controller/PublicFunction/ChangePrintMethod.ashx?oper=configColumns', 
-                                { itemModels: JSON.stringify(itemModels), grid: ma_md_select, type: type }, function(rs) {
+                            $.post(`Controller/PublicFunction/ChangePrintMethod.ashx?oper=${oper}`, 
+                            { 
+                                itemModels: JSON.stringify(itemModels), 
+                                grid: ma_md_select, 
+                                type: type 
+                            }, function(rs) {
                                 $('.nhan_loading0').remove();
-                                if(rs.length > 0) {
+                                let ok = true;
+                                if(type == 4) {
+                                    layoutSize = JSON.parse(rs);       
+                                }
+                                else if(rs.length > 0) {
+                                    ok = false;
                                     $('#dlg_gridSmall').prepend(`<div class="nhan-loi">${rs}</div>`);
                                 }
-                                else {
+                                
+                                if(ok) {
                                     $(thisSav).dialog("destroy").remove();
                                     $('.module_spanselect').click();
                                 }
@@ -510,7 +620,7 @@
                     }
                 ]
             });
-		}
+        }
 		
 		//Load auto
 		<%=VNN_Function.setFunction_AutoLoad(db) %>

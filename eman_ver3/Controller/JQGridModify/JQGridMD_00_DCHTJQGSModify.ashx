@@ -365,7 +365,7 @@ System.Web.SessionState.IRequiresSessionState
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -488,12 +488,12 @@ System.Web.SessionState.IRequiresSessionState
 
             if (msg.Length <= 0)
             {
-                transaction.Commit();
+                //transaction.Commit();
                 msg = msg_success;
             }
             else
             {
-                transaction.Rollback();
+                //transaction.Rollback();
             }
         }
         context.Response.Write(msg);
@@ -660,7 +660,7 @@ System.Web.SessionState.IRequiresSessionState
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
 
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -888,10 +888,10 @@ System.Web.SessionState.IRequiresSessionState
             if (msg.Length > 0)
             {
                 msg = string.Format(@"<div style='color:red'>Lỗi: {0}</div>", msg);
-                transaction.Rollback();
+                //transaction.Rollback();
             }
-            else
-                transaction.Commit();
+            //else
+                //transaction.Commit();
         }
 
         context.Response.Write(msg);

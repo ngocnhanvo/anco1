@@ -5,11 +5,11 @@ using System.Linq;
 using System.Collections.Generic;
 using DataAcess;
 using ExcelLibrary.SpreadSheet;
-using ExcelLibrary;
+using System.Threading.Tasks;
 using System.IO;
 using System.Data;
 using Mbg.Data.SqlClient;
-using System.Threading.Tasks;
+							 
 public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
@@ -91,6 +91,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         EntityContext db = new EntityContext();
         string msg = "";
         string select_ddpm = context.Request.Form["select_ddpm"];
+        string skipCheckColumnCount = context.Request.Form["skipCheckColumnCount"].removeAllSpaceOrTrimText(false);
         string file_path = upload(context);
         if (select_ddpm == "")
         {
@@ -106,9 +107,9 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         }
         else
         {
-            ad_import ip = db.ad_import.Where(s => s.ad_import_id == select_ddpm).FirstOrDefault();
+            var ip = db.ad_import.Where(s => s.ad_import_id == select_ddpm).FirstOrDefault();
             string file = context.Server.MapPath(file_path);
-            using (FileStream stream = File.Open(file, FileMode.Open))
+            using (var stream = File.Open(file, FileMode.Open))
             {
                 try
                 {
@@ -122,7 +123,65 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                         msg = "false#Tập tin này quá lớn và phức tạp để hệ thống có thể đọc hiểu.";
                     else if(wb != null)
                     {
-                        msg = this.NewFromCellCollection(context, wb.Worksheets[0].Cells, ip, file, db);
+                        var kiemTraCot = skipCheckColumnCount.ToLower() == "false";
+                        var activeWS = wb.Worksheets[0];
+                        var ipDetails = db.ad_import_column.
+                                Where(s => s.imported == "true" & s.ad_import_id == ip.ad_import_id).
+                                OrderBy(s=>s.sapxep).ToList();
+                        var tblTable = "";
+                        if (kiemTraCot)
+                        {
+                            var tblRow = "";
+                            var tblTd = "";
+                            foreach (var cell in ipDetails)
+                            {
+                                tblTd += string.Format(@"<th>{0}</th>", cell.ten_import_column);
+                            }
+							
+							if(ip.value_header != 999 & ip.value_row != 999)
+                            {
+                                for (var cell = ipDetails.Count; cell <= activeWS.Cells.LastColIndex; cell++)
+                                {
+                                    var val = activeWS.Cells.Rows[0].GetCell(cell);
+                                    tblTd += string.Format(@"<th>{0}</th>", val.StringValue);
+                                }
+                            }
+							
+                            tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
+
+                            for (var row = 1; row < activeWS.Cells.Rows.Count; row++)
+                            {
+                                tblTd = "";
+                                var tdOrTh = row == 0 ? "th" : "td";
+                                for (var cell = 0; cell <= activeWS.Cells.LastColIndex; cell++)
+                                {
+                                    var val = activeWS.Cells.Rows[row].GetCell(cell);
+                                    tblTd += string.Format(@"<{0}>{1}</{0}>", tdOrTh, val.StringValue);
+                                }
+                                tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
+
+                                if (row > 0 & activeWS.Cells.Rows.Count > 2)
+                                {
+                                    tblRow += string.Format(@"<tr><td colspan='{0}' style='background-color:rgb(240, 248, 255);text-align:center;'><b>{1} dòng đã được ẩn...</b></td></tr>",
+                                        activeWS.Cells.LastColIndex + 1,
+                                        activeWS.Cells.Rows.Count - 2
+                                        );
+                                    break;
+                                }
+                            }
+                            tblTable += string.Format(@"<table class='tblCheckColumnInReport'>{0}</table>", tblRow);
+
+                            string input = "<input class='continueImport' onclick='importDB(true)' type='button' value='ĐỒNG Ý NHẬP LIỆU'/>";
+                            msg = string.Format(@"false#Tập tin đã chọn ({0} cột), Định dạng đã chọn ({1} cột).
+                                <div style='padding: 5px;'>Xem lại trước khi nhập liệu</div>{2}<br>{3}",
+                                activeWS.Cells.LastColIndex + 1,
+                                ipDetails.Count,
+                                tblTable,
+                                input
+                            );
+                        }
+                        else
+                            msg = this.NewFromCellCollection(context, activeWS.Cells, ip, file, db);
                     }
                     else
                     {
@@ -131,7 +190,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 }
                 catch (Exception ex)
                 {
-                    msg = "false#" + ex.Message;
+                    msg = "false#" + ex;
                 }
                 stream.Close();
                 stream.Dispose();
@@ -142,7 +201,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string NewFromCellCollection(HttpContext context, CellCollection cellCollection, ad_import ip, string file_path, EntityContext db)
     {
-        string type = context.Request.Form["type"];
+		string type = context.Request.Form["type"];										   
         string ten_table = ip.ten_table;
         int count_column = db.ad_import_column.Where(s => s.ad_import_id == ip.ad_import_id & s.imported == "true").Count();
         string sql_del = "";
@@ -653,7 +712,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string change_avariable(string sql, User_TK us)
     {
-        string kq = sql.Replace("'@ad_user_id'", string.Format(@"N'{0}'", us.ad_user_id));
+		string kq = sql.Replace("'@ad_user_id'", string.Format(@"N'{0}'", us.ad_user_id));
         kq = kq.Replace("'@ad_role_id'", string.Format(@"N'{0}'", us.ad_role_id));
         kq = kq.Replace("'@md_phongban_id'", string.Format(@"N'{0}'", us.md_phongban_id));
         kq = kq.Replace("'@ma_user'", string.Format(@"N'{0}'", us.ma_user));
@@ -661,7 +720,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         kq = kq.Replace("'@ten_role'", string.Format(@"N'{0}'", us.ten_role));
         kq = kq.Replace("'@ten_phongban'", string.Format(@"N'{0}'", us.ten_phongban));
 
-        kq = kq.Replace("@ad_user_id", us.ad_user_id).Replace("@ad_role_id", us.ad_role_id)
+        kq = sql.Replace("@ad_user_id", us.ad_user_id).Replace("@ad_role_id", us.ad_role_id)
         .Replace("@md_phongban_id", us.md_phongban_id).Replace("@ma_user", us.ma_user)
         .Replace("@ma_role", us.ma_role).Replace("@ten_role", us.ten_role).Replace("@ten_phongban", us.ten_phongban);
 

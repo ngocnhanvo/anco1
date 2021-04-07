@@ -57,7 +57,7 @@ public class JQGridMD_01_DDSDHJQGSLoad : IHttpHandler , System.Web.SessionState.
             sELeCt P.* fRoM (
                 sELeCt A.*,  " + ROW_NUMBER + @" as RowNum 
                 fRoM (
-                    select B.*, (B.gianhap - B.giadoichieu) as chenhlechgia
+                    select B.*, (B.giachuan - B.giadoichieu) as chenhlechgia
                     from (
                         select " + select_sql.Replace("dsdh.chenhlechgia as chenhlechgia,", "") + @" null as vnn
                         from {1}

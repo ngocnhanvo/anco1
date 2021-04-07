@@ -140,6 +140,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.h2 = Convert.ToDecimal(b["h2"]);
                             c_dongdsdh.h1 = Convert.ToDecimal(b["h1"]);
                             c_dongdsdh.gianhap = Convert.ToDecimal(b["gianhap"]);
+							c_dongdsdh.giachuan = Convert.ToDecimal(b["giachuan"] == null ? "0" : b["giachuan"]);
                             c_dongdsdh.ghichu_vachngan = b["ghichu_vachngan"] + "";
                             c_dongdsdh.c_dongdsdh_id = b["c_dongdsdh_id"] + "";
                             c_dongdsdh.c_dongdonhang_id = b["c_dongdonhang_id"] + "";

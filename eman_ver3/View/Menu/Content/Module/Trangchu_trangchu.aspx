@@ -10,7 +10,7 @@
                     background-repeat: repeat-x;
                     position: absolute;
                     width: 100%;
-                    height: 21px;
+                    height: 7px;
                     border-radius: 4px 0px 0px 0px;
                     "
                 ></div>

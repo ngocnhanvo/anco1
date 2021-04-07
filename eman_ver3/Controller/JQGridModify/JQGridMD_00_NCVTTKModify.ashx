@@ -173,15 +173,15 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
         string msg = "", msg_success = "";
         string[] vnn = context.Request.Form["id"].Split(',');
         bool SingleFunc = false;
-        if (transaction == null)
-        {
-            transaction = db.Database.BeginTransaction();
-            SingleFunc = true;
-        }
 
         try
         {
-            foreach (var ncvt in db.c_nhucauvattu.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList())
+            System.Linq.Expressions.Expression<Func<c_nhucauvattu, bool>> condition = s => vnn.Contains(s.c_nhucauvattu_id);
+
+            var ncvts = db.c_nhucauvattu.Where(condition).ToList();
+            var ncvtsLocal = db.c_nhucauvattu.Local.AsQueryable().Where(condition).ToList();
+
+            foreach (var ncvt in ncvtsLocal)
             {
                 if (ncvt.c_yeucaumuavt_id != " ")
                 {
@@ -378,13 +378,13 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
         {
             if (msg.Length <= 0)
             {
-                transaction.Commit();
+                //transaction.Commit();
                 msg = msg_success;
             }
             else
-                transaction.Rollback();
+                //transaction.Rollback();
 
-            transaction.Dispose();
+            //transaction.Dispose();
             context.Response.Write(msg);
         }
     }
@@ -393,7 +393,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
     {
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -423,7 +423,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                     db.SaveChanges();
 
                     VNN_Function.SetFormValue("id", ncvt.c_nhucauvattu_id);
-                    CA_01_TinhNhuCauVatTu(context, db, transaction);
+                    CA_01_TinhNhuCauVatTu(context, db, null);
 
                     if (db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count() <= 0)
                     {
@@ -439,15 +439,15 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
             if(msg.Length <= 0)
             {
                 msg = "true#Tạo nhu cầu mua vật tư thành công";
-                transaction.Commit();
+                //transaction.Commit();
             }
             else
             {
                 msg = "false#" + msg;
-                transaction.Rollback();
+                //transaction.Rollback();
             }
 
-            transaction.Dispose();
+            //transaction.Dispose();
         }
         context.Response.Write(msg);
     }

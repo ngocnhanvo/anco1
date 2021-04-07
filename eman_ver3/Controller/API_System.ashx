@@ -40,7 +40,7 @@ public class API_System : IHttpHandler {
 
         if (File.Exists(url) & removePDF == "true")
         {
-            File.Delete(url);
+            //File.Delete(url);
         }
     }
 

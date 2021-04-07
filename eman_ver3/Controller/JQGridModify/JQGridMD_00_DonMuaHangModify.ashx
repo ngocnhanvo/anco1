@@ -100,7 +100,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         string dmhdhtcs = string.Join("\n", dmhs.Select(s => s.donhang_thamchieu).Distinct());
         string dmhscts = string.Join("\n", dmhs.Select(s => s.sctdathang).Distinct());
 
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -231,7 +231,9 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             dmh.phieunhapkho = "Đã tạo phiếu";
                     }
                 }
-                db.SaveChanges();
+
+                if(msg.Length <= 0)
+                    db.SaveChanges();
             }
             catch(Exception ex)
             {
@@ -240,13 +242,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
             if (msg.Length <= 0)
             {
-                transaction.Commit();
+                //transaction.Commit();
                 msg = "<div style='color:blue'>Tạo phiếu nhập kho từ NCC: \"" + sochungtu + "\" thành công</div>";
                 msg += string.Format(@"<input id='sctnew' type='hidden' value='{0}'/>", add_master);
             }
             else
             {
-                transaction.Rollback();
+                //transaction.Rollback();
                 msg = "<div class='error' style='color:red'>" + msg + "</div>";
             }
         }

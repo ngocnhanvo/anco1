@@ -358,7 +358,7 @@ public static class VNN_Config
                 colspan_kq += "\ncolspanedit('tr_" + cot.ma_column + "','" + value_colspan + "'); $('.ui-jqdialog-content .CaptionTD').css('text-align','right');";
             }
 			else if(cot.edittype == "textarea") {
-				colspan_kq += "\n$('#"+ cot.ma_column +"').css({'height':'inherit','width':'96%'});";
+				colspan_kq += "\n$('#"+ cot.ma_column +"').css({'height':'inherit','width':''});";
 			}
         }
 
@@ -755,12 +755,22 @@ public static class VNN_Config
                     }
                     //Height of form
                     if (cn.docaoForm != null & cn.docaoForm != "")
-                        kq[i][1] = "\n$('" + default_WH + "' + tengrid).css('height', " + cn.docaoForm + ");" +
-                                "\n$('" + default_FWH + "'+ tengrid).css('height', " + cn.docaoForm + " - 66);";
+                    {
+                        kq[i][1] += "\n$('" + default_WH + "' + tengrid).css('height', " + cn.docaoForm + ");";
+                        kq[i][1] += "\n$('" + default_FWH + "'+ tengrid).css('height', " + cn.docaoForm + " - 66);";
+                    }
                     else
-                        kq[i][1] = "\n$('" + default_WH + "' + tengrid).css('height', 'auto');" +
-                                "\n$('" + default_FWH + "'+ tengrid).css('height', 'auto');";
-                    //Center for form
+                    {
+                        kq[i][1] += "\n$('" + default_WH + "' + tengrid).css('height', 'auto');";
+                        kq[i][1] += "\n$('" + default_FWH + "'+ tengrid).css('height', 'auto');";
+                    }
+
+                    kq[i][1] += "\nsetTimeout(function() {";
+                    kq[i][1] += "\n     if($('" + default_WH + "' + tengrid).height() > window.innerHeight - 6) { $('" + default_WH + "' + tengrid).height(window.innerHeight - 6); }";
+                    kq[i][1] += "\n     if($('" + default_FWH + "' + tengrid).height() > window.innerHeight - 72) { $('" + default_FWH + "' + tengrid).height(window.innerHeight - 72); $('#FrmGrid_' + tengrid).closest('div.ui-jqdialog').css('top','0px'); }";
+                    kq[i][1] += "\n}, 100);";
+					
+					//Center for form
                     if (cn.canhgiua != null & cn.canhgiua == (false))
                         kq[i][2] = "";
                     else if(i < 3)
@@ -867,11 +877,21 @@ public static class VNN_Config
                     }
                     //Height of form
                     if (cn.docaoForm != null & cn.docaoForm != "")
-                        kq[i][1] = "\n$('" + default_WH + "' + "+ tengrid +").css('height', " + cn.docaoForm + ");" +
-                                "\n$('" + default_FWH + "'+ "+ tengrid +").css('height', " + cn.docaoForm + " - 66);";
+                    {
+                        kq[i][1] += "\n$('" + default_WH + "' + " + tengrid + ").css('height', " + cn.docaoForm + ");";
+                        kq[i][1] += "\n$('" + default_FWH + "' + " + tengrid + ").css('height', " + cn.docaoForm + " - 66);";
+                    }
                     else
-                        kq[i][1] = "\n$('" + default_WH + "' + "+ tengrid +").css('height', 'auto');" +
-                                "\n$('" + default_FWH + "'+ "+ tengrid +").css('height', 'auto');";
+                    {
+                        kq[i][1] += "\n$('" + default_WH + "' + " + tengrid + ").css('height', 'auto');";
+                        kq[i][1] += "\n$('" + default_FWH + "' + " + tengrid + ").css('height', 'auto');";
+                    }
+
+                    kq[i][1] += "\nsetTimeout(function() {";
+                    kq[i][1] += "\n     if($('" + default_WH + "' + " + tengrid + ").height() > window.innerHeight - 6) { $('" + default_WH + "' + " + tengrid + ").height(window.innerHeight - 6); }";
+                    kq[i][1] += "\n     if($('" + default_FWH + "' + " + tengrid + ").height() > window.innerHeight - 72) { $('" + default_FWH + "' + " + tengrid + ").height(window.innerHeight - 72); $('#FrmGrid_' + " + tengrid + ").closest('div.ui-jqdialog').css('top','0px'); }";
+                    kq[i][1] += "\n}, 100);";
+					
                     //Center for form
                     if (cn.canhgiua != null & cn.canhgiua == (false))
                         kq[i][2] = "";

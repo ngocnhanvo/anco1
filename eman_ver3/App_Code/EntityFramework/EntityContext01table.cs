@@ -1810,6 +1810,10 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             .HasColumnName("ghichu_vachngan")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.giachuan)
+                            .HasColumnName("giachuan")
+                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.giadoichieu)
                             .HasColumnName("giadoichieu")
                             .HasColumnType("numeric").HasPrecision(18, 4);

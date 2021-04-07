@@ -50,8 +50,6 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_GhepVatTuXuat(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string id = context.Request.Form["id"];
         string idpr = context.Request.Form["idpr"];
         string[] vnn = id.Split(',');
@@ -94,18 +92,18 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
                         md_xuatkhonb_id = idpr,
                         ghino = s.Select(t => t.ghino).Sum(),
                         saiso = s.Select(t => t.saiso).Sum(),
-                        bophancapnhat = us.md_phongban_id,
-                        bophantao = us.md_phongban_id,
-                        nguoicapnhat = us.ad_user_id,
-                        nguoitao = us.ad_user_id,
-                        vaitrocapnhat = us.ad_role_id,
-                        vaitrotao = us.ad_role_id,
-                        value_bophancapnhat = us.ten_phongban,
-                        value_bophantao = us.ten_phongban,
-                        value_nguoicapnhat = us.ma_user,
-                        value_nguoitao = us.ma_user,
-                        value_vaitrocapnhat = us.ten_role,
-                        value_vaitrotao = us.ten_role,
+                        bophancapnhat = userTK.md_phongban_id,
+                        bophantao = userTK.md_phongban_id,
+                        nguoicapnhat = userTK.ad_user_id,
+                        nguoitao = userTK.ad_user_id,
+                        vaitrocapnhat = userTK.ad_role_id,
+                        vaitrotao = userTK.ad_role_id,
+                        value_bophancapnhat = userTK.ten_phongban,
+                        value_bophantao = userTK.ten_phongban,
+                        value_nguoicapnhat = userTK.ma_user,
+                        value_nguoitao = userTK.ma_user,
+                        value_vaitrocapnhat = userTK.ten_role,
+                        value_vaitrotao = userTK.ten_role,
                         ngaycapnhat = DateTime.Now,
                         ngaytao = DateTime.Now,
                         hoatdong = true,
@@ -141,7 +139,6 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_PhanBoSoLuongTheoTo(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         using (var transaction = db.Database.BeginTransaction())
         {
@@ -209,7 +206,6 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void loadPBSL(HttpContext context)
     {
-        var db = new EntityContext();
         string id_parent = context.Request.QueryString["id"];
         var dongXKNBs = db.md_xuatkhonb_cdh.Where(s => s.md_xuatkhonb_id == id_parent).ToList();
         var lsxTos = new List<Dictionary<string, object>>();
@@ -251,9 +247,8 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_CapnhatSLXNB(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -381,12 +376,12 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
             if (msg.Length <= 0)
             {
                 msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
-                transaction.Commit();
+                //transaction.Commit();
             }
             else
             {
                 msg = string.Format("<div style='color:red'>Lỗi {0}</div>", msg);
-                transaction.Rollback();
+                //transaction.Rollback();
             }
         }
         context.Response.Write(msg);

@@ -44,7 +44,7 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
         var mdk = db.md_modongky.Where(s => s.md_modongky_id == id).FirstOrDefault();
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -110,11 +110,13 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
 
             if (msg.Length <= 0)
             {
-                transaction.Commit();
+                //transaction.Commit();
                 msg = msg_success;
             }
             else
-                transaction.Rollback();
+            {
+                //transaction.Rollback();
+            }
         }
         context.Response.Write(msg);
     }

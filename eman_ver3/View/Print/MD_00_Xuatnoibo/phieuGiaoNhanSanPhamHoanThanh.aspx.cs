@@ -61,7 +61,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
                 , substring(nknb_cdh.lsx_to, 0, 13) as ghichu
                 , sp.ma_sanpham as ma_vthh
 	            , dvtsp.ten_dvt as dvt
-	            , nknb_cdh.sl_thucxuat as giao
+	            , nknb_cdh.sl_muonxuat as giao
                 , xb.ngaydenghi
             from md_xuatkhonb xb
 	            left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
@@ -70,7 +70,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_phieuGiaoNhanSanPhamHoanTh
                 left join md_kho kho on xb.tukho = kho.md_kho_id
             where 
                 nknb_cdh.md_xuatkhonb_id = '{0}'
-                and nknb_cdh.sl_thucxuat > 0
+                and nknb_cdh.sl_muonxuat > 0
             order by xb.ngaydenghi, nknb_cdh.tenhang, sp.ma_sanpham
 		"
         , md_xuatkhonb_id

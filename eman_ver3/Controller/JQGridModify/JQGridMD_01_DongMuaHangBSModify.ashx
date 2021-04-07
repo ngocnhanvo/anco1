@@ -2,13 +2,13 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Transactions;
 using DataAcess;
 public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
-    public EntityContext db = new EntityContext();
-    public EntityFunction entityFunc = new EntityFunction();
     public JQGridMD_00_DonMuaHangClass classFunc = new JQGridMD_00_DonMuaHangClass();
+    EntityContext db;
+    EntityFunction entityFunc;
     User_TK userTK = null;
 
     public string oper = "vnn";
@@ -16,6 +16,8 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
     {
         if (Security.id_taikhoan(context) != "")
         {
+            db = new EntityContext();
+            entityFunc = new EntityFunction();
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
             userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
         }
@@ -44,7 +46,7 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
         string co_ngayhethan = context.Request.Form["co_ngayhethan"];
         string donvitinhId = context.Request.Form["md_donvitinhsanpham_id"];
 
-        using (var transaction = db.Database.BeginTransaction())
+        using (var transaction = new TransactionScope())
         {
             try
             {
@@ -172,12 +174,8 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
             if (msg.LastIndexOf("false#") <= -1)
             {
                 msg = "true#Cập nhật thành công.";
-                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                transaction.Rollback();
+                transaction.Complete();
             }
         }
         context.Response.Write(msg);
@@ -187,7 +185,7 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
+        using(var transaction = new TransactionScope(TransactionScopeOption.Required))
         {
             try
             {
@@ -214,7 +212,7 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
                     {
                         msg = "false#Không tìm thấy đơn mua hàng.";
                     }
-                    else if (dmh.md_trangthai_id == "HIEULUC")
+                    else if (dmh.md_trangthai_id != "SOANTHAO")
                     {
                         msg = "false#Đơn mua hàng đã hiệu lực, không thể sửa.";
                     }
@@ -249,10 +247,11 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
                         }
                     }
                 }
+
                 if (msg.Length <= 0)
                 {
+                    object_.sl_dadat2 = sl_thaythe;
                     VNN_Function.SetFormValue(object_.nameof(s=>s.thanhtien), thanhtien.ToString());
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.sl_dadat2), sl_thaythe.ToString());
                     VNN_Function.SetFormValue(object_.nameof(s=>s.saiso), saiso.ToString());
                     VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_id), "VNN_notpost");
                     VNN_Function.SetFormValue(object_.nameof(s=>s.md_donvitinhsanpham_id), "VNN_notpost");
@@ -271,11 +270,9 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
             if (msg.LastIndexOf("false#") <= -1)
             {
                 msg = "true#Cập nhật thành công.";
-                transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
+                transaction.Complete();
             }
-            else
-                transaction.Rollback();
         }
         context.Response.Write(msg);
     }
@@ -285,7 +282,7 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 
-        using (var transaction = db.Database.BeginTransaction())
+        using (var transaction = new TransactionScope())
         {
             try
             {
@@ -331,13 +328,12 @@ public class JQGridMD_01_DongMuaHangBSModify : IHttpHandler, System.Web.SessionS
             if (msg.Length <= 0)
             {
                 msg = string.Format(@"true#Xóa thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                VNN_Function.loaddulieu_Auto(ma_module);
+                transaction.Complete();
             }
             else
             {
                 msg = string.Format(@"false#{0}", msg.Substring(4));
-                transaction.Rollback();
             }
         }
         context.Response.Write(msg);

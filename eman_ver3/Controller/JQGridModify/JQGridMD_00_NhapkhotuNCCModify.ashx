@@ -77,7 +77,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                 else
                 {
                     var md_nhapkho_ncc_dhs = db.md_nhapkho_ncc_dh
-                            .Where(s => s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id & s.sl_nhap > 0).ToList();
+                            .Where(s => s.md_nhapkho_ncc_id == px.md_nhapkho_ncc_id & s.sl_nhap != null & s.sl_nhap > 0).ToList();
                     foreach (var dh in md_nhapkho_ncc_dhs)
                     {
                         var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
@@ -158,7 +158,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
         ).FirstOrDefault();
 
         if (dmh_cdmh != null)
-            dmh_cdmh.sl_hanngach += dh.sl_nhap.GetValueOrDefault(0);
+            dmh_cdmh.sl_hanngach = dmh_cdmh.sl_hanngach.GetValueOrDefault(0) + dh.sl_nhap.GetValueOrDefault(0);
 
         dh.sl_danhap = dh.sl_nhap.GetValueOrDefault(0);
         nk.ngaycapnhat = DateTime.Now;

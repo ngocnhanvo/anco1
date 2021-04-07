@@ -5,11 +5,25 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
+using DataAcess;
+
 public partial class LinqtoSQL : System.Web.UI.Page
 {
+    EntityContext db;
     protected void Page_Load(object sender, EventArgs e)
     {
+        db = new EntityContext();
 
+        System.Linq.Expressions.Expression<Func<ad_autoload, bool>> condition_cdhsLSXTSXs =
+                                    s => s.hoatdong == true;
+
+        var cdhsLSXTSXs = db.md_sanpham_bom_vattu;
+
+        var result = cdhsLSXTSXs.Where(delegate (md_sanpham_bom_vattu tb) {
+            return 1 == 1;
+        });
+
+        Response.Write("\n2:" + cdhsLSXTSXs.Take(1).FirstOrDefault());
     }
 
     protected void btn_Linq_Click(object sender, EventArgs e)

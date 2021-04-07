@@ -67,6 +67,12 @@
                         public string ghichu_vachngan { get; set; }
                 
 						
+                        #region c_dongdsdh_giachuan_wintaFN
+                        
+                        #endregion c_dongdsdh_giachuan_wintaFN
+                        public Decimal? giachuan { get; set; }
+                
+						
                         #region c_dongdsdh_giadoichieu_wintaFN
                         
                         #endregion c_dongdsdh_giadoichieu_wintaFN

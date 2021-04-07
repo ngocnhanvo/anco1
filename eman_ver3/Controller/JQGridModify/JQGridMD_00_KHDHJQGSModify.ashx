@@ -51,45 +51,43 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         string check_1 = context.Request.Form["check"];
         string[] vnn = id.Split(',');
 
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+            foreach (var dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
             {
-                foreach (var dsdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id)).ToList())
+                if (dsdh.trangthai != "DAHET")
                 {
-                    if (dsdh.trangthai != "DAHET")
+                    if (check_1 == "1")
                     {
-                        if (check_1 == "1")
-                        {
-                            dsdh.trangthai = "DAHET";
+                        dsdh.trangthai = "DAHET";
 
-                        }
-                        else if (check_1 == "2")
-                        {
-                            dsdh.trangthai = "KETTHUC";
-                        }
-                        msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
                     }
-                    else if (dsdh.trangthai != "KETTHUC")
+                    else if (check_1 == "2")
                     {
-                        dsdh.trangthai = "SOANTHAO";
-                        msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
+                        dsdh.trangthai = "KETTHUC";
                     }
-                    else
-                    {
-                        msg = "<div style='color:red'> Chuyển đổi thất bại, kế hoạch này đã kết thúc</div>";
-                    }
+                    msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
                 }
-                if (msg.Length <= 0)
+                else if (dsdh.trangthai != "KETTHUC")
                 {
-                    db.SaveChanges();
-                    msg = msg_success;
+                    dsdh.trangthai = "SOANTHAO";
+                    msg_success = "<div style='color:blue'> Chuyển đổi kế hoạch thành công.</div>";
+                }
+                else
+                {
+                    msg = "<div style='color:red'> Chuyển đổi thất bại, kế hoạch này đã kết thúc</div>";
                 }
             }
-            catch (Exception ex)
+
+            if (msg.Length <= 0)
             {
-                msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
+                db.SaveChanges();
+                msg = msg_success;
             }
+        }
+        catch (Exception ex)
+        {
+            msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
         }
         context.Response.Write(msg);
     }
@@ -108,7 +106,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         string id = context.Request.Form["id"];
         string thoigianht = context.Request.Form["thoigianht"];
         string[] vnn = id.Split(',');
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -289,10 +287,10 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
             if (msg.Length <= 0)
             {
                 msg = msg_success;
-                transaction.Commit();
+                //transaction.Commit();
             }
-            else
-                transaction.Rollback();
+            //else
+               // transaction.Rollback();
         }
 
         db.Dispose();
@@ -595,9 +593,14 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             var ds = db.c_danhsachdathang.FirstOrDefault(s => s.c_danhsachdathang_id == dcht.c_danhsachdathang_id);
                             if (dcht != null)
                             {
-                                dcht.kehoach = " ";
-                                ds.md_trangthai_id = "DOICHIEUHANGTON";
+                                db.c_doichieuhangton.Remove(dcht);
                             }
+							
+							if(ds != null) 
+							{
+								ds.md_trangthai_id = "HIEULUC";
+								ds.trangthai = "SOANTHAO";
+							}
 
                             VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
                             db.c_kehoachdathang.Remove(object_);

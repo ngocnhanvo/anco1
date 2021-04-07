@@ -10,6 +10,7 @@ public partial class MainPage : System.Web.UI.Page
     public string[] kq_script;
     public string date_ip = "";
     public string get_mauhienthi_sochungtu = "";
+    public string layoutSize = "[]";
     protected void Page_Load(object sender, EventArgs e)
     {
         //
@@ -35,6 +36,12 @@ public partial class MainPage : System.Web.UI.Page
         if (ttc.date_import != null)
         {
             date_ip = ttc.date_import.Value.ToString(VNN_Config.get_FormatDate());
+        }
+
+        var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + tk.ma_user + "/layoutSize.json");
+        if (System.IO.File.Exists(filepath))
+        {
+            layoutSize = System.IO.File.ReadAllText(filepath);
         }
     }
 }

@@ -269,7 +269,7 @@ public class PrintAnco2
 
     public NPOI.HSSF.UserModel.HSSFSheet PrintExcel(NPOI.HSSF.UserModel.HSSFSheet s1, string type)
     {
-        //s1.PrintSetup.PaperSize = (short)NPOI.SS.UserModel.PaperSize.A4_Small;
+        //s1.PrintSetup.PaperSize = (short)NPOI.SS.UserModel.PaperSize.A4;
         //s1.FitToPage = true;
         s1.PrintSetup.FitWidth = 1;
         s1.PrintSetup.FitHeight = 0;
@@ -363,8 +363,10 @@ public class PrintAnco2
         public RptGroupHeader rptGroupHeader { get; set; }
         public int? rptGroupFooter { get; set; }
         public bool? sizePDF { get; set; }
-        public string[] Alphabet = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-
+        public string[] Alphabet = new string[] {
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+            "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"
+        };
     }
 
     public class RptGroupHeader

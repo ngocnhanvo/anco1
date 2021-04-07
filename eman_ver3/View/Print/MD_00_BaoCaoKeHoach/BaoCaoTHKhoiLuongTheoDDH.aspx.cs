@@ -229,9 +229,9 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
 
             select
 	            A.*,
-	            (A.dh51 + A.dh52 + A.dh53 + A.dh81ch + A.dh81bg + A.dh99) as dhTongcong,
-	            (A.dl51 + A.dl52 + A.dl53 + A.dl81ch + A.dl81bg + A.dl99) as dlTongcong,
-	            (A.cl51 + A.cl52 + A.cl53 + A.cl81ch + A.cl81bg + A.cl99) as clTongcong,
+	            (A.dh51 + A.dh52 + A.dh53 + A.dh62 + A.dh67 + A.dh81ch + A.dh81bg + A.dh99) as dhTongcong,
+	            (A.dl51 + A.dl52 + A.dl53 + A.dh62 + A.dh67 + A.dl81ch + A.dl81bg + A.dl99) as dlTongcong,
+	            (A.cl51 + A.cl52 + A.cl53 + A.dh62 + A.dh67 + A.cl81ch + A.cl81bg + A.cl99) as clTongcong,
                 N'Từ {0} đến {1}' as thang_nam
             from ( 
 	            select 
@@ -246,6 +246,12 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
 		            sum(isnull(A.dh53, 0)) as dh53,
 		            sum(isnull(A.dl53, 0)) as dl53,
 		            sum(isnull(A.cl53, 0)) as cl53,
+                    sum(isnull(A.dh62, 0)) as dh62,
+		            sum(isnull(A.dl62, 0)) as dl62,
+		            sum(isnull(A.cl62, 0)) as cl62,
+                    sum(isnull(A.dh67, 0)) as dh67,
+		            sum(isnull(A.dl67, 0)) as dl67,
+		            sum(isnull(A.cl67, 0)) as cl67,
 		            sum(isnull(A.dh81ch, 0)) as dh81ch,
 		            sum(isnull(A.dl81ch, 0)) as dl81ch,
 		            sum(isnull(A.cl81ch, 0)) as cl81ch,
@@ -295,6 +301,33 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
 				            select sum(a.v2 * a.cl)
 				            where a.loaisp = '53'
 			            )  as cl53,
+                        
+                        (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '62'
+			            ) as dh62,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '62'
+			            )  as dl62,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '62'
+			            )  as cl62,
+
+                        (
+				            select sum(a.v2 * a.dh)
+				            where a.loaisp = '67'
+			            ) as dh67,
+			            (
+				            select sum(a.v2 * a.dl)
+				            where a.loaisp = '67'
+			            )  as dl67,
+			            (
+				            select sum(a.v2 * a.cl)
+				            where a.loaisp = '67'
+			            )  as cl67,
+
 			            (
 				            select sum(a.v2 * a.dh)
 				            where a.loaisp = '81' and a.ma_sanpham not like N'%F%' and a.sp_tv like N'Chậu%'

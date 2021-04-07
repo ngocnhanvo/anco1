@@ -547,7 +547,7 @@ public class JQGridMD_00_LenhsanxuatModify : IHttpHandler, System.Web.SessionSta
                         msg += string.Format(@"<br><b>{0}</b>: Đã được triển khai sản xuất.", object_.sochungtu);
                     }
                     else if (db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == object_.md_lenhsanxuat_id
-                        & !string.IsNullOrWhiteSpace(s.phieulayht) & s.phieulayht != "-").Count() > 0)
+                        & !string.IsNullOrEmpty(s.phieulayht) & s.phieulayht != "-").Count() > 0)
                     {
                         msg += string.Format(@"<br><b>{0}</b>: Đã thực hiện lấy tồn.", object_.sochungtu);
                     }

@@ -61,7 +61,7 @@
 
 div.cl_div_menu {
     margin: -6px 8px 0 0;
-    /*background:#eff0f3*/
+	background: #FFF;
 }
 
 #gridDSPB_VT_chon tr td input[type=checkbox] {
@@ -353,7 +353,7 @@ button#nhan_uidialog_mini {
 
 .cl_img_btnphangiai {
     float: right;
-    margin: -4 7 0 0
+    margin: -4px 7px 0 0;
 }
 
 .menu_div_dongkhung > table > tbody > tr {
@@ -364,6 +364,7 @@ button#nhan_uidialog_mini {
     font-weight: 700;
     cursor: pointer;
     user-select: none;
+        background-image: linear-gradient(318deg, #ffffff, #f3f3f3);
 }
 
 table.table_div_chuotphai {
@@ -401,10 +402,15 @@ span.image_menu0.glyphicon + span {
     box-shadow: 0 1px 4px 1px #423131
 }
 
-.menu_btndanhan {
+table.menu_btndanhan {
     border-collapse: collapse;
     margin: 2px 0 0 6px;
-    width: 90%
+    width: calc(100% - 6px);
+    background-color: #FFF;
+}
+
+table.menu_btndanhan i.fas.fa-minus {
+    opacity: 0;
 }
 
 .menu_div_dongkhung {

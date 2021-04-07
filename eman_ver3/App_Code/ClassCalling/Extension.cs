@@ -227,7 +227,7 @@ public static class Extension
             & s.md_lenhsanxuat_id == lsxTo.md_lenhsanxuat_id
             & s.hoatdong == true
             )
-            .OrderByDescending(s=>s.stt).FirstOrDefault();
+            .OrderByDescending(s=>s.stt).Take(1).FirstOrDefault();
         return prev;
     }
 
@@ -423,6 +423,14 @@ public static class Extension
             str2 = str2.Remove(str2.IndexOf("?"), 1);
         }
         return str2;
+    }
+
+    public static string removeAllSpaceOrTrimText(this string a, bool onlyTrim)
+    {
+        if (a == null)
+            a = "";
+
+        return onlyTrim ? a.Trim() : a.Replace(" ", "");
     }
 }
 

@@ -25,6 +25,62 @@ public class ChangePrintMethod : IHttpHandler, System.Web.SessionState.IRequires
             case "configColumns":
                 this.ConfigColumns(context);
                 break;
+            case "configSizeLayout":
+                this.ConfigSizeLayout(context);
+                break;
+        }
+    }
+
+    public void ConfigSizeLayout(HttpContext context)
+    {
+        try
+        {
+            var dicUser = Security.all_taikhoan(context);
+            var ma_user = "";
+            if (dicUser.ContainsKey("ma_user"))
+                ma_user = dicUser["ma_user"].ToString();
+
+            var itemModels = context.Request.Form["itemModels"];
+
+            var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemModels);
+
+            var directory = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + ma_user);
+            var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + ma_user + "/layoutSize.json");
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            if (!File.Exists(filepath))
+            {
+                var w = new StreamWriter(filepath, false, Encoding.UTF8);
+                w.WriteLine("[]");
+                w.Flush();
+                w.Close();
+            }
+
+            var jsonPrev = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(File.ReadAllText(filepath));
+
+            var item = jsonPrev.Where(s => s["module"].ToString() == json["module"].ToString()).FirstOrDefault();
+
+            if(item == null)
+            {
+                jsonPrev.Add(json);
+            }
+            else
+            {
+                item["size1"] = json["size1"];
+                item["size2"] = json["size2"];
+            }
+
+            var jsonData = JsonConvert.SerializeObject(jsonPrev);
+            File.WriteAllText(filepath, jsonData);
+            context.Response.Write(jsonData);
+        }
+        catch(Exception ex)
+        {
+            throw new ArgumentNullException(ex.Message);
         }
     }
 

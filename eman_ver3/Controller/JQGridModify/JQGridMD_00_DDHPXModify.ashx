@@ -6,11 +6,19 @@ using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
     {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -39,21 +47,9 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
         }
     }
 
-    public static T Clone<T>(T source)
-    {
-        var dcs = new System.Runtime.Serialization.DataContractSerializer(typeof(T));
-        using (var ms = new System.IO.MemoryStream())
-        {
-            dcs.WriteObject(ms, source);
-            ms.Seek(0, System.IO.SeekOrigin.Begin);
-            return (T)dcs.ReadObject(ms);
-        }
-    }
-
     public void CA_01_TachDDH(HttpContext context)
     {
         string msg = "";
-        EntityContext db = new EntityContext();
         string id = context.Request.Form["id"];
         string[] nht = id.Split(',');
         foreach (md_dondathangphanxuong dsdh in db.md_dondathangphanxuong.Where(s => nht.Contains(s.md_dondathangphanxuong_id)).ToList())
@@ -66,7 +62,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
             else
             {
                 string id_new = Helper.getNewId();
-                md_dondathangphanxuong dsdh_new = Clone(dsdh);
+                md_dondathangphanxuong dsdh_new = dsdh.Clone();
                 dsdh_new.md_dondathangphanxuong_id = id_new;
                 dsdh_new.sochungtu = sochungtu;
                 dsdh_new.md_trangthai_id = "SOANTHAO";
@@ -74,7 +70,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                 foreach (md_dondathangphanxuong_cdh dongdsdh in db.md_dondathangphanxuong_cdh.Where(s => s.md_dondathangphanxuong_id == dsdh.md_dondathangphanxuong_id).ToList())
                 {
-                    md_dondathangphanxuong_cdh dongdsdh_new = Clone(dongdsdh);
+                    md_dondathangphanxuong_cdh dongdsdh_new = dongdsdh.Clone();
                     dongdsdh_new.md_dondathangphanxuong_cdh_id = Helper.getNewId();
                     dongdsdh_new.md_dondathangphanxuong_id = id_new;
                     dongdsdh_new.tong_sl_dat = dongdsdh.tong_sl_dat / 2;
@@ -87,7 +83,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                 foreach (md_dondathangphanxuong_vattu vattu in db.md_dondathangphanxuong_vattu.Where(s => s.md_dondathangphanxuong_id == dsdh.md_dondathangphanxuong_id).ToList())
                 {
-                    md_dondathangphanxuong_vattu dongdsdh_new = Clone(vattu);
+                    md_dondathangphanxuong_vattu dongdsdh_new = vattu.Clone();
                     dongdsdh_new.md_dondathangphanxuong_vattu_id = Helper.getNewId();
                     dongdsdh_new.md_dondathangphanxuong_id = id_new;
                     dongdsdh_new.soluong = vattu.soluong / 2;
@@ -106,7 +102,6 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
     }
     public void load_sanpham(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string id = context.Request.QueryString["id"];
         string html = "";
         html += "<table style='width:100%'>";
@@ -137,8 +132,6 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void CA_01_TPNKPX(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
@@ -177,18 +170,18 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     dhpx.phieunhapkho = sochungtu;
                     px1.sctdathang = dhpx.sctdathang;
 
-                    px1.nguoitao = us.ad_user_id;
-                    px1.vaitrotao = us.ad_role_id;
-                    px1.bophantao = us.md_phongban_id;
-                    px1.value_nguoitao = us.ma_user;
-                    px1.value_vaitrotao = us.ten_role;
-                    px1.value_bophantao = us.ten_phongban;
-                    px1.nguoicapnhat = us.ad_user_id;
-                    px1.vaitrocapnhat = us.ad_role_id;
-                    px1.bophancapnhat = us.md_phongban_id;
-                    px1.value_nguoicapnhat = us.ma_user;
-                    px1.value_vaitrocapnhat = us.ten_role;
-                    px1.value_bophancapnhat = us.ten_phongban;
+                    px1.nguoitao = userTK.ad_user_id;
+                    px1.vaitrotao = userTK.ad_role_id;
+                    px1.bophantao = userTK.md_phongban_id;
+                    px1.value_nguoitao = userTK.ma_user;
+                    px1.value_vaitrotao = userTK.ten_role;
+                    px1.value_bophantao = userTK.ten_phongban;
+                    px1.nguoicapnhat = userTK.ad_user_id;
+                    px1.vaitrocapnhat = userTK.ad_role_id;
+                    px1.bophancapnhat = userTK.md_phongban_id;
+                    px1.value_nguoicapnhat = userTK.ma_user;
+                    px1.value_vaitrocapnhat = userTK.ten_role;
+                    px1.value_bophancapnhat = userTK.ten_phongban;
                     px1.hoatdong = true;
 
                     //Kiem tra
@@ -235,18 +228,18 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                         cdh.hanngach = cdh.tong_sl_dat - sl_chia;
 
-                        dh.nguoitao = us.ad_user_id;
-                        dh.vaitrotao = us.ad_role_id;
-                        dh.bophantao = us.md_phongban_id;
-                        dh.value_nguoitao = us.ma_user;
-                        dh.value_vaitrotao = us.ten_role;
-                        dh.value_bophantao = us.ten_phongban;
-                        dh.nguoicapnhat = us.ad_user_id;
-                        dh.vaitrocapnhat = us.ad_role_id;
-                        dh.bophancapnhat = us.md_phongban_id;
-                        dh.value_nguoicapnhat = us.ma_user;
-                        dh.value_vaitrocapnhat = us.ten_role;
-                        dh.value_bophancapnhat = us.ten_phongban;
+                        dh.nguoitao = userTK.ad_user_id;
+                        dh.vaitrotao = userTK.ad_role_id;
+                        dh.bophantao = userTK.md_phongban_id;
+                        dh.value_nguoitao = userTK.ma_user;
+                        dh.value_vaitrotao = userTK.ten_role;
+                        dh.value_bophantao = userTK.ten_phongban;
+                        dh.nguoicapnhat = userTK.ad_user_id;
+                        dh.vaitrocapnhat = userTK.ad_role_id;
+                        dh.bophancapnhat = userTK.md_phongban_id;
+                        dh.value_nguoicapnhat = userTK.ma_user;
+                        dh.value_vaitrocapnhat = userTK.ten_role;
+                        dh.value_bophancapnhat = userTK.ten_phongban;
                         dh.hoatdong = true;
                         //Kiem tra
                         dh.ngaytao = DateTime.Now;
@@ -273,8 +266,6 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void CA_01_TaoYCMVT_BPKH(HttpContext context)
     {
-        EntityContext db = new EntityContext();
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", 1);
         string msg = "";
         string[] vnn = context.Request.Form["id"].Split(',');
@@ -287,18 +278,18 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
             sochungtu = sochungtu,
             nguoiyeucau = "",
             ngaycan = DateTime.Now,
-            nguoitao = us.ad_user_id,
-            vaitrotao = us.ad_role_id,
-            bophantao = us.md_phongban_id,
-            value_nguoitao = us.ma_user,
-            value_vaitrotao = us.ten_role,
-            value_bophantao = us.ten_phongban,
-            nguoicapnhat = us.ad_user_id,
-            vaitrocapnhat = us.ad_role_id,
-            bophancapnhat = us.md_phongban_id,
-            value_nguoicapnhat = us.ma_user,
-            value_vaitrocapnhat = us.ten_role,
-            value_bophancapnhat = us.ten_phongban,
+            nguoitao = userTK.ad_user_id,
+            vaitrotao = userTK.ad_role_id,
+            bophantao = userTK.md_phongban_id,
+            value_nguoitao = userTK.ma_user,
+            value_vaitrotao = userTK.ten_role,
+            value_bophantao = userTK.ten_phongban,
+            nguoicapnhat = userTK.ad_user_id,
+            vaitrocapnhat = userTK.ad_role_id,
+            bophancapnhat = userTK.md_phongban_id,
+            value_nguoicapnhat = userTK.ma_user,
+            value_vaitrocapnhat = userTK.ten_role,
+            value_bophancapnhat = userTK.ten_phongban,
             ngaytao = DateTime.Now,
             ngaycapnhat = DateTime.Now,
             mota = "",
@@ -322,18 +313,18 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                         c_yeucaumuavt_id = ycmvt.c_yeucaumuavt_id,
                         md_sanpham_id = dhpx_vt.md_sanpham_id,
                         soluong_yeucau = (decimal)dhpx_vt.soluong.Value,
-                        nguoitao = us.ad_user_id,
-                        vaitrotao = us.ad_role_id,
-                        bophantao = us.md_phongban_id,
-                        value_nguoitao = us.ma_user,
-                        value_vaitrotao = us.ten_role,
-                        value_bophantao = us.ten_phongban,
-                        nguoicapnhat = us.ad_user_id,
-                        vaitrocapnhat = us.ad_role_id,
-                        bophancapnhat = us.md_phongban_id,
-                        value_nguoicapnhat = us.ma_user,
-                        value_vaitrocapnhat = us.ten_role,
-                        value_bophancapnhat = us.ten_phongban,
+                        nguoitao = userTK.ad_user_id,
+                        vaitrotao = userTK.ad_role_id,
+                        bophantao = userTK.md_phongban_id,
+                        value_nguoitao = userTK.ma_user,
+                        value_vaitrotao = userTK.ten_role,
+                        value_bophantao = userTK.ten_phongban,
+                        nguoicapnhat = userTK.ad_user_id,
+                        vaitrocapnhat = userTK.ad_role_id,
+                        bophancapnhat = userTK.md_phongban_id,
+                        value_nguoicapnhat = userTK.ma_user,
+                        value_vaitrocapnhat = userTK.ten_role,
+                        value_bophancapnhat = userTK.ten_phongban,
                         ngaytao = DateTime.Now,
                         ngaycapnhat = DateTime.Now,
                         mota = "",
@@ -373,7 +364,6 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -399,15 +389,13 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void edit(HttpContext context)
     {
-        var db = new EntityContext();
-        var us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
         string msg = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         string ngay_hieuluc = context.Request.Form["ngay_hieuluc"];
         bool kiemtragia = (context.Request.Form["kiemtragia"] + "").ToLower() == "true";
         string sctdathang = "", donhang_thamchieu = "";
-        using (var transaction = db.Database.BeginTransaction())
+        //using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
@@ -451,8 +439,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     pxuongXL = db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).FirstOrDefault();
 
-                    if(pxuongXL.ma_phanxuong != us.ma_phongban)
-                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxuongXL.ma_phanxuong, us.ma_phongban);
+                    if(pxuongXL.ma_phanxuong != userTK.ma_phongban)
+                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxuongXL.ma_phanxuong, userTK.ma_phongban);
                 }
 
                 if (msg.Length <= 0)
@@ -465,7 +453,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.mota = context.Request.Form["mota"];
                     object_.hdlh = context.Request.Form["hdlh"];
                     object_.hdlhchung = context.Request.Form["hdlhchung"];
-                    db.SaveChanges();
+                    //db.SaveChanges();
 
                     if (md_trangthai_id == "HIEULUC" & old_trangthai_id == "SOANTHAO")
                     {
@@ -489,18 +477,18 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             lsx.ngaydkgiaotp = ddh.ngayketthuc;
                             lsx.phieuXK = "CHUAHOANTHANH";
 
-                            lsx.nguoitao = us.ad_user_id;
-                            lsx.vaitrotao = us.ad_role_id;
-                            lsx.bophantao = us.md_phongban_id;
-                            lsx.value_nguoitao = us.ma_user;
-                            lsx.value_vaitrotao = us.ten_role;
-                            lsx.value_bophantao = us.ten_phongban;
-                            lsx.nguoicapnhat = us.ad_user_id;
-                            lsx.vaitrocapnhat = us.ad_role_id;
-                            lsx.bophancapnhat = us.md_phongban_id;
-                            lsx.value_nguoicapnhat = us.ma_user;
-                            lsx.value_vaitrocapnhat = us.ten_role;
-                            lsx.value_bophancapnhat = us.ten_phongban;
+                            lsx.nguoitao = userTK.ad_user_id;
+                            lsx.vaitrotao = userTK.ad_role_id;
+                            lsx.bophantao = userTK.md_phongban_id;
+                            lsx.value_nguoitao = userTK.ma_user;
+                            lsx.value_vaitrotao = userTK.ten_role;
+                            lsx.value_bophantao = userTK.ten_phongban;
+                            lsx.nguoicapnhat = userTK.ad_user_id;
+                            lsx.vaitrocapnhat = userTK.ad_role_id;
+                            lsx.bophancapnhat = userTK.md_phongban_id;
+                            lsx.value_nguoicapnhat = userTK.ma_user;
+                            lsx.value_vaitrocapnhat = userTK.ten_role;
+                            lsx.value_bophancapnhat = userTK.ten_phongban;
                             lsx.ngaytao = DateTime.Now;
                             lsx.ngaycapnhat = DateTime.Now;
                             lsx.hoatdong = true;
@@ -508,7 +496,8 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                             if (countPXT == 1)
                                 lsx.md_trangthai_id = "CHUAHOANTHANH";
                             db.md_lenhsanxuat.Add(lsx);
-                            db.SaveChanges();
+                            //db.SaveChanges();
+
                             foreach (var px_to in px_to_.Select((s, index) => new { s.md_phanxuong_id, s.md_to_id, s.sapxep, index }))
                             {
                                 var tosx = new md_lenhsanxuat_tosx();
@@ -521,37 +510,44 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 tosx.check_hoanthanh = false;
                                 tosx.sapxep = px_to.sapxep;
                                 tosx.stt = px_to.index + 1 == countPXT ? 9999 : px_to.index;
-                                tosx.nguoitao = us.ad_user_id;
-                                tosx.vaitrotao = us.ad_role_id;
-                                tosx.bophantao = us.md_phongban_id;
-                                tosx.value_nguoitao = us.ma_user;
-                                tosx.value_vaitrotao = us.ten_role;
-                                tosx.value_bophantao = us.ten_phongban;
-                                tosx.nguoicapnhat = us.ad_user_id;
-                                tosx.vaitrocapnhat = us.ad_role_id;
-                                tosx.bophancapnhat = us.md_phongban_id;
-                                tosx.value_nguoicapnhat = us.ma_user;
-                                tosx.value_vaitrocapnhat = us.ten_role;
-                                tosx.value_bophancapnhat = us.ten_phongban;
+                                tosx.nguoitao = userTK.ad_user_id;
+                                tosx.vaitrotao = userTK.ad_role_id;
+                                tosx.bophantao = userTK.md_phongban_id;
+                                tosx.value_nguoitao = userTK.ma_user;
+                                tosx.value_vaitrotao = userTK.ten_role;
+                                tosx.value_bophantao = userTK.ten_phongban;
+                                tosx.nguoicapnhat = userTK.ad_user_id;
+                                tosx.vaitrocapnhat = userTK.ad_role_id;
+                                tosx.bophancapnhat = userTK.md_phongban_id;
+                                tosx.value_nguoicapnhat = userTK.ma_user;
+                                tosx.value_vaitrocapnhat = userTK.ten_role;
+                                tosx.value_bophancapnhat = userTK.ten_phongban;
                                 tosx.ngaytao = DateTime.Now;
                                 tosx.ngaycapnhat = DateTime.Now;
                                 tosx.hoatdong = true;
                                 db.md_lenhsanxuat_tosx.Add(tosx);
-                                db.SaveChanges();
+                                //db.SaveChanges();
                                 tdt = px_to.index == 0 ? px_to.md_to_id : tdt;
                                 lsxTsxIds.Add(tosx.md_lenhsanxuat_tosx_id, px_to.md_to_id);
                             }
                         }
 
-                        var lsxTSX = db.md_lenhsanxuat_tosx.
-                                Where(s => s.md_lenhsanxuat_id == lsxId);
-                        foreach (var px_to in lsxTSX
-                                .OrderBy(s => s.sapxep)
-                                .ToList())
+                        System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx, bool>> condition = s=> s.md_lenhsanxuat_id == lsxId;
+
+                        var lsxTSX = db.md_lenhsanxuat_tosx.Where(condition).ToList();
+
+                        var lsxTSXLocal = db.md_lenhsanxuat_tosx.Local.AsQueryable().Where(condition).ToList();
+
+                        foreach (var px_to in lsxTSXLocal.OrderBy(s => s.sapxep).ToList())
                         {
-                            foreach (var dhpx_cdh in db.md_dondathangphanxuong_cdh.
-                                                Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id)
-                                                .ToList())
+                            System.Linq.Expressions.Expression<Func<md_dondathangphanxuong_cdh, bool>> conditionCDHPX =
+                                    s=> s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id;
+
+                            var cdhPXs = db.md_dondathangphanxuong_cdh.Where(conditionCDHPX).ToList();
+
+                            var cdhPXsLocal = db.md_dondathangphanxuong_cdh.Local.AsQueryable().Where(conditionCDHPX).ToList();
+
+                            foreach (var dhpx_cdh in cdhPXsLocal)
                             {
                                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id).Take(1).FirstOrDefault();
                                 string ma_caiTemp = sp.ma_sanpham.Substring(0, 9) + "{0}" + sp.ma_sanpham.Substring(11);
@@ -569,10 +565,19 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                             Where(s => s.ma_sanpham == ma_cai).
                                             Select(s => new { s.md_sanpham_id, s.md_donvitinhsanpham_id, s.ma_sanpham }).
                                             FirstOrDefault();
-                                    var lsx_tosx_cdh = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_sanpham_id == spCai.md_sanpham_id &
-                                        s.md_lenhsanxuat_tosx_id == px_to.md_lenhsanxuat_tosx_id).FirstOrDefault();
+
+                                    System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_cdh, bool>> conditionLSXTSXCDH =
+                                        s => s.md_sanpham_id == spCai.md_sanpham_id &
+                                             s.md_lenhsanxuat_tosx_id == px_to.md_lenhsanxuat_tosx_id;
+
+                                    var lsxTSXCDH = db.md_lenhsanxuat_tosx_cdh.Where(conditionLSXTSXCDH).ToList();
+
+                                    var lsxTSXCDHLocal = db.md_lenhsanxuat_tosx_cdh.Local.AsQueryable().Where(conditionLSXTSXCDH).ToList();
+
+                                    var lsx_tosx_cdh = lsxTSXCDHLocal.FirstOrDefault();
+
                                     var addLSX = lsx_tosx_cdh;
+
                                     if (lsx_tosx_cdh == null)
                                     {
                                         var nhanPS = (bool?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(
@@ -593,19 +598,19 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                         lsx_tosx_cdh.sl_danhapkho = 0;
                                         lsx_tosx_cdh.macuoi = ma_bo;
                                         lsx_tosx_cdh.md_donvitinhsanpham_id = spCai.md_donvitinhsanpham_id;
-                                        lsx_tosx_cdh.nguoitao = us.ad_user_id;
-                                        lsx_tosx_cdh.vaitrotao = us.ad_role_id;
-                                        lsx_tosx_cdh.bophantao = us.md_phongban_id;
-                                        lsx_tosx_cdh.value_nguoitao = us.ma_user;
-                                        lsx_tosx_cdh.value_vaitrotao = us.ten_role;
-                                        lsx_tosx_cdh.value_bophantao = us.ten_phongban;
+                                        lsx_tosx_cdh.nguoitao = userTK.ad_user_id;
+                                        lsx_tosx_cdh.vaitrotao = userTK.ad_role_id;
+                                        lsx_tosx_cdh.bophantao = userTK.md_phongban_id;
+                                        lsx_tosx_cdh.value_nguoitao = userTK.ma_user;
+                                        lsx_tosx_cdh.value_vaitrotao = userTK.ten_role;
+                                        lsx_tosx_cdh.value_bophantao = userTK.ten_phongban;
 
-                                        lsx_tosx_cdh.nguoicapnhat = us.ad_user_id;
-                                        lsx_tosx_cdh.vaitrocapnhat = us.ad_role_id;
-                                        lsx_tosx_cdh.bophancapnhat = us.md_phongban_id;
-                                        lsx_tosx_cdh.value_nguoicapnhat = us.ma_user;
-                                        lsx_tosx_cdh.value_vaitrocapnhat = us.ten_role;
-                                        lsx_tosx_cdh.value_bophancapnhat = us.ten_phongban;
+                                        lsx_tosx_cdh.nguoicapnhat = userTK.ad_user_id;
+                                        lsx_tosx_cdh.vaitrocapnhat = userTK.ad_role_id;
+                                        lsx_tosx_cdh.bophancapnhat = userTK.md_phongban_id;
+                                        lsx_tosx_cdh.value_nguoicapnhat = userTK.ma_user;
+                                        lsx_tosx_cdh.value_vaitrocapnhat = userTK.ten_role;
+                                        lsx_tosx_cdh.value_bophancapnhat = userTK.ten_phongban;
 
                                         lsx_tosx_cdh.ngaytao = DateTime.Now;
                                         lsx_tosx_cdh.ngaycapnhat = DateTime.Now;
@@ -633,7 +638,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                     {
                                         db.md_lenhsanxuat_tosx_cdh.Add(lsx_tosx_cdh);
                                     }
-                                    db.SaveChanges();
+                                    //db.SaveChanges();
                                 }
                             }
                         }
@@ -651,14 +656,21 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                        .OrderByDescending(s => s.ngay_hieuluc).Select(s => s.md_phienbangia_id)
                                        .FirstOrDefault();
 
-                            foreach (var item2 in db.md_lenhsanxuat_tosx_cdh.Where(s => item1.Key == s.md_lenhsanxuat_tosx_id).ToList())
-                            {
+                            System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_cdh, bool>> conditionLSXTSXCDH =
+                                    s => s.md_lenhsanxuat_tosx_id == item1.Key;
 
+                            var lsxTSXCDH = db.md_lenhsanxuat_tosx_cdh.Where(conditionLSXTSXCDH).ToList();
+
+                            var lsxTSXCDHLocal = db.md_lenhsanxuat_tosx_cdh.Local.AsQueryable().Where(conditionLSXTSXCDH).ToList();
+
+                            foreach (var item2 in lsxTSXCDHLocal)
+                            {
                                 var giasp = db.md_giasanpham.Where(s =>
                                     s.md_sanpham_id == item2.md_sanpham_id
                                     & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
                                     & s.md_phienbangia_id == pbgId
                                     ).FirstOrDefault();
+
                                 if (giasp == null)
                                 {
                                     if (kiemtragia == true)
@@ -692,9 +704,15 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                 {
                                     foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
                                     {
-                                        var vtlsxto = db.md_lenhsanxuat_tosx_vattu.Where(s =>
-                                           s.md_sanpham_id == vattusp.md_sanpham_id &
-                                           s.md_lenhsanxuat_tosx_id == item2.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                        System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_vattu, bool>> condition =
+                                            s => s.md_sanpham_id == vattusp.md_sanpham_id
+                                                & s.md_lenhsanxuat_tosx_id == item2.md_lenhsanxuat_tosx_id;
+
+                                        var toSXVTs = db.md_lenhsanxuat_tosx_vattu.Where(condition).ToList();
+
+                                        var toSXVTsLocal = db.md_lenhsanxuat_tosx_vattu.Local.AsQueryable().Where(condition).ToList();
+
+                                        var vtlsxto = toSXVTsLocal.FirstOrDefault();
                                         var addVTLSX = vtlsxto;
                                         if (addVTLSX == null)
                                         {
@@ -721,7 +739,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                                         vtbk.soluong = (decimal)vattusp.soluong.GetValueOrDefault(0);
                                         vtbk.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
                                         db.md_lenhsanxuat_tosx_vattuBackup.Add(vtbk);
-                                        db.SaveChanges();
+                                        //db.SaveChanges();
                                     }
                                 }
                                 else
@@ -740,11 +758,22 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
                         if (md_trangthai_id == "HUY" & object_.md_trangthai_id == "HIEULUC")
                         {
-                            var lsx_2 = db.md_lenhsanxuat.Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).FirstOrDefault();
+                            System.Linq.Expressions.Expression<Func<md_lenhsanxuat, bool>> conditionLSX = 
+                                s=> s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id;
+
+                            var lsxs = db.md_lenhsanxuat.Where(conditionLSX).ToList();
+
+                            var lsxsLocal = db.md_lenhsanxuat.Local.AsQueryable().Where(conditionLSX).ToList();
+
+                            var lsx_2 = lsxsLocal.FirstOrDefault();
                             lsx_2.md_trangthai_id = "KETTHUC";
                         }
-                        db.SaveChanges();
-                        msg_success = "Cập nhật thành công.";
+
+                        if (msg.Length <= 0)
+                        {
+                            db.SaveChanges();
+                            msg_success = "Cập nhật thành công.";
+                        }
                     }
                 }
             }
@@ -756,12 +785,12 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
             if (msg.Length <= 0)
             {
                 msg = "true#" + msg_success;
-                transaction.Commit();
+                //transaction.Commit();
             }
             else
             {
                 msg = "false#" + msg;
-                transaction.Rollback();
+                //transaction.Rollback();
             }
         }
         context.Response.Write(msg);
@@ -769,7 +798,6 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void del(HttpContext context)
     {
-        var db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 

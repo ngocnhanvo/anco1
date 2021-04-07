@@ -341,7 +341,8 @@ namespace OfficeToPDF
                     allSheets = workbook.Sheets;
                     var worksheet = (Microsoft.Office.Interop.Excel._Worksheet)workbook.ActiveSheet;
                     worksheet.PageSetup.CenterHorizontally = true;
-                    //worksheet.PageSetup.FitToPagesWide = 0;
+                    //worksheet.PageSetup.FitToPagesTall = 1;
+                    //worksheet.PageSetup.FitToPagesWide = 1;
 
                     if (mimeTypeOutput == "pdf")
                     {
