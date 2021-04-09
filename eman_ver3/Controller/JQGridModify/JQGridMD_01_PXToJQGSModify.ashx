@@ -37,6 +37,7 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
             string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
             string ma_to = context.Request.Form["ma_to"];
             string ten_to = context.Request.Form["ten_to"];
+            string phongbanId = context.Request.Form["phongbanId"];
 
             if(db.md_phanxuong_to.Where(p => p.ma_to == ma_to).Count() > 0)
             {
@@ -50,16 +51,24 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
 
             if (msg.Length <= 0)
             {
-                string action = context.Request.Params["oper"];
-                string[] column_ex = {"md_phanxuong_id"};
-                VNN_Function.SetFormValue("md_phanxuong_id", id_parent);
-                string ten_table = "md_phanxuong_to";
-                VNN_Function.SetFormValue("sapxep", sapxep);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", id_parent, "ma_to", ma_to, null);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
+                var pb = db.ad_department.Where(s => s.md_phongban_id == phongbanId).FirstOrDefault();
+                if (pb == null)
+                    msg = string.Format(@"false#Lỗi: Không tìm thấy phân xưởng đã chọn");
+                else
+                {
+                    string action = context.Request.Params["oper"];
+                    string[] column_ex = { "md_phanxuong_id", "ma_to", "ten_to" };
+                    VNN_Function.SetFormValue("md_phanxuong_id", id_parent);
+                    string ten_table = "md_phanxuong_to";
+                    VNN_Function.SetFormValue("ma_to", pb.ma_phongban);
+                    VNN_Function.SetFormValue("ten_to", pb.ten_phongban);
+                    VNN_Function.SetFormValue("sapxep", sapxep);
+                    VNN_Function.Set_DefaultvalueColumn(context, action);
+                    VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
+                    VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", id_parent, "phongbanId", pb.md_phongban_id, null);
+                    VNN_Function.loaddulieu_Auto(db, ma_module);
+                    msg = "true#Thêm thành công." + "#" + id_new;
+                }
             }
         }
         catch(Exception ex)
@@ -76,6 +85,7 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_to = context.Request.Form["ma_to"];
         string ten_to = context.Request.Form["ten_to"];
+        string phongbanId = context.Request.Form["phongbanId"];
         try
         {
             string id = context.Request.Form["id"];
@@ -97,16 +107,24 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
 
             if (msg.Length <= 0)
             {
-                string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_phanxuong_to";
-                VNN_Function.SetFormValue("sapxep", sapxep);
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", object_.md_phanxuong_id, "ma_to", ma_to, null);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
+                var pb = db.ad_department.Where(s => s.md_phongban_id == phongbanId).FirstOrDefault();
+                if (pb == null)
+                    msg = string.Format(@"false#Lỗi: Không tìm thấy phân xưởng đã chọn");
+                else
+                {
+                    string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
+                    string action = "edit";
+                    string[] column_ex = { "ma_to", "ten_to" };
+                    string ten_table = "md_phanxuong_to";
+                    VNN_Function.SetFormValue("ma_to", pb.ma_phongban);
+                    VNN_Function.SetFormValue("ten_to", pb.ten_phongban);
+                    VNN_Function.SetFormValue("sapxep", sapxep);
+                    VNN_Function.Set_DefaultvalueColumn(context, action);
+                    VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
+                    VNN_Function.SortColumn(ten_table, sapxep, "md_phanxuong_id", object_.md_phanxuong_id, "phongbanId", pb.md_phongban_id, null);
+                    VNN_Function.loaddulieu_Auto(db, ma_module);
+                    msg = "true#Cập nhật thành công.";
+                }
             }
         }
         catch(Exception ex)

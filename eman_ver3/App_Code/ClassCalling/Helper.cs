@@ -124,6 +124,16 @@ public static class Helper
         return System.Web.Configuration.WebConfigurationManager.ConnectionStrings[ten_connectstring].ConnectionString;
     }
 
+    public static dynamic getInfoDB()
+    {
+        var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(Mbg.Data.SqlClient.SqlHelper.connectionString);
+        return new System.Collections.Generic.Dictionary<string, string>
+        {
+            { "server", builder.DataSource },
+            { "database", builder.InitialCatalog }
+        };
+    }
+
     public static string getFilter(HttpContext context)
     {
         string filter = "";

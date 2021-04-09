@@ -104,8 +104,8 @@ public class JQGridMD_01_DongXoaDuLieuModify : IHttpHandler, System.Web.SessionS
 
                 if (context.Request.Form["update_0"] == "update_0")
                 {
-                    ad_systemconfig ttc = db.ad_systemconfig.Take(1).FirstOrDefault();
-                    VNN_Function.create_Trigger_Del(ttc.ten_db);
+                    var ttc = Helper.getInfoDB();
+                    VNN_Function.create_Trigger_Del(ttc["database"]);
                 }
             }
         }

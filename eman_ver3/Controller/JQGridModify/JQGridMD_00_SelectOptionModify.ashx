@@ -108,8 +108,10 @@ public class JQGridMD_00_SelectOptionModify : IHttpHandler, System.Web.SessionSt
                 db.ad_selectoption.Add(object_);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 VNN_Function.SortColumn("ad_selectoption", sapxep, null, null, "ma_selectoption", ma_selectoption, null);
-                ad_systemconfig ttc = db.ad_systemconfig.FirstOrDefault();
-                VNN_Function.create_Trigger(ttc.ten_db);
+
+                var ttc = Helper.getInfoDB();
+                VNN_Function.create_Trigger(ttc["database"]);
+
                 editJSON(context, object_, "modify");
                 msg = "true#Thêm thành công" + "#" + id_new;
             }

@@ -1872,6 +1872,10 @@ modelBuilder.Entity<md_phanxuong_to>().HasKey<string>(p => p.md_to_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_phanxuong_to>()
+                            .Property(p => p.phongbanId)
+                            .HasColumnName("phongbanId")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_phanxuong_to>()
                             .Property(p => p.sapxep)
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");
