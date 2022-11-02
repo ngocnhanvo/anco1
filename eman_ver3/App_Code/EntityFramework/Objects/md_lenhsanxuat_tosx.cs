@@ -31,6 +31,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_ma_to_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_ma_to_wintaFN
+                        public string ma_to { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_md_lenhsanxuat_id_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_md_lenhsanxuat_id_wintaFN
@@ -121,6 +127,18 @@
                         public string phieulayht { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_phieulayhttp_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_phieulayhttp_wintaFN
+                        public string phieulayhttp { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_phongbanId_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_phongbanId_wintaFN
+                        public string phongbanId { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_sapxep_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_sapxep_wintaFN
@@ -139,6 +157,12 @@
                         public bool? tinhhangton { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_tinhhangtontp_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_tinhhangtontp_wintaFN
+                        public bool? tinhhangtontp { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_tolayton_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_tolayton_wintaFN
@@ -149,6 +173,12 @@
                         
                         #endregion md_lenhsanxuat_tosx_tolaytonId_wintaFN
                         public string tolaytonId { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_tolaytontpId_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_tolaytontpId_wintaFN
+                        public string tolaytontpId { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_vaitrocapnhat_wintaFN

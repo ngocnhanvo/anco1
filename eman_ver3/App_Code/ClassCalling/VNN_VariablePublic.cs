@@ -84,7 +84,7 @@ public class VNN_VariablePublic
 		string km = sct.khuonmau.Replace(gttd, gtcd);
 		sct.giatri_thaydoi = gtcd;
 		sct.khuonmau = km;
-        km = km + "/" + nam;
+        km = km + "/" + sct.namnay.Value.ToString().Substring(2, 2);
         return km;
 	}
 	

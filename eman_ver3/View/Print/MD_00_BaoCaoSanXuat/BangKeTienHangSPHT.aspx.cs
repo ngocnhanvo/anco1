@@ -64,7 +64,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangSPHT : S
         sum_slxuat_cell.DataBindings[0].FormatString = sothapphan;
 
         var ma_to = tbl.Rows[lastRow]["ma_to"].ToString();
-        if (ma_to != "HT1" & ma_to != "HTS1")
+        if (!ma_to.StartsWith("HT1") & !ma_to.StartsWith("HTS1"))
         {
             var cellTTHT = ReportViewer1.Report.Report.FindControl("cellTTHT", true);
             cellTTHT.Text = "";

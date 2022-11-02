@@ -738,73 +738,68 @@ public class JQGridMD_00_MoDongKyModify : IHttpHandler, System.Web.SessionState.
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            foreach (var id_del_ in ids)
             {
-                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-                foreach (var id_del_ in ids)
+                var object_ = db.md_modongky.Where(p => p.md_modongky_id == id_del_).Take(1).FirstOrDefault();
+                if (object_ == null)
                 {
-                    var object_ = db.md_modongky.Where(p => p.md_modongky_id == id_del_).Take(1).FirstOrDefault();
-                    if (object_ == null)
+                    msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                }
+                else
+                {
+                    if (object_.hieuluc.GetValueOrDefault(false) == true)
                     {
-                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
-                    }
-                    else
-                    {
-                        if (object_.hieuluc == true)
+                        var mdks = db.md_modongky.Where(s => s.ky == object_.ky & s.nam == object_.nam & s.loai_baocao == object_.loai_baocao).ToList();
+                        db.md_modongky.RemoveRange(mdks);
+
+                        if(object_.loai_baocao == "")
                         {
-                            foreach (var mdk in db.md_modongky.Where(s => s.ky == object_.ky & s.nam == object_.nam & s.loai_baocao == object_.loai_baocao).ToList())
-                            {
-                                db.md_modongky.Remove(mdk);
-                            }
+                            var thks = db.md_tonghopkho.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id).ToList();
+                            db.md_tonghopkho.RemoveRange(thks);
 
-                            if (object_.loai_baocao == "KHO" | object_.loai_baocao == "")
-                            {
-                                foreach (var thk in db.md_tonghopkho.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id).ToList())
-                                {
-                                    db.md_tonghopkho.Remove(thk);
-                                }
-                            }
-
-                            if (object_.loai_baocao == "CNKH" | object_.loai_baocao == "")
-                            {
-                                foreach (var thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.iskh == true).ToList())
-                                {
-                                    db.md_tonghopcongno.Remove(thcn);
-                                }
-                            }
-
-                            if (object_.loai_baocao == "CNNCC" | object_.loai_baocao == "")
-                            {
-                                foreach (var thcn in db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.isncc == true).ToList())
-                                {
-                                    db.md_tonghopcongno.Remove(thcn);
-                                }
-                            }
+                            var thcns = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id).ToList();
+                            db.md_tonghopcongno.RemoveRange(thcns);
                         }
-
-                        db.md_modongky.Remove(object_);
-                        db.SaveChanges();
+                        else if (object_.loai_baocao == "KHO")
+                        {
+                            var thks = db.md_tonghopkho.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id).ToList();
+                            db.md_tonghopkho.RemoveRange(thks);
+                        }
+                        else if (object_.loai_baocao == "CNKH")
+                        {
+                            var thcns = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.iskh == true).ToList();
+                            db.md_tonghopcongno.RemoveRange(thcns);
+                        }
+                        else if (object_.loai_baocao == "CNNCC")
+                        {
+                            var thcns = db.md_tonghopcongno.Where(s => s.md_namtaichinh_ky_id == object_.md_namtaichinh_ky_id & s.isncc == true).ToList();
+                            db.md_tonghopcongno.RemoveRange(thcns);
+                        }
                     }
+                    else 
+                        db.md_modongky.Remove(object_);
                 }
             }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-            }
 
-            if(msg.Length <= 0)
-            {
-                msg = @"true#Xóa thành công.";
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg.Substring(4));
-                transaction.Rollback();
-            }
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if (msg.Length <= 0)
+        {
+            msg = @"true#Xóa thành công.";
+            //VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg.Substring(4));
         }
         context.Response.Write(msg);
     }

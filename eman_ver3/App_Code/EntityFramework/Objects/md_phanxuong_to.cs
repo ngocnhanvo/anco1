@@ -97,6 +97,12 @@
                         public string ten_to { get; set; }
                 
 						
+                        #region md_phanxuong_to_ten_to_cu_wintaFN
+                        
+                        #endregion md_phanxuong_to_ten_to_cu_wintaFN
+                        public string ten_to_cu { get; set; }
+                
+						
                         #region md_phanxuong_to_vaitrocapnhat_wintaFN
                         
                         #endregion md_phanxuong_to_vaitrocapnhat_wintaFN

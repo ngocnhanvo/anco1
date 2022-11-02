@@ -145,7 +145,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTienDoSanXuat : 
             where 
 	            1=1
 	            and lsx.ngayketthuc between @tungay and @denngay
-	            and px.ma_phanxuong in ('PX1', 'PX2')
+	            and px.ma_phanxuong in ('PX1', 'PX1_62', 'PX2')
                 {2}                
                 {3}
             

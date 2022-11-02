@@ -44,9 +44,12 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+
         md_vanchuyennoibo vcnb = null;
         using (var transaction = db.Database.BeginTransaction())
         {
+            var objSelfsVCNBDHSav = new List<Dictionary<string, string>>();
             foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
             {
                 vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id).FirstOrDefault();
@@ -57,7 +60,12 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 }
                 else
                 {
-                    decimal sltd = cdvc.soluong_muonchuyen.GetValueOrDefault(0);
+                    objSelfsVCNBDHSav.Add(new Dictionary<string, string>() {
+                        { "id", cdvc.md_vanchuyennoibo_cdvc_id },
+                        { "sl", cdvc.soluong_dichchuyen.GetValueOrDefault(0).ToString() }
+                    });
+
+                    decimal sltd = cdvc.soluong_muonchuyen.Value - cdvc.soluong_dachuyen.Value;
                     if (sel_val == "0")
                     {
                         cdvc.soluong_dichchuyen = sltd;
@@ -71,11 +79,73 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                         else
                         {
                             md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).Take(1).FirstOrDefault();
-                            msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " +sltd.DropTrailingZeros() + "</div>";
+                            msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + Math.Round(sltd, 0) + "</div>";
                             break;
                         }
                     }
+                    cdvc.ngaycapnhat = DateTime.Now;
                     db.SaveChanges();
+                }
+            }
+
+            if (vcnb.loaichuyen == "VANCNBCTKGH")
+            {
+                var objSelfs = new List<LSX_TSX>();
+                var objSelfsVCNBDH = new List<md_vanchuyennoibo_cdvc>();
+
+                var slcl = new List<Dictionary<string, object>>();
+                foreach (var b in db.md_vanchuyennoibo_cdvc.Where(s =>
+                    s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
+                    & (s.soluong_dichchuyen > 0 | vnn.Contains(s.md_vanchuyennoibo_cdvc_id))).ToList())
+                {
+                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == b.md_sanpham_id).FirstOrDefault();
+                    var lsxTSX = Extension.getLSXToId2(b.lsx_to, db);
+                    var tsx = lsxTSX.tsx;
+                    var lsxSp = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                        & s.macuoi.Contains(sp.ma_sanpham));
+                    if(vnn.Contains(b.md_vanchuyennoibo_cdvc_id))
+                    {
+                        objSelfs.Add(lsxTSX);
+                        objSelfsVCNBDH.Add(b);
+                    }
+
+                    foreach (var cai in lsxSp.ToList())
+                    {
+                        var caiJSon = slcl.Where(s => s["md_sanpham_id"] + "" == cai.md_sanpham_id).FirstOrDefault();
+                        if (caiJSon == null)
+                        {
+                            var spCai = db.md_sanpham.Where(s => s.md_sanpham_id == cai.md_sanpham_id).FirstOrDefault();
+                            var khosp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == spCai.md_sanpham_id & s.md_kho_id == vcnb.tukho).FirstOrDefault();
+                            var slCai = cai.sl_dahoanthanh.GetValueOrDefault(0)- cai.sl_dagiao.GetValueOrDefault(0);
+                            var slKho = khosp == null ? 0 : khosp.soluong.GetValueOrDefault(0);
+
+                            slcl.Add(new Dictionary<string, object>() {
+                                    { "md_sanpham_id", cai.md_sanpham_id },
+                                    { "ma_sanpham", spCai.ma_sanpham },
+                                    { "lsx_to", b.lsx_to },
+                                    { "soluong", b.soluong_dichchuyen },
+                                    { "sltd", slCai < slKho ? slCai : slKho }
+                                });
+                        }
+                        else
+                        {
+                            caiJSon["soluong"] = b.soluong_dichchuyen + decimal.Parse(caiJSon["soluong"].ToString());
+                        }
+                    }
+                }
+
+                foreach (var itemSLTH in slcl.OrderBy(s => s["ma_sanpham"].ToString()))
+                {
+                    string spId = itemSLTH["md_sanpham_id"].ToString();
+
+                    var sl = decimal.Parse(itemSLTH["soluong"].ToString());
+                    var sltd = decimal.Parse(itemSLTH["sltd"].ToString());
+                    if (sl > sltd)
+                    {
+                        msg += string.Format(@"<b>{0}</b> SL tối đa <b>{1}</b>, SL muốn chuyển <b>{2}</b>.<br>",
+                            itemSLTH["ma_sanpham"], sltd.DropTrailingZeros(), sl.DropTrailingZeros());
+                    }
                 }
             }
 
@@ -155,12 +225,15 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                                 {
                                     var spCai = db.md_sanpham.Where(s => s.md_sanpham_id == cai.md_sanpham_id).FirstOrDefault();
                                     var khosp = db.md_kho_sanpham.Where(s => s.md_sanpham_id == spCai.md_sanpham_id & s.md_kho_id == vnnb.tukho).FirstOrDefault();
+                                    var slCai = cai.sl_dahoanthanh.GetValueOrDefault(0) - cai.sl_dagiao.GetValueOrDefault(0);
+                                    var slKho = khosp == null ? 0 : khosp.soluong.GetValueOrDefault(0);
+
                                     slcl.Add(new Dictionary<string, object>() {
                                     { "md_sanpham_id", cai.md_sanpham_id },
                                     { "ma_sanpham", spCai.ma_sanpham },
                                     { "lsx_to", b.lsx_to },
                                     { "soluong", b.soluong_dichchuyen },
-                                    { "sltd", khosp == null ? 0 : khosp.soluong }
+                                    { "sltd", slCai < slKho ? slCai : slKho }
                                 });
                                 }
                                 else

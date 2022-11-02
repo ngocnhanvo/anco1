@@ -67,6 +67,12 @@
                         public string ghichu_vachngan { get; set; }
                 
 						
+                        #region c_dongdsdh_giachuan_wintaFN
+                        
+                        #endregion c_dongdsdh_giachuan_wintaFN
+                        public Decimal? giachuan { get; set; }
+                
+						
                         #region c_dongdsdh_giadoichieu_wintaFN
                         
                         #endregion c_dongdsdh_giadoichieu_wintaFN
@@ -253,10 +259,34 @@
                         public Decimal? sl_inner { get; set; }
                 
 						
+                        #region c_dongdsdh_sl_nhaphang_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_nhaphang_wintaFN
+                        public Decimal? sl_nhaphang { get; set; }
+                
+						
                         #region c_dongdsdh_sl_outer_wintaFN
                         
                         #endregion c_dongdsdh_sl_outer_wintaFN
                         public Decimal? sl_outer { get; set; }
+                
+						
+                        #region c_dongdsdh_sl_thuhoi_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_thuhoi_wintaFN
+                        public Decimal? sl_thuhoi { get; set; }
+                
+						
+                        #region c_dongdsdh_sl_thuhoiDG_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_thuhoiDG_wintaFN
+                        public Decimal? sl_thuhoiDG { get; set; }
+                
+						
+                        #region c_dongdsdh_sl_thuhoiTP_wintaFN
+                        
+                        #endregion c_dongdsdh_sl_thuhoiTP_wintaFN
+                        public Decimal? sl_thuhoiTP { get; set; }
                 
 						
                         #region c_dongdsdh_sothutu_wintaFN

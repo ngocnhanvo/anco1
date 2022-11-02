@@ -175,6 +175,12 @@
                         public string phieugiamHN { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_pxPhieuHN_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_pxPhieuHN_wintaFN
+                        public string pxPhieuHN { get; set; }
+                
+						
                         #region md_vanchuyennoibo_sapxep_wintaFN
                         
                         #endregion md_vanchuyennoibo_sapxep_wintaFN

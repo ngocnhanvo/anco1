@@ -67,12 +67,6 @@
                         public string nguoitao { get; set; }
                 
 						
-                        #region ad_department_sapxep_wintaFN
-                        
-                        #endregion ad_department_sapxep_wintaFN
-                        public string sapxep { get; set; }
-                
-						
                         #region ad_department_ten_phongban_wintaFN
                         
                         #endregion ad_department_ten_phongban_wintaFN

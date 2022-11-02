@@ -48,6 +48,7 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
                 object_.md_doitackinhdoanh_id = id_new;
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+				object_.hoatdong = true;
                 db.md_doitackinhdoanh.Add(object_);
                 db.SaveChanges();
             }

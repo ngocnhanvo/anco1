@@ -875,11 +875,11 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                     object_.chungtu_lenhsx = chungtu_lenhsx;
                     object_.md_lenhsanxuat_tosx_id = md_lenhsanxuat_tosx_id;
                     object_.ngaychuyen = ngaychuyen;
-                    object_.nguoitao = userTK.ad_user_id;
+                    //object_.nguoitao = userTK.ad_user_id;
                     object_.nguoicapnhat = userTK.ad_user_id;
-                    object_.value_nguoitao = userTK.ma_user;
+                    //object_.value_nguoitao = userTK.ma_user;
                     object_.value_nguoicapnhat = userTK.ma_user;
-                    object_.ngaytao = DateTime.Now;
+                    //object_.ngaytao = DateTime.Now;
                     object_.ngaycapnhat = DateTime.Now;
 
                     if (loaichuyen == "3")

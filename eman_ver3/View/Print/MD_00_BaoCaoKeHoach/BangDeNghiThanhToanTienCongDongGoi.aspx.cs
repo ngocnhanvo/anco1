@@ -44,11 +44,13 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BangDeNghiThanhToanTie
 
     public string CreateSql(HttpContext context)
     {
+        string viewAll = context.Request.QueryString["viewAll"];
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
         string nam = context.Request.QueryString["nam"];
         string donhang = context.Request.QueryString["donhang"];
         donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and xb.donhang_thamchieu like N'{0}'", donhang);
+        viewAll = viewAll == "1" ? "" : "and isnull(xb.tiencongDG, 0) > 0";
 
         string sql = string.Format(@"	 
             declare @tungay datetime = convert(datetime,N'01/{0}/{1} 00:00:00',103);
@@ -67,14 +69,15 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BangDeNghiThanhToanTie
 	            xb.ngaychuyen between @tungay and @denngay
 	            and xb.md_trangthai_id = 'HIEULUC'
 	            and xb.loaichuyen = 'VCTPDG'
-                and isnull(xb.tiencongDG, 0) > 0
                 {2}
+                {3}
             order by
                 xb.ngaychuyen, xb.donhang_thamchieu
 		"
         , thang
         , nam
         , donhang
+        , viewAll
         );
 		return sql;
     }

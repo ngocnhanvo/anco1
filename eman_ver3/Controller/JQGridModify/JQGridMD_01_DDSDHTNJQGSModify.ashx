@@ -77,7 +77,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
                 int ddsdh = db.c_dongdsdh.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.c_danhsachdathang_id == id).Count();
                 var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
-                var bom_sp = db.md_sanpham_bom.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.ten_phienban == ten_phienban).FirstOrDefault();
+                //var bom_sp = db.md_sanpham_bom.Where(s => s.md_sanpham_id == sp.md_sanpham_id & s.ten_phienban == ten_phienban).FirstOrDefault();
 
                 if (dsdh.trangthai == "HIEULUC")
                 {
@@ -107,14 +107,6 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi:CBM phải lớn hơn 0";
                 }
-                else if (bom_sp == null)
-                {
-                    var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db);
-                    if (string.IsNullOrEmpty(bom))
-                        msg = string.Format(@"HHVT {0} không có BOM", sp.ma_sanpham);
-                    else
-                        ten_phienban = bom;
-                }
 
                 if (msg.Length <= 0)
                 {
@@ -130,7 +122,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.sl_giamhanngach = 0;
                     VNN_Function.SetFormValue(object_.nameof(s=>s.gianhap), gianhap.ToString());
                     VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_id), sp.md_sanpham_id);
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_bom_id), bom_sp == null ? ten_phienban : bom_sp.md_sanpham_bom_id);
+                    //VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_bom_id), bom_sp == null ? ten_phienban : bom_sp.md_sanpham_bom_id);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     db.c_dongdsdh.Add(object_);
@@ -176,11 +168,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
                 var object_ = db.c_dongdsdh.Where(p => p.c_dongdsdh_id == id).FirstOrDefault();
                 var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id_parent).FirstOrDefault();
-                var bom_sp = db.md_sanpham_bom.Where(s =>
-                    s.md_sanpham_id == sp.md_sanpham_id &
-                    s.ten_phienban == ten_phienban &
-                    string.IsNullOrEmpty(s.md_phanxuong_id) &
-                    string.IsNullOrEmpty(s.md_to_id)).FirstOrDefault();
+                //var bom_sp = db.md_sanpham_bom.Where(s =>
+                //    s.md_sanpham_id == sp.md_sanpham_id &
+                //    s.ten_phienban == ten_phienban &
+                //    string.IsNullOrEmpty(s.md_phanxuong_id) &
+                //    string.IsNullOrEmpty(s.md_to_id)).FirstOrDefault();
 
                 if (object_ == null)
                 {
@@ -210,10 +202,10 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi:CBM phải lớn hơn 0";
                 }
-                else if (bom_sp == null)
-                {
-                    msg = string.Format(@"HHVT {0} không có BOM", sp.ma_sanpham);
-                }
+                //else if (bom_sp == null)
+                //{
+                //    msg = string.Format(@"HHVT {0} không có BOM", sp.ma_sanpham);
+                //}
 
                 if (msg.Length <= 0)
                 {
@@ -221,7 +213,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.sl_dagiao = 0;
                     VNN_Function.SetFormValue(object_.nameof(s => s.gianhap), gianhap.ToString());
                     VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_id), sp.md_sanpham_id);
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_bom_id), bom_sp.md_sanpham_bom_id);
+                    //VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_bom_id), bom_sp.md_sanpham_bom_id);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();

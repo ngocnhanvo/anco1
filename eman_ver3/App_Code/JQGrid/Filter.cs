@@ -126,7 +126,7 @@ namespace jqGridHelper
                             DateTime maxdate= DateTime.MaxValue;
 							if(cn_search[0] != null && cn_search[0] != "") {mindate = VNN_Config.setDateTime(cn_search[0]);}
 							if(cn_search[1] != null && cn_search[1] != "") {maxdate = VNN_Config.setDateTime(cn_search[1]);}
-                            str += String.Format("{0} {1}>='{3}' and {1}<='{4}' ", groupOp, item.Field, item.Data, mindate.ToString("yyyy-MM-dd"), maxdate.ToString("yyyy-MM-dd"));
+                            str += String.Format("{0} {1}>='{3}' and {1}<='{4}' ", groupOp, item.Field, item.Data, mindate.ToString("yyyy-MM-dd HH:mm"), maxdate.ToString("yyyy-MM-dd HH:mm"));
                             break;
                         case "abi":
 							int count_abi = item.Data.Split('#').Count();

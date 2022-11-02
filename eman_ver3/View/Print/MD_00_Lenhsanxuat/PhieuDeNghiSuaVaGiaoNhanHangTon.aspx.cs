@@ -30,7 +30,8 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
     {
         var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
 
-        tbl.Columns.Add("sum_sl_denghigiao", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_sl_tcd", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_sl_ttp", Type.GetType("System.Double"));
         tbl.Columns.Add("dd_yeucau", Type.GetType("System.String"));
         tbl.Columns.Add("MM_yeucau", Type.GetType("System.String"));
         tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
@@ -38,16 +39,26 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 
         //Footer
         int lastRow = tbl.Rows.Count - 1;
-        var sum_sl_denghigiao = tbl.Compute("Sum(sl_denghigiao)", string.Empty).ToString();
-        if (string.IsNullOrEmpty(sum_sl_denghigiao))
-            tbl.Rows[lastRow]["sum_sl_denghigiao"] = DBNull.Value;
+        //Sum tồn công đoạn
+        var sum_sl_tcd = tbl.Compute("Sum(sl_tcd)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_sl_tcd))
+            tbl.Rows[lastRow]["sum_sl_tcd"] = DBNull.Value;
         else
-            tbl.Rows[lastRow]["sum_sl_denghigiao"] = double.Parse(sum_sl_denghigiao);
-
-        var sl_denghigiao_cell = ReportViewer1.Report.Report.FindControl("sl_denghigiao", true);
-        sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
-        var sum_sl_denghigiao_cell = ReportViewer1.Report.Report.FindControl("sum_sl_denghigiao", true);
-        sum_sl_denghigiao_cell.DataBindings[0].FormatString = sothapphan;
+            tbl.Rows[lastRow]["sum_sl_tcd"] = double.Parse(sum_sl_tcd);
+        var sl_tcd_cell = ReportViewer1.Report.Report.FindControl("sl_tcd", true);
+        sl_tcd_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sl_tcd_cell = ReportViewer1.Report.Report.FindControl("sum_sl_tcd", true);
+        sum_sl_tcd_cell.DataBindings[0].FormatString = sothapphan;
+        //Sum tồn thành phẩm
+        var sum_sl_ttp = tbl.Compute("Sum(sl_ttp)", string.Empty).ToString();
+        if (string.IsNullOrEmpty(sum_sl_ttp))
+            tbl.Rows[lastRow]["sum_sl_ttp"] = DBNull.Value;
+        else
+            tbl.Rows[lastRow]["sum_sl_ttp"] = double.Parse(sum_sl_ttp);
+        var sl_ttp_cell = ReportViewer1.Report.Report.FindControl("sl_ttp", true);
+        sl_ttp_cell.DataBindings[0].FormatString = sothapphan;
+        var sum_sl_ttp_cell = ReportViewer1.Report.Report.FindControl("sum_sl_ttp", true);
+        sum_sl_ttp_cell.DataBindings[0].FormatString = sothapphan;
     }
 
     public String CreateSql(HttpContext context)
@@ -71,6 +82,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
             sql = string.Format(@"
 		        select 
 	                A.*
+                    , A.sl_denghigiao - A.sl_ttp as sl_tcd
                     , substring(A.cdcht, 0, len(A.cdcht) - 1) as congdoancanhoanthien
                     from
                     (
@@ -81,6 +93,14 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 		                    , sp.ma_sanpham as ma_vthh
 		                    , dvtsp.ten_dvt as dvt
 		                    , cdvc.soluong_muonchuyen as sl_denghigiao
+                            , (
+	                            select sum(isnull(a2.soluong_dachuyen, 0)) 
+	                            from md_vanchuyennoibo a1, md_vanchuyennoibo_cdvc a2 
+	                            where 
+		                            a1.sochungtu = lsx_tsx.phieulayhttp
+		                            and a1.md_vanchuyennoibo_id = a2.md_vanchuyennoibo_id
+		                            and a2.md_sanpham_id = sp.md_sanpham_id
+                            ) as sl_ttp
 		                    , dhpx.donhang_thamchieu as theodonhang
 		                    , cdvc.mota as ghichu
 		                    , pxto.ten_to as tosx
@@ -120,6 +140,7 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
             sql = string.Format(@"
 		        select 
                     A.*
+                    , A.sl_denghigiao - A.sl_ttp as sl_tcd
                     , substring(A.cdcht, 0, len(A.cdcht) - 1) as congdoancanhoanthien
                     from
                     (
@@ -130,6 +151,14 @@ public partial class PrintControllers_MD_00_Lenhsanxuat_PhieuDeNghiSuaVaGiaoNhan
 		                    , sp.ma_sanpham as ma_vthh
 		                    , dvtsp.ten_dvt as dvt
 		                    , lht.sl_layton as sl_denghigiao
+                            , (
+	                            select sum(isnull(a2.soluong_dachuyen, 0)) 
+	                            from md_vanchuyennoibo a1, md_vanchuyennoibo_cdvc a2 
+	                            where 
+		                            a1.sochungtu = lsx_tsx.phieulayhttp
+		                            and a1.md_vanchuyennoibo_id = a2.md_vanchuyennoibo_id
+		                            and a2.md_sanpham_id = sp.md_sanpham_id
+                            ) as sl_ttp
 		                    , dhpx.donhang_thamchieu as theodonhang
 		                    , lht.mota as ghichu
 		                    , pxto.ten_to as tosx

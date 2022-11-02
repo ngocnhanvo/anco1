@@ -89,7 +89,7 @@ function timkiem_dmh(id_elem, type) {
                     }
                 },
                 gridComplete: function () {
-                    $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());
+                    $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width() - 5);
                 },
                 loadComplete: function (data) {
                     var top_rowid = $('#' + namegrid + ' tr:nth-child(2)').attr('id');

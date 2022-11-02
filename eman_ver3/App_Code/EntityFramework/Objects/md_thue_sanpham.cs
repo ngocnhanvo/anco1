@@ -7,6 +7,18 @@
                     public partial class md_thue_sanpham
                     {
                         
+                        #region md_thue_sanpham_bophancapnhat_wintaFN
+                        
+                        #endregion md_thue_sanpham_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_thue_sanpham_bophantao_wintaFN
+                        
+                        #endregion md_thue_sanpham_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_thue_sanpham_giatri_wintaFN
                         
                         #endregion md_thue_sanpham_giatri_wintaFN
@@ -65,6 +77,54 @@
                         
                         #endregion md_thue_sanpham_ten_thue_sanpham_wintaFN
                         public string ten_thue_sanpham { get; set; }
+                
+						
+                        #region md_thue_sanpham_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_thue_sanpham_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_thue_sanpham_vaitrotao_wintaFN
+                        
+                        #endregion md_thue_sanpham_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_bophantao_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_nguoitao_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_thue_sanpham_value_vaitrotao_wintaFN
+                        
+                        #endregion md_thue_sanpham_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

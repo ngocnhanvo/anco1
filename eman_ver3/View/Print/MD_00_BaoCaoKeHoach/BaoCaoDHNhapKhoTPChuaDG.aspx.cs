@@ -47,6 +47,9 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDHNhapKhoTPChuaD
         string donhang = context.Request.QueryString["donhang"];
         string masp = context.Request.QueryString["masp"];
 
+        donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dsdh.so_po like N'{0}'", donhang);
+        masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
+
         return string.Format(@"
             declare @tungay datetime = convert(datetime,N'{0} 00:00:00',103);
             declare @denngay datetime = convert(datetime,N'{1} 23:59:59',103);
@@ -57,7 +60,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDHNhapKhoTPChuaD
 	            maHang nvarchar(MAX),
 	            spId nvarchar(MAX),
 	            dvt nvarchar(MAX),
-	            sldh decimal(18, 0)
+	            sldhCP decimal(18, 0),
+                sldh decimal(18, 0)
             )
 
             insert into @tbl1
@@ -67,7 +71,15 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDHNhapKhoTPChuaD
 	                sp.ma_sanpham as maHang,
 		            sp.md_sanpham_id,
 	                dvtsp.ten_dvt as dvt,
-	                (dh.sl_dathang - isnull(dh.sl_giamhanngach, 0)) as sldh
+	                (dh.sl_dathang - isnull(dh.sl_giamhanngach, 0)) as sldhCP,
+                    isnull((
+		                select sum(isnull(cdvc.soluong_dachuyen, 0))
+		                from md_vanchuyennoibo_cdvc cdvc
+		                where cdvc.tenhang = dsdh.so_po
+			                and cdvc.md_sanpham_id = sp.md_sanpham_id
+			                and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                            and isnull(cdvc.lsx_to,'') != ''
+	                ), 0) as sldh
                 from c_danhsachdathang dsdh
                 left join c_dongdsdh dh on dh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
                 left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
@@ -98,6 +110,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDHNhapKhoTPChuaD
                 ROW_NUMBER() OVER(ORDER BY m.donHang, m.maHang) as num,
 	            isnull((select sum(isnull(soluong_dichchuyen, 0)) from @tblKGD kgd where kgd.donHang = m.donHang and kgd.md_sanpham_id = m.spId), 0) as sldg
             from @tbl1 m
+            where m.sldh > 0
             order by m.donHang, m.maHang
         ",
         tu.ToString("dd/MM/yyyy"),

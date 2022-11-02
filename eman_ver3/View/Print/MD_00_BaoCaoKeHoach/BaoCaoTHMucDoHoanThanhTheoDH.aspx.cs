@@ -71,27 +71,49 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 	            sp.ma_sanpham,
 	            sp.v2,
 	            px.ma_phanxuong,
-	            (case 
-                    when tsx.stt = 0 
-                    then isnull(cdh.sl_dahoanthanh, 0)
-                    when tsx.stt = 9999
-                    then 
-                        case 
-                            when isnull(cdh.sl_dagiao, 0) > cdh.sl_nhapkho
-                            then isnull(cdh.sl_dagiao, 0) - cdh.sl_nhapkho
-                            else 0
-                        end   
-                    else isnull(cdh.sl_dagiao, 0) 
-                end) sldl,
-	            isnull((
-		            select 
-			            sum(dhpxDH.tong_sl_dat - isnull(dhpxDH.sl_giamhanngach, 0))
-		            from 
-			            md_dondathangphanxuong_cdh dhpxDH
-		            where 
-			            dhpxDH.md_dondathangphanxuong_id = dhpx.md_dondathangphanxuong_id
-			            and cdh.macuoi like N'%' + dhpxDH.macuoi + '%'
-	            ), 0) as sldhpx,
+	            (
+		            case 
+			            when 
+				            tsx.stt = 0 
+			            then 
+				            (
+					            case when isnull(sl_dagiao, 0) > isnull(sl_chiato, 0) 
+					            then isnull(sl_chiato, 0)
+					            else isnull(sl_dagiao, 0)
+					            end
+				            )  + sl_nhapkho
+			            when 
+				            tsx.stt = 9999
+			            then 
+				            (
+					            case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0) + isnull(sl_nhapkho, 0)
+					            then isnull(sl_chiato, 0) + isnull(sl_nhapkho, 0)
+					            else isnull(sl_dagiao, 0)
+					            end
+				            )
+			            else
+				            (
+					            case when isnull(sl_dagiao, 0) >= isnull(sl_chiato, 0)
+					            then isnull(sl_chiato, 0)
+					            else isnull(sl_dagiao, 0)
+					            end
+				            )
+		            end
+	            ) sldl,
+	            (
+		            case 
+			            when 
+				            tsx.stt = 0 
+			            then 
+				            isnull(sl_chiato, 0) + sl_nhapkho
+			            when 
+				            tsx.stt = 9999
+			            then 
+				            isnull(sl_chiato, 0) + isnull(sl_nhapkho, 0)
+			            else
+				            isnull(sl_chiato, 0)
+		            end
+	            ) sldhpx,
 	            cdh.sl_nhapkho as sllt
             from 
 	            md_lenhsanxuat lsx
@@ -103,30 +125,20 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
             where 
 	            1=1
 	            and lsx.ngayketthuc between @tungay and @denngay
-	            and px.ma_phanxuong in ('PX1', 'PX2')
-                {2}          
+	            and px.ma_phanxuong in ('PX1', 'PX1_62', 'PX2')
+                {2}
 
             select 
 	            A.*,
-	            (case when A.cbmAll > 0 then (A.cbmDuc + A.cbmTonDuc + A.cbmTonHT)/A.cbmAll else 0 end) as duc,
-	            (case when A.cbmAll > 0 then (A.cbmBancat + A.cbmTonHT)/A.cbmAll else 0 end) as bancat,
-	            (case when A.cbmAll > 0 then (A.cbmMai + A.cbmTonHT)/A.cbmAll else 0 end) as mai,
-	            (case when A.cbmAll > 0 then (A.cbmHoantat + A.cbmTonHT)/A.cbmAll else 0 end) as hoantat,
+	            (case when A.cbmAll > 0 then (A.cbmDuc)/A.cbmAll else 0 end) as duc,
+	            (case when A.cbmAll > 0 then (A.cbmBancat)/A.cbmAll else 0 end) as bancat,
+	            (case when A.cbmAll > 0 then (A.cbmMai)/A.cbmAll else 0 end) as mai,
+	            (case when A.cbmAllHT > 0 then (A.cbmHoantat)/A.cbmAllHT else 0 end) as hoantat,
                  N'Từ {0} đến {1}' as thang_nam
             from (
 	            select 
 		            A.dhpx,
 		            A.ngayxonghang,
-                    (
-			            select sum(B.v2 * B.sllt)
-			            from @tbl B
-			            where B.dhpx = A.dhpx and B.stt = 0	
-		            ) as cbmTonDuc,
-                    (
-                        select sum(B.v2 * B.sllt)
-			            from @tbl B
-			            where B.dhpx = A.dhpx and B.stt = 9999
-		            ) as cbmTonHT,
 		            (
 			            select sum(B.v2 * (B.sldl))
 			            from @tbl B
@@ -137,14 +149,14 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 			            from @tbl B
 			            where 
                             B.dhpx = A.dhpx 
-                            and B.stt = (case when B.px = 'PX1' then 1 when B.px = 'PX2' then 2 else 1 end)	
+                            and B.stt = (case when B.px = 'PX1' then 1 when B.px in ('PX2','PX1_62') then 2 else 1 end)	
 		            ) as cbmBancat,
 		            (
 			            select sum(B.v2 * (B.sldl))
 			            from @tbl B
 			            where 
                             B.dhpx = A.dhpx
-                            and B.stt = (case when B.px = 'PX1' then 2 when B.px = 'PX2' then 1 else 2 end)	
+                            and B.stt = (case when B.px = 'PX1' then 2 when B.px in ('PX2','PX1_62') then 1 else 2 end)	
 		            ) as cbmMai,
 		            (
 			            select sum(B.v2 * (B.sldl))
@@ -155,7 +167,12 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHMucDoHoanThanh
 			            select sum(B.v2 * B.sldhpx)
 			            from @tbl B
 			            where B.dhpx = A.dhpx and B.stt = 0
-		            ) as cbmAll
+		            ) as cbmAll,
+                    (
+			            select sum(B.v2 * B.sldhpx)
+			            from @tbl B
+			            where B.dhpx = A.dhpx and B.stt = 9999
+		            ) as cbmAllHT
 	            from @tbl A
 	            group by A.dhpx, A.ngayxonghang
             )A

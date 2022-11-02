@@ -91,6 +91,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_kho_phongbanId_wintaFN
+                        
+                        #endregion md_kho_phongbanId_wintaFN
+                        public string phongbanId { get; set; }
+                
+						
                         #region md_kho_sapxep_wintaFN
                         
                         #endregion md_kho_sapxep_wintaFN

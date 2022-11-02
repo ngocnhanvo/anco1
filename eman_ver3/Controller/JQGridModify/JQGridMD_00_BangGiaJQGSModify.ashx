@@ -96,13 +96,16 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
     {
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-
+        string pxId = context.Request.Form["md_phanxuong_id"];
+        string toId = context.Request.Form["md_to_id"];
         using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
+                var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
                 var object_ = new md_banggia();
                 object_.md_banggia_id = id_new;
+                object_.phongbanId = pxTrongQT.phongbanId;
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                 db.md_banggia.Add(object_);
@@ -132,6 +135,8 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string pxId = context.Request.Form["md_phanxuong_id"];
+        string toId = context.Request.Form["md_to_id"];
         using (var transaction = db.Database.BeginTransaction())
         {
             try
@@ -144,6 +149,8 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
                 }
                 else
                 {
+                    var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
+                    object_.phongbanId = pxTrongQT.phongbanId;
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();

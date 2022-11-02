@@ -31,7 +31,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 this.del(context);
                 break;
             case "CA_01_TinhNhuCauVatTu":
-                this.CA_01_TinhNhuCauVatTu(context, db, null);
+                this.CA_01_TinhNhuCauVatTu(context, db, true);
                 break;
             case "CA_01_TaoYCMuaVT":
                 this.CA_01_TaoYCMuaVT(context);
@@ -168,11 +168,10 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
         context.Response.Write(msg);
     }
 
-    public void CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, System.Data.Entity.DbContextTransaction transaction)
+    public void CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, bool SingleFunc)
     {
         string msg = "", msg_success = "";
         string[] vnn = context.Request.Form["id"].Split(',');
-        bool SingleFunc = false;
 
         try
         {
@@ -190,36 +189,16 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 }
                 else
                 {
-                    //Lay ra tat ca don dat hang px da tao yeu cau mua vat tu
-                    var dondhpxs_got = from a in db.c_nhucauvattu_dhpx
-                                       join b in db.c_kehoachdathang_dhcpx on a.md_dondathangphanxuong_id equals b.c_kehoachdathang_dhcpx_id
-                                       where b.tinh_ncvt == true
-                                       select new { a.md_dondathangphanxuong_id };
-
-                    var dondhpxs_got_arr = dondhpxs_got.Distinct();
-                    var arr_got = new List<string>();
-                    foreach (var a in dondhpxs_got_arr)
-                    {
-                        arr_got.Add(a.md_dondathangphanxuong_id);
-                    }
-
                     //--Xoa du lieu
                     var dondhpxs = from a in db.c_kehoachdathang_dhcpx
                                    join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
+                                   join c in db.md_dondathangphanxuong on a.dongdathang equals c.sochungtu
+                                   join d in db.md_lenhsanxuat on c.md_dondathangphanxuong_id equals d.md_dondathangphanxuong_id
                                    where b.ngaybatdausx >= ncvt.tungay & b.ngaybatdausx <= ncvt.denngay
                                    & b.xulykehoach == true
-                                   & (
-                                       !arr_got.Contains(a.c_kehoachdathang_dhcpx_id)
-                                       | db.c_kehoachdathang_dhcpx_vattu.
-                                       Where(s =>
-                                           s.c_kehoachdathang_dhcpx_id == a.c_kehoachdathang_dhcpx_id
-                                           & s.sl_duyetmua != null
-                                       ).Sum(s =>
-                                           s.soluong
-                                           - s.sl_giamhanngach
-                                           - s.sl_duyetmua) > 0
-                                   )
-                                   select new { a.c_kehoachdathang_dhcpx_id };
+                                   & d.md_trangthai_id != "CHUAHOANTHANH"
+                                   & (a.tinh_ncvt ?? false) == false
+                                   select new { a.c_kehoachdathang_dhcpx_id, d.md_lenhsanxuat_id };
 
                     int count_dondhpxs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count();
                     if (count_dondhpxs <= 0)
@@ -227,7 +206,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
 
                     db.c_nhucauvattu_ddhpx.RemoveRange(db.c_nhucauvattu_ddhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
                     db.c_nhucauvattu_ycmvt.RemoveRange(db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
-                    db.SaveChanges();
+
                     //--Tổng hợp đơn đặt hàng phân xưởng
                     if (count_dondhpxs <= 0)
                     {
@@ -242,6 +221,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                     c_nhucauvattu_dhpx_id = Helper.getNewId(),
                                     c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
                                     md_dondathangphanxuong_id = ddhpx.c_kehoachdathang_dhcpx_id,
+                                    md_lenhsanxuat_id = ddhpx.md_lenhsanxuat_id,
                                     nguoitao = userTK.ad_user_id,
                                     vaitrotao = userTK.ad_role_id,
                                     bophantao = userTK.md_phongban_id,
@@ -263,24 +243,27 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                 };
                                 db.c_nhucauvattu_dhpx.Add(ncvt_dhpx);
                                 khdhpx.tinh_ncvt = true;
-                                db.SaveChanges();
                             }
                         }
                     }
                     ncvt.datinh_nhucau = true;
-                    db.SaveChanges();
                     msg_success += "<div style='color:blue'>Tính nhu cầu vật tư \"" + ncvt.ten_nhucau + "\" thành công</div>";
                 }
             }
             if (msg.Length <= 0)
             {
-                foreach (var ncvt_dhpx in db.c_nhucauvattu_dhpx.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList())
+                var ncvtDHPXsServer = db.c_nhucauvattu_dhpx.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList();
+                var ncvtDHPXs = db.c_nhucauvattu_dhpx.Local.Where(s => vnn.Contains(s.c_nhucauvattu_id)).ToList();
+                foreach (var ncvt_dhpx in ncvtDHPXs)
                 {
                     //--Tổng hợp dòng đặt hàng phân xưởng
                     foreach (var dhpx_cdh in db.c_kehoachdathang_dhcpx_cdh.
                             Where(s => s.c_kehoachdathang_dhcpx_id == ncvt_dhpx.md_dondathangphanxuong_id).ToList())
                     {
-                        var ncvt_ddhpx_chk = db.c_nhucauvattu_ddhpx.
+                        var ncvt_ddhpx_chkServer = db.c_nhucauvattu_ddhpx.
+                                Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id &
+                                s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
+                        var ncvt_ddhpx_chk = db.c_nhucauvattu_ddhpx.Local.
                                 Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id &
                                 s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
                         c_nhucauvattu_ddhpx ncvt_ddhpx = ncvt_ddhpx_chk;
@@ -317,56 +300,63 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                         {
                             db.c_nhucauvattu_ddhpx.Add(ncvt_ddhpx);
                         }
-                        db.SaveChanges();
                     }
                     //--Tổng hợp tổng vật tư đặt hàng phân xưởng
-                    foreach (var dhpx_vt in db.c_kehoachdathang_dhcpx_vattu.
-                            Where(s => s.c_kehoachdathang_dhcpx_id == ncvt_dhpx.md_dondathangphanxuong_id).ToList())
+                    foreach (var a in db.md_lenhsanxuat_tosx.
+                            Where(s => s.md_lenhsanxuat_id == ncvt_dhpx.md_lenhsanxuat_id).ToList())
                     {
-                        var sltd = dhpx_vt.soluong.GetValueOrDefault(0) - dhpx_vt.sl_giamhanngach.GetValueOrDefault(0) - dhpx_vt.sl_duyetmua.GetValueOrDefault(0);
-                        if (sltd > 0)
+                        foreach (var dhpx_vt in db.md_lenhsanxuat_tosx_vattu.
+                            Where(s => s.md_lenhsanxuat_tosx_id == a.md_lenhsanxuat_tosx_id).ToList())
                         {
-                            var ncvt_ycmvt_chk = db.c_nhucauvattu_ycmvt.Where(s => s.md_sanpham_id == dhpx_vt.md_sanpham_id & s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
-                            c_nhucauvattu_ycmvt ncvt_ycmvt = ncvt_ycmvt_chk;
-
-
-                            if (ncvt_ycmvt_chk == null)
+                            var sltd = dhpx_vt.soluong.GetValueOrDefault(0) - dhpx_vt.sl_giamhanngach.GetValueOrDefault(0);
+                            if (sltd > 0)
                             {
-                                ncvt_ycmvt = new c_nhucauvattu_ycmvt();
-                                ncvt_ycmvt.c_nhucauvattu_ycmvt_id = Helper.getNewId();
-                                ncvt_ycmvt.c_nhucauvattu_id = ncvt_dhpx.c_nhucauvattu_id;
-                                ncvt_ycmvt.md_sanpham_id = dhpx_vt.md_sanpham_id;
-                                ncvt_ycmvt.md_donvitinhsanpham_id = dhpx_vt.md_donvitinhsanpham_id;
-                                ncvt_ycmvt.soluong = sltd;
+                                var ncvt_ycmvt_chkServer = db.c_nhucauvattu_ycmvt.Where(s => s.md_sanpham_id == dhpx_vt.md_sanpham_id & s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
+                                var ncvt_ycmvt_chk = db.c_nhucauvattu_ycmvt.Local.Where(s => s.md_sanpham_id == dhpx_vt.md_sanpham_id & s.c_nhucauvattu_id == ncvt_dhpx.c_nhucauvattu_id).Take(1).FirstOrDefault();
+                                c_nhucauvattu_ycmvt ncvt_ycmvt = ncvt_ycmvt_chk;
+                                if (ncvt_ycmvt_chk == null)
+                                {
+                                    ncvt_ycmvt = new c_nhucauvattu_ycmvt();
+                                    ncvt_ycmvt.c_nhucauvattu_ycmvt_id = Helper.getNewId();
+                                    ncvt_ycmvt.c_nhucauvattu_id = ncvt_dhpx.c_nhucauvattu_id;
+                                    ncvt_ycmvt.md_sanpham_id = dhpx_vt.md_sanpham_id;
+                                    ncvt_ycmvt.md_donvitinhsanpham_id = dhpx_vt.md_donvitinhsanpham_id;
+                                    ncvt_ycmvt.soluong = sltd;
+                                }
+                                else
+                                {
+                                    ncvt_ycmvt.soluong += sltd;
+                                }
+                                ncvt_ycmvt.nguoitao = userTK.ad_user_id;
+                                ncvt_ycmvt.vaitrotao = userTK.ad_role_id;
+                                ncvt_ycmvt.bophantao = userTK.md_phongban_id;
+                                ncvt_ycmvt.value_nguoitao = userTK.ma_user;
+                                ncvt_ycmvt.value_vaitrotao = userTK.ten_role;
+                                ncvt_ycmvt.value_bophantao = userTK.ten_phongban;
+                                ncvt_ycmvt.nguoicapnhat = userTK.ad_user_id;
+                                ncvt_ycmvt.vaitrocapnhat = userTK.ad_role_id;
+                                ncvt_ycmvt.bophancapnhat = userTK.md_phongban_id;
+                                ncvt_ycmvt.value_nguoicapnhat = userTK.ma_user;
+                                ncvt_ycmvt.value_vaitrocapnhat = userTK.ten_role;
+                                ncvt_ycmvt.value_bophancapnhat = userTK.ten_phongban;
+                                ncvt_ycmvt.ngaytao = DateTime.Now;
+                                ncvt_ycmvt.ngaycapnhat = DateTime.Now;
+                                ncvt_ycmvt.mota = "";
+                                ncvt_ycmvt.hoatdong = true;
+                                if (ncvt_ycmvt_chk == null)
+                                {
+                                    db.c_nhucauvattu_ycmvt.Add(ncvt_ycmvt);
+                                }
                             }
-                            else
-                            {
-                                ncvt_ycmvt.soluong += sltd;
-                            }
-                            ncvt_ycmvt.nguoitao = userTK.ad_user_id;
-                            ncvt_ycmvt.vaitrotao = userTK.ad_role_id;
-                            ncvt_ycmvt.bophantao = userTK.md_phongban_id;
-                            ncvt_ycmvt.value_nguoitao = userTK.ma_user;
-                            ncvt_ycmvt.value_vaitrotao = userTK.ten_role;
-                            ncvt_ycmvt.value_bophantao = userTK.ten_phongban;
-                            ncvt_ycmvt.nguoicapnhat = userTK.ad_user_id;
-                            ncvt_ycmvt.vaitrocapnhat = userTK.ad_role_id;
-                            ncvt_ycmvt.bophancapnhat = userTK.md_phongban_id;
-                            ncvt_ycmvt.value_nguoicapnhat = userTK.ma_user;
-                            ncvt_ycmvt.value_vaitrocapnhat = userTK.ten_role;
-                            ncvt_ycmvt.value_bophancapnhat = userTK.ten_phongban;
-                            ncvt_ycmvt.ngaytao = DateTime.Now;
-                            ncvt_ycmvt.ngaycapnhat = DateTime.Now;
-                            ncvt_ycmvt.mota = "";
-                            ncvt_ycmvt.hoatdong = true;
-                            if (ncvt_ycmvt_chk == null)
-                            {
-                                db.c_nhucauvattu_ycmvt.Add(ncvt_ycmvt);
-                            }
-                            db.SaveChanges();
                         }
                     }
                 }
+            }
+
+            if (SingleFunc == true)
+            {
+                if (msg.Length <= 0)
+                    db.SaveChanges();
             }
         }
         catch (Exception ex)
@@ -384,8 +374,8 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
             else
                 //transaction.Rollback();
 
-            //transaction.Dispose();
-            context.Response.Write(msg);
+                //transaction.Dispose();
+                context.Response.Write(msg);
         }
     }
 
@@ -420,14 +410,20 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                     ncvt.c_yeucaumuavt_id = " ";
                     ncvt.mota = context.Request.Form["mota"];
                     db.c_nhucauvattu.Add(ncvt);
-                    db.SaveChanges();
+
 
                     VNN_Function.SetFormValue("id", ncvt.c_nhucauvattu_id);
-                    CA_01_TinhNhuCauVatTu(context, db, null);
+                    CA_01_TinhNhuCauVatTu(context, db, false);
 
-                    if (db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count() <= 0)
+                    var countNCMVTServer = db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count();
+                    var countNCMVT = db.c_nhucauvattu_ycmvt.Local.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).Count();
+                    if (countNCMVT <= 0)
                     {
                         msg = "Không có vật tư nào cần mua trong thời gian này.";
+                    }
+                    else
+                    {
+                        db.SaveChanges();
                     }
                 }
             }
@@ -517,6 +513,12 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                     }
                     else
                     {
+                        foreach(var dhpx in db.c_nhucauvattu_dhpx.Where(s=>s.c_nhucauvattu_id == object_.c_nhucauvattu_id).ToList())
+                        {
+                            var khdhpx = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_dhcpx_id == dhpx.md_dondathangphanxuong_id).FirstOrDefault();
+                            if (khdhpx != null)
+                                khdhpx.tinh_ncvt = false;
+                        }
                         VNN_Function.Write_log(context, ma_module, null, oper, "TNCMVT:" + object_.ten_nhucau, db);
                         db.c_nhucauvattu.Remove(object_);
                         db.SaveChanges();

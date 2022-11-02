@@ -199,6 +199,12 @@
                         public Decimal? sl_nkton { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sl_tamgiao_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_tamgiao_wintaFN
+                        public Decimal? sl_tamgiao { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_tinhvattu_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_tinhvattu_wintaFN

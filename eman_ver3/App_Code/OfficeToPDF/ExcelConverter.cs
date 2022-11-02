@@ -252,7 +252,7 @@ namespace OfficeToPDF
                     var onlyActiveSheet = false;
                     Boolean activeSheetOnMaxRows = false;
                     Boolean includeProps = !false;
-                    Boolean skipRecalculation = true;
+                    Boolean skipRecalculation = false;
                     Boolean showHeadings = false;
                     Boolean showFormulas = false;
                     Boolean isHidden = false;
@@ -792,6 +792,10 @@ namespace OfficeToPDF
                     {
                         app.Calculation = XlCalculation.xlCalculationManual;
                         app.CalculateBeforeSave = false;
+                    }
+                    else
+                    {
+                        app.Calculation = XlCalculation.xlCalculationAutomatic;
                     }
 
                     if (mimeTypeOutput == "pdf")

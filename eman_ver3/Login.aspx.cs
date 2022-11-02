@@ -36,6 +36,7 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
                 var us = db.ad_user.Where(s => 
                     s.ma_user == taikhoan
                     & s.matkhau == pass
+					& s.hoatdong == true
                 ).FirstOrDefault();
 
                 if (us != null)

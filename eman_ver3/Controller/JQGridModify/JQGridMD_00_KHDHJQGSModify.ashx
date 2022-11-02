@@ -290,7 +290,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                 //transaction.Commit();
             }
             //else
-               // transaction.Rollback();
+            // transaction.Rollback();
         }
 
         db.Dispose();
@@ -507,6 +507,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
         var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == dhcpx.sctdathang).FirstOrDefault();
         dhcpx.hdlh = dsdh.huongdanlamhang;
         dhcpx.hdlhchung = dsdh.huongdanlamhangchung;
+        dhcpx.c_danhsachdathang_id = dsdh.c_danhsachdathang_id;
         dhcpx.tinh_ncvt = false;
 
         dhcpx.nguoitao = us.ad_user_id;
@@ -594,13 +595,9 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             if (dcht != null)
                             {
                                 db.c_doichieuhangton.Remove(dcht);
+                                ds.md_trangthai_id = Helper.HIEULUC;
+                                ds.trangthai = Helper.SOANTHAO;
                             }
-							
-							if(ds != null) 
-							{
-								ds.md_trangthai_id = "HIEULUC";
-								ds.trangthai = "SOANTHAO";
-							}
 
                             VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
                             db.c_kehoachdathang.Remove(object_);

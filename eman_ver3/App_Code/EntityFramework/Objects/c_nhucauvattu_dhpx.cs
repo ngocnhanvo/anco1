@@ -43,6 +43,12 @@
                         public string md_dondathangphanxuong_id { get; set; }
                 
 						
+                        #region c_nhucauvattu_dhpx_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion c_nhucauvattu_dhpx_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
+                
+						
                         #region c_nhucauvattu_dhpx_mota_wintaFN
                         
                         #endregion c_nhucauvattu_dhpx_mota_wintaFN

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Data;
 using Mbg.Data.SqlClient;
-							 
+
 public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public void ProcessRequest(HttpContext context)
@@ -30,15 +30,18 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         }
     }
 
-    public void del_soluong()
+    public void finalFunctionAfterImportEnd(string select_ddpm)
     {
-        EntityContext db = new EntityContext();
-        //foreach(md_sanpham_bom_vattu cc in db.md_sanpham_bom_vattu.Where(s => s.soluong == 0 & s.hoatdong == true).ToList())
-        //{
-        //    if(db.md_sanpham_bom.Where(s=>s.md_sanpham_bom_id == cc.md_sanpham_bom_id & s.bom_tam == true).Count() > 0)
-        //        cc.hoatdong = false;
-        //}
+        var db = new EntityContext();
+        var ip = db.ad_import.Where(s => s.ad_import_id == select_ddpm).FirstOrDefault();
+        if (ip == null)
+        {
+            goto end;
+        }
+
         VNN_Function.loaddulieu_Auto(db, "MD_00_NhaplieuPM");
+
+        end:;
     }
 
     public string upload(HttpContext context)
@@ -114,20 +117,21 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 try
                 {
                     Workbook wb = null;
-                    var task = Task.Run(() => {
+                    var task = Task.Run(() =>
+                    {
                         wb = Workbook.Load(stream);
                         context.Session["worksheets"] = wb.Worksheets[0].Cells;
                     });
 
                     if (!task.Wait(TimeSpan.FromSeconds(30)))
                         msg = "false#Tập tin này quá lớn và phức tạp để hệ thống có thể đọc hiểu.";
-                    else if(wb != null)
+                    else if (wb != null)
                     {
                         var kiemTraCot = skipCheckColumnCount.ToLower() == "false";
                         var activeWS = wb.Worksheets[0];
                         var ipDetails = db.ad_import_column.
                                 Where(s => s.imported == "true" & s.ad_import_id == ip.ad_import_id).
-                                OrderBy(s=>s.sapxep).ToList();
+                                OrderBy(s => s.sapxep).ToList();
                         var tblTable = "";
                         if (kiemTraCot)
                         {
@@ -137,8 +141,8 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                             {
                                 tblTd += string.Format(@"<th>{0}</th>", cell.ten_import_column);
                             }
-							
-							if(ip.value_header != 999 & ip.value_row != 999)
+
+                            if (ip.value_header != 999 & ip.value_row != 999)
                             {
                                 for (var cell = ipDetails.Count; cell <= activeWS.Cells.LastColIndex; cell++)
                                 {
@@ -146,7 +150,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                     tblTd += string.Format(@"<th>{0}</th>", val.StringValue);
                                 }
                             }
-							
+
                             tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
 
                             for (var row = 1; row < activeWS.Cells.Rows.Count; row++)
@@ -162,7 +166,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
                                 if (row > 0 & activeWS.Cells.Rows.Count > 2)
                                 {
-                                    tblRow += string.Format(@"<tr><td colspan='{0}' style='background-color:rgb(240, 248, 255);text-align:center;'><b>{1} dòng đã được ẩn...</b></td></tr>",
+                                    tblRow += string.Format(@"<tr><td colspan='{0}' style='background-color:rgb(240, 248, 255);text-align:left;'><b>{1} dòng đã được ẩn...</b></td></tr>",
                                         activeWS.Cells.LastColIndex + 1,
                                         activeWS.Cells.Rows.Count - 2
                                         );
@@ -201,7 +205,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string NewFromCellCollection(HttpContext context, CellCollection cellCollection, ad_import ip, string file_path, EntityContext db)
     {
-		string type = context.Request.Form["type"];										   
+        string type = context.Request.Form["type"];
         string ten_table = ip.ten_table;
         int count_column = db.ad_import_column.Where(s => s.ad_import_id == ip.ad_import_id & s.imported == "true").Count();
         string sql_del = "";
@@ -349,6 +353,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
         string msg = "";
         try
         {
+            string select_ddpm = context.Request.Form["select_ddpm"];
             int end = int.Parse(context.Request.Form["end"]);
             int total = int.Parse(context.Request.Form["total"]);
             int value_header = int.Parse(context.Request.Form["value_header"]);
@@ -506,7 +511,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                     {
                         msg = copy_data_checked(context, ten_table, ten_tablecp, msg);
                     }
-                    del_soluong();
+                    finalFunctionAfterImportEnd(select_ddpm);
                     context.Session.Remove("us_import");
                     context.Session.Remove("str_check_arr");
                     context.Session.Remove("ex_sql");
@@ -601,7 +606,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             }
             else
             {
-                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, sql_update_row);
+                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, ex);
             }
         }
         else
@@ -712,7 +717,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
 
     public string change_avariable(string sql, User_TK us)
     {
-		string kq = sql.Replace("'@ad_user_id'", string.Format(@"N'{0}'", us.ad_user_id));
+        string kq = sql.Replace("'@ad_user_id'", string.Format(@"N'{0}'", us.ad_user_id));
         kq = kq.Replace("'@ad_role_id'", string.Format(@"N'{0}'", us.ad_role_id));
         kq = kq.Replace("'@md_phongban_id'", string.Format(@"N'{0}'", us.md_phongban_id));
         kq = kq.Replace("'@ma_user'", string.Format(@"N'{0}'", us.ma_user));

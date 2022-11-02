@@ -80,6 +80,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 
         string sql = string.Format(@"	 
             declare @tosx1 nvarchar(32) = (select top 1 md_to_id from md_phanxuong_to where ma_to = 'DUC1');
+			declare @tosx1_1 nvarchar(32) = (select top 1 md_to_id from md_phanxuong_to where ma_to = 'DUC1_62');
             declare @tosx2 nvarchar(32) = (select top 1 md_to_id from md_phanxuong_to where ma_to = 'DUCS1');
             declare @tungay datetime = convert(datetime,N'01/{0}/{1} 00:00:00',103);
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
@@ -146,7 +147,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 				                ) 
 			            where 
 				            xnb.bosung = 4 
-				            and (kho.md_to_id = @tosx1 or kho.md_to_id = @tosx2)
+				            and kho.md_to_id in (@tosx1, @tosx1_1, @tosx2)
 				            and xnb.ngaychuyen between @tungay and @denngay
 				            and dh.sl_daxuat is not null
                         union
@@ -175,7 +176,7 @@ public partial class PrintControllers_MD_00_BaoCaoSanXuat_BangKeTienHangCatSoi :
 				                ) 
 			            where 
 				            xnb.loaichuyen = 'VANCNBCTKGH' 
-				            and (xnb.md_to_id = @tosx1 or xnb.md_to_id = @tosx2)
+				            and xnb.md_to_id in (@tosx1, @tosx1_1, @tosx2)
 				            and xnb.ngaychuyen between @tungay and @denngay
 				            and dh.soluong_dachuyen is not null
 		            )A

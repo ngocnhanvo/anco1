@@ -202,92 +202,86 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
-        string id_px = "";
-        using (var transaction = db.Database.BeginTransaction())
+        md_dondathangphanxuong id_px = null;
+        bool kiemtragia = (context.Request.Form["kiemtragia"] + "").ToLower() == "true";
+
+        try
         {
-            try
+            foreach (var dhcpx in db.c_kehoachdathang_dhcpx.Where(s => vnn.Contains(s.c_kehoachdathang_dhcpx_id)).ToList())
             {
-                foreach (var dhcpx in db.c_kehoachdathang_dhcpx.Where(s => vnn.Contains(s.c_kehoachdathang_dhcpx_id)).ToList())
+                if (dhcpx.md_phanxuong_id == "" || dhcpx.md_phanxuong_id == null || dhcpx.md_phanxuong_id == " ")
                 {
-                    if (dhcpx.md_phanxuong_id == "" || dhcpx.md_phanxuong_id == null || dhcpx.md_phanxuong_id == " ")
+                    msg = "<div style='color:red'>Dòng " + dhcpx.donhang + " chưa có phân xưởng không thể tạo</div>";
+                    break;
+                }
+                //khai bao
+                var px = db.md_phanxuong.FirstOrDefault(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id);
+                if (px.ten_phanxuong == "PX.KẾ HOẠCH")
+                {
+                    msg = "<div style='color:red'>Dòng " + dhcpx.donhang + " không thể tạo đơn hàng cho phân xưởng cho " + px.ten_phanxuong + ".</div>";
+                    break;
+                }
+                var c_kehoachdathang_dhcpx_cdhs = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
+                if (dhcpx.dongdathang != " ")
+                {
+                    msg += "<div style='color:red'>Dòng " + px.ten_phanxuong + " của " + dhcpx.donhang + " đã tạo đơn!!</div>";
+                }
+
+                if (msg.Length <= 0)
+                {
+                    //--them dong don dat hang phan xuong
+                    id_px = add_px(db, dhcpx, 1, userTK);
+
+                    //start
+                    foreach (var dhcpx_cdh in c_kehoachdathang_dhcpx_cdhs.ToList())
                     {
-                        msg = "<div style='color:red'>Dòng " + dhcpx.donhang + " chưa có phân xưởng không thể tạo</div>";
-                        break;
+                        add_px_cd(db, id_px.md_dondathangphanxuong_id, dhcpx_cdh.md_sanpham_id, dhcpx_cdh.noigiaohang, dhcpx_cdh.soluong.Value, dhcpx_cdh.md_donvitinhsanpham_id, dhcpx_cdh.mota, 1, userTK, dhcpx.c_danhsachdathang_id, dhcpx_cdh.c_kehoachdathang_dhcpx_id);
                     }
-                    //khai bao
-                    var px = db.md_phanxuong.FirstOrDefault(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id);
-                    if (px.ten_phanxuong == "PX.KẾ HOẠCH")
+                    //end
+
+                    //start 
+                    add_px_vattu(db, dhcpx.c_kehoachdathang_dhcpx_id, id_px.md_dondathangphanxuong_id, userTK);
+                    //end                
+
+                    int dem_SLPXServer = db.c_kehoachdathang_dhcpx.Where(s => s.dongdathang == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id & s.c_kehoachdathang_dhcpx_id != dhcpx.c_kehoachdathang_dhcpx_id).Count();
+                    int dem_SLPX = db.c_kehoachdathang_dhcpx.Local.Where(s => s.dongdathang == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id & s.c_kehoachdathang_dhcpx_id != dhcpx.c_kehoachdathang_dhcpx_id).Count();
+                    int dem_SLCCServer = db.c_kehoachdathang_dhncc.Where(s => s.chungtu == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).Count();
+                    int dem_SLCC = db.c_kehoachdathang_dhncc.Local.Where(s => s.chungtu == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).Count();
+                    var khdtServer = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).FirstOrDefault();
+                    var khdt = db.c_kehoachdathang.Local.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).FirstOrDefault();
+
+                    int dem_SL = dem_SLPX + dem_SLCC;
+                    if (dem_SL > 0)
                     {
-                        msg = "<div style='color:red'>Dòng " + dhcpx.donhang + " không thể tạo đơn hàng cho phân xưởng cho " + px.ten_phanxuong + ".</div>";
-                        break;
+                        khdt.mota = "Còn \"" + dem_SL + "\" đơn hàng chưa đặt cho PX hoặc chưa cho NCC";
+                        khdt.trangthai = "CHUAHET";
                     }
-                    var c_kehoachdathang_dhcpx_cdhs = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
-                    if (dhcpx.dongdathang != " ")
+                    else
                     {
-                        msg += "<div style='color:red'>Dòng " + px.ten_phanxuong + " của " + dhcpx.donhang + " đã tạo đơn!!</div>";
+                        khdt.mota = "";
+                        khdt.trangthai = "DAHET";
                     }
 
-                    foreach (var dh_dkpx in db.c_kehoachdathang_dhcpx_cdh.Where(s =>
-                         s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).ToList())
-                    {
-                        if (
-                                db.md_sanpham_bom_vattu.Where(t =>
-                                   t.md_sanpham_bom_id == dh_dkpx.md_sanpham_bom_id
-                                ).Count() <= 0
-                        )
-                        {
-                            msg += "<div style='color:red'>Dòng " + dh_dkpx.macuoi + " chưa có vật tư trong BOM!!</div>";
-                        }
-                    }
+                    var pub = new Public();
+                    msg += pub.TaoLenhSanXuat(db, id_px, userTK, kiemtragia);
+
                     if (msg.Length <= 0)
-                    {
-                        //--them dong don dat hang phan xuong
-                        id_px = add_px(db, dhcpx, 1, userTK);
-
-                        //start
-                        var ddh = db.md_dondathangphanxuong.FirstOrDefault(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
-                        foreach (var dhcpx_cdh in c_kehoachdathang_dhcpx_cdhs.ToList())
-                        {
-                            add_px_cd(db, ddh.md_dondathangphanxuong_id, dhcpx_cdh.md_sanpham_id, dhcpx_cdh.noigiaohang, dhcpx_cdh.soluong.Value, dhcpx_cdh.md_donvitinhsanpham_id, dhcpx_cdh.mota, 1, userTK);
-                        }
-                        //end
-
-                        //start 
-                        add_px_vattu(db, dhcpx.c_kehoachdathang_dhcpx_id, id_px, userTK);
-                        //end                
-
-                        int dem_SLPX = db.c_kehoachdathang_dhcpx.Where(s => s.dongdathang == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id & s.c_kehoachdathang_dhcpx_id != dhcpx.c_kehoachdathang_dhcpx_id).Count();
-                        int dem_SLCC = db.c_kehoachdathang_dhncc.Where(s => s.chungtu == " " & s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).Count();
-                        var khdt = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dhcpx.c_kehoachdathang_id).FirstOrDefault();
-                        int dem_SL = dem_SLPX + dem_SLCC;
-                        if (dem_SL > 0)
-                        {
-                            khdt.mota = "Còn \"" + dem_SL + "\" đơn hàng chưa đặt cho PX hoặc chưa cho NCC";
-                            khdt.trangthai = "CHUAHET";
-                        }
-                        else
-                        {
-                            khdt.mota = "";
-                            khdt.trangthai = "DAHET";
-                        }
                         db.SaveChanges();
-                        msg_success += "<div style='color:blue'>" + px.ten_phanxuong + " của " + dhcpx.donhang + " đã tạo đơn thành công.</div>";
-                    }
+
+                    msg_success += "<div style='color:blue'>" + px.ten_phanxuong + " của " + dhcpx.donhang + " đã tạo đơn thành công.</div>";
                 }
             }
-            catch (Exception ex)
-            {
-                msg = "false#" + ex.Message;
-            }
-
-            if (msg.Length <= 0)
-            {
-                msg = msg_success;
-                transaction.Commit();
-            }
-            else
-                transaction.Rollback();
         }
+        catch (Exception ex)
+        {
+            msg = "false#" + ex.Message;
+        }
+
+        if (msg.Length <= 0)
+        {
+            msg = msg_success;
+        }
+
         context.Response.Write(msg);
     }
 
@@ -320,21 +314,23 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
             vattu.ngaycapnhat = DateTime.Now;
             db.md_dondathangphanxuong_vattu.Add(vattu);
         }
-        db.SaveChanges();
     }
     //cac dong
-    public string add_px_cd(EntityContext db, string md_dondathangphanxuong_id, string md_sanpham_id, string noigiaohang, decimal soluong, string md_donvitinhsanpham_id, string mota, int i, User_TK us)
+    public string add_px_cd(EntityContext db, string md_dondathangphanxuong_id, string md_sanpham_id, string noigiaohang, decimal soluong, string md_donvitinhsanpham_id, string mota, int i, User_TK us, string c_danhsachdathang_id, string c_kehoachdathang_dhcpx_id)
     {
         string id_new = Helper.getNewId();
         //kiem tra
-        md_dondathangphanxuong_cdh check_px = db.md_dondathangphanxuong_cdh.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_dondathangphanxuong_id == md_dondathangphanxuong_id).FirstOrDefault();
+        var check_pxServer = db.md_dondathangphanxuong_cdh.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_dondathangphanxuong_id == md_dondathangphanxuong_id).FirstOrDefault();
+        var check_px = db.md_dondathangphanxuong_cdh.Local.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_dondathangphanxuong_id == md_dondathangphanxuong_id).FirstOrDefault();
         md_dondathangphanxuong_cdh cdh = check_px;
 
-        c_kehoachdathang_dhcpx_cdh dhcpx = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_donvitinhsanpham_id == md_donvitinhsanpham_id).FirstOrDefault();
+        var dhcpxServer = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_donvitinhsanpham_id == md_donvitinhsanpham_id & s.c_kehoachdathang_dhcpx_id == c_kehoachdathang_dhcpx_id).FirstOrDefault();
+        var dhcpx = db.c_kehoachdathang_dhcpx_cdh.Local.Where(s => s.md_sanpham_id == md_sanpham_id & s.md_donvitinhsanpham_id == md_donvitinhsanpham_id & s.c_kehoachdathang_dhcpx_id == c_kehoachdathang_dhcpx_id).FirstOrDefault();
         if (check_px == null)
         {
             cdh = new md_dondathangphanxuong_cdh();
             cdh.md_dondathangphanxuong_cdh_id = Helper.getNewId();
+            cdh.c_danhsachdathang_id = c_danhsachdathang_id;
         }
         else
         {
@@ -375,12 +371,11 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         {
             cdh.ngaycapnhat = DateTime.Now;
         }
-        db.SaveChanges();
         return id_new;
     }
 
     //them dong don dat hang
-    public string add_px(EntityContext db, c_kehoachdathang_dhcpx dhcpx, int i, User_TK us)
+    public md_dondathangphanxuong add_px(EntityContext db, c_kehoachdathang_dhcpx dhcpx, int i, User_TK us)
     {
         int dem_sct = 0;
         dem_sct++;
@@ -391,7 +386,8 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         b.trangthai = "HIEULUC";
         string id_new = Helper.getNewId();
         //kiem tra
-        md_dondathangphanxuong check_px = db.md_dondathangphanxuong.Where(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id & s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).FirstOrDefault();
+        var check_pxServer = db.md_dondathangphanxuong.Where(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id & s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).FirstOrDefault();
+        var check_px = db.md_dondathangphanxuong.Local.Where(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id & s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).FirstOrDefault();
         md_dondathangphanxuong ddh = check_px;
 
         if (check_px == null)
@@ -405,7 +401,13 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         }
 
         int so_ngay = 0;
-        var ngaydksxes = from aa in db.md_dondathangphanxuong_cdh
+        var ngaydksxesServer = from aa in db.md_dondathangphanxuong_cdh
+                               join bb in db.md_sanpham on aa.md_sanpham_id equals bb.md_sanpham_id
+                               join cc in db.md_chungloai on bb.md_nhomnangluc_id equals cc.md_chungloai_id
+                               where aa.md_dondathangphanxuong_id == ddh.md_dondathangphanxuong_id
+                               select new { cc.songaysx };
+
+        var ngaydksxes = from aa in db.md_dondathangphanxuong_cdh.Local
                          join bb in db.md_sanpham on aa.md_sanpham_id equals bb.md_sanpham_id
                          join cc in db.md_chungloai on bb.md_nhomnangluc_id equals cc.md_chungloai_id
                          where aa.md_dondathangphanxuong_id == ddh.md_dondathangphanxuong_id
@@ -465,8 +467,7 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         {
             ddh.ngaycapnhat = DateTime.Now;
         }
-        db.SaveChanges();
-        return id_new;
+        return ddh;
     }
 
     public void add(HttpContext context)

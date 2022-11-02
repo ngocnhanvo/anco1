@@ -444,6 +444,10 @@ modelBuilder.Entity<c_kehoachdathang_dhcpx>().ToTable("c_kehoachdathang_dhcpx");
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_kehoachdathang_dhcpx>()
+                            .Property(p => p.c_danhsachdathang_id)
+                            .HasColumnName("c_danhsachdathang_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachdathang_dhcpx>()
                             .Property(p => p.c_kehoachdathang_dhcpx_id)
                             .HasColumnName("c_kehoachdathang_dhcpx_id")
                             .HasColumnType("nvarchar");
@@ -1601,6 +1605,10 @@ modelBuilder.Entity<c_nhucauvattu_dhpx>().HasKey<string>(p => p.c_nhucauvattu_dh
                             modelBuilder.Entity<c_nhucauvattu_dhpx>()
                             .Property(p => p.md_dondathangphanxuong_id)
                             .HasColumnName("md_dondathangphanxuong_id")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<c_nhucauvattu_dhpx>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_nhucauvattu_dhpx>()
                             .Property(p => p.mota)

@@ -90,9 +90,11 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                 if(msg.Length <= 0)
                 {
                     var ngaygoihan = DateTime.Now.AddDays(-120);
-                    var xnbss = db.md_xuatkhonb.Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan);
+                    var xnbss = db.md_xuatkhonb.Where(s => s.phienbangiaNC == id);
                     if (type == "2")
                         xnbss = xnbss.Where(s => scts.Contains(s.sochungtu));
+                    else
+                        xnbss = xnbss.Where(s => s.ngaytao >= ngaygoihan);
                     var xnbs = xnbss.ToList();
 
                     foreach (var xnb in xnbs) {
@@ -154,9 +156,11 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     }
 
                     var vcnbss = db.md_vanchuyennoibo
-                            .Where(s => s.phienbangiaNC == id & s.ngaytao >= ngaygoihan);
+                            .Where(s => s.phienbangiaNC == id);
                     if (type == "2")
                         vcnbss = vcnbss.Where(s => scts.Contains(s.sochungtu));
+                    else
+                        vcnbss = vcnbss.Where(s => s.ngaytao >= ngaygoihan);
                     var vcnbs = vcnbss.ToList();
 
                     foreach (var xnb in vcnbs)

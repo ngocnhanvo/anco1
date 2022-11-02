@@ -59,6 +59,22 @@ public class JQGridMD_00_SelectOptionModify : IHttpHandler, System.Web.SessionSt
             {
                 msg = "false#Mã selectoption này đã tồn tại";
             }
+            else if(new_select.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Select";
+            }
+            else if(new_from.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có From";
+            }
+            else if(new_where.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Where";
+            }
+            else if(new_orderby.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Order by";
+            }
             else if (ma_selectoption.Length < 5)
             {
                 msg = "false#Mã selectoption này phải có dạng là: <%=" + ma_selectoption + "%>";
@@ -108,10 +124,8 @@ public class JQGridMD_00_SelectOptionModify : IHttpHandler, System.Web.SessionSt
                 db.ad_selectoption.Add(object_);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 VNN_Function.SortColumn("ad_selectoption", sapxep, null, null, "ma_selectoption", ma_selectoption, null);
-
                 var ttc = Helper.getInfoDB();
                 VNN_Function.create_Trigger(ttc["database"]);
-
                 editJSON(context, object_, "modify");
                 msg = "true#Thêm thành công" + "#" + id_new;
             }
@@ -150,7 +164,24 @@ public class JQGridMD_00_SelectOptionModify : IHttpHandler, System.Web.SessionSt
             }
             string Testdisplay_member = "false#Display member0 không có giá trị để hiển thị.";
             //#sort
-            if (VNN_Function.TestSQL(sql) == false)
+
+            if(new_select.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Select";
+            }
+            else if(new_from.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có From";
+            }
+            else if(new_where.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Where";
+            }
+            else if(new_orderby.removeAllSpaceOrTrimText(true).Length <= 0)
+            {
+                msg = "false#Phải có Order by";
+            }
+            else if (VNN_Function.TestSQL(sql) == false)
             {
                 msg = "false#Sai cú pháp SQL: " + sql;
             }

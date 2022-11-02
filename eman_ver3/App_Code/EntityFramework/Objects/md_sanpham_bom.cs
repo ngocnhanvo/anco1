@@ -103,6 +103,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_sanpham_bom_phongbanId_wintaFN
+                        
+                        #endregion md_sanpham_bom_phongbanId_wintaFN
+                        public string phongbanId { get; set; }
+                
+						
                         #region md_sanpham_bom_soluong_wintaFN
                         
                         #endregion md_sanpham_bom_soluong_wintaFN

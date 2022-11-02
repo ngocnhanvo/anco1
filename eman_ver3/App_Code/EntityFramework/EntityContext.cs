@@ -122,6 +122,7 @@ public virtual DbSet<md_lenhsanxuat_ddsx> md_lenhsanxuat_ddsx { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx> md_lenhsanxuat_tosx { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_cdh> md_lenhsanxuat_tosx_cdh { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_dklht> md_lenhsanxuat_tosx_dklht { get; set; }
+public virtual DbSet<md_lenhsanxuat_tosx_dklhttp> md_lenhsanxuat_tosx_dklhttp { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_tonkho> md_lenhsanxuat_tosx_tonkho { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_vattu> md_lenhsanxuat_tosx_vattu { get; set; }
 public virtual DbSet<md_lenhsanxuat_tosx_vattuBackup> md_lenhsanxuat_tosx_vattuBackup { get; set; }
@@ -148,6 +149,7 @@ public virtual DbSet<md_phannnhommx_qhd> md_phannnhommx_qhd { get; set; }
 public virtual DbSet<md_phannnhommx_tlkthh> md_phannnhommx_tlkthh { get; set; }
 public virtual DbSet<md_phanxuong> md_phanxuong { get; set; }
 public virtual DbSet<md_phanxuong_to> md_phanxuong_to { get; set; }
+public virtual DbSet<md_phanxuongMain> md_phanxuongMain { get; set; }
 public virtual DbSet<md_phienbangia> md_phienbangia { get; set; }
 public virtual DbSet<md_quocgia> md_quocgia { get; set; }
 public virtual DbSet<md_sanpham> md_sanpham { get; set; }
@@ -169,6 +171,7 @@ public virtual DbSet<md_tygia> md_tygia { get; set; }
 public virtual DbSet<md_vanchuyennoibo> md_vanchuyennoibo { get; set; }
 public virtual DbSet<md_vanchuyennoibo_cdvc> md_vanchuyennoibo_cdvc { get; set; }
 public virtual DbSet<md_vanchuyennoibo_dalayton> md_vanchuyennoibo_dalayton { get; set; }
+public virtual DbSet<md_vanchuyennoibo_rabo> md_vanchuyennoibo_rabo { get; set; }
 public virtual DbSet<md_vattukhoan> md_vattukhoan { get; set; }
 public virtual DbSet<md_vattutrongtinhbom> md_vattutrongtinhbom { get; set; }
 public virtual DbSet<md_xuatban> md_xuatban { get; set; }

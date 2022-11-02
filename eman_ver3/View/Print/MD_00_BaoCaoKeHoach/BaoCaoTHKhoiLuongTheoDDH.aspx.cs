@@ -230,8 +230,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHKhoiLuongTheoD
             select
 	            A.*,
 	            (A.dh51 + A.dh52 + A.dh53 + A.dh62 + A.dh67 + A.dh81ch + A.dh81bg + A.dh99) as dhTongcong,
-	            (A.dl51 + A.dl52 + A.dl53 + A.dh62 + A.dh67 + A.dl81ch + A.dl81bg + A.dl99) as dlTongcong,
-	            (A.cl51 + A.cl52 + A.cl53 + A.dh62 + A.dh67 + A.cl81ch + A.cl81bg + A.cl99) as clTongcong,
+	            (A.dl51 + A.dl52 + A.dl53 + A.dl62 + A.dl67 + A.dl81ch + A.dl81bg + A.dl99) as dlTongcong,
+	            (A.cl51 + A.cl52 + A.cl53 + A.cl62 + A.cl67 + A.cl81ch + A.cl81bg + A.cl99) as clTongcong,
                 N'Từ {0} đến {1}' as thang_nam
             from ( 
 	            select 

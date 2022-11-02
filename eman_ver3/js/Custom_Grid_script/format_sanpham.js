@@ -122,7 +122,7 @@ function timkiem_sanpham(id_elem, type) {
                     $('#dlg_gridSmal_2').dialog('destroy').remove();
                 },
                 gridComplete: function () {
-                    $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());
+                    $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width() - 5);
                 },
                 loadComplete: function (data) {
                     var top_rowid = $('#gridMD_00_DSHangHoaVG_cp tr:nth-child(2)').attr('id') + '';

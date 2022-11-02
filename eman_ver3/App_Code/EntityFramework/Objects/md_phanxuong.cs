@@ -73,6 +73,12 @@
                         public string ten_phanxuong { get; set; }
                 
 						
+                        #region md_phanxuong_thuocPX_wintaFN
+                        
+                        #endregion md_phanxuong_thuocPX_wintaFN
+                        public string thuocPX { get; set; }
+                
+						
                         #region md_phanxuong_vaitrocapnhat_wintaFN
                         
                         #endregion md_phanxuong_vaitrocapnhat_wintaFN

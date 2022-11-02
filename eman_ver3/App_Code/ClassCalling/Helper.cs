@@ -10,6 +10,20 @@ using System.Collections.Generic;
 /// </summary>
 public static class Helper
 {
+    public static string SOANTHAO = "SOANTHAO";
+    public static string DANHAN = "DANHAN";
+    public static string HIEULUC = "HIEULUC";
+
+    public static dynamic getInfoDB()
+    {
+        var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(Mbg.Data.SqlClient.SqlHelper.connectionString);
+        return new System.Collections.Generic.Dictionary<string, string>
+    {
+        { "server", builder.DataSource },
+        { "database", builder.InitialCatalog }
+    };
+    }
+
     public static void removeFileWithPath(string path)
     {
         if (System.IO.File.Exists(path))
@@ -122,16 +136,6 @@ public static class Helper
     public static string getConnectStrings(string ten_connectstring)
     {
         return System.Web.Configuration.WebConfigurationManager.ConnectionStrings[ten_connectstring].ConnectionString;
-    }
-
-    public static dynamic getInfoDB()
-    {
-        var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(Mbg.Data.SqlClient.SqlHelper.connectionString);
-        return new System.Collections.Generic.Dictionary<string, string>
-        {
-            { "server", builder.DataSource },
-            { "database", builder.InitialCatalog }
-        };
     }
 
     public static string getFilter(HttpContext context)

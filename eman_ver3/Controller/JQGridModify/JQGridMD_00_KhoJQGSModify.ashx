@@ -52,10 +52,14 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string maKho = context.Request.Form["ma_kho"];
+        string pxId = context.Request.Form["md_phanxuong_id"];
+        string toId = context.Request.Form["md_to_id"];
         using (var transaction = db.Database.BeginTransaction())
         {
             try
             {
+                var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
+
                 if (db.md_kho.Where(s => s.ma_kho == maKho).Count() > 0)
                 {
                     msg = string.Format("Kho {0} đã tồn tại tồn tại", maKho);
@@ -65,6 +69,7 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
                     string id = context.Request.QueryString["id"];
                     var object_ = new md_kho();
                     object_.md_kho_id = id_new;
+                    object_.phongbanId = pxTrongQT.phongbanId;
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     db.md_kho.Add(object_);
@@ -95,6 +100,8 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string pxId = context.Request.Form["md_phanxuong_id"];
+        string toId = context.Request.Form["md_to_id"];
 
         using (var transaction = db.Database.BeginTransaction())
         {
@@ -108,6 +115,8 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
                 }
                 else
                 {
+                    var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
+                    object_.phongbanId = pxTrongQT.phongbanId;
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();

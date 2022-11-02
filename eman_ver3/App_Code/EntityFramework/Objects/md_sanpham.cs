@@ -307,6 +307,12 @@
                         public Decimal? trongluong { get; set; }
                 
 						
+                        #region md_sanpham_updated_wintaFN
+                        
+                        #endregion md_sanpham_updated_wintaFN
+                        public bool? updated { get; set; }
+                
+						
                         #region md_sanpham_v2_wintaFN
                         
                         #endregion md_sanpham_v2_wintaFN

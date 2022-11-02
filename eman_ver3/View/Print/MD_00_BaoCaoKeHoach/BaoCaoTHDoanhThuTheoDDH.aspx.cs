@@ -69,7 +69,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 
             select 
 	            A.*
-	            , (isnull(A.c51, 0) + isnull(A.c52, 0) + isnull(A.c53, 0) + isnull(A.c81BG, 0) + isnull(A.c81CH, 0) + isnull(A.c99, 0)) as tongcong
+	            , (isnull(A.c51, 0) + isnull(A.c52, 0) + isnull(A.c53, 0) + isnull(A.c62, 0) + isnull(A.c67, 0) + isnull(A.c81BG, 0) + isnull(A.c81CH, 0) + isnull(A.c99, 0)) as tongcong
 	            from (
 		            select 
 			            dsdh.so_po as donhang
@@ -101,6 +101,24 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoTHDoanhThuTheoDD
 					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
 					            and substring(sp.ma_sanpham, 0, 3) = '53'
 			            ) as c53
+                        , (
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
+				            from c_dongdsdh cdh
+				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+				            where
+                                1=1
+					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+					            and substring(sp.ma_sanpham, 0, 3) = '62'
+			            ) as c62
+                        , (
+				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
+				            from c_dongdsdh cdh
+				            inner join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+				            where
+                                1=1
+					            and cdh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+					            and substring(sp.ma_sanpham, 0, 3) = '67'
+			            ) as c67
 			            , (
 				            select sum((cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0)) * cdh.gianhap)
 				            from c_dongdsdh cdh

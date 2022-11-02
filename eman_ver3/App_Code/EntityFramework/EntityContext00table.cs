@@ -718,10 +718,6 @@ modelBuilder.Entity<ad_department>().HasKey<string>(p => p.md_phongban_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<ad_department>()
-                            .Property(p => p.sapxep)
-                            .HasColumnName("sapxep")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_department>()
                             .Property(p => p.ten_phongban)
                             .HasColumnName("ten_phongban")
                             .HasColumnType("nvarchar");

@@ -46,13 +46,14 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BangDeNghiThanhToanTie
 
     public string CreateSql(HttpContext context)
     {
+        string viewAll = context.Request.QueryString["viewAll"];
         string thang = context.Request.QueryString["thang"];
         thang = thang.Length < 2 ? "0" + thang : thang;
         string nam = context.Request.QueryString["nam"];
         string donhang = context.Request.QueryString["donhang"];
         donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and xb.donhang_thamchieu like N'{0}'", donhang);
-
-        string sql = string.Format(@"	 
+        viewAll = viewAll == "1" ? "" : "and (isnull(xb.tienlencong, 0) + isnull(xb.tiencongghep, 0)) > 0";
+        string sql = string.Format(@"
             declare @tungay datetime = convert(datetime,N'01/{0}/{1} 00:00:00',103);
             declare @denngay datetime = DATEADD(month, ((YEAR(@tungay) - 1900) * 12) + MONTH(@tungay), -1);
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
@@ -71,14 +72,15 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BangDeNghiThanhToanTie
 	            xb.ngaychuyen between @tungay and @denngay
 	            and xb.trangthai = 'HIEULUC'
                 and isnull(xb.xuat_thanhly, 0) = 0
-                and (isnull(xb.tienlencong, 0) + isnull(xb.tiencongghep, 0)) > 0
                 {2}
+                {3}
             order by
                 xb.ngaychuyen, xb.donhang_thamchieu
 		"
         , thang
         , nam
         , donhang
+        , viewAll
         );
 		return sql;
     }

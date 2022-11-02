@@ -389,7 +389,7 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void edit(HttpContext context)
     {
-        string msg = "", msg_success = "";
+        string msg = "", msg_success = "", msgEX = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string md_trangthai_id = context.Request.Form["md_trangthai_id"];
         string ngay_hieuluc = context.Request.Form["ngay_hieuluc"];
@@ -438,9 +438,11 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 else
                 {
                     pxuongXL = db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).FirstOrDefault();
-
-                    if(pxuongXL.ma_phanxuong != userTK.ma_phongban)
-                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxuongXL.ma_phanxuong, userTK.ma_phongban);
+                    var pxDT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxuongXL.md_phanxuong_id).OrderBy(s=>s.sapxep).FirstOrDefault();
+                    if (!pxDT.ma_to.StartsWith(userTK.ma_phongban))
+                    {
+                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxDT.ten_to, userTK.ten_phongban);
+                    }
                 }
 
                 if (msg.Length <= 0)
@@ -453,319 +455,26 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                     object_.mota = context.Request.Form["mota"];
                     object_.hdlh = context.Request.Form["hdlh"];
                     object_.hdlhchung = context.Request.Form["hdlhchung"];
-                    //db.SaveChanges();
-
-                    if (md_trangthai_id == "HIEULUC" & old_trangthai_id == "SOANTHAO")
-                    {
-                        var lsxId = Helper.getNewId();
-                        var px_to_ = db.md_phanxuong_to.
-                                Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).OrderBy(s => s.sapxep).ToList();
-                        var tdt = "";
-                        var countPXT = px_to_.Count;
-
-                        foreach (var ddh in db.md_dondathangphanxuong.
-                                Where(s => s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id).ToList())
-                        {
-                            var lsx = new md_lenhsanxuat();
-                            lsx.md_lenhsanxuat_id = lsxId;
-                            lsx.md_dondathangphanxuong_id = ddh.md_dondathangphanxuong_id;
-                            lsx.md_phanxuong_id = ddh.md_phanxuong_id;
-                            lsx.md_trangthai_id = "CHUAHOANTHANH";
-                            lsx.sochungtu = sochungtu;
-                            lsx.ngaylap = DateTime.Now;
-                            lsx.ngayketthuc = ddh.ngayketthuc;
-                            lsx.ngaydkgiaotp = ddh.ngayketthuc;
-                            lsx.phieuXK = "CHUAHOANTHANH";
-
-                            lsx.nguoitao = userTK.ad_user_id;
-                            lsx.vaitrotao = userTK.ad_role_id;
-                            lsx.bophantao = userTK.md_phongban_id;
-                            lsx.value_nguoitao = userTK.ma_user;
-                            lsx.value_vaitrotao = userTK.ten_role;
-                            lsx.value_bophantao = userTK.ten_phongban;
-                            lsx.nguoicapnhat = userTK.ad_user_id;
-                            lsx.vaitrocapnhat = userTK.ad_role_id;
-                            lsx.bophancapnhat = userTK.md_phongban_id;
-                            lsx.value_nguoicapnhat = userTK.ma_user;
-                            lsx.value_vaitrocapnhat = userTK.ten_role;
-                            lsx.value_bophancapnhat = userTK.ten_phongban;
-                            lsx.ngaytao = DateTime.Now;
-                            lsx.ngaycapnhat = DateTime.Now;
-                            lsx.hoatdong = true;
-
-                            if (countPXT == 1)
-                                lsx.md_trangthai_id = "CHUAHOANTHANH";
-                            db.md_lenhsanxuat.Add(lsx);
-                            //db.SaveChanges();
-
-                            foreach (var px_to in px_to_.Select((s, index) => new { s.md_phanxuong_id, s.md_to_id, s.sapxep, index }))
-                            {
-                                var tosx = new md_lenhsanxuat_tosx();
-                                tosx.md_lenhsanxuat_tosx_id = Helper.getNewId();
-                                tosx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
-                                tosx.md_phanxuong_to_id = px_to.md_to_id;
-                                tosx.md_phanxuong_id = px_to.md_phanxuong_id;
-                                tosx.ngaybatdausx = object_.ngay_hieuluc;
-                                tosx.ngaydkht = lsx.ngayketthuc;
-                                tosx.check_hoanthanh = false;
-                                tosx.sapxep = px_to.sapxep;
-                                tosx.stt = px_to.index + 1 == countPXT ? 9999 : px_to.index;
-                                tosx.nguoitao = userTK.ad_user_id;
-                                tosx.vaitrotao = userTK.ad_role_id;
-                                tosx.bophantao = userTK.md_phongban_id;
-                                tosx.value_nguoitao = userTK.ma_user;
-                                tosx.value_vaitrotao = userTK.ten_role;
-                                tosx.value_bophantao = userTK.ten_phongban;
-                                tosx.nguoicapnhat = userTK.ad_user_id;
-                                tosx.vaitrocapnhat = userTK.ad_role_id;
-                                tosx.bophancapnhat = userTK.md_phongban_id;
-                                tosx.value_nguoicapnhat = userTK.ma_user;
-                                tosx.value_vaitrocapnhat = userTK.ten_role;
-                                tosx.value_bophancapnhat = userTK.ten_phongban;
-                                tosx.ngaytao = DateTime.Now;
-                                tosx.ngaycapnhat = DateTime.Now;
-                                tosx.hoatdong = true;
-                                db.md_lenhsanxuat_tosx.Add(tosx);
-                                //db.SaveChanges();
-                                tdt = px_to.index == 0 ? px_to.md_to_id : tdt;
-                                lsxTsxIds.Add(tosx.md_lenhsanxuat_tosx_id, px_to.md_to_id);
-                            }
-                        }
-
-                        System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx, bool>> condition = s=> s.md_lenhsanxuat_id == lsxId;
-
-                        var lsxTSX = db.md_lenhsanxuat_tosx.Where(condition).ToList();
-
-                        var lsxTSXLocal = db.md_lenhsanxuat_tosx.Local.AsQueryable().Where(condition).ToList();
-
-                        foreach (var px_to in lsxTSXLocal.OrderBy(s => s.sapxep).ToList())
-                        {
-                            System.Linq.Expressions.Expression<Func<md_dondathangphanxuong_cdh, bool>> conditionCDHPX =
-                                    s=> s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id;
-
-                            var cdhPXs = db.md_dondathangphanxuong_cdh.Where(conditionCDHPX).ToList();
-
-                            var cdhPXsLocal = db.md_dondathangphanxuong_cdh.Local.AsQueryable().Where(conditionCDHPX).ToList();
-
-                            foreach (var dhpx_cdh in cdhPXsLocal)
-                            {
-                                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhpx_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                                string ma_caiTemp = sp.ma_sanpham.Substring(0, 9) + "{0}" + sp.ma_sanpham.Substring(11);
-                                string bo = sp.ma_sanpham.Substring(9, 2);
-                                string bo_lon = db.md_sanpham.Where(s => s.ma_sanpham.StartsWith(sp.ma_sanpham.Substring(0, 9) + "S")).Select(s => s.ma_sanpham.Substring(9, 2)).FirstOrDefault();
-                                string mdBoId = db.md_bo.Where(s => s.ma_bo == bo & s.ma_bo_cha == bo_lon).Select(s => s.md_bo_id).FirstOrDefault();
-                                var bocais = db.md_bo_chitiet.Where(s => s.md_bo_id == mdBoId).OrderByDescending(s => s.md_bo_detail).Select(s => s.md_bo_detail).ToList();
-                                if (bocais.Count <= 0)
-                                    bocais.Add(bo);
-                                foreach (var bocai in bocais)
-                                {
-                                    string ma_cai = string.Format(ma_caiTemp, bocai);
-                                    string ma_bo = string.Format(ma_caiTemp, bo);
-                                    var spCai = db.md_sanpham.
-                                            Where(s => s.ma_sanpham == ma_cai).
-                                            Select(s => new { s.md_sanpham_id, s.md_donvitinhsanpham_id, s.ma_sanpham }).
-                                            FirstOrDefault();
-
-                                    System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_cdh, bool>> conditionLSXTSXCDH =
-                                        s => s.md_sanpham_id == spCai.md_sanpham_id &
-                                             s.md_lenhsanxuat_tosx_id == px_to.md_lenhsanxuat_tosx_id;
-
-                                    var lsxTSXCDH = db.md_lenhsanxuat_tosx_cdh.Where(conditionLSXTSXCDH).ToList();
-
-                                    var lsxTSXCDHLocal = db.md_lenhsanxuat_tosx_cdh.Local.AsQueryable().Where(conditionLSXTSXCDH).ToList();
-
-                                    var lsx_tosx_cdh = lsxTSXCDHLocal.FirstOrDefault();
-
-                                    var addLSX = lsx_tosx_cdh;
-
-                                    if (lsx_tosx_cdh == null)
-                                    {
-                                        var nhanPS = (bool?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar(
-                                        string.Format(@"
-                                            select top 1 nhanphoisoi 
-                                            from md_nhanphoisoi
-                                            where N'{0}' like ma_sp
-                                                and md_to_id = N'{1}'
-                                        ", ma_cai, px_to.md_phanxuong_to_id));
-
-                                        lsx_tosx_cdh = new md_lenhsanxuat_tosx_cdh();
-                                        lsx_tosx_cdh.md_lenhsanxuat_tosx_cdh_id = Helper.getNewId();
-                                        lsx_tosx_cdh.md_lenhsanxuat_tosx_id = px_to.md_lenhsanxuat_tosx_id;
-                                        lsx_tosx_cdh.md_sanpham_id = spCai.md_sanpham_id;
-                                        lsx_tosx_cdh.noigiaohang = dhpx_cdh.noigiaohang;
-                                        lsx_tosx_cdh.sl_hoanthanh = 0;
-                                        lsx_tosx_cdh.sl_nhapkho = 0;
-                                        lsx_tosx_cdh.sl_danhapkho = 0;
-                                        lsx_tosx_cdh.macuoi = ma_bo;
-                                        lsx_tosx_cdh.md_donvitinhsanpham_id = spCai.md_donvitinhsanpham_id;
-                                        lsx_tosx_cdh.nguoitao = userTK.ad_user_id;
-                                        lsx_tosx_cdh.vaitrotao = userTK.ad_role_id;
-                                        lsx_tosx_cdh.bophantao = userTK.md_phongban_id;
-                                        lsx_tosx_cdh.value_nguoitao = userTK.ma_user;
-                                        lsx_tosx_cdh.value_vaitrotao = userTK.ten_role;
-                                        lsx_tosx_cdh.value_bophantao = userTK.ten_phongban;
-
-                                        lsx_tosx_cdh.nguoicapnhat = userTK.ad_user_id;
-                                        lsx_tosx_cdh.vaitrocapnhat = userTK.ad_role_id;
-                                        lsx_tosx_cdh.bophancapnhat = userTK.md_phongban_id;
-                                        lsx_tosx_cdh.value_nguoicapnhat = userTK.ma_user;
-                                        lsx_tosx_cdh.value_vaitrocapnhat = userTK.ten_role;
-                                        lsx_tosx_cdh.value_bophancapnhat = userTK.ten_phongban;
-
-                                        lsx_tosx_cdh.ngaytao = DateTime.Now;
-                                        lsx_tosx_cdh.ngaycapnhat = DateTime.Now;
-                                        lsx_tosx_cdh.mota = "";
-                                        lsx_tosx_cdh.hoatdong = true;
-                                        lsx_tosx_cdh.nhanphoisoi = nhanPS.GetValueOrDefault(true);
-                                    }
-
-                                    decimal? sltd = dhpx_cdh.tong_sl_dat - dhpx_cdh.sl_hoanthanh.GetValueOrDefault(0) - dhpx_cdh.sl_giamhanngach.GetValueOrDefault(0);
-                                    //var slgiamhn = db.c_kehoachdathang_dhcpx_hanngach.Where(s =>
-                                    //    s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id
-                                    //    & s.md_sanpham_id == lsx_tosx_cdh.md_sanpham_id
-                                    //    & s.md_to_id == px_to.md_phanxuong_to_id).Sum(s => s.soluong);
-
-                                    //var sltd2 = sltd;
-                                    //sltd = (sltd.GetValueOrDefault(0) - slgiamhn.GetValueOrDefault(0)).Set0WhenlessThan0();
-                                    lsx_tosx_cdh.sl_dat = lsx_tosx_cdh.sl_dat.GetValueOrDefault(0) + sltd;
-                                    lsx_tosx_cdh.sl_chiato = lsx_tosx_cdh.sl_chiato.GetValueOrDefault(0) + sltd;
-                                    lsx_tosx_cdh.sl_chiato2 = lsx_tosx_cdh.sl_chiato;
-                                    lsx_tosx_cdh.sl_tinhvattu = lsx_tosx_cdh.sl_tinhvattu.GetValueOrDefault(0) + sltd;
-                                    lsx_tosx_cdh.sl_dahoanthanh = 0;
-                                    if (!lsx_tosx_cdh.macuoi.Contains(ma_bo))
-                                        lsx_tosx_cdh.macuoi += "," + ma_bo;
-                                    if (addLSX == null)
-                                    {
-                                        db.md_lenhsanxuat_tosx_cdh.Add(lsx_tosx_cdh);
-                                    }
-                                    //db.SaveChanges();
-                                }
-                            }
-                        }
-                    }
 
                     if (msg.Length <= 0)
                     {
-                        foreach (var item1 in lsxTsxIds)
+                        System.Linq.Expressions.Expression<Func<md_lenhsanxuat, bool>> conditionLSX =
+                                s=> s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id;
+
+                        var lsxs = db.md_lenhsanxuat.Where(conditionLSX).ToList();
+
+                        var lsxsLocal = db.md_lenhsanxuat.Local.AsQueryable().Where(conditionLSX).ToList();
+
+                        var lsx_2 = lsxsLocal.FirstOrDefault();
+
+                        if (md_trangthai_id == "HIEULUC")
                         {
-                            var bgIds = db.md_banggia
-                                    .Where(s => s.md_to_id == item1.Value & s.tuychon == "NHANCONG" & s.hoatdong == true)
-                                    .Select(s => s.md_banggia_id).ToList();
-                            string pbgId = db.md_phienbangia
-                                       .Where(s => bgIds.Contains(s.md_banggia_id) & s.hoatdong == true)
-                                       .OrderByDescending(s => s.ngay_hieuluc).Select(s => s.md_phienbangia_id)
-                                       .FirstOrDefault();
-
-                            System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_cdh, bool>> conditionLSXTSXCDH =
-                                    s => s.md_lenhsanxuat_tosx_id == item1.Key;
-
-                            var lsxTSXCDH = db.md_lenhsanxuat_tosx_cdh.Where(conditionLSXTSXCDH).ToList();
-
-                            var lsxTSXCDHLocal = db.md_lenhsanxuat_tosx_cdh.Local.AsQueryable().Where(conditionLSXTSXCDH).ToList();
-
-                            foreach (var item2 in lsxTSXCDHLocal)
-                            {
-                                var giasp = db.md_giasanpham.Where(s =>
-                                    s.md_sanpham_id == item2.md_sanpham_id
-                                    & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
-                                    & s.md_phienbangia_id == pbgId
-                                    ).FirstOrDefault();
-
-                                if (giasp == null)
-                                {
-                                    if (kiemtragia == true)
-                                    {
-                                        string err = string.Format(@"<br>HHVT ""{0}"" chưa có giá cho tổ ""{2} - {1}""",
-                                            db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
-                                            db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).Select(s => s.ten_phanxuong).FirstOrDefault(),
-                                            db.md_phanxuong_to.Where(s => s.md_to_id == item1.Value).Select(s => s.ten_to).FirstOrDefault());
-                                        msg += err;
-                                    }
-                                }
-                                else
-                                {
-                                    item2.gianhancong = giasp.gia;
-                                }
-
-
-                                var spBom = db.md_sanpham_bom.
-                                            Where(s => s.md_sanpham_id == item2.md_sanpham_id &
-                                            s.md_phanxuong_id == object_.md_phanxuong_id &
-                                            s.md_to_id == item1.Value).OrderByDescending(s => s.ngay_hieuluc).Take(1).FirstOrDefault();
-                                string bomSpId = spBom == null ? "" : spBom.md_sanpham_bom_id;
-                                var bomSP = db.md_sanpham_bom_vattu.Where(s =>
-                                    s.md_sanpham_bom_id == bomSpId
-                                    & s.sanphamId == item2.md_sanpham_id
-                                    ).ToList();
-
-                                item2.noigiaohang = bomSpId;
-
-                                if (bomSP.Count > 0)
-                                {
-                                    foreach (var vattusp in bomSP.Where(s => s.soluong > 0))
-                                    {
-                                        System.Linq.Expressions.Expression<Func<md_lenhsanxuat_tosx_vattu, bool>> condition =
-                                            s => s.md_sanpham_id == vattusp.md_sanpham_id
-                                                & s.md_lenhsanxuat_tosx_id == item2.md_lenhsanxuat_tosx_id;
-
-                                        var toSXVTs = db.md_lenhsanxuat_tosx_vattu.Where(condition).ToList();
-
-                                        var toSXVTsLocal = db.md_lenhsanxuat_tosx_vattu.Local.AsQueryable().Where(condition).ToList();
-
-                                        var vtlsxto = toSXVTsLocal.FirstOrDefault();
-                                        var addVTLSX = vtlsxto;
-                                        if (addVTLSX == null)
-                                        {
-                                            vtlsxto = new md_lenhsanxuat_tosx_vattu();
-                                            vtlsxto.md_lenhsanxuat_tosx_vattu_id = Helper.getNewId();
-                                            vtlsxto.md_lenhsanxuat_tosx_id = item2.md_lenhsanxuat_tosx_id;
-                                            vtlsxto.md_sanpham_id = vattusp.md_sanpham_id;
-                                            vtlsxto.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
-                                            vtlsxto.sl_hanngach = 0;
-                                            vtlsxto.sl_giamhanngach = 0;
-                                        }
-                                        vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) +
-                                            (decimal)vattusp.soluong.GetValueOrDefault(0) *
-                                            item2.sl_chiato.GetValueOrDefault(0);
-
-                                        if (addVTLSX == null)
-                                            db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
-
-                                        var vtbk = new md_lenhsanxuat_tosx_vattuBackup();
-                                        vtbk.md_lenhsanxuat_tosx_vattuBackup_id = Helper.getNewId();
-                                        vtbk.md_lenhsanxuat_tosx_id = item2.md_lenhsanxuat_tosx_id;
-                                        vtbk.sp = item2.md_sanpham_id;
-                                        vtbk.vt = vattusp.md_sanpham_id;
-                                        vtbk.soluong = (decimal)vattusp.soluong.GetValueOrDefault(0);
-                                        vtbk.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
-                                        db.md_lenhsanxuat_tosx_vattuBackup.Add(vtbk);
-                                        //db.SaveChanges();
-                                    }
-                                }
-                                else
-                                {
-                                    string err = string.Format(@"<br>HHVT ""{0}"" chưa có BOM cho tổ ""{2} - {1}""",
-                                        db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
-                                        db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).Select(s => s.ten_phanxuong).FirstOrDefault(),
-                                        db.md_phanxuong_to.Where(s => s.md_to_id == item1.Value).Select(s => s.ten_to).FirstOrDefault());
-                                    if (!msg.Contains(err))
-                                    {
-                                        msg += err;
-                                    }
-                                }
-                            }
+                            lsx_2.bophantao = userTK.md_phongban_id;
+                            lsx_2.md_trangthai_id = "DAXL";
                         }
 
                         if (md_trangthai_id == "HUY" & object_.md_trangthai_id == "HIEULUC")
                         {
-                            System.Linq.Expressions.Expression<Func<md_lenhsanxuat, bool>> conditionLSX = 
-                                s=> s.md_dondathangphanxuong_id == object_.md_dondathangphanxuong_id;
-
-                            var lsxs = db.md_lenhsanxuat.Where(conditionLSX).ToList();
-
-                            var lsxsLocal = db.md_lenhsanxuat.Local.AsQueryable().Where(conditionLSX).ToList();
-
-                            var lsx_2 = lsxsLocal.FirstOrDefault();
                             lsx_2.md_trangthai_id = "KETTHUC";
                         }
 
@@ -779,7 +488,10 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
+                if(string.IsNullOrEmpty(msgEX))
+                    msg = ex.Message;
+                else
+                    msg = msgEX;
             }
 
             if (msg.Length <= 0)

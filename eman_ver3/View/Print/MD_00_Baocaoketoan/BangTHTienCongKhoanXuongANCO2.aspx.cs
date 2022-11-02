@@ -58,24 +58,31 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangTHTienCongKhoanXuon
             set @denngay = DATEADD(SECOND, 23*3600 + 59 * 60 + 59, @denngay);
             declare @thang_nam nvarchar(MAX) = N'Kỳ ' + CONVERT (nvarchar(10), @tungay, 103) + ' - '+ CONVERT (nvarchar(10), @denngay, 103);            
 
-            declare @toduc1 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'DUC1');
-            declare @tobancat1 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'BC1');
-            declare @tomai1 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'MAI1');
-            declare @tohoantat1 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'HT1');
-            declare @toduc2 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'DUCS1');
-            declare @tobancat2 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'BCS1');
-            declare @tomai2 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'MAIS1');
-            declare @tohoantat2 nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'HTS1');
-            declare @tocatsoi nvarchar(32) = (select top 1 ten_phongban from ad_department where ma_phongban = N'TCS');
-            declare @toSTD nvarchar(32) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'TO1STĐ');
+            declare @toduc1 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'DUC1');
+            declare @tobancat1 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'BC1');
+            declare @tomai1 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'MAI1');
+            declare @tohoantat1 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'HT1');
+
+            declare @toduc1_62 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'DUC1_62');
+            declare @tobancat1_62 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'BC1_62');
+            declare @tomai1_62 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'MAI1_62');
+            declare @tohoantat1_62 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'HT1_62');
+
+            declare @toduc2 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'DUCS1');
+            declare @tobancat2 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'BCS1');
+            declare @tomai2 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'MAIS1');
+            declare @tohoantat2 nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = 'HTS1');
+            declare @tocatsoi nvarchar(150) = (select top 1 ten_phongban from ad_department where ma_phongban = N'TCS');
+            declare @toSTD nvarchar(150) = (select top 1 ten_to from md_phanxuong_to where ma_to = N'TO1STĐ');
             
             select 
                 A.*,
-                A.tienHangPX1 + A.tienHangPX2 + A.tienHangPXCS + A.tienHangPXSTD + A.tienHangTDG as sum_tienhang
+                A.tienHangPX1 + A.tienHangPX1_62 + A.tienHangPX2 + A.tienHangPXCS + A.tienHangPXSTD + A.tienHangTDG as sum_tienhang
             from (
                 select 
                     A.*,
                     A.tienHangDuc1 + A.tienHangBC1 + A.tienHangMai1 + A.tienHangHT1 as tienHangPX1,
+                    A.tienHangDuc1_62 + A.tienHangBC1_62 + A.tienHangMai1_62 + A.tienHangHT1_62 as tienHangPX1_62,
                     A.tienHangDuc2 + A.tienHangBC2 + A.tienHangMai2 + A.tienHangHT2 as tienHangPX2,
                     A.tienHangTCS as tienHangPXCS,
                     A.tienHangSTD as tienHangPXSTD,
@@ -90,6 +97,16 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangTHTienCongKhoanXuon
                         [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @tomai1, 0) as tienHangMai1,
                         @tohoantat1 as tohoantat1,
                         [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @tohoantat1, 0) as tienHangHT1,
+
+                        @toduc1_62 as toduc1_62,
+                        [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @toduc1_62, 0) as tienHangDuc1_62,
+                        @tobancat1_62 as tobancat1_62,
+                        [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @tobancat1_62, 0) as tienHangBC1_62,
+                        @tomai1_62 as tomai1_62,
+                        [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @tomai1_62, 0) as tienHangMai1_62,
+                        @tohoantat1_62 as tohoantat1_62,
+                        [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @tohoantat1_62, 0) as tienHangHT1_62,
+                        
                         @toduc2 as toduc2,
                         [dbo].[GET_TienHangCuaTo](@tungay, @denngay, @toduc2, 0) as tienHangDuc2,
                         @tobancat2 as tobancat2,

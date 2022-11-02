@@ -83,7 +83,15 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_BaoCaoDHNhapKhoTPChuaX
 		            dsdh.so_po as tenDH,
 		            sp.ma_sanpham as maHang,
 		            dvtsp.ten_dvt as dvt,
-		            dh.sl_dathang - isnull(dh.sl_giamhanngach, 0) as slDH,
+		            dh.sl_dathang - isnull(dh.sl_giamhanngach, 0) as slDHCP,
+                    isnull((
+		                select sum(isnull(cdvc.soluong_dachuyen, 0))
+		                from md_vanchuyennoibo_cdvc cdvc
+		                where cdvc.tenhang = dsdh.so_po
+			                and cdvc.md_sanpham_id = sp.md_sanpham_id
+			                and cdvc.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                            and isnull(cdvc.lsx_to,'') != ''
+	                ), 0) as slDH,
 		            dh.sl_dagiao as slDXK
 	            from 
 		            md_kho_giaodich kgd

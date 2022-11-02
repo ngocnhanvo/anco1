@@ -1014,6 +1014,10 @@ modelBuilder.Entity<md_kho>().HasKey<string>(p => p.md_kho_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_kho>()
+                            .Property(p => p.phongbanId)
+                            .HasColumnName("phongbanId")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_kho>()
                             .Property(p => p.sapxep)
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");

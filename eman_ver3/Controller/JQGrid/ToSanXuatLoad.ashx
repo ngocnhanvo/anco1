@@ -57,13 +57,14 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
                 , lsx.sochungtu
                 , pxto.ten_to
                 , px.ten_phanxuong
-                , (select top 1 kho.md_kho_id from md_kho kho where kho.md_phanxuong_id = px.md_phanxuong_id and kho.md_to_id = pxto.md_to_id and isnull(kho.hangton, 0) = 0) as md_kho_id
+                , pxto.phongbanId
+                , (select top 1 kho.md_kho_id from md_kho kho where kho.phongbanId = pxto.phongbanId and isnull(kho.hangton, 0) = 0) as md_kho_id
                 , (
                     select top 1 kho.md_kho_id 
                     from md_kho kho 
                     where 
-                        kho.md_phanxuong_id = px.md_phanxuong_id 
-                        and kho.md_to_id = (select top 1 md_to_id from md_phanxuong_to where md_phanxuong_id = px.md_phanxuong_id and cast(sapxep as int) < cast(pxto.sapxep as int) order by sapxep desc) 
+                        1=1 
+                        and kho.phongbanId = (select top 1 phongbanId from md_phanxuong_to where md_phanxuong_id = px.md_phanxuong_id and cast(sapxep as int) < cast(pxto.sapxep as int) order by sapxep desc) 
                         and isnull(kho.hangton, 0) = 0
                 ) as khoprev
                 , tosx.stt

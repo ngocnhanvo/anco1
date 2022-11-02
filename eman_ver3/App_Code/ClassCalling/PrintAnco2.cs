@@ -60,7 +60,7 @@ public class PrintAnco2
 
             viewer.Report.DataSource = ds;
             viewer.Report.DataAdapter = da;
-            foreach(DataColumn column in tbl.Columns)
+            foreach (DataColumn column in tbl.Columns)
             {
                 viewer.Report.DisplayName = viewer.Report.DisplayName.Replace("{" + column.ColumnName + "}", tbl.Rows[0][column.ColumnName].ToString());
             }
@@ -169,9 +169,9 @@ public class PrintAnco2
         {
             msg = string.Format(@"Cách in này không được sử dụng cho báo cáo hoặc mẫu in ""{0}"", hãy chọn một cách in khác", viewer.Report.DisplayName);
             var allTK = Security.all_taikhoan(context);
-            if(allTK.ContainsKey("tuDongNhanDienCachIn"))
+            if (allTK.ContainsKey("tuDongNhanDienCachIn"))
             {
-                if(((bool?)allTK["tuDongNhanDienCachIn"]).GetValueOrDefault(false) == true)
+                if (((bool?)allTK["tuDongNhanDienCachIn"]).GetValueOrDefault(false) == true)
                 {
                     if (viewer.Attributes["ChuyenCachIn"] == null)
                     {
@@ -187,8 +187,8 @@ public class PrintAnco2
             }
         }
 
-        if (showMsg & msg.Length> 0)
-            HttpContext.Current.Response.Write("<center><h1>"+ msg + "</h1></center>");
+        if (showMsg & msg.Length > 0)
+            HttpContext.Current.Response.Write("<center><h1>" + msg + "</h1></center>");
 
         return msg;
     }
@@ -205,7 +205,7 @@ public class PrintAnco2
         else if (font.Underline != FontUnderlineType.None)
             fontSylte = FontStyle.Underline;
 
-        var moreVal = isPDF.GetValueOrDefault(false) ? 0 : 0.5; 
+        var moreVal = isPDF.GetValueOrDefault(false) ? 0 : 0.5;
         var fontS = new Font(font.FontName, (float)(font.FontHeightInPoints + moreVal), fontSylte);
         var fakeImage = new Bitmap(1, 1); //As we cannot use CreateGraphics() in a class library, so the fake image is used to load the Graphics.
         var graphics = Graphics.FromImage(fakeImage);
@@ -269,7 +269,7 @@ public class PrintAnco2
 
     public NPOI.HSSF.UserModel.HSSFSheet PrintExcel(NPOI.HSSF.UserModel.HSSFSheet s1, string type)
     {
-        //s1.PrintSetup.PaperSize = (short)NPOI.SS.UserModel.PaperSize.A4;
+        //s1.PrintSetup.PaperSize = (short)NPOI.SS.UserModel.PaperSize.A4_Small;
         //s1.FitToPage = true;
         s1.PrintSetup.FitWidth = 1;
         s1.PrintSetup.FitHeight = 0;
@@ -322,7 +322,7 @@ public class PrintAnco2
         return sothapphan;
     }
 
-    public static string Replace0ToHyphen(string sothapphan) 
+    public static string Replace0ToHyphen(string sothapphan)
     {
         sothapphan = sothapphan.Substring(1, sothapphan.Length - 2);
         //return "{0:#,#.####;-0;-}";
@@ -343,10 +343,19 @@ public class PrintAnco2
         return msg;
     }
 
+    public static string GetStoreNotApp(bool? excel, string fileName)
+    {
+        fileName = excel.GetValueOrDefault(false) ? fileName.Replace("[", "(").Replace("]", ")") : fileName;
+        string msg = (excel.GetValueOrDefault(false) ? "ReportsStorageExcel/" : "ReportsStorage/");
+        msg = string.IsNullOrEmpty(fileName) ? msg : (msg + fileName);
+
+        return msg;
+    }
+
     public static string GetStoreBackUp(bool? excel, string fileName)
     {
         string msg = "";
-        if(excel.GetValueOrDefault(false))
+        if (excel.GetValueOrDefault(false))
             msg = GetStore(excel, fileName).Replace("/ReportsStorageExcel/", "/ReportsStorageExcelBackup/");
         else
             msg = GetStore(excel, fileName).Replace("/ReportsStorage/", "/ReportsStorageBackup/");
@@ -365,15 +374,18 @@ public class PrintAnco2
         public bool? sizePDF { get; set; }
         public string[] Alphabet = new string[] {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-            "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ"
+            "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ",
+            "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ",
+            "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ"
         };
+
     }
 
     public class RptGroupHeader
     {
         public int? start { get; set; }
         public int? end { get; set; }
-        public List<string> arrAva { get; set; } 
+        public List<string> arrAva { get; set; }
         public string key { get; set; }
         public int moreVal { get; set; }
         public List<IRowICellCopy> rows { get; set; }

@@ -6,10 +6,18 @@ using System.Data.Linq;
 using DataAcess;
 public class JQGridMD_00_ThueModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
     public string oper = "vnn";
     public void ProcessRequest (HttpContext context) {
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
+
         switch (oper)
         {
             case "add":
@@ -33,22 +41,28 @@ public class JQGridMD_00_ThueModify : IHttpHandler, System.Web.SessionState.IReq
         string ma_module = context.Request.QueryString["ma_module"];
         try
         {
-            string id = context.Request.Form["id"];
-            if (msg.Length <= 0)
-            {
-                string action = "add";
-                string[] column_ex = { };
-                string ten_table = "md_thue_sanpham";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, id_new, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Thêm thành công." + "#" + id_new;
-            }
+            var object_ = new md_thue_sanpham();
+            object_.md_thue_sanpham_id = id_new;
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            db.md_thue_sanpham.Add(object_);
+            db.SaveChanges();
         }
         catch(Exception ex)
         {
             msg = "false#" + ex.Message;
         }
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
+        }
+
         context.Response.Write(msg);
     }
 
@@ -60,27 +74,33 @@ public class JQGridMD_00_ThueModify : IHttpHandler, System.Web.SessionState.IReq
         try
         {
             string id = context.Request.Form["id"];
-            string object_ = db.md_thue_sanpham.Where(p => p.md_thue_sanpham_id == id).Select(s => s.md_thue_sanpham_id).Take(1).FirstOrDefault();
+            var object_ = db.md_thue_sanpham.Where(p => p.md_thue_sanpham_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
             }
-
-            if (msg.Length <= 0)
+            else
             {
-                string action = "edit";
-                string[] column_ex = { };
-                string ten_table = "md_thue_sanpham";
-                VNN_Function.Set_DefaultvalueColumn(context, action);
-                VNN_Function.Modify_Function(context, ma_module, null, ten_table, action, column_ex, db);
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
+                object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+                object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                db.SaveChanges();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = ex.Message;
         }
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Cập nhật thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
+        }
+
         context.Response.Write(msg);
     }
 

@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_dondathangphanxuong_cdh_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_cdh_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
                         #region md_dondathangphanxuong_cdh_hanngach_wintaFN
                         
                         #endregion md_dondathangphanxuong_cdh_hanngach_wintaFN
@@ -125,6 +131,12 @@
                         
                         #endregion md_dondathangphanxuong_cdh_sl_hoanthanh_wintaFN
                         public Decimal? sl_hoanthanh { get; set; }
+                
+						
+                        #region md_dondathangphanxuong_cdh_sl_tamhoanthanh_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_cdh_sl_tamhoanthanh_wintaFN
+                        public Decimal? sl_tamhoanthanh { get; set; }
                 
 						
                         #region md_dondathangphanxuong_cdh_tong_sl_dat_wintaFN

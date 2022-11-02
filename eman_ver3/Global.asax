@@ -24,8 +24,8 @@
 			urlstr = builder.ToString();
         }
 		
-		if (urlstr.Contains("http://") & !urlhost.StartsWith("192") & !urlhost.StartsWith("localhost"))
-			Response.Redirect(urlstr.Replace("http","https"));
+		//if (urlstr.Contains("http://") & !urlhost.StartsWith("192") & !urlhost.StartsWith("localhost"))
+			//Response.Redirect(urlstr.Replace("http","https"));
     }
 
     void Application_End(object sender, EventArgs e)

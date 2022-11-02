@@ -57,6 +57,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string id = context.Request.Form["id"];
         string[] vnn = id.Split(',');
 
+        var koCapnhatDLSX = context.Request.Form["koCapnhatDLSX"] == "true";
 
         if (vnn.Count() <= 0)
         {
@@ -99,7 +100,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         }
 
                         vcnb.ngayhieuluc = DateTime.Now;
-                        var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id & s.soluong_dichchuyen > 0);
+                        var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id);
 
                         var khoSPDic = new Dictionary<string, decimal>();
                         foreach (var vcnb_cdvc in vcnb_cdvcs.OrderBy(s => s.denkho).ToList())
@@ -108,7 +109,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                             string toSXId = "", toSXId2 = "", lsx = "";
                             int sanxuat = 0;
-                            if (vcnb.loaichuyen == "VANCNBTC")
+                            if (vcnb.loaichuyen == "VANCNBTC" & vcnb_cdvc.soluong_dichchuyen > 0)
                             {
                                 var cdhLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
                                     s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
@@ -146,27 +147,34 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 if (cdhLSX != null & chuyenVeKT == false)
                                 {
-                                    sanxuat = 4;
-                                    cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                    if (koCapnhatDLSX)
+                                    {
+                                        sanxuat = 6;
+                                    }
+                                    else
+                                    {
+                                        sanxuat = 4;
+                                        cdhLSX.sl_nhapkho = cdhLSX.sl_nhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
 
-                                    var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == cdhLSX.md_lenhsanxuat_tosx_id).FirstOrDefault();
-                                    toSXId = tsx.md_lenhsanxuat_tosx_id;
+                                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == cdhLSX.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                        toSXId = tsx.md_lenhsanxuat_tosx_id;
 
-                                    var tsx2 = db.md_lenhsanxuat_tosx.Where(s =>
-                                        s.stt > tsx.stt
-                                        & s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id
-                                    ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
+                                        var tsx2 = db.md_lenhsanxuat_tosx.Where(s =>
+                                            s.stt > tsx.stt
+                                            & s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id
+                                        ).OrderBy(s => s.stt).Take(1).FirstOrDefault();
 
-                                    string lsxTsxIdTiepTheo = tsx2 == null ? tsx.md_lenhsanxuat_tosx_id : tsx2.md_lenhsanxuat_tosx_id;
-                                    toSXId2 = lsxTsxIdTiepTheo;
+                                        string lsxTsxIdTiepTheo = tsx2 == null ? tsx.md_lenhsanxuat_tosx_id : tsx2.md_lenhsanxuat_tosx_id;
+                                        toSXId2 = lsxTsxIdTiepTheo;
 
-                                    var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_sanpham_id == cdhLSX.md_sanpham_id
-                                        & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
-                                    ).FirstOrDefault();
+                                        var dhCDTT = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_sanpham_id == cdhLSX.md_sanpham_id
+                                            & s.md_lenhsanxuat_tosx_id == lsxTsxIdTiepTheo
+                                        ).FirstOrDefault();
 
-                                    if (dhCDTT != null)
-                                        dhCDTT.sl_dahoanthanh = dhCDTT.sl_dahoanthanh.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        if (dhCDTT != null)
+                                            dhCDTT.sl_dahoanthanh = dhCDTT.sl_dahoanthanh.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                    }
                                 }
                             }
                             //start Xuat kho
@@ -188,26 +196,29 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
                                 tsx.ngaygiao = vcnb.ngaychuyen;
                                 var tsxsInLSX = db.md_lenhsanxuat_tosx.Where(t => t.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s=>s.md_lenhsanxuat_tosx_id).ToList();
-                                foreach (var cai in lsxSp.ToList())
+                                if (sl_dichchuyen_thucte > 0)
                                 {
-                                    var cdhsInLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_sanpham_id == cai.md_sanpham_id
-                                        & tsxsInLSX.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
-
-                                    foreach (var cdhInLsx in cdhsInLSX)
+                                    foreach (var cai in lsxSp.ToList())
                                     {
-                                        cdhInLsx.sl_danhapkho = cdhInLsx.sl_danhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
-                                        cdhInLsx.ngayhoanthanh = vcnb.ngaychuyen;
-                                    }
-                                    cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen;
-                                    if (cai.sl_chiato < cai.sl_dagiao)
-                                        cai.sl_layton = cai.sl_dagiao - cai.sl_chiato;
-                                    else
-                                        cai.sl_layton = 0;
+                                        var cdhsInLSX = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                            s.md_sanpham_id == cai.md_sanpham_id
+                                            & tsxsInLSX.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
 
-                                    lstSPId.Add(cai.md_sanpham_id);
+                                        foreach (var cdhInLsx in cdhsInLSX)
+                                        {
+                                            cdhInLsx.sl_danhapkho = cdhInLsx.sl_danhapkho.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                                            cdhInLsx.ngayhoanthanh = vcnb.ngaychuyen;
+                                        }
+                                        cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen;
+                                        if (cai.sl_chiato < cai.sl_dagiao)
+                                            cai.sl_layton = cai.sl_dagiao - cai.sl_chiato;
+                                        else
+                                            cai.sl_layton = 0;
+
+                                        lstSPId.Add(cai.md_sanpham_id);
+                                    }
+                                    db.SaveChanges();
                                 }
-                                db.SaveChanges();
 
                                 var ddhpx = db.md_dondathangphanxuong_cdh.Where(s =>
                                     s.md_dondathangphanxuong_id == lsxto.lsx.md_dondathangphanxuong_id
@@ -215,6 +226,17 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 if (ddhpx != null)
                                 {
                                     ddhpx.sl_hoanthanh += vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                                    ddhpx.sl_tamhoanthanh = ddhpx.sl_tamhoanthanh.GetValueOrDefault(0)
+                                            - vcnb_cdvc.soluong_muonchuyen.GetValueOrDefault(0)
+                                            + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+
+                                    var ddsdh = db.c_dongdsdh.Where(s =>
+                                    s.c_danhsachdathang_id == ddhpx.c_danhsachdathang_id
+                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+                                    if (ddsdh != null)
+                                    {
+                                        ddsdh.sl_nhaphang = ddsdh.sl_nhaphang.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                                    }
                                     db.SaveChanges();
                                 }
 
@@ -222,7 +244,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             }
                             else
                             {
-                                lstSPId.Add(vcnb_cdvc.md_sanpham_id);
+                                if (sl_dichchuyen_thucte > 0)
+                                    lstSPId.Add(vcnb_cdvc.md_sanpham_id);
                             }
 
                             foreach (var kho_sp in db.md_kho_sanpham.Where(s => s.md_kho_id == vcnb.tukho & lstSPId.Contains(s.md_sanpham_id)).ToList())
@@ -390,7 +413,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             }
 
                             //Cap nhat lai cac dong van chuyen
-                            var sldgSTs = db.md_vanchuyennoibo_cdvc.Where(s =>
+                            /*var sldgSTs = db.md_vanchuyennoibo_cdvc.Where(s =>
                                 s.md_sanpham_id == vcnb_cdvc.md_sanpham_id &
                                 s.tuto == vcnb_cdvc.tuto &
                                 s.dento == vcnb_cdvc.dento &
@@ -408,14 +431,17 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                 sldgST.soluong_toida = sldgST.soluong_toida - vcnb_cdvc.soluong_dachuyen;
                                 sldgST.soluong_muonchuyen = sldgST.soluong_muonchuyen > sldgST.soluong_toida ? sldgST.soluong_toida : sldgST.soluong_muonchuyen;
                                 sldgST.soluong_dichchuyen = sldgST.soluong_dichchuyen > sldgST.soluong_muonchuyen ? sldgST.soluong_muonchuyen : sldgST.soluong_dichchuyen;
-                            }
+                            }*/
 
-                            foreach (var lhtCp in db.md_vanchuyennoibo_dalayton.Where(s =>
-                                         s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
-                                         & s.mota != "DLT").ToList())
+                            if (sl_dichchuyen_thucte > 0)
                             {
-                                lhtCp.soluong_layton = 0;
-                                lhtCp.mota = "DLT";
+                                foreach (var lhtCp in db.md_vanchuyennoibo_dalayton.Where(s =>
+                                             s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
+                                             & s.mota != "DLT").ToList())
+                                {
+                                    lhtCp.soluong_layton = 0;
+                                    lhtCp.mota = "DLT";
+                                }
                             }
                         }
 

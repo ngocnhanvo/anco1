@@ -36,7 +36,9 @@ public partial class PrintControllers_MD_00_PVCNoiBo_PhieuKetQuaGiaoHang : Syste
         tbl.Columns.Add("yyyy_yeucau", Type.GetType("System.String"));
         DateTime? ngaydenghi = tbl.Rows[0]["ngaydenghi"] as DateTime?;
         //Header
-
+		tbl.Rows[0]["dd"] = ngaydenghi.Value.ToString("dd");
+        tbl.Rows[0]["MM"] = ngaydenghi.Value.ToString("MM");
+        tbl.Rows[0]["yyyy"] = ngaydenghi.Value.ToString("yyyy");
         //Footer
         int lastRow = tbl.Rows.Count - 1;
         tbl.Rows[lastRow]["dd_yeucau"] ="";

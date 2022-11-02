@@ -36,8 +36,8 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
     var input_focus = '';
     $('#dlg_gridSmall').dialog({
         modal: true,
-        width: CLform_infor.dodai,
-        height: CLform_infor.docao,
+        width: 800,
+        height: 550,
         open: function (event, ui) {
             $('#btnSLMbangSLCM').off('click');
             $('#btnSLMbangSLCM').click(function () {
@@ -68,8 +68,8 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                 jQuery('#gridMD_00_KHMHHVT_cp').jqGrid({
                     url: 'Controller/JqGrid/JQGridMD_01_CDKHVattuLoad.ashx?ma_module=MD_01_CDKHVattu&ma_menu=MN_01_KHMVT&module_select=1&id_sel=1',
                     editurl: '',
-                    height: 300,
-                    width: 680,
+                    height: 315,
+                    width: 772,
                     datatype: 'json',
                     shrinkToFit: true,
                     rownumbers: true,

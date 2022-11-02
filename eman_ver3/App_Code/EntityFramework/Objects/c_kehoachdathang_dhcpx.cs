@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_c_kehoachdathang_dhcpx_id_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_c_kehoachdathang_dhcpx_id_wintaFN
