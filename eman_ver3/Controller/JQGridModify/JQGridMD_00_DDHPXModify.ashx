@@ -437,12 +437,12 @@ public class JQGridMD_00_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
                 }
                 else
                 {
-                    pxuongXL = db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).FirstOrDefault();
-                    var pxDT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxuongXL.md_phanxuong_id).OrderBy(s=>s.sapxep).FirstOrDefault();
-                    if (!pxDT.ma_to.StartsWith(userTK.ma_phongban))
-                    {
-                        msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxDT.ten_to, userTK.ten_phongban);
-                    }
+                    //pxuongXL = db.md_phanxuong.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id).FirstOrDefault();
+                    //var pxDT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxuongXL.md_phanxuong_id).OrderBy(s=>s.sapxep).FirstOrDefault();
+                    //if (!pxDT.ma_to.StartsWith(userTK.ma_phongban))
+                    //{
+                    //    msg = string.Format("Lỗi: Đơn đặt hàng thuộc <b>{0}</b>, bộ phận hiện tại của tài khoản là <b>{1}</b>.", pxDT.ten_to, userTK.ten_phongban);
+                    //}
                 }
 
                 if (msg.Length <= 0)

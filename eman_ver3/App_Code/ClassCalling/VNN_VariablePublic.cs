@@ -26,20 +26,52 @@ public class VNN_VariablePublic
     public static string API_AncoTrading = System.Web.Configuration.WebConfigurationManager.AppSettings["API_AncoTrading"];
     public static string[] Module_script(ADmin_JSON json)
     {
-        string[] kq = new string[3];
-        var modules = json.ad_moduleJSON();
+        string[] kq = new string[4];
+        List<ad_module> modules = json.ad_moduleJSON();
         var systemconfig = json.ad_systemconfigJSON().FirstOrDefault();
-        foreach (var mod in modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")))
+        modules = modules.Where(s => s.hoatdong == true & (s.thuake == null | s.thuake == "")).ToList();
+
+        foreach (ad_module mod in modules)
         {
-            kq[0] += "<script async src=\"" + Security.UrlBase() + "js/Module_script/"+ mod.ma_module +".js?ver="+ systemconfig.fax + "\" type=\"text/javascript\"></script>";
-			kq[1] += "<input type='hidden' id=\"org_grid"+ mod.ma_module +"\"/>";
-            kq[2] += string.Format(@"let id_{0} = 0;", mod.ma_module);
-            kq[2] += string.Format(@"let filter_{0} = null, filterVal_{0} = null;", mod.ma_module);
-            kq[2] += string.Format(@"let page_{0} = null;", mod.ma_module);
-            kq[2] += string.Format(@"let sidx_{0} = null;", mod.ma_module);
-            kq[2] += string.Format(@"let sord_{0} = null;", mod.ma_module);
-            kq[2] += string.Format(@"let header_{0} = null;", mod.ma_module);
+            string src_text = string.Format("js/Module_script/" + mod.ma_module + ".js");
+            string src_File = ExcuteSignalRStatic.mapPathSignalR("~/" + src_text);
+            if (File.Exists(src_File))
+            {
+                string src_link = string.Format(Security.UrlBase() + src_text + "?ver=" + systemconfig.fax);
+
+                kq[0] += string.Format(@"<script async src=""{0}"" type=""text/javascript""></script>", src_link);
+                kq[3] += string.Format(@"loadScriptUrl('{0}','{1}');{2}", src_link, src_text, Environment.NewLine);
+
+                kq[1] += "<input type='hidden' id=\"org_grid" + mod.ma_module + "\"/>";
+                kq[2] += string.Format(@"let id_{0} = 0;", mod.ma_module);
+                kq[2] += string.Format(@"let filter_{0} = null, filterVal_{0} = null;", mod.ma_module);
+                kq[2] += string.Format(@"let page_{0} = null;", mod.ma_module);
+                kq[2] += string.Format(@"let sidx_{0} = null;", mod.ma_module);
+                kq[2] += string.Format(@"let sord_{0} = null;", mod.ma_module);
+                kq[2] += string.Format(@"let header_{0} = null;", mod.ma_module);
+            }
         }
+
+        var lst = new List<string>();
+        //lst.Add("vnnhan00000");
+        //lst.Add("kknhi00000");
+        //lst.Add("lvvuong00000");
+        //lst.Add("ptttrang00000");
+
+        foreach (var nameFld in lst)
+        {
+            var d = new DirectoryInfo(ExcuteSignalRStatic.mapPathSignalR("~/js/Custom_Grid_script/" + nameFld));
+            FileInfo[] Files = d.GetFiles("*.js");
+            foreach (FileInfo file in Files)
+            {
+                string srcD_text = string.Format("js/Custom_Grid_script/" + nameFld + "/" + file.Name);
+                string srcD_link = string.Format(Security.UrlBase() + srcD_text + "?ver=" + Guid.NewGuid());
+
+                kq[0] += string.Format(@"<script src=""{0}"" type=""text/javascript""></script>", srcD_link);
+                kq[3] += string.Format(@"loadScriptUrl('{0}','{1}');{2}", srcD_link, srcD_text, Environment.NewLine);
+            }
+        }
+
         return kq;
     }
 
@@ -249,7 +281,9 @@ public class User_TK
     public string ad_user_id { get; set; }
     public string ad_role_id { get; set; }
     public string md_phongban_id { get; set; }
+    public string chinhanh { get; set; }
     public string ma_user { get; set; }
+    public string ma_nhanvien { get; set; }
     public string hoten { get; set; }
     public string ma_role { get; set; }
     public string ten_role { get; set; }
@@ -258,5 +292,6 @@ public class User_TK
     public string mauBackground { get; set; }
     public bool? chuyenCachInBTSangPDF { get; set; }
     public bool? tuDongNhanDienCachIn { get; set; }
+    public bool? btnDongMenuTuDong { get; set; }
 }
 

@@ -454,6 +454,10 @@ modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<ad_user>()
+                            .Property(p => p.btnDongMenuTuDong)
+                            .HasColumnName("btnDongMenuTuDong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<ad_user>()
                             .Property(p => p.chuyenCachInBTSangPDF)
                             .HasColumnName("chuyenCachInBTSangPDF")
                             .HasColumnType("bit");

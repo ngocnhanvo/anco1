@@ -235,7 +235,7 @@ public class Public
                     {
                         string err = string.Format(@"<br>HHVT ""{0}"" chưa có giá cho ""{1}""",
                             db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
-                            db.md_phanxuong_to.Where(s => s.phongbanId == item1.Value).Select(s => s.ten_to).FirstOrDefault());
+                            db.ad_department.Where(s => s.md_phongban_id == item1.Value).Select(s => s.ten_phongban).FirstOrDefault());
                         msgEX += err;
                     }
                 }
@@ -302,7 +302,7 @@ public class Public
                 {
                     string err = string.Format(@"<br>HHVT ""{0}"" chưa có BOM cho ""{1}""",
                         db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault(),
-                        db.md_phanxuong_to.Where(s => s.phongbanId == item1.Value).Select(s => s.ten_to).FirstOrDefault());
+                        db.ad_department.Where(s => s.md_phongban_id == item1.Value).Select(s => s.ten_phongban).FirstOrDefault());
                     if (!msgEX.Contains(err))
                     {
                         msgEX += err;

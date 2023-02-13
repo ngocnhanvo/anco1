@@ -128,17 +128,23 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
         {
             string id_parent = context.Request.Form["id_parent"];
             string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
-            string ten_to = context.Request.Form["ten_to"];
-            var px = db.ad_department.Where(s => s.md_phongban_id == ten_to).FirstOrDefault();
-            if(px == null)
+            string cdoan = context.Request.Form["ten_to"];
+            string xuong = context.Request.Form["xuong"];
+            var congdoan = db.ad_department.Where(s => s.md_phongban_id == cdoan).FirstOrDefault();
+            var phanxuong = db.ad_department.Where(s => s.md_phongban_id == xuong).FirstOrDefault();
+            if(congdoan == null)
             {
-                msg = "false#Không tìm thấy phân xưởng";
+                msg = "Không tìm thấy công đoạn";
+            }
+            else if(xuong == null)
+            {
+                msg = "Không tìm thấy phân xưởng";
             }
             else
             {
-                var pxin = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == id_parent & s.ma_to == px.ma_phongban).FirstOrDefault();
+                var pxin = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == id_parent & s.phongbanId == congdoan.md_phongban_id).FirstOrDefault();
                 if (pxin != null)
-                    msg = "false#Đã tồn tại phân xưởng trong quy trình";
+                    msg = "Đã tồn tại công đoạn này trong quy trình";
             }
 
             if (msg.Length <= 0)
@@ -149,9 +155,10 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
                 VNN_Function.SetFormValue(object_.nameof(s => s.sapxep), sapxep);
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                object_.ma_to = px.ma_phongban;
-                object_.ten_to = px.ten_phongban;
-                object_.phongbanId = px.md_phongban_id;
+                object_.ma_to = congdoan.ma_phongban;
+                object_.ten_to = congdoan.ten_phongban;
+                object_.phongbanId = congdoan.md_phongban_id;
+                object_.phongbanId2 = phanxuong.md_phongban_id;
                 db.md_phanxuong_to.Add(object_);
                 db.SaveChanges();
 
@@ -176,23 +183,29 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
             string id = context.Request.Form["id"];
             string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
 
-            string ten_to = context.Request.Form["ten_to"];
-            var px = db.ad_department.Where(s => s.md_phongban_id == ten_to).FirstOrDefault();
-
+            string cdoan = context.Request.Form["ten_to"];
+            string xuong = context.Request.Form["xuong"];
+            var congdoan = db.ad_department.Where(s => s.md_phongban_id == cdoan).FirstOrDefault();
+            var phanxuong = db.ad_department.Where(s => s.md_phongban_id == xuong).FirstOrDefault();
+                
             var object_ = db.md_phanxuong_to.Where(p => p.md_to_id == id).Take(1).FirstOrDefault();
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                msg = "Không tìm thấy đối tượng cần sửa ";
             }
-            else if (px == null)
+            else if(congdoan == null)
             {
-                msg = "false#Không tìm thấy phân xưởng";
+                msg = "Không tìm thấy công đoạn";
+            }
+            else if(xuong == null)
+            {
+                msg = "Không tìm thấy phân xưởng";
             }
             else
             {
-                var pxin = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.ma_to == px.ma_phongban & s.md_to_id != object_.md_to_id).FirstOrDefault();
+                var pxin = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.phongbanId == congdoan.md_phongban_id & s.md_to_id != object_.md_to_id).FirstOrDefault();
                 if (pxin != null)
-                    msg = "false#Đã tồn tại phân xưởng trong quy trình";
+                    msg = "Đã tồn tại công đoạn này trong quy trình";
             }
 
             if (msg.Length <= 0)
@@ -200,20 +213,24 @@ public class JQGridMD_01_PXToModify : IHttpHandler, System.Web.SessionState.IReq
                 VNN_Function.SetFormValue(object_.nameof(s => s.sapxep), sapxep);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                object_.ma_to = px.ma_phongban;
-                object_.ten_to = px.ten_phongban;
-                object_.phongbanId = px.md_phongban_id;
+                object_.ma_to = congdoan.ma_phongban;
+                object_.ten_to = congdoan.ten_phongban;
+                object_.phongbanId = congdoan.md_phongban_id;
+                object_.phongbanId2 = phanxuong.md_phongban_id;
                 db.SaveChanges();
 
                 VNN_Function.SortColumn("md_phanxuong_to", sapxep, "md_phanxuong_id", object_.md_phanxuong_id, "ma_to", object_.ma_to, null);
                 VNN_Function.loaddulieu_Auto(db, ma_module);
-                msg = "true#Cập nhật thành công.";
+                msg = "Cập nhật thành công.";
             }
         }
         catch(Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = ex.Message;
         }
+
+        
+
         context.Response.Write(msg);
     }
 

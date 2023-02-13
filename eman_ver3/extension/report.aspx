@@ -21,14 +21,14 @@
 	    <div id="loader"></div>
     </div>
 
-    <div class="container">
-        <div class="row">
+    <div class="">
+        <div class="">
             <div class="main">
-                <h1 style="text-align: center; margin-bottom: 20px; position: relative">
+                <h2 style="text-align: center; margin-bottom: 15px; position: relative">
                     <img class="reportPublic left" src="report_image_speakers.png" />
                     BẢNG THÔNG BÁO
                     <img class="reportPublic right" src="report_image_speakers.png" />
-                </h1>
+                </h2>
                 <!-- Another variation with a button -->
                 
 		        <div class="input-group">

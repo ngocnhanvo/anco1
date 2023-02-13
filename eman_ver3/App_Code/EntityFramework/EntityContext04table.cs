@@ -513,6 +513,10 @@ modelBuilder.Entity<md_hanngachPXTo_chitiet>().HasKey<string>(p => p.md_hanngach
                             .Property(p => p.sllayton)
                             .HasColumnName("sllayton")
                             .HasColumnType("int");
+                            modelBuilder.Entity<md_hanngachPXTo_chitiet>()
+                            .Property(p => p.sllaytonTP)
+                            .HasColumnName("sllaytonTP")
+                            .HasColumnType("int");
 modelBuilder.Entity<md_hanngachPXTo_chitiet2>().ToTable("md_hanngachPXTo_chitiet2");
                             modelBuilder.Entity<md_hanngachPXTo_chitiet2>()
                             .Property(p => p.hoatdong)

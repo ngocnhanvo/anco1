@@ -55,16 +55,17 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
             string sql = string.Format(@"sELeCt * fRoM (
             sELeCt tosx.md_lenhsanxuat_tosx_id
                 , lsx.sochungtu
-                , pxto.ten_to
-                , px.ten_phanxuong
+                , cd.ten_phongban as cdoan
+                , px.ten_phongban as pxuong
                 , pxto.phongbanId
-                , (select top 1 kho.md_kho_id from md_kho kho where kho.phongbanId = pxto.phongbanId and isnull(kho.hangton, 0) = 0) as md_kho_id
+                , pxto.phongbanId2
+                , (select top 1 kho.md_kho_id from md_kho kho where kho.md_to_id = pxto.phongbanId and isnull(kho.hangton, 0) = 0) as md_kho_id
                 , (
                     select top 1 kho.md_kho_id 
                     from md_kho kho 
                     where 
                         1=1 
-                        and kho.phongbanId = (select top 1 phongbanId from md_phanxuong_to where md_phanxuong_id = px.md_phanxuong_id and cast(sapxep as int) < cast(pxto.sapxep as int) order by sapxep desc) 
+                        and kho.md_to_id = (select top 1 phongbanId from md_phanxuong_to where md_phanxuong_id = pxto.md_phanxuong_id and cast(sapxep as int) < cast(pxto.sapxep as int) order by sapxep desc) 
                         and isnull(kho.hangton, 0) = 0
                 ) as khoprev
                 , tosx.stt
@@ -72,7 +73,8 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
             @" fRoM md_lenhsanxuat_tosx tosx
                 left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
                 left join md_phanxuong_to pxto on pxto.md_to_id = tosx.md_phanxuong_to_id
-                left join md_phanxuong px on px.md_phanxuong_id = lsx.md_phanxuong_id
+                left join ad_department cd on cd.md_phongban_id = pxto.phongbanId
+                left join ad_department px on px.md_phongban_id = pxto.phongbanId2
             WHeRe 1=1 
             and tosx.ngayhoanthanh is null 
             and isnull(tosx.hoatdong, 0) = 1

@@ -103,10 +103,10 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi:Số lượng đặt hàng phải lớn hơn 0";
                 }
-                else if (cbm <= 0)
-                {
-                    msg = "Lỗi:CBM phải lớn hơn 0";
-                }
+                //else if (cbm <= 0)
+                //{
+                //    msg = "Lỗi:CBM phải lớn hơn 0";
+                //}
 
                 if (msg.Length <= 0)
                 {
@@ -198,13 +198,9 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi:Số lượng đặt hàng phải lớn hơn 0";
                 }
-                else if (cbm <= 0)
-                {
-                    msg = "Lỗi:CBM phải lớn hơn 0";
-                }
-                //else if (bom_sp == null)
+                //else if (cbm <= 0)
                 //{
-                //    msg = string.Format(@"HHVT {0} không có BOM", sp.ma_sanpham);
+                //    msg = "Lỗi:CBM phải lớn hơn 0";
                 //}
 
                 if (msg.Length <= 0)

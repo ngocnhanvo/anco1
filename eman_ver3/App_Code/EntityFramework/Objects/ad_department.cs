@@ -19,6 +19,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region ad_department_dtkdValue_wintaFN
+                        
+                        #endregion ad_department_dtkdValue_wintaFN
+                        public string dtkdValue { get; set; }
+                
+						
                         #region ad_department_hoatdong_wintaFN
                         
                         #endregion ad_department_hoatdong_wintaFN
@@ -29,6 +35,12 @@
                         
                         #endregion ad_department_ma_phongban_wintaFN
                         public string ma_phongban { get; set; }
+                
+						
+                        #region ad_department_md_doitackinhdoanh_id_wintaFN
+                        
+                        #endregion ad_department_md_doitackinhdoanh_id_wintaFN
+                        public string md_doitackinhdoanh_id { get; set; }
                 
 						
                         #region ad_department_md_phongban_id_wintaFN

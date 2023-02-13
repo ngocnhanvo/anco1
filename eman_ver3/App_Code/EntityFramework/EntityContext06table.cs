@@ -1966,6 +1966,10 @@ modelBuilder.Entity<md_phanxuong_to>().HasKey<string>(p => p.md_to_id);
                             .HasColumnName("phongbanId")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_phanxuong_to>()
+                            .Property(p => p.phongbanId2)
+                            .HasColumnName("phongbanId2")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_phanxuong_to>()
                             .Property(p => p.sapxep)
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");

@@ -1,19 +1,18 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" %>
-<%var version = 6; %>
 <html>
 <head>
     <link rel="shortcut icon" href="images/logo/anco_logo.ico" />
     <title>eMan</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Css Grid -->
-    <link href="css/layout-default.css" rel="stylesheet" type="text/css" />
-    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="css/layout-default.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
+    <link href="css/style.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="css/docsupport/prism.css">
     <link rel="stylesheet" href="css/chosen.css">
     <!-- Css VNN -->
-    <link href="css/VNN_css/Default.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
-    <link href="css/VNN_css/Menu.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
-    <link href="css/VNN_css/Content.css?ver=<%=version %>" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Default.css" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Menu.css" rel="stylesheet" type="text/css" />
+    <link href="css/VNN_css/Content.css" rel="stylesheet" type="text/css" />
     <!-- Css bootstrap -->
     <link href="css/bootstrap-awesome.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="css/FontAwesome/fontawesome_all.css">
@@ -29,9 +28,11 @@
     <script src="js/VNN_script/GridFunction_View.js?ver=<%=version %>" type="text/javascript"></script>
     <script src="js/VNN_script/GridFunction_Admin.js?ver=<%=version %>" type="text/javascript"></script>
     <script async src="js/VNN_script/User_GridFormatter.js?ver=<%=version %>" type="text/javascript"></script>
+    <script src="js/Public_script/pdf.min.js"></script>
     <!-- layout -->
     <script src="js/Public_script/jquery.number.js" type="text/javascript"></script>
     <script src="js/Public_script/jquery.form.js" type="text/javascript"></script>
+    <script src="js/VNN_script/CheckBrowser.js" type="text/javascript"></script>
     <!-- Script Jqx Widgets -->
     <script src="js/jqxwidgets/jqxcore.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxbuttons.js" type="text/javascript"></script>
@@ -40,11 +41,61 @@
     <script async src="js/jqxwidgets/jqxdragdrop.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxtree.js" type="text/javascript"></script>
     <script async src="js/jqxwidgets/jqxcheckbox.js" type="text/javascript"></script>
+    <script async src="js/jqxwidgets/jqxdata.js" type="text/javascript"></script>
+    <script async src="js/jqxwidgets/jqxmenu.js" type="text/javascript"></script>
+    <script async src="js/jqxwidgets/jqxcombobox.js" type="text/javascript"></script>
+
+    <script src="js/ComboGrid/plugin/jquery.ui.combogrid-1.6.3.js" type="text/javascript"></script>
+    <link href="js/ComboGrid/css/jquery.ui.combogrid.css" rel="stylesheet" />
     <!--/ layout -->
+    
     <!--Script Module-->
     <%=kq_script[0]%>
+
+    <script type="text/javascript">
+        var click_reloadJavascript = function () {
+            let countModuleTotal = 0, countModuleLoaded = 0;
+            let divScript = $('#divScript');
+
+            let loadScriptUrl = function (link, text) {
+                countModuleTotal++;
+                $.getScript(link, function (data, textStatus, jqxhr) {
+                    divScriptLoaded(text);
+                }).fail(function () {
+                    if (arguments[0].readyState == 0) {
+                        //script failed to load
+                        divScriptLoaded(text);
+                    } else {
+                        //script loaded but failed to parse
+                        divScriptLoaded(text);
+                    }
+                });
+            };
+
+            let divScriptLoaded = function (text) {
+                countModuleLoaded++;
+                divScript.html(`Tổng: ${countModuleTotal}, đã tải: ${countModuleLoaded}`);
+
+                if (countModuleTotal == countModuleLoaded) {
+                    setTimeout(function () {
+                        divScript.html('Đã cập nhật javascript thành công.');
+                        setTimeout(function () {
+                            divScript.hide();
+                        }, 200);
+                    }, 200);
+                }
+            };t
+
+            //if (confirm('Bạn có chắn chắn muốn tải lại thư viện javascript???')) {
+                divScript.show();
+                <%=kq_script[3]%>;
+            //}
+        };
+
+    </script>
 </head>
 <body class="main_body" id="main_body">
+    <div style="display:none" id="divScript">Đang tải..</div>
     <div class="overlay-dark"></div>
     <img alt="" class="img-overlay" />
     <div class="ckeditorPublic hidden">
@@ -54,33 +105,41 @@
         <!-- head_page -->
         <table class="nhan_header">
             <tr>
-                <td style="width: 10%; min-width: 222px" align="center">
+                <td class="tdDisplayMenuConfig" align="center">
+                    <div class="displayMenuConfig">
+                        <span title="Ẩn/hiện menu (ALT+Q)" class="glyphicon glyphicon-cog"></span>
+                    </div>
                     <div style="height:30px">
-                        <img id="nhan_image" alt="" src="images/logo/emanAnco.png" 
+                        <img id="nhan_image" alt="" src="images/logo/emanAnco.png?ver1" 
 							style="
-								height: 24px;
-                                padding: 0px;
-                                margin-top: 1.3px;
+								height: 20px;
+								padding: 7px;
+								margin-top: -3px;
 							"
 						/>
                     </div>
                 </td>
+
                 <td style="width: 12px; min-width: 12px"></td>
 
-                <td style="width: 138px; min-width: 138px">
+                <td style="width: 180px; min-width: 180px">
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 12px;" onclick="click_back()" alt="" title="trở về trang trước" src="images/Menu/header_back2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0" onclick="click_refreshPage(true)" alt="" title="làm mới trang hiện tại" src="images/Menu/header_frefesh2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="click_doimau()" alt="" title="đổi màu" src="images/Menu/header_idea2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="loadContent('MN_01_HT1','','Hướng dẫn sử dụng','Trợ Giúp')" alt="" title="giúp đỡ" src="images/Menu/header_ask2.png" />
+                    <%if (tk.ma_user == "admin")
+                    {%>
+                        <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="click_reloadJavascript()" alt="" title="Tải lại thư viện của module (CTRL+SHIFT+S)" src="images/Menu/javascript.png" />
+                    <%}%>
                 </td>
                 <td class="cl_td_urlmenu">
                     <div>
                         <span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span>
                     </div>
                 </td>
-                <td style="width: 1px">
-                    <div id="logo_right" onclick="fix_loi_screen()">
-                        <img height="0" width="0" style='margin: 0 0 0 0px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
+                <td style="width: 92px">
+                    <div id="logo_right" class="cl_div_chiadiv2">
+                        <img height="30" width="60" style='margin: 0 0 0 20px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
                     </div>
                 </td>
 
@@ -96,7 +155,7 @@
                     <td class="menu" valign="top">
                         <div class="menu_module_first" align="center">Đang tải menu ...</div>
                     </td>
-                    <td style="width: 12px; min-width: 12px">
+                    <td class="menuSpaceModule">
                         <div onclick="configModelGridForUser()" class="div_chiacach" style="margin: 10px 0px 0px -7px;">
                             <img class="cl_img_div_chiatach" width="20px" height="20px" alt="" src="images/Menu/phanquyen.png" />
 
@@ -163,14 +222,60 @@
         <%=kq_script[2]%>
         //$('#mainpane').css('height', window.innerHeight - 15); 
         var heightBody = getSizeBrowser().height;
+        var idWindow = uuidv4();
         var heightHeader = $('.nhan_header').height();
         var heightFooter = $('.footer').height();
         var height_menu_noidung = heightBody - (heightHeader + heightFooter) * ratePercentTransform;
+        let searchParams = new URLSearchParams(window.location.search);
+        var isLinkTransfer = searchParams.has('menu');
+        var googleMapLoaded = false;
+        var input_focus_public;
+        var formVisible_addEdit, formVisible_Del, formVisible_addEdit_id, formVisible_Del_id;
+
+        
+        if(isLinkTransfer) 
+        {
+            $('td.menu').css('display', 'none');
+            $('td.menu').next().css('display', 'none');
+            $('.nhan_header').css('visibility', 'hidden');
+            let arrHide = ['MD_01_Khach_HangGoogleMap', 'MD_01_NhaCungCap_GoogleMap', 'MD_01_CongTyChiNhanhGGMap'];
+            let arrHideLen = arrHide.length;
+            let hideGoogleMap = function() {
+                if(arrHide.length == arrHideLen) {
+                    arrHide.forEach(function(str) {
+                        let item = $(`li[aria-controls="tabs_${str}"][role="tab"]`);
+                        
+                        if(item.attr('style')) {
+                            item.hide();
+                            arrHide = arrHide.filter(e => e !== str);
+                        }
+                    });
+                    setTimeout(hideGoogleMap, 1000);
+                }
+            };
+            hideGoogleMap();
+        }
+        else {
+            $.getScript( "https://polyfill.io/v3/polyfill.min.js?features=default", function( data, textStatus, jqxhr ) {
+                $.getScript( "https://maps.googleapis.com/maps/api/js?key=<%=ttc.url_lichtuan%>&libraries=places", function( data, textStatus, jqxhr ) {
+                    googleMapLoaded = true;
+                });
+            });
+        }
+
         $('.menu').height(height_menu_noidung);
 
         setTimeout(function () {
             loadMenu('Menu/Menu.htm');
         }, 10);
+
+        setInterval(function () {
+            $.ajax({
+                type: "GET",
+                url: "Controller/PublicFunction/Timer.ashx",
+                async: true
+            });
+        }, 60000);
 
         $('body').click(function (e) {
             $('#div_chuotphai').remove();
@@ -236,7 +341,7 @@
                         colModel: [
                             <%=colModel[0] %>
                         ],
-						ondblClickRow: function(e){
+						ondblClickRow: function(e) {
 						    $('#view_gridMD_00_NhatKy').click();
 						},
 						beforeRequest: function() { 
@@ -326,7 +431,7 @@
             let options = '';
             for(let i = 1; i <= 99; i++) {
                 options += `<option value="${i}">${i}</option>`;
-            }
+            } 
 
             $('#mainpane').append(`
                 <div id="dlg_gridSmall" style="overflow: hidden;" title="Cấu hình lưới dữ liệu">
@@ -620,7 +725,7 @@
                     }
                 ]
             });
-        }
+		}
 		
 		//Load auto
 		<%=VNN_Function.setFunction_AutoLoad(db) %>
@@ -628,12 +733,17 @@
         //Xem chi tiết tài khoản
         let chuyenCachInBTSangPDF = <%=tk.chuyenCachInBTSangPDF.GetValueOrDefault(false).ToString().ToLower() %>;
         let tuDongNhanDienCachIn = <%=tk.tuDongNhanDienCachIn.GetValueOrDefault(false).ToString().ToLower() %>;
+        let btnDongMenuTuDong = <%=tk.btnDongMenuTuDong.GetValueOrDefault(false).ToString().ToLower() %>;
         let mauBackgroundDF = '<%=tk.mauBackground %>';
         load_doimau_client(mauBackgroundDF);
-		let ma_tk = '<%=tk.ma_user %>';
+        let ma_tk = '<%=tk.ma_user %>';
+        let ma_nhanvien = '<%=tk.ma_nhanvien %>';
+        let hoten_nv = '<%=string.IsNullOrWhiteSpace(tk.ma_nhanvien) ? "" : tk.hoten %>';
+        let hoten_tk = '<%=tk.hoten %>';
 		let ma_role = '<%=tk.ma_role %>';
         let ten_role = '<%=tk.ten_role %>';
         let ma_phongban = '<%=tk.ma_phongban %>';
+        let ten_phongban = '<%=tk.ten_phongban %>';
 		let token = '<%=tk.ad_user_id + "-" + tk.ad_role_id %>';
 		//thong tin chung
 		let url_org_sys = '<%=Security.UrlBase() %>';
@@ -649,14 +759,15 @@
         var yearDF = (new Date()).getFullYear();
 		let dec = vnn_formatnumber()[0], thous = vnn_formatnumber()[1];
 		//cookie tai khoan
-		let cookie = '<%=tk.ad_user_id %>';
+        let cookie = '<%=tk.ad_user_id %>';
+        let divDisplayMenuConfig = $('div.displayMenuConfig'); 
 		$.jqm.params.closeoverlay = false;
 		$.jgrid.no_legacy_api = true; 
 		$.jgrid.useJSON = true; 
 		
 		function load_sct(ma_sct) {
 			let kq = '';
-			<%=get_mauhienthi_sochungtu%>
+			<%=VNN_VariablePublic.get_mauhienthi_sochungtu(db)%>
 			return kq;
 		}
 
@@ -701,10 +812,12 @@
 
             let html = `
                 <select id="kieuInBaoCao" class="FormElement">
-                    <option value="0">In trên trình duyệt</option>
-                    <option value="1">In thông qua PDF</option>
+                    <option value="0">In thông qua Browser</option>
+                    <option value="1">In thông qua PDF (Mẫu Browser)</option>
                     <option value="2">In thông qua Excel</option>
                     <option value="3">In thông qua PDF (Mẫu Excel)</option>
+                    <option value="4">In thông qua Word</option>
+                    <option value="5">In thông qua PDF (Mẫu Word)</option>
                 </select>
             `;
 
@@ -725,6 +838,176 @@
 		    click_refreshPage2();
 		}; 
 
+		let displayAddEditDelForm = function(editmod, id, type) { 
+		    if(!editmod & !id) {
+		        return;
+		    }
+
+		    let mod = type == 'del' ? 'delmod' : 'editmod';
+		    editmod = $(`#${mod}${id}`);
+
+		    let editF = $(`#editmod${id}`), delF = $(`#delmod${id}`);
+		    let alert = $(`#alertmod_${id}`);
+
+		    let displayEdit = editF.attr('aria-hidden') == null ? true : (editF.attr('aria-hidden') == "true" ? true : false);
+		    let displayDel = delF.attr('aria-hidden') == null ? true : (delF.attr('aria-hidden') == "true" ? true : false);
+		    let display = displayEdit & displayDel;
+
+		    let showAlter = alert.attr('aria-hidden') == null ? false : (alert.attr('aria-hidden') == "true" ? false : true);
+
+		    formVisible_Del_id = formVisible_addEdit_id = id;
+
+		    if(display & !showAlter) {
+		        type == 'add' ? click_add(id) : (type == 'edit' ? click_edit(id) : click_del(id));
+		    }
+		    else
+		    {
+		        if(!displayDel)
+		            $('#eData').click();
+		        
+		        if(!displayEdit)
+		            $('#cData').click();
+
+		        if(showAlter) {
+		            alert.find('.ui-jqdialog-titlebar-close.ui-corner-all').click();
+		        }
+		    }
+		};
+
+		document.onkeydown = function (e) {
+		    e = e || window.event;
+
+		    if (!e.ctrlKey & !e.altKey) return;
+
+		    let code = e.which || e.keyCode;
+            if (e.ctrlKey) {
+                if (e.shiftKey  && code == 83) {
+                    // CTRL+SHIFT+S
+                    click_reloadJavascript();
+                    return;
+                }
+
+		        switch (code) {
+		            case 81:
+		                e.preventDefault();
+		                e.stopPropagation();
+		                if ($(e.target).closest('.ui-jqdialog').length > 0) {
+		                    $('#cData').click();
+		                }
+
+		                if ($(e.target).closest('.ui-dialog.ui-widget.ui-widget-content').length > 0) {
+		                    $('#btn-close_').click();
+		                }
+		                break;
+		            case 83:
+		                e.preventDefault();
+		                e.stopPropagation();
+		                if ($(e.target).closest('.ui-jqdialog').length > 0) {
+		                    $('#sData').click();
+		                }
+
+		                if ($(e.target).closest('.ui-dialog.ui-widget.ui-widget-content').length > 0) {
+		                    $('#btn-ok_').click();
+		                }
+		                break;
+		        }
+		    }
+		    else if(e.altKey) {
+                let chk = $(e.target).closest('.ui-tabs-panel.ui-widget-content.ui-corner-bottom');
+
+		        switch (code) {
+		            case 65:
+		                e.preventDefault();
+		                e.stopPropagation();
+		                
+		                if (chk.length > 0) {
+		                    let id = chk.attr('id').replace('tabs_','grid');
+		                    displayAddEditDelForm(null, id, 'add');
+		                }
+		                else {
+		                    displayAddEditDelForm(null, formVisible_addEdit_id, 'add');
+		                }
+                        break;
+                    case 81:
+		                e.preventDefault();
+		                e.stopPropagation();
+
+                        divDisplayMenuConfig.click();
+		                break;
+		            case 83:
+		                e.preventDefault();
+		                e.stopPropagation();
+
+		                if (chk.length > 0) {
+		                    let id = chk.attr('id').replace('tabs_','grid');
+		                    displayAddEditDelForm(null, id, 'edit');
+		                }
+		                else {
+		                    displayAddEditDelForm(null, formVisible_addEdit_id, 'edit');
+		                }
+		                break;
+		            case 68:
+		                e.preventDefault();
+		                e.stopPropagation();
+		                if (chk.length > 0) {
+		                    let id = chk.attr('id').replace('tabs_','grid');
+		                    displayAddEditDelForm(null, id, 'del');
+		                }
+		                else {
+		                    displayAddEditDelForm(null, formVisible_Del_id, 'del');
+		                }
+		                break;
+		        }
+		        return false;
+		    }
+		};
+
+        divDisplayMenuConfig.click(function () {
+            let dlnMN = 'displayNoneMenu';
+            let bodyClass = $('#main_body').hasClass(dlnMN);
+            if (!bodyClass) {
+                divDisplayMenuConfig.addClass('favnn-spin');
+                divDisplayMenuConfig.removeClass('favnn-spin-1');
+
+                $('#main_body').addClass(dlnMN);
+                $('td.menu').fadeOut(200);
+                $('td.menuSpaceModule').fadeOut(200, "linear", function () {
+                    $('.div_noidung_menu').css('width', $('.div_module_background').width() - 8);
+
+                    if(typeof tengrid != 'undefined')
+                        $(`#${tengrid}`).jqGrid('setGridWidth', $(`#${tengrid}`).parent().parent().parent().parent().parent().width());
+
+                    if(typeof tengrid0 != 'undefined')
+                        $(`#${tengrid0}`).jqGrid('setGridWidth', $(`#${tengrid0}`).parent().parent().parent().parent().parent().width());
+
+                    if(typeof tengrid1 != 'undefined')
+                        $(`#${tengrid1}`).jqGrid('setGridWidth', $(`#${tengrid1}`).parent().parent().parent().parent().parent().width());
+
+                    if(typeof tengrid2 != 'undefined')
+                        $(`#${tengrid2}`).jqGrid('setGridWidth', $(`#${tengrid2}`).parent().parent().parent().parent().parent().width());
+                });
+            }
+            else {
+                divDisplayMenuConfig.removeClass('favnn-spin');
+                divDisplayMenuConfig.addClass('favnn-spin-1');
+
+                $('#main_body').removeClass(dlnMN);
+                $('td.menu').fadeIn(200);
+                $('td.menuSpaceModule').fadeIn(200, "linear", function () {
+                    $('.div_noidung_menu').css('width', $('.div_module_background').width() - 8);
+                    if(typeof tengrid0 != 'undefined')
+                        $(`#${tengrid0}`).jqGrid('setGridWidth', $(`#${tengrid0}`).parent().parent().parent().parent().parent().width());
+
+                    if(typeof tengrid1 != 'undefined')
+                        $(`#${tengrid1}`).jqGrid('setGridWidth', $(`#${tengrid1}`).parent().parent().parent().parent().parent().width());
+
+                    if(typeof tengrid2 != 'undefined')
+                        $(`#${tengrid2}`).jqGrid('setGridWidth', $(`#${tengrid2}`).parent().parent().parent().parent().parent().width());
+                });
+            }
+            
+        });
+
 		window.addEventListener('message', function(e) {
 		    const data = e.data;
 
@@ -738,6 +1021,14 @@
 		    if(data.saveVal) {
 		        $(data.elem).val(encodeHTML(data.saveVal));
 		        $(data.elem).next().next().val(data.files);
+            }
+
+            if (data.moveToMenu) {
+                let a = 'filter_' + data.ma_module + ' = \'{"groupOp":"AND","rules":[{"field":" ' + data.index + ' ","op":"bw","data":"' + data.sochungtu + '"}]}\'';
+                eval(a);
+                let b = 'filterVal_' + data.ma_module + ' = "gs_sochungtu(##)' + data.sochungtu + '";';
+                eval(b);
+                $('#td_' + data.ma_menu).click();
 		    }
 		});
     </script>

@@ -11,8 +11,8 @@ var uuidv4 = function () {
     });
 };
 
-if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-	CKEDITOR.tools.enableHtml5Elements( document );
+if (CKEDITOR.env.ie && CKEDITOR.env.version < 9)
+    CKEDITOR.tools.enableHtml5Elements(document);
 
 // The trick to keep the editor in the sample quite small
 // unless user specified own height.
@@ -20,8 +20,9 @@ CKEDITOR.config.height = 'calc(100vh - 140px)';
 CKEDITOR.config.width = 'auto';
 CKEDITOR.config.htmlEncodeOutput = false;
 CKEDITOR.config.entities = false;
+CKEDITOR.config.allowedContent = true;
 CKEDITOR.config.extraPlugins = 'find,image2';
-CKEDITOR.config.extraAllowedContent = 'img[src,alt,width,height];a[file]';
+CKEDITOR.config.extraAllowedContent = 'img[src,alt,width,height];a[file,excel,title];tr[repeat];div[style,align];td[data-t,data-a-h,data-b-a-s, data-f-bold];table[data-cols-width]';
 var editorElement = null;
 var editorElementReplace = null;
 var titleEditor = null;
@@ -136,77 +137,78 @@ function readDataWhenChangeFile(input, callback) {
     }
 }
 
-var initSample = ( function() {
-	var wysiwygareaAvailable = isWysiwygareaAvailable(),
-		isBBCodeBuiltIn = !!CKEDITOR.plugins.get( 'bbcode' );
+var initSample = (function () {
+    var wysiwygareaAvailable = isWysiwygareaAvailable(),
+        isBBCodeBuiltIn = !!CKEDITOR.plugins.get('bbcode');
 
-	return function () {
-	    overlayDark = document.getElementsByClassName("overlay-dark")[0];
-	    overlayContent = document.getElementsByClassName("overlay-content")[0];
+    return function () {
+        overlayDark = document.getElementsByClassName("overlay-dark")[0];
+        overlayContent = document.getElementsByClassName("overlay-content")[0];
 
-	    overlayDark.onclick = function () {
-	        displayAttachFile(false);
-	    };
+        overlayDark.onclick = function () {
+            displayAttachFile(false);
+        };
 
-		editorElement = CKEDITOR.document.getById( 'editor' );
-		titleEditor = document.getElementById('titleEditor');
-		closeEditor = document.getElementById('closeEditor');
-		// :(((
-		if ( isBBCodeBuiltIn ) {
-			//editorElement.setHtml(
-			//	'Hello world!\n\n' +
-			//	'I\'m an instance of [url=https://ckeditor.com]CKEditor[/url].'
-			//);
-		}
+        editorElement = CKEDITOR.document.getById('editor');
+        titleEditor = document.getElementById('titleEditor');
+        closeEditor = document.getElementById('closeEditor');
+        // :(((
+        if (isBBCodeBuiltIn) {
+            //editorElement.setHtml(
+            //	'Hello world!\n\n' +
+            //	'I\'m an instance of [url=https://ckeditor.com]CKEditor[/url].'
+            //);
+        }
 
-		// Depending on the wysiwygarea plugin availability initialize classic or inline editor.
-		if ( wysiwygareaAvailable ) {
-		    editorElementReplace = CKEDITOR.replace('editor',
+        // Depending on the wysiwygarea plugin availability initialize classic or inline editor.
+        if (wysiwygareaAvailable) {
+            editorElementReplace = CKEDITOR.replace('editor',
                 {
                     toolbar: [
-			            { name: 'styles', items: ['Styles', 'Format', 'SelectAll', 'RemoveFormat'] },
-			            { name: 'basicstyles', items: ['Bold', 'Italic', 'Strike', 'TextColor', 'BGColor'] },
-			            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-'] },
+                        { name: 'styles', items: ['Styles', 'Format', 'SelectAll', 'RemoveFormat'] },
+                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Strike', 'TextColor', 'BGColor'] },
+                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-'] },
                         '/',
-			            { name: 'links', items: ['Link', 'Unlink'] },
-			            { name: 'insert', items: ['Table'] },
-			            { name: 'editing', items: [ 'Find', 'VNN_File', 'Source'] }
+                        { name: 'links', items: ['Link', 'Unlink'] },
+                        { name: 'insert', items: ['Table'] },
+                        { name: 'editing', items: ['Find', 'VNN_File', 'Source'] }
                     ],
-		            enterMode: CKEDITOR.ENTER_BR,
-		            shiftEnterMode: CKEDITOR.ENTER_P
+                    enterMode: CKEDITOR.ENTER_BR,
+                    shiftEnterMode: CKEDITOR.ENTER_P,
+                    basicEntities: false
                 }
             );
 
-		    editorElementReplace.ui.addButton('VNN_File', {
-		        label: "Attach Image or File",
-		        command: 'AttachFile',
-		        toolbar: 'editing'
-		    });
+            editorElementReplace.ui.addButton('VNN_File', {
+                label: "Attach Image or File",
+                command: 'AttachFile',
+                toolbar: 'editing'
+            });
 
-		    editorElementReplace.addCommand("AttachFile", {
-		        exec: function (edt) {
-		            displayAttachFile(true);
-		        }
-		    });
+            editorElementReplace.addCommand("AttachFile", {
+                exec: function (edt) {
+                    displayAttachFile(true);
+                }
+            });
 
-		} else {
-			editorElement.setAttribute( 'contenteditable', 'true' );
-			CKEDITOR.inline( 'editor' );
+        } else {
+            editorElement.setAttribute('contenteditable', 'true');
+            CKEDITOR.inline('editor');
 
-			// TODO we can consider displaying some info box that
-			// without wysiwygarea the classic editor may not work.
-		}
-	};
+            // TODO we can consider displaying some info box that
+            // without wysiwygarea the classic editor may not work.
+        }
+    };
 
-	function isWysiwygareaAvailable() {
-		// If in development mode, then the wysiwygarea must be available.
-		// Split REV into two strings so builder does not replace it :D.
-		if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
-			return true;
-		}
+    function isWysiwygareaAvailable() {
+        // If in development mode, then the wysiwygarea must be available.
+        // Split REV into two strings so builder does not replace it :D.
+        if (CKEDITOR.revision == ('%RE' + 'V%')) {
+            return true;
+        }
 
-		return !!CKEDITOR.plugins.get( 'wysiwygarea' );
-	}
+        return !!CKEDITOR.plugins.get('wysiwygarea');
+    }
 })();
 
 let funcMess = function (event) {

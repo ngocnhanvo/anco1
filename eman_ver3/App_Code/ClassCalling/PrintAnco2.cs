@@ -40,6 +40,7 @@ public class PrintAnco2
         var infoPrint = PrintAnco2.GetInfoPrint();
         string msg = "";
         var da = new SqlDataAdapter(sql, Mbg.Data.SqlClient.SqlHelper.GetConnection);
+        da.SelectCommand.CommandTimeout = 60;
         var ds = new DataSet();
         da.Fill(ds);
         var tbl = ds.Tables[0];

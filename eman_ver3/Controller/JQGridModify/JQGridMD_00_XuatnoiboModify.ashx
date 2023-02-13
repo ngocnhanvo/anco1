@@ -259,13 +259,12 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                                         {
                                             var lsxKho = db.md_lenhsanxuat_tosx.Where(s =>
                                                 s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                                                & s.md_phanxuong_id == kho.md_phanxuong_id
-                                                & s.md_phanxuong_to_id == kho.md_to_id).FirstOrDefault();
+                                                & s.phongbanId == kho.md_to_id).FirstOrDefault();
 
                                             if (lsxKho != null)
                                                 lsxKho.ngaygiao = xk.ngaychuyen;
 
-                                            string khoNext = Helper.layKhoCuaTo(lsx.md_phanxuong_id, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
+                                            string khoNext = Helper.layKhoCuaTo(lsxTSX.phongbanId, lsxTSX.md_phanxuong_to_id, db).md_kho_id;
                                             string KSPID = nhap_kho(db, dh, khoNext, nhanvoi, userTK);
                                             add_nhapkho_hsd(db, dh, khoNext, userTK, KSPID);
                                             add_nhapkho_ls(db, dh, khoNext, xk, 1, userTK, lsx, lsxTSX, xk.md_to_id);

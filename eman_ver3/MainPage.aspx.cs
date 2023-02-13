@@ -9,8 +9,8 @@ public partial class MainPage : System.Web.UI.Page
     public ad_systemconfig ttc = null;
     public string[] kq_script;
     public string date_ip = "";
-    public string get_mauhienthi_sochungtu = "";
     public string layoutSize = "[]";
+    public int version = 19;
     protected void Page_Load(object sender, EventArgs e)
     {
         //
@@ -31,7 +31,6 @@ public partial class MainPage : System.Web.UI.Page
 
 
         kq_script = VNN_VariablePublic.Module_script(json);
-        get_mauhienthi_sochungtu = VNN_VariablePublic.get_mauhienthi_sochungtu(db);
         ttc = json.ad_systemconfigJSON().FirstOrDefault();
         if (ttc.date_import != null)
         {

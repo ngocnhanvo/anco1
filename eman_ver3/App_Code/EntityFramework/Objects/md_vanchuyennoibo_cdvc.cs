@@ -25,6 +25,12 @@
                         public bool? chuyenton { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_chuyentonTP_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_chuyentonTP_wintaFN
+                        public bool? chuyentonTP { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_dachuyenhet_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_dachuyenhet_wintaFN

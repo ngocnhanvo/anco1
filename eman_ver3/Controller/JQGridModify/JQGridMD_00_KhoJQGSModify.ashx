@@ -69,7 +69,7 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
                     string id = context.Request.QueryString["id"];
                     var object_ = new md_kho();
                     object_.md_kho_id = id_new;
-                    object_.phongbanId = pxTrongQT.phongbanId;
+                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.phongbanId;
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     db.md_kho.Add(object_);
@@ -116,7 +116,7 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
                 else
                 {
                     var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
-                    object_.phongbanId = pxTrongQT.phongbanId;
+                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.phongbanId;
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();

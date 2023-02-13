@@ -1893,6 +1893,14 @@ modelBuilder.Entity<md_vanchuyennoibo>().ToTable("md_vanchuyennoibo");
                             .HasColumnName("ketoan")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.kiemtraSL)
+                            .HasColumnName("kiemtraSL")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.laytonTP)
+                            .HasColumnName("laytonTP")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.loaichuyen)
                             .HasColumnName("loaichuyen")
                             .HasColumnType("nvarchar");
@@ -2033,6 +2041,10 @@ modelBuilder.Entity<md_vanchuyennoibo_cdvc>().ToTable("md_vanchuyennoibo_cdvc");
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.chuyenton)
                             .HasColumnName("chuyenton")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.chuyentonTP)
+                            .HasColumnName("chuyentonTP")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.dachuyenhet)

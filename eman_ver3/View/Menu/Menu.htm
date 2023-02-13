@@ -1,11 +1,11 @@
-﻿<table class="cl_table_menu">
+﻿<table class="cl_table_menu" >
     <!-- thong tin tai khoan -->
     <tr id="trFirstUser" style="width:100%" height="34px">
-        <td colspan="6" style="cursor:pointer; position: relative">
-            <img id="Img2" height="18px" style="margin: 0px 0 0 9px;" alt="" src="images/Menu/menu_user.png" />
+        <td colspan = "6" style="cursor:pointer; position: relative">
+            <img  id="Img2" height="18px" style="margin: 0px 0 0 9px;"  alt="" src="images/Menu/menu_user.png"/>
             <a id="a_user" title="xem chi tiết" class="cl_a_btnthongtinnguoidung" onclick="xemthongtinchitiet()"></a>
-            <img class="cl_img_btncanhbao" id="Img4" style="margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png" />
-            <a onclick="link_report()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
+            <img class="cl_img_btncanhbao" id="Img4" style="margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png"/>
+			<a onclick="link_report()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
             <span title="Thoát chương trình" onclick="logout()" class="span_logout glyphicon glyphicon-off"></span>
         </td>
     </tr>
@@ -13,20 +13,26 @@
     <tr>
         <!--menu -->
         <td class="menu_td_menuchinh" style="max-width: 220px;" colspan="6" valign="top">
-            <div class="cl_div_menu">
-                <div class="menu_div_dongkhung">
-                    <table style="width: 100%;margin: 7px 0 0 0; border-collapse: collapse; ">
-                        <tr>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </table>
-                </div>
+        <div class = "cl_div_menu">
+            <div class="menu_div_dongkhung">
+            <table style="width: 100%;margin: 7px 0 0 0; border-collapse: collapse; ">
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       
+                    </td>
+                </tr>
+            </table>
+            </div>
             </div>
         </td>
         <!--#menu -->
@@ -71,6 +77,12 @@
             $('.menu_td_menuchinh table').empty();
             $('.menu_td_menuchinh table').append(msg);
             dem_Records_menu();
+
+            if (isLinkTransfer) {
+                let menu = searchParams.get('menu');
+                $('#a_' + menu).click();
+                $('#tr_' + menu).parent().parent().prev().click();
+            }
         }
     });
 
@@ -88,7 +100,7 @@
         else {
 			$('#div_' + e).css('padding', '4px 0 3px 0');
 			$('#div_' + e + ' > a').css('text-shadow','1px 1px 1px #F16B6B');
-
+			
 			$(this_sel).addClass('menu_btndanhan');
 			$(this_sel).fadeIn( 200, function(){
 				$(this).removeAttr('style');
@@ -121,9 +133,23 @@
         $('#input_tenmodule2').val("");
         // gán giá trị cho sự kiện trở về trang trước
         $('#input_trovetrangtruoc').val($('#input_trovetrangtruoc').val() + '/' + 'td_' + e);
-		document.title = "eMan-" + c;
-        loadPage('Menu/Content/Content.aspx');
+        document.title = "eMan-" + c;
+        //let searchParams = new URLSearchParams(window.location.search);
 
+        //if (searchParams.has('menu')) {
+        //    let uri = window.location.toString();
+        //    if (uri.indexOf("?") > 0) {
+        //        var clean_uri = uri.substring(0, uri.indexOf("?"));
+        //        window.history.replaceState({}, document.title, clean_uri);
+        //    }
+        //}
+
+        if (btnDongMenuTuDong) {
+            $('div.displayMenuConfig').click();
+        }
+
+        loadPage('Menu/Content/Content.aspx');
+       
     }
 
     function overmouse_menu_lv0(e) {
@@ -145,7 +171,7 @@
     }
 
     $('#a_user').append(ma_tk);
-
+    
     click_refreshPage();
 
     let margin_img = 30 + Number($('#a_user').width()) - 18;

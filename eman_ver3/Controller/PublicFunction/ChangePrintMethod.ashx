@@ -28,7 +28,51 @@ public class ChangePrintMethod : IHttpHandler, System.Web.SessionState.IRequires
             case "configSizeLayout":
                 this.ConfigSizeLayout(context);
                 break;
+            case "configMenu":
+                this.configMenu(context);
+                break;
         }
+    }
+
+    public void configMenu(HttpContext context)
+    {
+        string msg = "";
+        dynamic result = new Dictionary<string, object>() { { "ok", false }, { "msg", "" }, { "btnDongMenuTuDong", false } };
+        string ck = Security.id_taikhoan(context);
+        var btnDongMenuTuDong = context.Request.Form["btnDongMenuTuDong"].ToLower() == "true";
+
+        try
+        {
+            var db = new EntityContext();
+            var user = db.ad_user.Where(s => s.ad_user_id == ck).FirstOrDefault();
+            if (user != null)
+            {
+                user.btnDongMenuTuDong = btnDongMenuTuDong;
+                db.SaveChanges();
+            }
+            else
+            {
+                msg = "Tài khoản không tồn tại.";
+            }
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if(msg.Length <= 0)
+        {
+            msg = "<div class='nhan-thanhcong'>Cập nhật tùy chỉnh hiển thị menu thành công</div>";
+            result["ok"] = true;
+            result["btnDongMenuTuDong"] = btnDongMenuTuDong;
+        }
+        else
+        {
+            msg = string.Format(@"<div class='nhan-loi'>{0}</div>", msg);
+        }
+
+        result["msg"] = msg;
+        context.Response.Write(JsonConvert.SerializeObject(result));
     }
 
     public void ConfigSizeLayout(HttpContext context)

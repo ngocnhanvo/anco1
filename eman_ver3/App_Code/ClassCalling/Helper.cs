@@ -196,10 +196,7 @@ public static class Helper
 
     public static md_kho layKhoCuaTo(string pxId, string toId, EntityContext db)
     {
-        return db.md_kho.Where(s =>
-                                s.md_phanxuong_id == pxId
-                                & s.md_to_id == toId
-                                & s.hangton == false).FirstOrDefault();
+        return db.md_kho.Where(s => s.md_to_id == pxId & s.hangton == false).FirstOrDefault();
     }
 
     public static decimal soLuongTonKhoThucTe(string khoId, string spId, EntityContext db)

@@ -85,6 +85,12 @@
                         public string phongbanId { get; set; }
                 
 						
+                        #region md_phanxuong_to_phongbanId2_wintaFN
+                        
+                        #endregion md_phanxuong_to_phongbanId2_wintaFN
+                        public string phongbanId2 { get; set; }
+                
+						
                         #region md_phanxuong_to_sapxep_wintaFN
                         
                         #endregion md_phanxuong_to_sapxep_wintaFN

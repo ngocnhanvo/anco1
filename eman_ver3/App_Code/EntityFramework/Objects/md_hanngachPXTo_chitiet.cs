@@ -97,6 +97,12 @@
                         public int? sllayton { get; set; }
                 
 						
+                        #region md_hanngachPXTo_chitiet_sllaytonTP_wintaFN
+                        
+                        #endregion md_hanngachPXTo_chitiet_sllaytonTP_wintaFN
+                        public int? sllaytonTP { get; set; }
+                
+						
                     }
                 }
             

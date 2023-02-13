@@ -67,6 +67,18 @@
                         public bool? ketoan { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_kiemtraSL_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_kiemtraSL_wintaFN
+                        public bool? kiemtraSL { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_laytonTP_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_laytonTP_wintaFN
+                        public bool? laytonTP { get; set; }
+                
+						
                         #region md_vanchuyennoibo_loaichuyen_wintaFN
                         
                         #endregion md_vanchuyennoibo_loaichuyen_wintaFN
