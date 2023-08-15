@@ -4,17 +4,17 @@
     <!-- cong cu them sua xoa mac dinh -->
     <tr class="cl_tr_thanhcongcu">
         <td colspan="6">
-            <div class="sub_trangthu" style="padding:28px 0 0 8px;background:none; border:none">
+            <div class="sub_trangthu" style="padding:28px 0 0 8px;background:none; border:none; position: relative;">
                 <div style="    
                     background-image: url(images/Menu/Menu_bordertop.png);
                     background-repeat: repeat-x;
                     position: absolute;
-                    width: 100%;
+                    width: calc(100% - 7px);
                     height: 7px;
                     border-radius: 4px 0px 0px 0px;
                     "
                 ></div>
-                <iframe id="frameReport" src="extension/report.aspx" style="width: 100%; height: 100%; border: 1px solid rgba(157,159,180,.35); border-radius: 4px 0px 0px 0px;"></iframe>
+                <iframe id="frameReport" src="extension/mess/mess.aspx" style="width: 100%; height: 100%; border: 1px solid rgba(157,159,180,.35); border-radius: 4px 0px 0px 0px;"></iframe>
             </div>
         </td>
     </tr>

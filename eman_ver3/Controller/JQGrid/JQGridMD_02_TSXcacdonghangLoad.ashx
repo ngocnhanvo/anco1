@@ -51,20 +51,44 @@ string id_vaitro = Security.id_vaitro(context);            string where_vaitro =
                 orderby = sidx + " " + sord;
             }
 
+            string groupby = "";
+            if (mod_.groupby_sql != null & mod_.groupby_sql != "")
+                groupby = string.Format("group by {0}", mod_.groupby_sql);
 
             string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY "+ orderby +")";
-            string sql = string.Format(@"sELeCt * fRoM (
-            sELeCt " + select_sql + 
-            @" (case when {4} = '{5}' and (" + ROW_NUMBER +" <= " + start + " or " + ROW_NUMBER + " >= " + end + ")  then -1 else " + ROW_NUMBER + " end) as RowNum" +
-            @" fRoM {1}
-            WHeRe 1=1 {2} {3} {6} {7} {8} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " or (RowNum = -1) order by RowNum asc",
-            orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);
+            string sql = string.Format(@"
+            sELeCt * fRoM (
+                select
+                    P.md_sanpham_id, 
+                    P.md_donvitinhsanpham_id,
+                    sum(P.sl_dat) as sl_dat,
+                    sum(P.sl_chiato) as sl_chiato,
+                    sum(P.sl_dahoanthanh) as sl_dahoanthanh,
+                    sum(P.sl_dagiao) as sl_dagiao,
+                    sum(P.sl_nkton) as sl_nkton,
+                    ROW_NUMBER() OVER (ORDER BY P.md_sanpham_id) as RowNum
+                from (
+                    sELeCt " + select_sql + " 0 as RowNum" +
+                    @" from {1}
+                    WHeRe 1=1 {2} {3} {6} {7} {8}
+                    {9}
+                )P
+                where 
+                    1=1
+                group by 
+                    P.md_sanpham_id, P.md_donvitinhsanpham_id
+            ) P 
+            WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
+            orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select, groupby);
 
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
 
+            string sqlcount = sql.Split('^')[1];
+            sqlcount = sqlcount.Replace("''", "'");
+            sqlcount = string.Format("select count(1) as count from(select {0})P)P ", sqlcount.Replace("select count(1) as count", "*"));
 
-            string sqlcount = string.Format("exec [dbo].[{3}] N'{0}',N'{1}',{2}", sql, mod_.ma_moduletk, 0, mod_.procedure_sql);
+            //string sqlcount = string.Format("exec [dbo].[{3}] N'{0}',N'{1}',{2}", sql, mod_.ma_moduletk, 0, mod_.procedure_sql);
             System.Data.DataTable dt_count = Mbg.Data.SqlClient.SqlHelper.GetData(sqlcount);
             int count = int.Parse(dt_count.Rows[0][0].ToString());
             string sql_select = string.Format("exec [dbo].[{3}] N'{0}',N'{1}',{2}", sql, mod_.ma_moduletk, 1, mod_.procedure_sql);

@@ -37,9 +37,10 @@ public class ChangePrintMethod : IHttpHandler, System.Web.SessionState.IRequires
     public void configMenu(HttpContext context)
     {
         string msg = "";
-        dynamic result = new Dictionary<string, object>() { { "ok", false }, { "msg", "" }, { "btnDongMenuTuDong", false } };
+        dynamic result = new Dictionary<string, object>() { { "ok", false }, { "msg", "" }, { "btnDongMenuTuDong", false }, { "btnDongMenuConTuDong", false } };
         string ck = Security.id_taikhoan(context);
-        var btnDongMenuTuDong = context.Request.Form["btnDongMenuTuDong"].ToLower() == "true";
+        var dongMenuTuDong = context.Request.Form["dongMenuTuDong"].ToLower() == "true";
+        var dongMenuConTuDong = context.Request.Form["dongMenuConTuDong"].ToLower() == "true";
 
         try
         {
@@ -47,7 +48,8 @@ public class ChangePrintMethod : IHttpHandler, System.Web.SessionState.IRequires
             var user = db.ad_user.Where(s => s.ad_user_id == ck).FirstOrDefault();
             if (user != null)
             {
-                user.btnDongMenuTuDong = btnDongMenuTuDong;
+                user.btnDongMenuTuDong = dongMenuTuDong;
+                user.btnDongMenuConTuDong = dongMenuConTuDong;
                 db.SaveChanges();
             }
             else
@@ -64,7 +66,8 @@ public class ChangePrintMethod : IHttpHandler, System.Web.SessionState.IRequires
         {
             msg = "<div class='nhan-thanhcong'>Cập nhật tùy chỉnh hiển thị menu thành công</div>";
             result["ok"] = true;
-            result["btnDongMenuTuDong"] = btnDongMenuTuDong;
+            result["btnDongMenuTuDong"] = dongMenuTuDong;
+            result["btnDongMenuConTuDong"] = dongMenuConTuDong;
         }
         else
         {

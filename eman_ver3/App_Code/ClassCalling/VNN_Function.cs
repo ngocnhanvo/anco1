@@ -59,6 +59,7 @@ public static class VNN_Function
         user.chuyenCachInBTSangPDF = tk.chuyenCachInBTSangPDF;
         user.tuDongNhanDienCachIn = tk.tuDongNhanDienCachIn;
         user.btnDongMenuTuDong = tk.btnDongMenuTuDong;
+        user.btnDongMenuConTuDong = tk.btnDongMenuConTuDong;
         user.chinhanh = pb.md_doitackinhdoanh_id;
         user.ma_nhanvien = tk.ma_nhanvien;
         return user;
@@ -164,15 +165,15 @@ public static class VNN_Function
                     selectoptions.Add(sel);
                 }
             }
-            db.ad_selectop_save.RemoveRange(db.ad_selectop_save.Where(s=>s.ten_table == sel_save.ten_table));
+            db.ad_selectop_save.RemoveRange(db.ad_selectop_save.Where(s => s.ten_table == sel_save.ten_table));
         }
         db.SaveChanges();
         string jsonData = JsonConvert.SerializeObject(selectoptions, Formatting.Indented);
-        if(jsonData != null) 
+        if (jsonData != null)
         {
-            if(jsonData.Replace("\n","").Replace(" ","").Length > 0) 
-            { 
-	            json.urlData = typeof(ad_selectoption).Name;
+            if (jsonData.Replace("\n", "").Replace(" ", "").Length > 0)
+            {
+                json.urlData = typeof(ad_selectoption).Name;
                 json.WriteJson(jsonData);
             }
         }
@@ -181,9 +182,9 @@ public static class VNN_Function
 
     public static string ADUpdateSelect_Auto(System.Web.HttpContext context, EntityContext db, ADmin_JSON json)
     {
-        if(db == null)
+        if (db == null)
             db = new EntityContext();
-        if(json == null)
+        if (json == null)
             json = new ADmin_JSON();
 
         json.urlData = typeof(ad_selectoption).Name;
@@ -409,17 +410,38 @@ public static class VNN_Function
         db.SaveChanges();
     }
 
-    public static void XoaPhanQuyen(System.Web.HttpContext context, string ad_module_id, string ad_case_id, ADmin_JSON json)
+    public static void XoaPhanQuyen(System.Web.HttpContext context, string ad_module_id, string ad_case_id, ADmin_JSON json, EntityContext db = null)
     {
-        EntityContext db = new EntityContext();
+        if (db == null)
+            db = new EntityContext();
+
         List<ad_role_mmc> lstAdRoleMMC = json.ad_role_mmcJSON();
+        List<ad_role_mmcol> lstAdRoleMMCol = json.ad_role_mmcolJSON();
         List<string> idsDelRoleMMC = new List<string>();
-        if (string.IsNullOrEmpty(ad_case_id))
+        List<string> idsDelRoleMMCol = new List<string>();
+        var xoaModule = string.IsNullOrWhiteSpace(ad_case_id);
+        if (xoaModule)
         {
-            foreach (ad_role_mmc pq in db.ad_role_mmc.Where(s => s.ad_module_id == ad_module_id).ToList())
+            foreach (var pq in db.ad_role_mmc.Where(s => s.ad_module_id == ad_module_id).ToList())
             {
                 db.ad_role_mmc.Remove(pq);
                 idsDelRoleMMC.Add(pq.ad_role_mmc_id);
+            }
+
+            foreach (var pq in db.ad_role_mmcol.Where(s => s.ad_module_id == ad_module_id).ToList())
+            {
+                db.ad_role_mmcol.Remove(pq);
+                idsDelRoleMMCol.Add(pq.ad_role_mmcol_id);
+            }
+
+            foreach (var pq in db.ad_role_where.Where(s => s.ad_module_id == ad_module_id).ToList())
+            {
+                db.ad_role_where.Remove(pq);
+            }
+
+            foreach (var pq in db.ad_role_mmvalue.Where(s => s.ad_module_id == ad_module_id).ToList())
+            {
+                db.ad_role_mmvalue.Remove(pq);
             }
         }
         else
@@ -436,6 +458,14 @@ public static class VNN_Function
         string jsonData = JsonConvert.SerializeObject(lstAdRoleMMC, Formatting.Indented);
         json.urlData = typeof(ad_role_mmc).Name;
         json.WriteJson(jsonData);
+
+        if (xoaModule)
+        {
+            lstAdRoleMMCol = lstAdRoleMMCol.Where(s => !idsDelRoleMMCol.Contains(s.ad_role_mmcol_id)).ToList();
+            jsonData = JsonConvert.SerializeObject(lstAdRoleMMCol, Formatting.Indented);
+            json.urlData = typeof(ad_role_mmcol).Name;
+            json.WriteJson(jsonData);
+        }
     }
 
     public static ad_role_mmc ThemPhanQuyen(System.Web.HttpContext context, string ad_role_id, string ad_menu_id, string ad_module_id, string ad_case_id)
@@ -523,6 +553,98 @@ public static class VNN_Function
         string jsonData = JsonConvert.SerializeObject(lstAdRoleMMC, Formatting.Indented);
         json.urlData = typeof(ad_role_mmc).Name;
         json.WriteJson(jsonData);
+        return pqBB;
+    }
+
+    public static ad_role_mmc ThemPhanQuyenChucNang(System.Web.HttpContext context, string ad_role_id, string ad_menu_id, string ad_module_id, string caseId, EntityContext db)
+    {
+        string id_taikhoan = Security.id_taikhoan(context);
+        string id_vaitro = Security.id_vaitro(context);
+        string id_phongban = Security.id_phongban(context);
+        var tk = db.ad_user.Where(s => s.ad_user_id == id_taikhoan).Take(1).FirstOrDefault();
+        var vtr = db.ad_role.Where(s => s.ad_role_id == id_vaitro).Take(1).FirstOrDefault();
+        var pb = db.ad_department.Where(s => s.md_phongban_id == id_phongban).Take(1).FirstOrDefault();
+        ad_role_mmc pqBB = null;
+
+        foreach (var cn in db.ad_case.Where(s => s.ad_module_id == ad_module_id & s.ad_case_id == caseId).ToList())
+        {
+            pqBB = new ad_role_mmc
+            {
+                ad_role_mmc_id = Helper.getNewId(),
+                ad_menu_id = ad_menu_id,
+                ad_module_id = ad_module_id,
+                ad_case_id = cn.ad_case_id,
+                ten_case = cn.ten_case,
+                ad_role_id = ad_role_id,
+                mota = null,
+
+                nguoitao = tk.ad_user_id,
+                vaitrotao = vtr.ad_role_id,
+                bophantao = pb.md_phongban_id,
+                value_nguoitao = tk.ma_user,
+                value_vaitrotao = vtr.ten_role,
+                value_bophantao = pb.ten_phongban,
+
+                nguoicapnhat = tk.ad_user_id,
+                vaitrocapnhat = vtr.ad_role_id,
+                bophancapnhat = pb.md_phongban_id,
+                value_nguoicapnhat = tk.ma_user,
+                value_vaitrocapnhat = vtr.ten_role,
+                value_bophancapnhat = pb.ten_phongban,
+
+                ngaytao = DateTime.Now,
+                ngaycapnhat = DateTime.Now,
+                hoatdong = true
+            };
+        }
+
+        return pqBB;
+    }
+
+    public static ad_role_mmcol ThemPhanQuyenCot(System.Web.HttpContext context, string ad_role_id, string ad_menu_id, string ad_module_id, string columnId, bool edit, bool view, EntityContext db)
+    {
+        string id_taikhoan = Security.id_taikhoan(context);
+        string id_vaitro = Security.id_vaitro(context);
+        string id_phongban = Security.id_phongban(context);
+        var tk = db.ad_user.Where(s => s.ad_user_id == id_taikhoan).Take(1).FirstOrDefault();
+        var vtr = db.ad_role.Where(s => s.ad_role_id == id_vaitro).Take(1).FirstOrDefault();
+        var pb = db.ad_department.Where(s => s.md_phongban_id == id_phongban).Take(1).FirstOrDefault();
+        ad_role_mmcol pqBB = null;
+
+        foreach (var cn in db.ad_column.Where(s => s.ad_module_id == ad_module_id & s.ad_column_id == columnId).ToList())
+        {
+            pqBB = new ad_role_mmcol
+            {
+                ad_role_mmcol_id = Helper.getNewId(),
+                ad_menu_id = ad_menu_id,
+                ad_module_id = ad_module_id,
+                ad_column_id = cn.ad_column_id,
+                ten_column = cn.ten_column,
+                ad_role_id = ad_role_id,
+                disableEdit = edit,
+                disableView = view,
+                mota = null,
+
+                nguoitao = tk.ad_user_id,
+                vaitrotao = vtr.ad_role_id,
+                bophantao = pb.md_phongban_id,
+                value_nguoitao = tk.ma_user,
+                value_vaitrotao = vtr.ten_role,
+                value_bophantao = pb.ten_phongban,
+
+                nguoicapnhat = tk.ad_user_id,
+                vaitrocapnhat = vtr.ad_role_id,
+                bophancapnhat = pb.md_phongban_id,
+                value_nguoicapnhat = tk.ma_user,
+                value_vaitrocapnhat = vtr.ten_role,
+                value_bophancapnhat = pb.ten_phongban,
+
+                ngaytao = DateTime.Now,
+                ngaycapnhat = DateTime.Now,
+                hoatdong = true
+            };
+        }
+
         return pqBB;
     }
 
@@ -732,7 +854,12 @@ public static class VNN_Function
         propInfo.SetValue(collection, false, new object[] { });
 
         // Change the value of the key.
-        collection[key] = value;
+        if (collection.AllKeys.Contains(key))
+            collection[key] = value;
+        else
+        {
+            collection.Add(key, value);
+        }
 
         // Mark the collection back as "IsReadOnly"     
         propInfo.SetValue(collection, true, new object[] { });
@@ -863,11 +990,14 @@ public static class VNN_Function
         return kq;
     }
 
-    public static string Write_log(System.Web.HttpContext context, string ma_module, string ma_modulebs, string oper, string noidung, EntityContext db)
+    public static string Write_log(System.Web.HttpContext context, string ma_module, string ma_modulebs, string oper, string noidung, EntityContext db, bool? nosubmit = false, User_TK us = null)
     {
         string kq = "";
         ad_case cn = null;
-        User_TK us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+
+        if (us == null)
+            us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+
         if (oper != "add" & oper != "edit" & oper != "del")
         {
             if (ma_modulebs != null & ma_modulebs != "")
@@ -883,39 +1013,26 @@ public static class VNN_Function
                 cn = db.ad_case.Where(s => s.ma_module == ma_module & s.hamxuly.Equals("click_" + oper + "(tengrid)")).Take(1).FirstOrDefault();
         }
 
-        ad_log log = new ad_log
+        var log = new ad_log
         {
             ad_log_id = Helper.getNewId(),
             ad_case_id = cn.ad_case_id,
             ad_module_id = cn.ad_module_id,
-
-            nguoitao = us.ad_user_id,
-            vaitrotao = us.ad_role_id,
-            bophantao = us.md_phongban_id,
-            value_nguoitao = us.ma_user,
-            value_vaitrotao = us.ten_role,
-            value_bophantao = us.ten_phongban,
-
-            nguoicapnhat = us.ad_user_id,
-            vaitrocapnhat = us.ad_role_id,
-            bophancapnhat = us.md_phongban_id,
-            value_nguoicapnhat = us.ma_user,
-            value_vaitrocapnhat = us.ten_role,
-            value_bophancapnhat = us.ten_phongban,
-
-            ngaytao = DateTime.Now,
-            ngaycapnhat = DateTime.Now,
             mota = noidung,
             hoatdong = true
         };
+        log = Helper.setDefaultValueWhenInsertOrUpdate(log, us, false);
         db.ad_log.Add(log);
-        db.SaveChanges();
+
+        if (!nosubmit.GetValueOrDefault(false))
+            db.SaveChanges();
+
         return kq;
     }
 
     public static void WriteSCTDaXoa(System.Web.HttpContext context, User_TK us, string sct, EntityContext db)
     {
-        if(us == null)
+        if (us == null)
             us = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context));
 
         var sctDaXoa = new md_sochungtudaxoa

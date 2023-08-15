@@ -32,6 +32,7 @@
     <!-- layout -->
     <script src="js/Public_script/jquery.number.js" type="text/javascript"></script>
     <script src="js/Public_script/jquery.form.js" type="text/javascript"></script>
+    <script src="js/Public_script/jquery.dragScroll.js" type="text/javascript"></script>
     <script src="js/VNN_script/CheckBrowser.js" type="text/javascript"></script>
     <!-- Script Jqx Widgets -->
     <script src="js/jqxwidgets/jqxcore.js" type="text/javascript"></script>
@@ -47,6 +48,8 @@
 
     <script src="js/ComboGrid/plugin/jquery.ui.combogrid-1.6.3.js" type="text/javascript"></script>
     <link href="js/ComboGrid/css/jquery.ui.combogrid.css" rel="stylesheet" />
+
+    <script src="js/Public_script/moment.js"></script> 
     <!--/ layout -->
     
     <!--Script Module-->
@@ -77,14 +80,16 @@
                 divScript.html(`Tổng: ${countModuleTotal}, đã tải: ${countModuleLoaded}`);
 
                 if (countModuleTotal == countModuleLoaded) {
-                    setTimeout(function () {
+                    let sto1 = setTimeout(function () {
                         divScript.html('Đã cập nhật javascript thành công.');
-                        setTimeout(function () {
+                        let sto2 = setTimeout(function () {
                             divScript.hide();
+                            clearTimeout(sto2);
                         }, 200);
+                        clearTimeout(sto1);
                     }, 200);
                 }
-            };t
+            };
 
             //if (confirm('Bạn có chắn chắn muốn tải lại thư viện javascript???')) {
                 divScript.show();
@@ -93,9 +98,47 @@
         };
 
     </script>
+
+    <style type="text/css">
+        @media (min-width: 721px) {
+            .menuMobile {
+                display: none;
+            }
+        }
+
+         @media (max-width: 720px) {
+            td.tdDisplayMenuConfig, td.menuSpaceModule, td.tdDisplayButton {
+                display: none;
+            }
+
+            td.menu {
+                min-width: 220px;
+                position: absolute;
+                z-index: 4;
+                box-shadow: 1px 1px 4px #000;
+            }
+
+            .menuMobile {
+                color: #FFF;
+                font-size: 14px !important;
+                padding: 8px;
+            }
+
+            .ui-dialog, .ui-jqdialog, .ui-jqdialog-content .FormGrid {
+                max-width: 100%;
+            }
+
+            .ui-pager-control > table.ui-pg-table > tbody > tr > td:first-child, 
+            .ui-pager-control > table.ui-pg-table > tbody > tr > td:last-child {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body class="main_body" id="main_body">
+    <div style="display:none" id="divRoteMobile">Hãy xoay điện thoại theo hướng dọc</div>
     <div style="display:none" id="divScript">Đang tải..</div>
+    <div style="display:none" id="divVirtual"></div>
     <div class="overlay-dark"></div>
     <img alt="" class="img-overlay" />
     <div class="ckeditorPublic hidden">
@@ -120,9 +163,13 @@
                     </div>
                 </td>
 
-                <td style="width: 12px; min-width: 12px"></td>
+                <td style="width: 12px; min-width: 12px">
+                    <div onclick="showMenuMobile();" class="menuMobile">
+                        <i class="fa fa-bars"></i>
+                    </div>
+                </td>
 
-                <td style="width: 180px; min-width: 180px">
+                <td class="tdDisplayButton" style="width: 180px; min-width: 180px">
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 12px;" onclick="click_back()" alt="" title="trở về trang trước" src="images/Menu/header_back2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0" onclick="click_refreshPage(true)" alt="" title="làm mới trang hiện tại" src="images/Menu/header_frefesh2.png" />
                     <img class="cl_img_btnmenu" style="margin: 0 10px -3px 0;" onclick="click_doimau()" alt="" title="đổi màu" src="images/Menu/header_idea2.png" />
@@ -137,13 +184,6 @@
                         <span class="cl_span_urlmenu" style="display:none;">URL of clicking events</span>
                     </div>
                 </td>
-                <td style="width: 92px">
-                    <div id="logo_right" class="cl_div_chiadiv2">
-                        <img height="30" width="60" style='margin: 0 0 0 20px;' alt="" title="hình ảnh" src="images/logo/logo_esc2.png" />
-                    </div>
-                </td>
-
-
             </tr>
         </table>
         <!-- #head_page -->
@@ -226,34 +266,29 @@
         var heightHeader = $('.nhan_header').height();
         var heightFooter = $('.footer').height();
         var height_menu_noidung = heightBody - (heightHeader + heightFooter) * ratePercentTransform;
-        let searchParams = new URLSearchParams(window.location.search);
+        var searchParams = new URLSearchParams(window.location.search);
         var isLinkTransfer = searchParams.has('menu');
         var googleMapLoaded = false;
         var input_focus_public;
         var formVisible_addEdit, formVisible_Del, formVisible_addEdit_id, formVisible_Del_id;
 
-        
+        var hideTabInGrid = function (arrMaModule, selected) {
+             arrMaModule.forEach(function(str) {
+                 let item = $(`li[aria-controls="tabs_${str}"][role="tab"]`);
+                 item.hide();
+            });
+
+            if (selected) {
+                $(`li[aria-controls="tabs_${selected}"][role="tab"] > a`).click();
+            }
+            return arrMaModule;
+        };
+
         if(isLinkTransfer) 
         {
             $('td.menu').css('display', 'none');
             $('td.menu').next().css('display', 'none');
             $('.nhan_header').css('visibility', 'hidden');
-            let arrHide = ['MD_01_Khach_HangGoogleMap', 'MD_01_NhaCungCap_GoogleMap', 'MD_01_CongTyChiNhanhGGMap'];
-            let arrHideLen = arrHide.length;
-            let hideGoogleMap = function() {
-                if(arrHide.length == arrHideLen) {
-                    arrHide.forEach(function(str) {
-                        let item = $(`li[aria-controls="tabs_${str}"][role="tab"]`);
-                        
-                        if(item.attr('style')) {
-                            item.hide();
-                            arrHide = arrHide.filter(e => e !== str);
-                        }
-                    });
-                    setTimeout(hideGoogleMap, 1000);
-                }
-            };
-            hideGoogleMap();
         }
         else {
             $.getScript( "https://polyfill.io/v3/polyfill.min.js?features=default", function( data, textStatus, jqxhr ) {
@@ -265,16 +300,18 @@
 
         $('.menu').height(height_menu_noidung);
 
-        setTimeout(function () {
+        let sto3 = setTimeout(function () {
             loadMenu('Menu/Menu.htm');
+            clearTimeout(sto3);
         }, 10);
 
-        setInterval(function () {
-            $.ajax({
-                type: "GET",
-                url: "Controller/PublicFunction/Timer.ashx",
-                async: true
-            });
+        let inter270323 = setInterval(function () {
+            if (reload_page) {
+                clearInterval(inter270323);
+            }
+            else {
+                checkNewReport();
+            }
         }, 60000);
 
         $('body').click(function (e) {
@@ -734,6 +771,7 @@
         let chuyenCachInBTSangPDF = <%=tk.chuyenCachInBTSangPDF.GetValueOrDefault(false).ToString().ToLower() %>;
         let tuDongNhanDienCachIn = <%=tk.tuDongNhanDienCachIn.GetValueOrDefault(false).ToString().ToLower() %>;
         let btnDongMenuTuDong = <%=tk.btnDongMenuTuDong.GetValueOrDefault(false).ToString().ToLower() %>;
+        let btnDongMenuConTuDong = <%=tk.btnDongMenuConTuDong.GetValueOrDefault(false).ToString().ToLower() %>;
         let mauBackgroundDF = '<%=tk.mauBackground %>';
         load_doimau_client(mauBackgroundDF);
         let ma_tk = '<%=tk.ma_user %>';
@@ -833,7 +871,16 @@
         }
 
 		history.pushState(null,null,""),window.addEventListener("popstate",function(){history.pushState(null,null,"")}),"Firefox"!=Browser&&$(window).bind("beforeunload",function(n){return null==reload_page?'BẠN MUỐN LÀM MỚI LẠI GIAO DIỆN?\n\n >> Nhấn "Reload This Page" để làm mới\n >> Nhấn "Don\'t Reload" để hủy thao tác.':void 0});
-    
+
+        var showMenuMobile = function () {
+            if ($('.menu').css('display') == 'none') {
+                $('.menu').css('display', '');
+            }
+            else {
+                $('.menu').css('display', 'none');
+            }
+        }
+
 		window.onresize = function() {
 		    click_refreshPage2();
 		}; 
@@ -1030,7 +1077,65 @@
                 eval(b);
                 $('#td_' + data.ma_menu).click();
 		    }
-		});
+        });
+
+        function detectMobileOrientation() {
+            switch (screen.orientation.angle) {
+                case 90:
+                    showRoteMobile(screen.orientation.angle);
+                    break;
+                case 270:
+                    showRoteMobile(screen.orientation.angle);
+                    break;
+                default:
+                    showRoteMobile(screen.orientation.angle, true);
+                    break;
+            }
+        }
+
+        var prevMenuMobile = $('.menuMobile').is(":visible");
+
+        var showHideMenuMobile = function () {
+            if ($('.menuMobile').is(":visible")) {
+                $('.menu').css('display', 'none');
+            }
+            else {
+				if(!isLinkTransfer)
+					$('.menu').css('display', '');
+            }
+        };
+
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(userAgent);
+        const isMobile = /iphone|ipod|android/i.test(userAgent);
+        var showRoteMobile = function (angle, hide) {
+            if (hide) {
+                if (isTablet) {
+                    $('#divRoteMobile').html('Vui lòng xoay thiết bị theo hướng ngang');
+                    $('#divRoteMobile').show();
+                }
+                else {
+                    $('#divRoteMobile').hide();
+                    click_refreshPage2();
+                }
+            }
+            else {
+                if (isMobile) {
+                    $('#divRoteMobile').html('Vui lòng xoay thiết bị theo hướng dọc');
+                    $('#divRoteMobile').show();
+                }
+                else {
+                     $('#divRoteMobile').hide();
+                    click_refreshPage2();
+                }
+            }
+        };
+
+        showHideMenuMobile();
+
+        window.addEventListener("orientationchange", detectMobileOrientation);
+
+        detectMobileOrientation();
     </script>
 </body>
 </html>

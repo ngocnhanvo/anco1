@@ -80,7 +80,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                 //Xu Ly nhap kho
                 foreach (var px in db.md_xuatban.Where(s => vnn.Contains(s.md_xuatban_id)).ToList())
                 {
-                    if (px.trangthai == "HIEULUC")
+                    if (px.trangthai == Helper.HIEULUC)
                     {
                         msg = "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
                         break;
@@ -133,7 +133,26 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
 
                     if (msg.Length <= 0)
                     {
-                        px.trangthai = "HIEULUC";
+                        var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id).FirstOrDefault();
+                        if(dsdh != null)
+                        {
+                            var checkKTServer = db.c_dongdsdh.Where(s =>
+                                s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
+                                (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
+                                ).Take(1).Count();
+
+                            var checkKT = db.c_dongdsdh.Local.Where(s =>
+                                s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
+                                (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
+                                ).Take(1).Count();
+
+                            if(checkKT <= 0)
+                            {
+                                dsdh.trangthai = Helper.KETTHUC;
+                            }
+                        }
+
+                        px.trangthai = Helper.HIEULUC;
                         db.SaveChanges();
                     }
 
@@ -161,7 +180,9 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         var xk = db.md_xuatban.Where(s => s.md_xuatban_id == dh.md_xuatban_id).FirstOrDefault();
         var ddsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
         if (ddsdh != null)
-            ddsdh.sl_hanngach += (decimal)dh.sl_xuat;
+        {
+            ddsdh.sl_hanngach = ddsdh.sl_hanngach.GetValueOrDefault(0) + dh.sl_xuat.GetValueOrDefault(0);
+        }
 
         decimal sl_daxuat = dh.sl_daxuat.Value + dh.sl_xuat.Value;
         if (dh.tong_sl_xuat.Value <= sl_daxuat)

@@ -85,6 +85,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_kehoachdathang_nhomKH_wintaFN
+                        
+                        #endregion c_kehoachdathang_nhomKH_wintaFN
+                        public string nhomKH { get; set; }
+                
+						
                         #region c_kehoachdathang_sodonhang_wintaFN
                         
                         #endregion c_kehoachdathang_sodonhang_wintaFN

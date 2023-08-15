@@ -91,7 +91,7 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                         { key: false, fixed: true, label: 'Mô tả tiếng việt', name: 'mota_tiengviet', index: 'sp.mota_tiengviet', width: 120, editable: false, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Mô tả tiếng việt' } },
                         { key: false, fixed: true, label: 'SL cần mua', name: 'sl_canmua', index: '', width: 95, editable: false, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'SL cần' } },
                         { key: false, fixed: true, label: 'Đơn vị tính', name: 'md_donvitinhsanpham_id2', index: 'dvt_sp.ten_dvt', width: 80, editable: false, editrules: { edithidden: true }, hidden: false, align: 'center', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Đơn vị tính' } },
-                        { key: false, fixed: true, label: 'SL mua', name: 'sl_semua', index: '', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['bw'], dataInit: function (elem) { search_number(elem); } }, editoptions: { dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'SL mua' } },
+                        { key: false, fixed: true, label: 'SL mua', name: 'sl_semua', index: '', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['bw'], dataInit: function (elem) { search_number(elem); } }, editoptions: { dataInit: function (elem) { format_numeric($(elem), 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'SL mua' } },
                         { key: false, fixed: true, label: 'Đơn vị tính', name: 'md_donvitinhsanpham_id', index: 'dvt_sp.ten_dvt', width: 80, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Đơn vị tính' }, edittype: 'select', editoptions: { value: donvitinh } },
                         { key: false, fixed: true, label: 'Nhà cung ứng', name: 'md_doitackinhdoanh_id', index: 'dtkd.ma_dtkd', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_dtkdHHVT(elem); $(elem).css('padding', '3px 20px 3px 0px'); } }, frozen: false, formoptions: { label: 'Nhà cung ứng' } },
                     ],
@@ -108,9 +108,11 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                         //$(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());
                     },
                     loadComplete: function (data) {
-                        var ids = jQuery("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
+                        var ids = $("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
                         for (var i = 0; i < ids.length; i++) {
-                            jQuery('#gridMD_00_KHMHHVT_cp').editRow(ids[i]);
+                            $('#gridMD_00_KHMHHVT_cp').editRow(ids[i]);
+                            $('#' + ids[i] + '_sl_semua').css({ 'text-align': 'right' });
+                            $('#' + ids[i] + '_sl_semua').attr('autocomplete', 'off');
                         }
                         //giữ focus end
                         $('.' + input_focus).focus();
@@ -132,7 +134,7 @@ function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_info
                         var ids_sel = jQuery("#gridMD_00_KHMHHVT_cp").jqGrid('getDataIDs');
                         var arr_sl = '', arr_ncc = '', arr_id = '', arr_dvt = '';
                         for (var i = 0; i < ids_sel.length; i++) {
-                            arr_sl += getCellValue(ids_sel[i], 'sl_semua') + ',';
+                            arr_sl += $('#' + ids_sel[i] + '_sl_semua')[0].val2() + ',';
                             //--
                             arr_ncc += getCellValue(ids_sel[i], 'md_doitackinhdoanh_id') + ',';
                             //--

@@ -21,23 +21,27 @@ public class MainHubExcute
 
     public void Exec(string name, string data)
     {
-        string url = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+        string url = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + Security.UrlBase();
         if (string.IsNullOrWhiteSpace(urlHub))
         {
-            string chub = string.IsNullOrWhiteSpace(classHub) ? "MainHub" : classHub;
+            string chub = string.IsNullOrWhiteSpace(classHub) ? Avariables.hubname : classHub;
             var magicType = Type.GetType(chub);
             var magicConstructor = magicType.GetConstructor(Type.EmptyTypes);
             object magicClassObject = magicConstructor.Invoke(new object[] { });
             var magicMethod = magicType.GetMethod(name);
             object magicValue = magicMethod.Invoke(magicClassObject, new object[] { data });
         }
-        else if(urlHub != url)
+        else if (urlHub != url)
         {
             var hubConnection = new HubConnection(url);
             var stockTickerHubProxy = hubConnection.CreateHubProxy(Avariables.hubname);
             hubConnection.Start().Wait(30000);
 
-            stockTickerHubProxy.Invoke(name, data);
+            if (hubConnection.State == ConnectionState.Connected)
+            {
+                stockTickerHubProxy.Invoke(name, data).Wait();
+                hubConnection.Stop();
+            }
         }
     }
 }

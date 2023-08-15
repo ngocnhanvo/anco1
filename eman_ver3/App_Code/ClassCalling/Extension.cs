@@ -210,8 +210,19 @@ public static class Extension
         string sctLSX = arr[0];
         string tentoLSX = arr[1];
         var lsx = db.md_lenhsanxuat.Where(s => s.sochungtu == sctLSX).FirstOrDefault();
-        string toId = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == lsx.md_phanxuong_id &
-        s.ten_to == tentoLSX).Select(s => s.md_to_id).FirstOrDefault();
+        string toId = db.md_phanxuong_to.Where(s => 
+            s.md_phanxuong_id == lsx.md_phanxuong_id 
+            & s.ten_to == tentoLSX
+            ).Select(s => s.md_to_id).FirstOrDefault();
+
+        if(string.IsNullOrWhiteSpace(toId))
+        {
+            toId = db.md_phanxuong_to.Where(s =>
+            s.md_phanxuong_id == lsx.md_phanxuong_id
+            & s.mota == tentoLSX
+            ).Select(s => s.md_to_id).FirstOrDefault();
+        }
+
         var lsxTSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
                             & s.md_phanxuong_to_id == toId).FirstOrDefault();
         return new LSX_TSX {
@@ -366,7 +377,7 @@ public static class Extension
 
     public static int? ToNullableInt(this string s)
     {
-        if (s != null)
+        if (!string.IsNullOrWhiteSpace(s))
             return int.Parse(s);
         else
             return null;
@@ -374,7 +385,7 @@ public static class Extension
 
     public static long? ToNullableLong(this string s)
     {
-        if (s != null)
+        if (!string.IsNullOrWhiteSpace(s))
             return long.Parse(s);
         else
             return null;
@@ -382,7 +393,7 @@ public static class Extension
 
     public static decimal? ToNullableDecimal(this string s)
     {
-        if (s != null)
+        if (!string.IsNullOrWhiteSpace(s))
             return decimal.Parse(s);
         else
             return null;
@@ -390,7 +401,7 @@ public static class Extension
 
     public static double? ToNullableDouble(this string s)
     {
-        if (s != null)
+        if (!string.IsNullOrWhiteSpace(s))
             return double.Parse(s);
         else
             return null;

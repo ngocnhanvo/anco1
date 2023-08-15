@@ -7,6 +7,12 @@
                     public partial class md_lenhsanxuat_tosx_cdh
                     {
                         
+                        #region md_lenhsanxuat_tosx_cdh_bomId_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_bomId_wintaFN
+                        public string bomId { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_bophancapnhat_wintaFN
@@ -121,6 +127,12 @@
                         public string noigiaohang { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_pbgId_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_pbgId_wintaFN
+                        public string pbgId { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_chiato_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_chiato_wintaFN
@@ -161,6 +173,18 @@
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_dat_wintaFN
                         public Decimal? sl_dat { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_sl_dat2_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_dat2_wintaFN
+                        public Decimal? sl_dat2 { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_sl_datncc_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_datncc_wintaFN
+                        public Decimal? sl_datncc { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_cdh_sl_giamhanngach_wintaFN

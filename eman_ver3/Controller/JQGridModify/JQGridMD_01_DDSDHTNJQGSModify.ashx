@@ -103,10 +103,12 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 {
                     msg = "Lỗi:Số lượng đặt hàng phải lớn hơn 0";
                 }
-                //else if (cbm <= 0)
-                //{
-                //    msg = "Lỗi:CBM phải lớn hơn 0";
-                //}
+                else if (dsdh.sanxuatton.GetValueOrDefault(false))
+                {
+                    var rgxBoS = new System.Text.RegularExpressions.Regex("^[0-9][0-9]-[0-9][0-9][0-9][0-9][0-9]-[BLXS][0-9]-[0-9][0-9]$");
+                    if (rgxBoS.IsMatch(sp.ma_sanpham))
+                        msg = "Lỗi: Không thể sản xuất tồn theo bộ";
+                }
 
                 if (msg.Length <= 0)
                 {

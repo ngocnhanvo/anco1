@@ -49,6 +49,12 @@
                         public string from_sql { get; set; }
                 
 						
+                        #region ad_module_groupby_sql_wintaFN
+                        
+                        #endregion ad_module_groupby_sql_wintaFN
+                        public string groupby_sql { get; set; }
+                
+						
                         #region ad_module_header_grid_wintaFN
                         
                         #endregion ad_module_header_grid_wintaFN

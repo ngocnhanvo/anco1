@@ -39,9 +39,17 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             goto end;
         }
 
+        if(ip.ma_import == "IP_BOM_01")
+        {
+            foreach(var vt in db.md_sanpham_bom_vattu.Where(s => s.soluong == null).ToList())
+            {
+                db.md_sanpham_bom_vattu.Remove(vt);
+            }
+        }
+
         VNN_Function.loaddulieu_Auto(db, "MD_00_NhaplieuPM");
 
-        end:;
+    end:;
     }
 
     public string upload(HttpContext context)
@@ -164,11 +172,11 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                 }
                                 tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
 
-                                if (row > 0 & activeWS.Cells.Rows.Count > 2)
+                                if (row > 5 & activeWS.Cells.Rows.Count > 2)
                                 {
                                     tblRow += string.Format(@"<tr><td colspan='{0}' style='background-color:rgb(240, 248, 255);text-align:left;'><b>{1} dòng đã được ẩn...</b></td></tr>",
                                         activeWS.Cells.LastColIndex + 1,
-                                        activeWS.Cells.Rows.Count - 2
+                                        activeWS.Cells.Rows.Count - row
                                         );
                                     break;
                                 }

@@ -61,7 +61,7 @@
 
 div.cl_div_menu {
     margin: -6px 8px 0 0;
-	background: #FFF;
+    background: #FFF;
 }
 
 #gridDSPB_VT_chon tr td input[type=checkbox] {
@@ -364,21 +364,21 @@ button#nhan_uidialog_mini {
     font-weight: 700;
     cursor: pointer;
     user-select: none;
-        background-image: linear-gradient(318deg, #ffffff, #f3f3f3);
+    background-image: linear-gradient(318deg, #ffffff, #f3f3f3);
 }
 
 table.table_div_chuotphai {
     border-collapse: collapse;
 }
 
-table.table_div_chuotphai td {
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
+    table.table_div_chuotphai td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
-table.table_div_chuotphai td:first-child {
-    padding-left: 5px;
-}
+        table.table_div_chuotphai td:first-child {
+            padding-left: 5px;
+        }
 
 span.image_menu0.glyphicon + span {
     position: absolute;
@@ -395,7 +395,8 @@ span.image_menu0.glyphicon + span {
 
 .cl_table_menu tr td a {
     font-weight: 700;
-    color: #666
+    color: #666;
+    user-select: none;
 }
 
 .ui-jqgrid {
@@ -409,9 +410,9 @@ table.menu_btndanhan {
     background-color: #FFF;
 }
 
-table.menu_btndanhan i.fas.fa-minus {
-    opacity: 0;
-}
+    table.menu_btndanhan i.fas.fa-minus {
+        opacity: 0;
+    }
 
 .menu_div_dongkhung {
     min-width: 210px;
@@ -419,28 +420,30 @@ table.menu_btndanhan i.fas.fa-minus {
     background-image: url(../../images/Menu/Menu_bordertop.png);
     background-repeat: repeat-x;
     border-right: 1px solid rgba(157,159,180,.35);
-    /*border-top: 2px solid rgba(157,159,180,.58);*/
-    border-radius: 0 4px 0 0
+    border-radius: 0 4px 0 0;
+    overflow-x: hidden;
 }
 
 .cl_img_btnxemlichtuan {
-    margin: 0 5px 0 0
+    margin: 0 5px 0 0;
 }
 
 .cl_a_btnthongtinnguoidung {
-    margin: 2px 0 0 -2px;
-    padding: 2px 5px 2px 5px;
-    position: absolute;
+    top: -4px;
+    padding: 2px 7px 2px 2px;
+    position: relative;
     font-size: 10.5px !important;
     white-space: pre;
-    color: #2D538D !important
+    color: #2D538D !important;
+    user-select: none;
 }
 
     .cl_a_btnthongtinnguoidung:hover {
         opacity: .8;
         cursor: pointer
     }
-.cl_timkiem{
+
+.cl_timkiem {
     width: 100px;
     margin: 0 0 0 3px;
     position: absolute;
@@ -448,6 +451,7 @@ table.menu_btndanhan i.fas.fa-minus {
     white-space: pre;
     color: #2D538D !important
 }
+
 .display_visible {
     display: inherit
 }
@@ -465,9 +469,9 @@ table.menu_btndanhan i.fas.fa-minus {
     position: relative;
 }
 
-.image_menu1.fa.fa-envelope-open {
-    top: -2px;
-}
+    .image_menu1.fa.fa-envelope-open {
+        top: -2px;
+    }
 
 .span_logout {
     margin: 2px 12px 0 0;
@@ -498,7 +502,18 @@ div.div_scroll_chrome {
 }
 
 @keyframes thumb {
-    0% { top: 4px; background-color: #e5faff; }
-    50% { top: 6px; background-color: #d7eef3; }
-    100% { top: 4px; background-color: #e5faff; }
+    0% {
+        top: -4px;
+        background-color: #e5faff;
+    }
+
+    50% {
+        top: -6px;
+        background-color: #d7eef3;
+    }
+
+    100% {
+        top: -4px;
+        background-color: #e5faff;
+    }
 }

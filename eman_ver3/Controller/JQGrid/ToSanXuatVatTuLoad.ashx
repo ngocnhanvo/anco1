@@ -69,6 +69,7 @@ public class ToSanXuatVatTuLoad : IHttpHandler, System.Web.SessionState.IRequire
                         left join md_lenhsanxuat lsx on lsx.md_lenhsanxuat_id = tosx.md_lenhsanxuat_id
                     WHeRe 1=1 
                         and (isnull(tosx_vt.soluong, 0) - isnull(tosx_vt.sl_hanngach, 0)) > 0
+                        and tosx_vt.hoatdong = 1
                         and N'{1}' like '%' + tosx.md_lenhsanxuat_tosx_id + '%' {0} {2} 
                 ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc"
                 , filter

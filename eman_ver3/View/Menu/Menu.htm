@@ -1,44 +1,36 @@
-﻿<table class="cl_table_menu" >
+﻿<table class="cl_table_menu">
     <!-- thong tin tai khoan -->
     <tr id="trFirstUser" style="width:100%" height="34px">
-        <td colspan = "6" style="cursor:pointer; position: relative">
-            <img  id="Img2" height="18px" style="margin: 0px 0 0 9px;"  alt="" src="images/Menu/menu_user.png"/>
+        <td colspan="6" style="cursor:pointer; position: relative">
+            <img id="Img2" height="18" style="margin: 0px 0 0 9px;" alt="" src="images/Menu/menu_user.png" />
             <a id="a_user" title="xem chi tiết" class="cl_a_btnthongtinnguoidung" onclick="xemthongtinchitiet()"></a>
-            <img class="cl_img_btncanhbao" id="Img4" style="margin: 0px 3px 0 60px;" height="18px" alt="" src="images/Menu/menu_chatbox.png"/>
-			<a onclick="link_report()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
+            <img class="cl_img_btncanhbao" id="Img4" height="18" alt="" src="images/Menu/menu_chatbox.png" />
+            <a onclick="link_report()" id="a_canhbao" class="cl_a_btnthongtinnguoidung">0 Tin nhắn</a>
             <span title="Thoát chương trình" onclick="logout()" class="span_logout glyphicon glyphicon-off"></span>
         </td>
     </tr>
-
     <tr>
         <!--menu -->
         <td class="menu_td_menuchinh" style="max-width: 220px;" colspan="6" valign="top">
-        <div class = "cl_div_menu">
-            <div class="menu_div_dongkhung">
-            <table style="width: 100%;margin: 7px 0 0 0; border-collapse: collapse; ">
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                       
-                    </td>
-                </tr>
-            </table>
-            </div>
+            <div class="cl_div_menu">
+                <div class="menu_div_dongkhung">
+                    <table style="width: 100%;margin: 7px 0 0 0; border-collapse: collapse; ">
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </td>
         <!--#menu -->
     </tr>
 </table>
-
 
 <script type="text/javascript">
     function dem_Records_menu() {
@@ -87,24 +79,32 @@
     });
 
     function loadMenucon(e, d) {
-		var this_sel = $('#tr_' + e + ' > td > table');
+        var this_sel = $('#tr_' + e + ' > td > table');
         if ($(this_sel).hasClass('menu_btndanhan')) {
-			$('#div_' + e + ' > a').css('text-shadow','none');
-			$(this_sel).fadeOut( 200, function(){
-				$('#div_' + e).css('padding', '0px 0 3px 0');
-				$(this).css('display', 'none');
-				$(this).removeClass('menu_btndanhan');
-				//$(this).parent().removeAttr('style');
-			});
+            $('#div_' + e + ' > a').css('text-shadow', 'none');
+            $(this_sel).fadeOut(200, function () {
+                $('#div_' + e).css('padding', '0px 0 3px 0');
+                $(this).css('display', 'none');
+                $(this).removeClass('menu_btndanhan');
+                //$(this).parent().removeAttr('style');
+            });
         }
         else {
-			$('#div_' + e).css('padding', '4px 0 3px 0');
-			$('#div_' + e + ' > a').css('text-shadow','1px 1px 1px #F16B6B');
-			
-			$(this_sel).addClass('menu_btndanhan');
-			$(this_sel).fadeIn( 200, function(){
-				$(this).removeAttr('style');
-			});
+            $('#div_' + e).css('padding', '4px 0 3px 0');
+            $('#div_' + e + ' > a').css('text-shadow', '1px 1px 1px #F16B6B');
+
+            $(this_sel).addClass('menu_btndanhan');
+            $(this_sel).fadeIn(200, function () {
+                $(this).removeAttr('style');
+            });
+        }
+
+        if (btnDongMenuConTuDong) {
+            $('.menu_div_dongkhung > table > tbody > tr').each(function () {
+                let $tbl = $(this).children().children().next();
+                if ($(this).attr('id') != 'tr_' + e)
+                    $tbl.removeClass('menu_btndanhan').hide();
+            });
         }
     }
 
@@ -148,8 +148,10 @@
             $('div.displayMenuConfig').click();
         }
 
+        showHideMenuMobile();
+
         loadPage('Menu/Content/Content.aspx');
-       
+
     }
 
     function overmouse_menu_lv0(e) {
@@ -171,13 +173,9 @@
     }
 
     $('#a_user').append(ma_tk);
-    
-    click_refreshPage();
 
-    let margin_img = 30 + Number($('#a_user').width()) - 18;
-    $('#Img4').css('margin', '0px 3px 0 ' + margin_img + 'px');
+    click_refreshPage();
 
     checkNewReport();
 </script>
-
 

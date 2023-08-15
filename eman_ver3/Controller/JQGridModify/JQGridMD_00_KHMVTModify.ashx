@@ -60,7 +60,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
         var khmvts = db.c_kehoachmuavt.Where(s => id.Contains(s.c_kehoachmuavt_id)).OrderByDescending(s => s.sochungtu);
         c_kehoachmuavt khmvt_sel = khmvts.FirstOrDefault();
 
-        if (khmvts.Where(s => s.md_trangthai_id == "SOANTHAO").Count() == khmvts.Count())
+        if (khmvts.Where(s => s.md_trangthai_id == Helper.SOANTHAO).Count() == khmvts.Count())
         {
             foreach (var khmvt in khmvts.Where(s => s.c_kehoachmuavt_id != khmvt_sel.c_kehoachmuavt_id).ToList())
             {
@@ -263,7 +263,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                     daidien = dtkd.daidien,
                                     ma_sanpham = sp.ma_sanpham,
                                     ma_dtkd = dtkd.ma_dtkd,
-                                    md_banggia_id = db.md_banggia.Where(s => s.lienket_bg == dtkd.ma_dtkd & s.tuychon == "BANVT").Select(s => s.md_banggia_id).ToList()
+                                    md_banggia_id = db.md_banggia.Where(s => s.lienket_bg == dtkd.ma_dtkd & s.tuychon == Helper.MUAVT).Select(s => s.md_banggia_id).ToList()
                                 };
                                 lst.Add(khm);
                             }
@@ -310,21 +310,21 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         {
 
                             var check_gia = (from a in db.md_banggia
-                                                join b in db.md_phienbangia on a.md_banggia_id equals b.md_banggia_id
-                                                join c in db.md_giasanpham on b.md_phienbangia_id equals c.md_phienbangia_id
-                                                where
-                                                c.md_sanpham_id == khmvt_cdh.md_sanpham_id
-                                                & c.md_donvitinhsanpham_id == khmvt_cdh.md_donvitinhsanpham_id
-                                                & khmvt_cdh.md_banggia_id.Contains(a.md_banggia_id)
-                                                & b.hoatdong == true
-                                                select new
-                                                {
-                                                    a.md_banggia_id,
-                                                    c.gia,
-                                                    a.md_dongtien_id,
-                                                    c.md_phienbangia_id,
-                                                    b.ngay_hieuluc
-                                                }
+                                             join b in db.md_phienbangia on a.md_banggia_id equals b.md_banggia_id
+                                             join c in db.md_giasanpham on b.md_phienbangia_id equals c.md_phienbangia_id
+                                             where
+                                             c.md_sanpham_id == khmvt_cdh.md_sanpham_id
+                                             & c.md_donvitinhsanpham_id == khmvt_cdh.md_donvitinhsanpham_id
+                                             & khmvt_cdh.md_banggia_id.Contains(a.md_banggia_id)
+                                             & b.hoatdong == true
+                                             select new
+                                             {
+                                                 a.md_banggia_id,
+                                                 c.gia,
+                                                 a.md_dongtien_id,
+                                                 c.md_phienbangia_id,
+                                                 b.ngay_hieuluc
+                                             }
                                             ).OrderByDescending(s => s.ngay_hieuluc).FirstOrDefault();
 
                             if (khmvt_cdh.sl_duyet == khmvt_cdh.sl_conlai)
@@ -356,12 +356,13 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                     dmh.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id;
                                     dmh.md_trangthai_id = "SOANTHAO";
                                     dmh.sochungtu = sochungtu;
+                                    dmh.so_donmuahang = sochungtu;
                                     dmh.sctkehoach = khmvt.sochungtu;
                                     dmh.donhang_thamchieu = "";
                                     dmh.huongdan_lamhang = "";
                                     dmh.ngaydonhang = DateTime.Now;
                                     dmh.ngaygiaohang = DateTime.Now.AddDays(4);
-                                    dmh.diadiem_giaohang = "";
+                                    dmh.diadiem_giaohang = db.md_kho.Where(s=>s.ma_kho == Helper.KHOVT).FirstOrDefault().md_kho_id;
                                     dmh.hinhthucthanhtoan = db.md_hinhthucthanhtoan.OrderBy(s => s.sapxep).FirstOrDefault().ten;
                                     dmh.md_doitackinhdoanh_id = khmvt_cdh.md_doitackinhdoanh_id;
                                     dmh.nguoilienhe = khmvt_cdh.daidien;
@@ -508,7 +509,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             dmh_thue.tong_tien_chiu_thue = c_donmuahang_thueschild.Select(s => s.tong_tien_chiu_thue).Sum();
                             id_notdel.Add(dmh_thue.c_donmuahang_thue_id);
                         }
-                        
+
                         foreach (var dong_thue in c_donmuahang_thues.Where(s => !id_notdel.Contains(s.c_donmuahang_thue_id)).ToList())
                         {
                             db.c_donmuahang_thue.Remove(dong_thue);

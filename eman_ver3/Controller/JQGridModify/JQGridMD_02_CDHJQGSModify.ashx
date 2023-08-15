@@ -182,14 +182,6 @@ public class JQGridMD_02_CDHJQGSModify : IHttpHandler, System.Web.SessionState.I
                         db.c_kehoachdathang_dhcpx_vattu.RemoveRange(
                             db.c_kehoachdathang_dhcpx_vattu.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id));
                         db.SaveChanges();
-
-                        foreach (var cdh in db.c_kehoachdathang_dhcpx_cdh.Where(s =>
-                            s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id)
-                            .OrderBy(s => s.md_sanpham_id).ToList())
-                        {
-                            //--them cac dong dat hang phan xuong
-                            pb.add_px_vattu(db, cdh, 1, userTK);
-                        }
                     }
                     db.SaveChanges();
 

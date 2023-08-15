@@ -8,6 +8,15 @@ using Newtonsoft.Json;
 
 public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    private class MenuRole
+    {
+        public string icon { get; set; }
+        public string label { get; set; }
+        public bool? expanded { get; set; }
+        public bool? selected { get; set; }
+        public List<MenuRole> items { get; set; }
+    }
+
     EntityContext db = new EntityContext();
     public void ProcessRequest(HttpContext context)
     {
@@ -408,7 +417,7 @@ public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequ
         role_mmcs = role_mmcs.Where(s => s.ad_role_id == ad_role_id).ToList();
 
         var dt_menu0 = menus.Where(s => s.capmenu == 0 & s.hoatdong == true).OrderBy(s => s.sapxep);
-        var dt_menu0_1 = menus.Where(s => s.capmenu == 1 & s.hoatdong == true 
+        var dt_menu0_1 = menus.Where(s => s.capmenu == 1 & s.hoatdong == true
             & (role_mmcs.Where(s1 => s1.ad_menu_id == s.ad_menu_id).Take(1).Count() > 0 | user_mmcs.Where(s1 => s1.ad_menu_id == s.ad_menu_id).Take(1).Count() > 0)
         ).OrderBy(s => s.sapxep);
         foreach (var mn_cap0 in dt_menu0)
@@ -459,18 +468,45 @@ public class JQGridMD_00_MNZModify : IHttpHandler, System.Web.SessionState.IRequ
 
     public void LoadList(HttpContext context)
     {
+        var vtid = context.Request.QueryString["id"];
+        var loadTheoVT = context.Request.QueryString["type"].removeAllSpaceOrTrimText(false) == "1";
+
         ADmin_JSON json = new ADmin_JSON();
         var menus = json.ad_menuJSON();
-        var data = "";
-        foreach (var mn in menus.Where(p => p.capmenu == 0).OrderBy(p => p.sapxep).ToList())
+
+        var mn1coVTs = new List<string>();
+        if(loadTheoVT)
         {
-            data += "<a style='display:none'>" + mn.ad_menu_id + "</a><a style='font-weight:700'>" + mn.ten_menu + "</a>ξ";
-            foreach (var mn_cap1 in menus.Where(p => p.capmenu == 1 & p.ma_menucha == mn.ad_menu_id & p.hoatdong == true).OrderBy(p => p.sapxep))
-            {
-                data += "<a style='display:none'>" + mn_cap1.ad_menu_id + "</a><a>" + mn_cap1.ten_menu + "</a>ξ";
-            }
+            var pqs = json.ad_role_mmcJSON();
+            mn1coVTs = pqs.Where(s => s.ad_role_id == vtid).Select(s=>s.ad_menu_id).ToList();
         }
-        context.Response.Write(data.Remove(data.Length - 1));
+
+        var lst = new List<MenuRole>();
+        foreach (var mn in menus.Where(p => p.capmenu == 0 & p.hoatdong == true).OrderBy(p => p.sapxep).ToList())
+        {
+            var itemMenu = new MenuRole();
+            itemMenu.label = string.Format(@"<a style='display:none'>{0}</a><a style='font-weight:700'>{1}</a>", mn.ad_menu_id, mn.ten_menu);
+            var mn_cap1s = menus.Where(p => p.capmenu == 1 & p.ma_menucha == mn.ad_menu_id & p.hoatdong == true);
+            if(loadTheoVT)
+            {
+                mn_cap1s = mn_cap1s.Where(s => mn1coVTs.Contains(s.ad_menu_id));
+            }
+
+            foreach (var mn_cap1 in mn_cap1s.OrderBy(p => p.sapxep))
+            {
+                if (itemMenu.items == null)
+                    itemMenu.items = new List<MenuRole>();
+
+                itemMenu.items.Add(new MenuRole()
+                {
+                    label = string.Format(@"<a style='display:none'>{0}</a><a>{1}</a>", mn_cap1.ad_menu_id, mn_cap1.ten_menu)
+                });
+            }
+
+            if(itemMenu.items != null)
+                lst.Add(itemMenu);
+        }
+        context.Response.Write(JsonConvert.SerializeObject(lst));
     }
 
     public bool IsReusable

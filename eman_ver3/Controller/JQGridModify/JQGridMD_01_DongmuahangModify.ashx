@@ -56,7 +56,7 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                 string co_ngayhethan = context.Request.Form["co_ngayhethan"];
                 decimal sl_dadat = decimal.Parse(context.Request.Form["sl_dadat"]);
                 decimal dongiamua = decimal.Parse(context.Request.Form["dongiamua"]);
-                decimal giachuan = decimal.Parse(context.Request.Form["giachuan"]);
+                decimal giachuan = dongiamua;
                 decimal sl_duyet = decimal.Parse(context.Request.Form["sl_duyet"]);
                 decimal thanhtien = 0, sl_thaythe = 0, sl_thaythe2 = 0, saiso = 0;
                 var object_ = db.c_donmuahang_cdmh.Where(p => p.c_donmuahang_cdmh_id == id).Take(1).FirstOrDefault();
@@ -123,17 +123,18 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                                     tendvt);
                             }
 
-                            if (sl_thaythe2 + sl_thaythe - saiso > cdh_obj.sl_duyet.Value)
+                            var sltd = cdh_obj.sl_duyet2.Value - sl_thaythe2;
+                            if (sl_thaythe - saiso > sltd)
                             {
-                                decimal check_sl = cdh_obj.sl_duyet.Value - sl_thaythe2;
+                                decimal check_sl = cdh_obj.sl_duyet2.Value - sl_thaythe2;
                                 string ten_dvt = db.md_donvitinhsanpham.Where(s => s.md_donvitinhsanpham_id == sp_obj.md_donvitinhsanpham_id).Select(s => s.ten_dvt).FirstOrDefault();
                                 string msgDT = "";
-                                msgDT += @"chỉ có thể nhập số lượng tối đa là: ""{0}""";
-                                msgDT += @"<br> + Số lượng đang muốn nhập: ""{1}"" ({2})";
-                                msgDT += @"<br> + Độ sai lệch cho phép: ""{3}""";
-                                msgDT = string.Format(msgDT, cdh_obj.sl_duyet.Value.DropTrailingZeros(),
+                                msgDT += @"Số lượng tối đa có thể mua là: <b>{0}</b> ({2})";
+                                msgDT += @"<br> + Số lượng đang muốn mua: <b>{1}</b> ({2})";
+                                msgDT += @"<br> + Độ sai lệch cho phép: <b>{3}</b>";
+                                msgDT = string.Format(msgDT, sltd.DropTrailingZeros(),
                                     sl_thaythe.DropTrailingZeros(), ten_dvt, saiso.DropTrailingZeros());
-                                msg += string.Format(@"false#Lỗi:Mặt hàng ""{0}"" {1}", sp_obj.ma_sanpham, msgDT);
+                                msg += string.Format(@"false#Lỗi: {1}", sp_obj.ma_sanpham, msgDT);
                             }
                         }
                     }
@@ -168,7 +169,7 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
             }
             catch (Exception ex)
             {
-                msg = "false#" + ex.Message;
+                msg = "false#" + ex.ToString();
             }
 
             if (msg.LastIndexOf("false#") <= -1)

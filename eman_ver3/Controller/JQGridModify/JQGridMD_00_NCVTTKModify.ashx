@@ -194,9 +194,9 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                                    join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
                                    join c in db.md_dondathangphanxuong on a.dongdathang equals c.sochungtu
                                    join d in db.md_lenhsanxuat on c.md_dondathangphanxuong_id equals d.md_dondathangphanxuong_id
-                                   where b.ngaybatdausx >= ncvt.tungay & b.ngaybatdausx <= ncvt.denngay
+                                   where a.ngayBDSX >= ncvt.tungay & a.ngayBDSX <= ncvt.denngay
                                    & b.xulykehoach == true
-                                   & d.md_trangthai_id != "CHUAHOANTHANH"
+                                   & d.md_trangthai_id != Helper.CHUAHOANTHANH
                                    & (a.tinh_ncvt ?? false) == false
                                    select new { a.c_kehoachdathang_dhcpx_id, d.md_lenhsanxuat_id };
 
@@ -306,7 +306,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                             Where(s => s.md_lenhsanxuat_id == ncvt_dhpx.md_lenhsanxuat_id).ToList())
                     {
                         foreach (var dhpx_vt in db.md_lenhsanxuat_tosx_vattu.
-                            Where(s => s.md_lenhsanxuat_tosx_id == a.md_lenhsanxuat_tosx_id).ToList())
+                            Where(s => s.md_lenhsanxuat_tosx_id == a.md_lenhsanxuat_tosx_id & s.hoatdong == true).ToList())
                         {
                             var sltd = dhpx_vt.soluong.GetValueOrDefault(0) - dhpx_vt.sl_giamhanngach.GetValueOrDefault(0);
                             if (sltd > 0)

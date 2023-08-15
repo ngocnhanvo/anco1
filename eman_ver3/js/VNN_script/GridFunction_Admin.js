@@ -98,17 +98,31 @@ function boolconvert(string) {
 
 function click_add(tengridAdd, type) {
     $('td#add_' + tengridAdd).click();
+    $('#sData').show();
 }
 function click_edit(tengridEdit, type) {
-    $('td#edit_' + tengridEdit).click();
+    let tdEdit = $('td#edit_' + tengridEdit);
+    type == null ? tdEdit.removeAttr('typeE') : tdEdit.attr('typeE', type);
+    tdEdit.click();
+    if (type == 0) {
+        if ($('#sData').is(":visible"))
+            type = null;
+        else
+            type = 1;
+    }
+
+    if (type == null)
+        $('#sData').show();
+    else if (type == 1) {
+        khoa_field(tengridEdit);
+        $('#sData').hide();
+    }
 }
 function click_del(tengridDel, id_parent, ma_case, load_stt) {
     $('#del_' + tengridDel).click();
 }
 function click_view(tengridView) {
-    click_edit(tengridView, 0);
-    khoa_field(tengridView);
-    $('#sData').hide();
+    click_edit(tengridView, 1);
 }
 function click_refresh(tengridRefresh) {
     loadclick_(tengridRefresh, 'noSel');
@@ -381,7 +395,7 @@ function Logo_Center(logo, center, id_dialog) {
 
 
 function Close_Form(object, close) {
-    if (close == 'True')
+    if (close == 'True' | close == true)
         $(object).dialog("destroy").remove();
 }
 
@@ -1073,7 +1087,38 @@ function colspanedit(a, e) {
 function clearSearchOptions(a) { $("#refresh_" + a).click(function () { $("#gview_" + a + " .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input input").val("") }) }
 function multiSelectHandler(a, e) { var i = $(e.target).closest("table.ui-jqgrid-btable"), t = i[0], s = e.target, n = $(s).hasClass("cbox"); if ("INPUT" == s.tagName && !n || "A" == s.tagName) return !0; var c = i.getGridParam("selarrrow"), r = $.inArray(a, c) >= 0; if (e.ctrlKey || n && (r || !e.shiftKey)) i.setSelection(a, !0); else { if (e.shiftKey) { var l = i.getInd(a), d = l, o = l; for ($.each(c, function () { var a = i.getInd(this); d > a && (d = a), a > o && (o = a) }) ; o >= d;) { var u = t.rows[d++], h = u.id; h != a && $.inArray(h, c) < 0 && i.setSelection(u.id, !1) } } else r || i.resetSelection(); if (r) { var g = i.getGridParam("onSelectRow"); $.isFunction(g) && g(a, !0) } else i.setSelection(a, !0) } } function setbackgroundforgrid(a, e, i) { var t, s, n, c = (getColumnIndexByName($(a), "closed"), a.rows.length); for (t = 0; c > t; t++) s = a.rows[t], n = s.className.replace(/ VNN_css_rows/g, ""), s.cells.item(e).innerHTML != i ? s.className = n + " VNN_css_rows" : s.className = n.replace(/ VNN_css_rows/g, "") } function Remove(a, e, i) { return a.substr(0, e) + a.substr(e + i) } function countRows(a, e) { var i = jQuery("#" + a).jqGrid("getGridParam", "records"); if (null == e | "" == e) return i; var t = $("#" + a + " tr:nth-child(2)").attr("id"); null != t & "0" != t & "-" != t ? $("#" + e).val(i) : $("#" + e).val(0) } function Focus_Selection(a) { var e = $("#" + a).jqGrid("getGridParam", "selrow"); scrollToRow($("#" + a), e) } function getGridRowHeight(a, e) { var i = null; try { var t = jQuery(a).find("tbody").find("tr"); $(t).each(function (a) { return e > a ? void (i += $(this).outerHeight()) : !1 }) } catch (s) { } return i } function scrollToRow(a, e) { var i = jQuery(a).getInd(e), t = getGridRowHeight(a, i) || 23; jQuery(a).closest(".ui-jqgrid-bdiv").scrollTop(t - 20) } function SetWidth_BtnHeader(a) { var e = a - 3, i = e, t = $(".cl_div_chuathanhcongcu div"), s = $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh"); $(s).length > a && ($(s).each(function (a) { a > e && $(this).addClass("case_hidden") }), $(t).prepend('<img src="images/Content/content_quatrai2.png" id="case_quatrai" class="img_btnmacdinh2" title="Qua trái" />'), $(t).append('<img src="images/Content/content_quaphai2.png" id="case_quaphai" class="img_btnmacdinh2" title="Qua phải" />'), $("#case_quatrai").click(function () { $("#case_quatrai").hasClass("case_disable") || (i > e && (i -= e), $(s).each(function (a) { i >= a ? $(this).removeClass("case_hidden") : $(this).addClass("case_hidden") }), $("#case_quaphai").removeClass("case_disable"), $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh:first").hasClass("case_hidden") || $("#case_quatrai").addClass("case_disable")) }), $("#case_quaphai").click(function () { $("#case_quaphai").hasClass("case_disable") || ($(s).each(function (a) { a > i ? $(this).removeClass("case_hidden") : $(this).addClass("case_hidden") }), i < $(s).length && (i += e), $("#case_quatrai").removeClass("case_disable"), $(".cl_div_chuathanhcongcu div > img.img_btnmacdinh:last").hasClass("case_hidden") || $("#case_quaphai").addClass("case_disable")) }), $("#case_quatrai").click()) } var getColumnIndexByName = function (a, e) { for (var i = a.jqGrid("getGridParam", "colModel"), t = 0, s = i.length; s > t; t++) if (i[t].name === e) return t; return -1 };
 //JQGridver2.js
-function check_click_rutgon(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).hasClass(e) ? ($(t).removeClass(e), $(t).removeClass("glyphicon-plus"), $(t).addClass(i), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus")) : ($(t).removeClass(i), $(t).removeClass("glyphicon-minus"), $(t).addClass(e), $(t).hasClass("glyphicon-plus") || $(t).addClass("glyphicon-plus")) } function check_click_rutgon2(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).removeClass(e), $(t).hasClass(i) || $(t).addClass(i), $(t).removeClass("glyphicon-plus"), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus") } function check_click_rutgon3(t) { for (var a = 0; 3 > a; a++) { var i = "unclick_div" + a, e = "click_div" + a; $(t + a).hasClass(e) && ($(t + a).removeClass(e), $(t + a).addClass(i), $(t + a).removeClass("glyphicon-plus"), $(t + a).hasClass("glyphicon-minus") || $(t + a).addClass("glyphicon-minus")) } } function click_rutgon_div(t) { var a = $("#div_getdt_2").outerHeight(); $("#div_getdt_1").outerHeight(), $("#div_getdt_0").outerHeight(); 0 == t ? $(".btn_check_div0").hasClass("click_div0") ? 5 >= a ? layout_vnn.sizePane("north", "50%") : (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("north", "4%"), a > 5 && layout_vnn.sizePane("south", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div1"), 1), check_click_rutgon2($(".btn_check_div2"), 2) }, 100)) : 1 == t ? $(".btn_check_div1").hasClass("click_div1") ? 5 >= a ? layout_vnn.sizePane("north", "49%") : layout_vnn.sizePane("north", "33%") : 5 >= a ? layout_vnn.sizePane("north", "95%") : 27 >= a ? layout_vnn.sizePane("north", "92%") : layout_vnn.sizePane("north", "63%") : 2 == t && ($(".btn_check_div2").hasClass("click_div2") ? (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("south", "4%"), layout_vnn.sizePane("north", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div0"), 0), check_click_rutgon2($(".btn_check_div1"), 1) }, 100))), check_click_rutgon($(".btn_check_div" + t), t) }
+function check_click_rutgon(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).hasClass(e) ? ($(t).removeClass(e), $(t).removeClass("glyphicon-plus"), $(t).addClass(i), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus")) : ($(t).removeClass(i), $(t).removeClass("glyphicon-minus"), $(t).addClass(e), $(t).hasClass("glyphicon-plus") || $(t).addClass("glyphicon-plus")) } function check_click_rutgon2(t, a) { var i = "unclick_div" + a, e = "click_div" + a; $(t).removeClass(e), $(t).hasClass(i) || $(t).addClass(i), $(t).removeClass("glyphicon-plus"), $(t).hasClass("glyphicon-minus") || $(t).addClass("glyphicon-minus") } function check_click_rutgon3(t) { for (var a = 0; 3 > a; a++) { var i = "unclick_div" + a, e = "click_div" + a; $(t + a).hasClass(e) && ($(t + a).removeClass(e), $(t + a).addClass(i), $(t + a).removeClass("glyphicon-plus"), $(t + a).hasClass("glyphicon-minus") || $(t + a).addClass("glyphicon-minus")) } }
+
+function click_rutgon_div(t) {
+    let a = $("#div_getdt_2").outerHeight();
+    let a1 = $("#div_getdt_1").outerHeight();
+    let a2 = $("#div_getdt_0").outerHeight();
+    let lengthHide = 10;
+
+    if (t == 0 & a < lengthHide & a1 < lengthHide) {
+        return;
+    }
+
+    0 == t ?
+        $(".btn_check_div0").hasClass("click_div0") ? lengthHide >= a ?
+            layout_vnn.sizePane("north", "50%") : (layout_vnn.sizePane("north", "33%"),
+                layout_vnn.sizePane("south", "33%")) : (
+                layout_vnn.sizePane("north", "4%"),
+                a > lengthHide && layout_vnn.sizePane("south", "49%"),
+                setTimeout(function () {
+                    check_click_rutgon2($(".btn_check_div1"), 1),
+                        check_click_rutgon2($(".btn_check_div2"), 2);
+                }, 100)
+            ) :
+        1 == t ?
+            $(".btn_check_div1").hasClass("click_div1") ?
+                lengthHide >= a ? layout_vnn.sizePane("north", "49%") : layout_vnn.sizePane("north", "33%")
+                : lengthHide >= a ? layout_vnn.sizePane("north", "95%") : 27 >= a ? layout_vnn.sizePane("north", "92%") :
+                    layout_vnn.sizePane("north", "63%") :
+            2 == t &&
+            ($(".btn_check_div2").hasClass("click_div2") ? (layout_vnn.sizePane("north", "33%"), layout_vnn.sizePane("south", "33%")) : (layout_vnn.sizePane("south", "4%"), layout_vnn.sizePane("north", "49%"), setTimeout(function () { check_click_rutgon2($(".btn_check_div0"), 0), check_click_rutgon2($(".btn_check_div1"), 1) }, 100))),
+        check_click_rutgon($(".btn_check_div" + t), t);
+}
 
 function load_detail(t, a, i, e, n) {
     let s = ".ui-layout-center > .ui-tabs-nav > .ui-state-active",
@@ -1183,6 +1228,75 @@ function display_hidden(t, a) {
                 layout_vnn.sizePane("south", (getLayoutSize == null ? 33 : getLayoutSize.size2[2]) + '%')
             )
     }
+}
+
+function format_numeric(a, decimalPlaces) {
+    let options = {
+        colModel: {
+            formatoptions: {
+                decimalSeparator: vnn_formatnumber()[0],
+                thousandsSeparator: vnn_formatnumber()[1],
+                decimalPlaces: 'auto',
+                suffix: ''
+            }
+        }
+    };
+
+    let sept = options.colModel.formatoptions.thousandsSeparator;
+    let sepd = options.colModel.formatoptions.decimalSeparator;
+    sept = sept == "." ? "[/.]" : sept;
+    sepd = sepd == "." ? "[/.]" : sepd;
+    let ret = new RegExp(sept, 'g');
+    let red = new RegExp(sepd, 'g');
+
+    a.numeric();
+
+    a.off('focusin');
+    a.focusin(function () {
+        if (!this.in) {
+            if (this.value != '') {
+                let val = Number(this.value.replace(ret, '').replace(red, '.'));
+                $(this).val(val);
+            }
+        }
+        this.in = true;
+    });
+
+    a.off('focusout');
+    a.focusout(function () {
+        if (this.value != '') {
+            let val = Number(this.value);
+            if (decimalPlaces) {
+                let n = Math.abs(val);
+                let nD = n.toString().split('.')[1];
+                let nL = nD ? nD.length : 0;
+                if (nL > decimalPlaces)
+                    val = val.toFixed(decimalPlaces);
+            }
+            let number = vnn_number(val, options);
+            $(this).val($(number).text());
+            $(number).remove();
+        }
+        this.in = null;
+    });
+
+    if (!a[0].val2) {
+        a[0].val2 = function () {
+            let val = '';
+            if (this.value != '') {
+                val = Number(this.value.replace(ret, '').replace(red, '.'));
+                if (isNaN(val))
+                    val = '';
+            }
+            return val;
+        };
+    }
+
+    if (!a.hasClass('formatnumber'))
+        a.addClass('formatnumber');
+
+    if (!a.hasClass('format_vnn'))
+        a.addClass('format_vnn');
 }
 //CheckBrowser.js
 function check_zoom() { }

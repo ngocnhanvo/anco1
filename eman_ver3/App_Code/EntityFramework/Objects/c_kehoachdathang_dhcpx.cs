@@ -79,6 +79,12 @@
                         public string mota { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_ngayBDSX_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_ngayBDSX_wintaFN
+                        public DateTime? ngayBDSX { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_ngaycapnhat_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_ngaycapnhat_wintaFN

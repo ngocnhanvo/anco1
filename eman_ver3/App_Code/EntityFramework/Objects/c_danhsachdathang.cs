@@ -187,6 +187,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_danhsachdathang_sanxuatton_wintaFN
+                        
+                        #endregion c_danhsachdathang_sanxuatton_wintaFN
+                        public bool? sanxuatton { get; set; }
+                
+						
                         #region c_danhsachdathang_so_po_wintaFN
                         
                         #endregion c_danhsachdathang_so_po_wintaFN

@@ -121,6 +121,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_nhomKH_wintaFN
+                        
+                        #endregion md_lenhsanxuat_nhomKH_wintaFN
+                        public string nhomKH { get; set; }
+                
+						
                         #region md_lenhsanxuat_phieuXK_wintaFN
                         
                         #endregion md_lenhsanxuat_phieuXK_wintaFN
@@ -131,6 +137,12 @@
                         
                         #endregion md_lenhsanxuat_sochungtu_wintaFN
                         public string sochungtu { get; set; }
+                
+						
+                        #region md_lenhsanxuat_sxton_wintaFN
+                        
+                        #endregion md_lenhsanxuat_sxton_wintaFN
+                        public bool? sxton { get; set; }
                 
 						
                         #region md_lenhsanxuat_vaitrocapnhat_wintaFN

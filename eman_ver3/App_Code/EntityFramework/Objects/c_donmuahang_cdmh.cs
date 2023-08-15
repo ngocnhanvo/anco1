@@ -133,6 +133,12 @@
                         public Decimal? thanhtien { get; set; }
                 
 						
+                        #region c_donmuahang_cdmh_thanhtienThue_wintaFN
+                        
+                        #endregion c_donmuahang_cdmh_thanhtienThue_wintaFN
+                        public Decimal? thanhtienThue { get; set; }
+                
+						
                         #region c_donmuahang_cdmh_thue_wintaFN
                         
                         #endregion c_donmuahang_cdmh_thue_wintaFN

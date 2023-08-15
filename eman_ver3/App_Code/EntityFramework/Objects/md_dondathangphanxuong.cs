@@ -127,6 +127,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_dondathangphanxuong_nhomKH_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_nhomKH_wintaFN
+                        public string nhomKH { get; set; }
+                
+						
                         #region md_dondathangphanxuong_phieunhapkho_wintaFN
                         
                         #endregion md_dondathangphanxuong_phieunhapkho_wintaFN

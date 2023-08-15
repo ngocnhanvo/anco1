@@ -267,7 +267,7 @@ System.Web.SessionState.IRequiresSessionState
         string md_kho_id = db.md_sanpham.Where(s => s.md_sanpham_id == md_sanpham_id).Select(s => s.khomacdinh).Take(1).FirstOrDefault();
         if(string.IsNullOrEmpty(md_kho_id))
         {
-            md_kho_id = db.md_kho.Where(s => s.ten_kho == "KHO THÀNH PHẨM AN CO 2").Select(s=>s.md_kho_id).FirstOrDefault();
+            md_kho_id = db.md_kho.Where(s => s.ten_kho == Helper.KHOTP).Select(s=>s.md_kho_id).FirstOrDefault();
         }
         string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
         //Tạo phiếu lấy hàng tồn

@@ -17,6 +17,7 @@ public static class VNN_JQGridver2
         string[] arr_mod0_tk = new string[100];
         string[] arr_mod1_tk = new string[100];
         int dem_mod0 = 0, dem_mod1 = 0;
+        var hideModules = context.Request.Params["hideModules"].removeAllSpaceOrTrimText(false).Split(',');
         foreach (var mod_0 in modules.Where(s => s.ad_menu_id == mod.ad_menu_id & s.capmodule == 0 & s.hoatdong == true
         ).OrderBy(s => s.sapxep))
         {
@@ -42,8 +43,12 @@ public static class VNN_JQGridver2
         }
 
         var firstMod1 = "";
-        foreach (var mod_1 in modules.Where(s => s.capmodule == 1 & arr_mod0_tk.Contains(s.ma_modulecha)
-        & s.hoatdong == true).OrderBy(s => s.sapxep))
+        foreach (var mod_1 in modules.Where(s => 
+            s.capmodule == 1 & 
+            !hideModules.Contains(s.ma_module) & 
+            arr_mod0_tk.Contains(s.ma_modulecha) & 
+            s.hoatdong == true
+            ).OrderBy(s => s.sapxep))
         {
             if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_1.ad_module_id))
             {
@@ -64,8 +69,12 @@ public static class VNN_JQGridver2
         }
 
         var firstMod2 = "";
-        foreach (var mod_2 in modules.Where(s => s.capmodule == 2 & arr_mod1_tk.Contains(s.ma_modulecha)
-        & s.hoatdong == true).OrderBy(s => s.sapxep))
+        foreach (var mod_2 in modules.Where(s => 
+            s.capmodule == 2 & 
+            arr_mod1_tk.Contains(s.ma_modulecha) &
+            !hideModules.Contains(s.ma_module) &
+            s.hoatdong == true
+            ).OrderBy(s => s.sapxep))
         {
             if (Security.PhanQuyen_Module(context, role_mmcs, user_mmcs, mod_2.ad_module_id))
             {
@@ -83,7 +92,7 @@ public static class VNN_JQGridver2
         kq += "<div class='ui-layout-north ui-widget-content' style='overflow:hidden' id='div_getdt_0'>";
         kq += "<ul class='ul_mod_0'>";
         kq += li_mod0;
-        kq += "<li onclick=\"click_rutgon_div(0)\" style='float: right;margin: -2px 4px 0 0px;border: none; padding: 0px 4px 4px 4px;'><span class='btn_check_div0 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
+        kq += "<li onclick=\"click_rutgon_div(0)\" class='btnResizeGrid'><span class='btn_check_div0 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
         kq += "</ul>";
         kq += div_mod0;
         kq += "</div>";
@@ -91,7 +100,7 @@ public static class VNN_JQGridver2
         kq += "<div class='ui-layout-center ui-widget-content' style='overflow:hidden' id='div_getdt_1' sizeTH1='50,49,1' sizeTH2='35,32,33' count='" + countFirstLoad + "'>";
         kq += "<ul class='ul_mod_1'>";
         kq += li_mod1;
-        kq += "<li onclick=\"click_rutgon_div(1)\" style='float: right;margin: -2px 4px 0 0px;border: none; padding: 0px 4px 4px 4px;'><span class='btn_check_div1 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
+        kq += "<li onclick=\"click_rutgon_div(1)\" class='btnResizeGrid'><span class='btn_check_div1 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
         kq += "</ul>";
         kq += div_mod1;
         kq += "</div>";
@@ -99,7 +108,7 @@ public static class VNN_JQGridver2
         kq += "<div class='ui-layout-south ui-widget-content' style='overflow:hidden' id='div_getdt_2'>";
         kq += "<ul class='ul_mod_2'>";
         kq += li_mod2;
-        kq += "<li onclick=\"click_rutgon_div(2)\" style='float: right;margin: -2px 4px 0 0px;border: none; padding: 0px 4px 4px 4px;'><span class='btn_check_div2 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
+        kq += "<li onclick=\"click_rutgon_div(2)\" class='btnResizeGrid'><span class='btn_check_div2 glyphicon glyphicon-minus' style='font-size:14px; cursor:pointer' /></li>";
         kq += "</ul>";
         kq += div_mod2;
         kq += "</div>";
@@ -115,6 +124,7 @@ public static class VNN_JQGridver2
         kq += "$('.ui-layout-north').tabs();\n";
         kq += "$('.ui-layout-center').tabs();\n";
         kq += "$('.ui-layout-south').tabs();\n";
+        kq += "$('.ul_mod_1').dragScroll();$('.ul_mod_2').dragScroll();\n";
         kq += "let countFirstLoad = $('#div_getdt_1').attr('count');\n";
 
         kq += "let sizeNorth, sizeSouth;\n";

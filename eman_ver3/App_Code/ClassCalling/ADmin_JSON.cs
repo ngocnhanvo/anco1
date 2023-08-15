@@ -167,6 +167,60 @@ public class ADmin_JSON
         return jsonData;
     }
 
+    public List<ad_role_mmcol> ad_role_mmcolJSON()
+    {
+        urlData = typeof(ad_role_mmcol).Name;
+        object cache = HttpContext.Current.Cache.Get(getCacheName(urlData));
+        var jsonData = new List<ad_role_mmcol>();
+
+        if (cache == null)
+        {
+            jsonData = JsonConvert.DeserializeObject<List<ad_role_mmcol>>(ReadStringJSON());
+            HttpContext.Current.Cache.Insert(getCacheName(urlData), jsonData);
+        }
+        else
+        {
+            jsonData = cache as List<ad_role_mmcol>;
+        }
+        return jsonData;
+    }
+
+    public List<ad_role_mmvalue> ad_role_mmvalueJSON()
+    {
+        urlData = typeof(ad_role_mmvalue).Name;
+        object cache = HttpContext.Current.Cache.Get(getCacheName(urlData));
+        var jsonData = new List<ad_role_mmvalue>();
+
+        if (cache == null)
+        {
+            jsonData = JsonConvert.DeserializeObject<List<ad_role_mmvalue>>(ReadStringJSON());
+            HttpContext.Current.Cache.Insert(getCacheName(urlData), jsonData);
+        }
+        else
+        {
+            jsonData = cache as List<ad_role_mmvalue>;
+        }
+        return jsonData;
+    }
+
+    public List<ad_role_where> ad_role_whereJSON()
+    {
+        urlData = typeof(ad_role_where).Name;
+        object cache = HttpContext.Current.Cache.Get(getCacheName(urlData));
+        var jsonData = new List<ad_role_where>();
+
+        if (cache == null)
+        {
+            jsonData = JsonConvert.DeserializeObject<List<ad_role_where>>(ReadStringJSON());
+            HttpContext.Current.Cache.Insert(getCacheName(urlData), jsonData);
+        }
+        else
+        {
+            jsonData = cache as List<ad_role_where>;
+        }
+        return jsonData;
+    }
+
     public List<ad_menu> ad_menuJSON()
     {
         urlData = typeof(ad_menu).Name;

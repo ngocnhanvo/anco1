@@ -31,6 +31,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region ad_user_btnDongMenuConTuDong_wintaFN
+                        
+                        #endregion ad_user_btnDongMenuConTuDong_wintaFN
+                        public bool? btnDongMenuConTuDong { get; set; }
+                
+						
                         #region ad_user_btnDongMenuTuDong_wintaFN
                         
                         #endregion ad_user_btnDongMenuTuDong_wintaFN

@@ -67,6 +67,17 @@ function timkiem_donhang(id_elem, type) {
                         if (tengrid0 != 'gridMD_00_GiamHanNgach')
                             whereSQL = " and dsdh.trangthai = 'HIEULUC'";
 
+                        if (tengrid0 == 'gridMD_00_XuatBan_PDN')
+                            whereSQL += ` 
+                            and (
+                                select top 1 1
+                                from c_dongdsdh
+                                where 
+                                    c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+                                    and (sl_dathang - isnull(sl_giamhanngach,0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                            ) > 0
+                            `;
+
                         if (tengrid0 == 'gridMD_00_LenhDongGoi')
                         {
                             whereSQL += " and (";

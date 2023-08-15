@@ -17,10 +17,13 @@ function timkiem_lenhsx(id_elem, type) {
         return;
     var load_sp = 0;
     var namegrid = "gridMD_00_Lenhsanxuat_cp";
-    $('body').append('<div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục Lệnh sản xuất">' +
-        '<table id="gridMD_00_Lenhsanxuat_cp"></table>' +
-        '<div id="pagergridMD_00_Lenhsanxuat_cp"></div>' +
-        '</div>');
+    $('body').append(`
+        <div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục Lệnh sản xuất">
+            <table id="gridMD_00_Lenhsanxuat_cp"></table>
+            <div id="pagergridMD_00_Lenhsanxuat_cp"></div>
+        </div>`
+    );
+
     var multi = false;
     if (tengrid0 == 'gridMD_00_Xuatnoibo_PDN' | tengrid0 == 'gridMD_00_Nhapnoibo_PDN' | tengrid0 == 'gridMD_00_PVCNoiBo_PDN')
     {
@@ -70,11 +73,10 @@ function timkiem_lenhsx(id_elem, type) {
                     { key: false, fixed: true, label: 'Trạng thái', name: 'md_trangthai_id', index: ' lsx.md_trangthai_id ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, formatter: Frm_MD_00_Lenhsanxuat_trangthai, unformat: disable_formatter, align: 'left', stype: 'select', searchoptions: { sopt: ['eq'], value: { '': '', 'CHUAHOANTHANH': 'Chưa hoàn thành', 'HOANTHANH': 'Hoàn thành' } }, edittype: 'select', editoptions: { value: { 'CHUAHOANTHANH': 'Chưa hoàn thành', 'HOANTHANH': 'Hoàn thành' } }, frozen: false, formoptions: { label: 'Trạng thái' } },
                     { key: false, fixed: true, label: 'Số Chứng Từ', name: 'sochungtu', index: '  lsx.sochungtu ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Số Chứng Từ' } },
                     { key: false, fixed: true, label: 'ĐĐH phân xưởng', name: 'md_dondathangphanxuong_id', index: '  lsx.md_dondathangphanxuong_id ', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'ĐĐH phân xưởng' } },
-                    //{ key: false, fixed: true, label: 'CT tham chiếu', name: 'sctdathang', index: 'ddhpx.sctdathang', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'CT tham chiếu' } },
                     { key: false, fixed: true, label: 'Đơn hàng TC', name: 'donhang_thamchieu', index: 'ddhpx.donhang_thamchieu', width: 120, editable: false, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Đơn hàng tham chiếu' } },
-                    { key: false, fixed: true, label: 'Quy trình', name: 'md_phanxuong_id', index: '  px.ten_phanxuong ', width: 240, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Phân xưởng' } },
+                    { key: false, fixed: true, label: 'Quy trình', name: 'md_phanxuong_id', index: '  px.ten_phanxuong ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Phân xưởng' } },
                     { key: false, fixed: true, label: 'ID Phân xưởng', name: 'md_phanxuong_id2', index: 'lsx.md_phanxuong_id ', width: 170, editable: false, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'ID Phân xưởng' } },
-                    { key: false, fixed: true, label: 'Ngày Lập', name: 'ngaylap', index: ' lsx.ngaylap', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày Lập' } },
+                    { key: false, fixed: true, label: 'Ngày BĐSX', name: 'ngay_hieuluc', index: ' ddhpx.ngay_hieuluc', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày Lập' } },
                     { key: false, fixed: true, label: 'Ngày kết thúc', name: 'ngayketthuc', index: '  lsx.ngayketthuc ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày kết thúc' } },
                     { key: false, fixed: true, label: 'Ngày hoàn thành', name: 'ngayhoanthanh', index: '  lsx.ngayhoanthanh ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày hoàn thành' } },
                 ],
@@ -88,8 +90,24 @@ function timkiem_lenhsx(id_elem, type) {
                             
                             return dkc;
                         }
-                        else if (tengrid0 == 'gridMD_00_Nhapnoibo')
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
+                        else if (['gridMD_00_Nhapnoibo', 'gridMD_00_Nhapnoibo_PDN'].lastIndexOf(tengrid0) > -1)
+                            return ` 
+                                and  dsdh.trangthai != 'KETTHUC'
+                                and dsdh.trangthai != 'HUYBO'
+                                and lsx.md_trangthai_id = 'DAXL'
+                                and isnull((
+                                    select 
+                                        top 1 1
+                                    from 
+                                        md_lenhsanxuat_tosx_cdh cdh
+                                        left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
+                                    where 
+                                        tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                                        and tsx.hoatdong = 1
+                                        and cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
+                                        and isnull(cdh.sl_chiato, 0) > isnull(cdh.sl_dahoanthanh, 0)
+                                ), 0) > 0
+                            `;
                         else if (tengrid0 == 'gridMD_00_PVCNoiBo')
                             return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
                         else
@@ -168,12 +186,14 @@ function timkiem_lenhsx(id_elem, type) {
                 click: function () {
                     if (multi == true)
                     {
-                        var ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
+                        let ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
+                        let dhtcs = [];
                         for (var i = 0; i < ids_sel.length; i++) {
                             var cel_s = $('#' + namegrid).getRowData(ids_sel[i]);
                             sct_pnk += cel_s['sochungtu'] + '\n';
                             sct_dhtc += cel_s['sctdathang'] + '\n';
                             val_dhtc += cel_s['donhang_thamchieu'] + '\n';
+                            dhtcs.push(cel_s['donhang_thamchieu']);
                         }
                         if (sct_pnk != '') {
                             sct_pnk = sct_pnk.substring(0, sct_pnk.length - 1);
@@ -184,7 +204,20 @@ function timkiem_lenhsx(id_elem, type) {
                         $('#chungtu_lenhsx').val(sct_pnk);
                         $('#sctdathang').val(sct_dhtc);
                         $('#donhang_thamchieu').val(val_dhtc);
+                        $('#md_lenhsanxuat_tosx_id').val('');
                         khoa_column('sctdathang');
+
+                        if (tengrid0 == 'gridMD_00_PVCNoiBo_PDN') {
+                            let dhtcsDis = dhtcs.filter(function onlyUnique(value, index, array) {
+                                return array.indexOf(value) === index;
+                            });
+
+                            console.log(dhtcsDis);
+                            if (dhtcsDis.length > 1) {
+                                alert('Đơn hàng bạn chọn phải trùng nhau');
+                                return;
+                            }
+                        }
                     }
                     $(this).dialog('destroy').remove();
                 }

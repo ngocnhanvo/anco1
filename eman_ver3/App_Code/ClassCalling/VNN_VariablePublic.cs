@@ -99,7 +99,8 @@ public class VNN_VariablePublic
     }
 	
 	public static string sochungtu(EntityContext db, string ma_sochungtu, int congthem){
-		var sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
+		var sctServer = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == Helper.HIEULUC).Take(1).FirstOrDefault();
+        var sct = db.md_sochungtu.Local.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == Helper.HIEULUC).Take(1).FirstOrDefault();
         // get Year from md_modongky
         //md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
         string nam = DateTime.Now.Year.ToString().Substring(2, 2);
@@ -268,6 +269,7 @@ public class Module_TK
     public string from_sql;
     public string where_sql;
     public string orderby_sql;
+    public string groupby_sql;
     public string procedure_sql;
     public int capmodule;
     public string ma_modulecha;
@@ -293,5 +295,6 @@ public class User_TK
     public bool? chuyenCachInBTSangPDF { get; set; }
     public bool? tuDongNhanDienCachIn { get; set; }
     public bool? btnDongMenuTuDong { get; set; }
+    public bool? btnDongMenuConTuDong { get; set; }
 }
 

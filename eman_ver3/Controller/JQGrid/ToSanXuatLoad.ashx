@@ -56,10 +56,12 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
             sELeCt tosx.md_lenhsanxuat_tosx_id
                 , lsx.sochungtu
                 , cd.ten_phongban as cdoan
+                , pxto.mota as cdoan2
                 , px.ten_phongban as pxuong
                 , pxto.phongbanId
                 , pxto.phongbanId2
                 , (select top 1 kho.md_kho_id from md_kho kho where kho.md_to_id = pxto.phongbanId and isnull(kho.hangton, 0) = 0) as md_kho_id
+                , (select top 1 kho.md_kho_id from md_kho kho where kho.md_to_id = pxto.phongbanId and isnull(kho.hangton, 0) = 1) as md_kho_id2
                 , (
                     select top 1 kho.md_kho_id 
                     from md_kho kho 
@@ -82,7 +84,7 @@ public class ToSanXuatLoad : IHttpHandler, System.Web.SessionState.IRequiresSess
             filter, id, where_ex);
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
-
+            //context.Response.Write(ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("''", "'"));
 
             string sqlcount = string.Format("exec [dbo].[{3}] N'{0}',N'{1}',{2}", sql, mod_.ma_moduletk, 0, mod_.procedure_sql);
             System.Data.DataTable dt_count = Mbg.Data.SqlClient.SqlHelper.GetData(sqlcount);

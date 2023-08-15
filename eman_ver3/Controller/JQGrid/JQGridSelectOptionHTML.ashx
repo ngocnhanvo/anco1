@@ -60,9 +60,9 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
                 cn.md_to_id,
                 cn.phongbanId,
                 cn.vattu == true ? "KVT" :
-                    !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
-                        !string.IsNullOrEmpty(cn.md_phanxuong_id) & !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
-                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHODG") ? "KDG" : "KTP"
+                    !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
+                        !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
+                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHO4") ? "KDG" : "KTP"
             );
         }
         str += "</select>";
@@ -73,11 +73,9 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
     {
         string sql = string.Format(@"
             select * from (
-	            select md_to_id as id, ten_to as value, 1 as orderby, ROW_NUMBER() over (ORDER BY md_phanxuong_id, sapxep) as Num
-	            from md_phanxuong_to
-	            union
 	            select md_phongban_id as id, ten_phongban as value, 2 as orderby, ROW_NUMBER() over (ORDER BY ten_phongban) + 999 as Num
 	            from ad_department
+                where ma_phongban not like 'CD-%'
             )A
             order by A.orderby, A.Num 
         ");

@@ -81,6 +81,12 @@
             xhr_content = $.ajax({
                 type: "GET",
                 url: page,
+                data: {
+                    isLinkTransfer,
+                    menu: searchParams.get('menu'),
+                    module: searchParams.get('module'),
+                    hideModules: searchParams.get('hideModules')
+                },
                 success: function (msg) {
                     $('.div_noidung_menu').removeClass('loading');
                     $('.div_noidung_menu').html(msg);

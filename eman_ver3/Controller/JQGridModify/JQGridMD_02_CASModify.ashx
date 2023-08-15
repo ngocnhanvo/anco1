@@ -7,6 +7,13 @@ using DataAcess;
 using Newtonsoft.Json;
 public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    private class CaseRole
+    {
+        public string text { get; set; }
+        public bool? selected { get; set; }
+        public int? index { get; set; }
+    }
+
     public void ProcessRequest(HttpContext context)
     {
 
@@ -28,8 +35,6 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
             case "loadlist":
                 this.LoadList(context);
                 break;
-            case "loadlist2":
-                this.LoadList2(context);
                 break;
             default:
                 break;
@@ -404,70 +409,39 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
 
     public void LoadList(HttpContext context)
     {
-        ADmin_JSON json = new ADmin_JSON();
+        var json = new ADmin_JSON();
         var cases = json.ad_caseJSON();
         var role_mmcs = json.ad_role_mmcJSON();
-        var data = "Tất cảξ";
-        string data_dachon = "";
+        var dataJS = new List<CaseRole>();
+        dataJS.Add(new CaseRole() {
+            text = "Tất cả",
+            selected = false,
+            index = 0
+        });
+
         string id = context.Request.QueryString["id"];
         string ad_module_id = context.Request.QueryString["ad_module_id"];
 
         int i = 1;
-        foreach (var cn in cases.Where(s => 
-            s.ad_module_id == ad_module_id 
-            & s.isview == (false) 
+        foreach (var cn in cases.Where(s =>
+            s.ad_module_id == ad_module_id
             & string.IsNullOrEmpty(s.thuake)
             & s.hoatdong == true
             ).OrderBy(p => p.sapxep))
         {
+            var itemCas = new CaseRole();
+            itemCas.text = "<a style='display:none'>" + cn.ad_case_id + "</a><a>" + cn.ten_case + "</a>";
+            itemCas.selected = false;
+            itemCas.index = i;
             foreach (ad_role_mmc pq in role_mmcs.Where(p => p.ad_module_id == cn.ad_module_id & p.ad_role_id == id))
             {
                 if (pq.ad_case_id == cn.ad_case_id)
-                    data_dachon += "/" + i;
+                    itemCas.selected = true;
             }
-            data += "<a style='display:none'>" + cn.ad_case_id + "</a><a>" + cn.ten_case + "</a>ξ";
+            dataJS.Add(itemCas);
             i++;
         }
-
-        if (data_dachon.Length > 0)
-        {
-            data_dachon = data_dachon.Remove(0, 1);
-        }
-        context.Response.Write(data.Remove(data.Length - 1) + "-" + data_dachon);
-    }
-
-    public void LoadList2(HttpContext context)
-    {
-        ADmin_JSON json = new ADmin_JSON();
-        var cases = json.ad_caseJSON();
-        var role_mmcs = json.ad_role_mmcJSON();
-        var data = "Tất cảξ";
-        string data_dachon = "";
-        string id = context.Request.QueryString["id"];
-        string ad_module_id = context.Request.QueryString["ad_module_id"];
-
-        int i = 1;
-        foreach (ad_case cn in cases.Where(s => 
-            s.ad_module_id == ad_module_id 
-            & s.isview == true 
-            & string.IsNullOrEmpty(s.thuake)
-            & s.hoatdong == true
-            ).OrderBy(p => p.sapxep))
-        {
-            foreach (ad_role_mmc pq in role_mmcs.Where(p => p.ad_module_id == cn.ad_module_id & p.ad_role_id == id))
-            {
-                if (pq.ad_case_id == cn.ad_case_id)
-                    data_dachon += "/" + i;
-            }
-            data += "<a style='display:none'>" + cn.ad_case_id + "</a><a>" + cn.ten_case + "</a>ξ";
-            i++;
-        }
-
-        if (data_dachon.Length > 0)
-        {
-            data_dachon = data_dachon.Remove(0, 1);
-        }
-        context.Response.Write(data.Remove(data.Length - 1) + "-" + data_dachon);
+        context.Response.Write(JsonConvert.SerializeObject(dataJS));
     }
 
     public void Create_Case(HttpContext context, string hamxuly, string ma_module, string ma_case, string ma_moduletk, string ma_casetk)
@@ -501,14 +475,14 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
                     sel = "selarrrow";
                 }
                 str_new += "\nfunction " + hamxuly + " {";
-                str_new += "\n    var masterId = id_parent;";
+                str_new += "\n    let masterId = id_parent;";
                 str_new += "\n    if (masterId == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', '"+ sel + "\'); }";
                 str_new += "\n    if (masterId == null | masterId == '') {";
                 str_new += "\n        alert('Chưa chọn đối tượng cần thao tác.');";
                 str_new += "\n    }";
                 str_new += "\n    else {";
-                str_new += "\n        var CLform_infor = new get_Forminfor(ma_case, Form_infor);";
-                str_new += "\n        var ma_module = tengrid.replace('grid','');";
+                str_new += "\n        let CLform_infor = new get_Forminfor(ma_case, Form_infor);";
+                str_new += "\n        let ma_module = tengrid.replace('grid','');";
                 str_new += "\n        $('body').append('<div id=\"dlg_gridSmall\" title=\"' + CLform_infor.tieude + '\">' +";
                 str_new += "\n            '<div class=\"dlg_content\">Thực hiện chức năng này?</div>' +";
                 str_new += "\n        '</div>');";

@@ -10,9 +10,33 @@ using System.Collections.Generic;
 /// </summary>
 public static class Helper
 {
+    public static string VNN_notpost = "VNN_notpost";
     public static string SOANTHAO = "SOANTHAO";
     public static string DANHAN = "DANHAN";
     public static string HIEULUC = "HIEULUC";
+    public static string KETTHUC = "KETTHUC";
+    public static string CHUAHOANTHANH = "CHUAHOANTHANH";
+    public static string KHDXL = "KHDXL";
+    public static string MUAVT = "MUAVT";
+    public static string MUATP = "MUATP";
+    public static string BANTP = "BANTP";
+    public static string NHANCONG = "NHANCONG";
+    public static string LAYTONTP = "LAYTONTP";
+    public static string LAYTONTHO = "LAYTONTHO";
+    public static string DATNCC = "DATNCC";
+    public static string DATSX = "DATSX";
+    public static string CHODUYET = "CHODUYET";
+    public static string DADUYET = "DADUYET";
+    public static string TUCHOI = "TUCHOI";
+
+    public static string KHOTRON = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTRON"];
+    public static string KHODUC = System.Web.Configuration.WebConfigurationManager.AppSettings["KHODUC"];
+    public static string KHOHTTHO = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOHTTHO"];
+    public static string KHOHT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOHT"];
+    public static string KHOTONTHO = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTHO"];
+    public static string KHOTONTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTP"];
+    public static string KHOTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTP"];
+    public static string KHOVT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOVT"];
 
     public static dynamic getInfoDB()
     {

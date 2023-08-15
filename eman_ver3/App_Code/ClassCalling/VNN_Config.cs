@@ -45,9 +45,9 @@ public static class VNN_Config
         }
         return kq;
     }
-	
-	//Neu ket qua la DateTime.MinValue (NGay` bi bo trong)
-	//Neu ket qua la kq = DateTime.MinValue.AddDays(1) (NGay` bi bo trong)
+
+    //Neu ket qua la DateTime.MinValue (NGay` bi bo trong)
+    //Neu ket qua la kq = DateTime.MinValue.AddDays(1) (NGay` bi bo trong)
     public static DateTime setDateTime(string date)
     {
         DateTime kq = DateTime.MinValue.AddDays(1);
@@ -60,7 +60,7 @@ public static class VNN_Config
             if (ttc.format_ngay != null)
             {
                 string format = ttc.format_ngay;
-                
+
                 if (!ttc.format_ngay.Contains("tt") & !ttc.format_ngay.Contains("TT"))
                 {
                     format = ttc.format_ngay.Replace("hh", "HH");
@@ -103,12 +103,12 @@ public static class VNN_Config
         var lstDic = new List<Dictionary<string, object>>();
         var allTK = Security.all_taikhoan(context);
         var ma_user = allTK.ContainsKey("ma_user") ? allTK["ma_user"] : "";
-        var modelStr = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/"+ ma_user + "/grid"+ ma_module +".json");
+        string roleId = allTK.ContainsKey("user_role") ? allTK["user_role"] + "" : "";
+        var modelStr = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + ma_user + "/grid" + ma_module + ".json");
         if (System.IO.File.Exists(modelStr))
             lstDic = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(System.IO.File.ReadAllText(modelStr));
 
         string[] kq = new string[10];
-
         kq[0] = ""; //Get Col_Model
         kq[1] = ""; //Colspan Edit
         kq[2] = ""; //Colspan Add
@@ -121,26 +121,30 @@ public static class VNN_Config
         string editoption_kq = "";
         string addoption_kq = "";
         string model_infor = "";
+
         int i_ = 0;
-        ADmin_JSON json = new ADmin_JSON();
+        var json = new ADmin_JSON();
         var cols = json.ad_columnJSON();
         var sels = json.ad_selectoptionJSON();
-
+        var roleMMCols = json.ad_role_mmcolJSON();
+        var roleMMVas = json.ad_role_mmvalueJSON();
+        roleMMCols = roleMMCols.Where(s => s.ad_role_id == roleId).ToList();
+        roleMMVas = roleMMVas.Where(s => s.ad_role_id == roleId).ToList();
         var col1s = cols.Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList().Clone();
         var col2s = col1s.Clone();
 
         var lstDicShow = lstDic.Where(s => s["hidden"].ToString().ToLower() == "false").ToList();
         var lstDicHidden = lstDic.Where(s => s["hidden"].ToString().ToLower() == "true").ToList();
-        
-        var colsFilter = col1s.Where(s => lstDicShow.Select(t => t["name"].ToString()).Contains(s.ma_column)).OrderBy(s=>s.sapxep).ToList();
-        for(var i = 0; i < colsFilter.Count; i++)
+
+        var colsFilter = col1s.Where(s => lstDicShow.Select(t => t["name"].ToString()).Contains(s.ma_column)).OrderBy(s => s.sapxep).ToList();
+        for (var i = 0; i < colsFilter.Count; i++)
         {
             var editCol = col2s.Where(s => s.ma_column == lstDicShow[i]["name"].ToString()).FirstOrDefault();
             editCol.sapxep = colsFilter[i].sapxep;
             editCol.hidden = "false";
         }
 
-        foreach(var item in lstDicHidden)
+        foreach (var item in lstDicHidden)
         {
             var editCol = col2s.Where(s => s.ma_column == item["name"].ToString()).FirstOrDefault();
             editCol.hidden = "true";
@@ -149,6 +153,13 @@ public static class VNN_Config
         col2s = col2s.OrderBy(p => p.sapxep).ToList();
         foreach (var cot in col2s)
         {
+            var pqcot = roleMMCols.Where(s => s.ad_column_id == cot.ad_column_id).FirstOrDefault();
+            if (pqcot != null)
+            {
+                cot.disable_modify = pqcot.disableEdit.GetValueOrDefault(false) ? "dis_all" : cot.disable_modify;
+                cot.hidden = pqcot.disableView.ToString().ToLower();
+            }
+
             var itemDic = lstDic.Where(s => s["name"].ToString() == cot.ma_column).FirstOrDefault();
             if (itemDic != null)
             {
@@ -332,6 +343,49 @@ public static class VNN_Config
                             }
                         }
                     }
+
+                    var pqval = roleMMVas.Where(s => s.ad_column_id == cot.ad_column_id).FirstOrDefault();
+                    if (pqval != null)
+                    {
+                        string jsonED = "";
+                        Dictionary<string, string> jsonEDDT = null;
+                        var vals = pqval.ten_column.Split(',');
+                        foreach (var val in vals)
+                        {
+                            if (value_selectoption.Contains("value: {") | value_selectoption.Contains("value:{"))
+                            {
+                                if (jsonEDDT == null)
+                                {
+                                    jsonED = value_selectoption.Replace("value: {", "{").Replace("value:{", "{");
+                                    try
+                                    {
+                                        jsonEDDT = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonED);
+                                    }
+                                    catch { }
+                                }
+
+                                if(jsonEDDT != null)
+                                {
+                                    jsonEDDT.Remove(val);
+                                }
+                            }
+                            else
+                            {
+                                string mauVal1 = ";" + val + ":.*?;";
+                                string mauVal2 = "'" + val + ":.*?;";
+                                string mauVal3 = ";" + val + ":.*?'";
+                                value_selectoption = Regex.Replace(value_selectoption, mauVal1, ";", RegexOptions.IgnoreCase);
+                                value_selectoption = Regex.Replace(value_selectoption, mauVal2, "'", RegexOptions.IgnoreCase);
+                                value_selectoption = Regex.Replace(value_selectoption, mauVal3, "'", RegexOptions.IgnoreCase);
+                            }
+                        }
+
+                        if (jsonEDDT != null)
+                        {
+                            value_selectoption = "value: " + Newtonsoft.Json.JsonConvert.SerializeObject(jsonEDDT);
+                        }
+                    }
+
                     if (value_selectoption != "value: {")
                         kq[0] += "editoptions:{" + value_selectoption + "},";
                 }
@@ -357,13 +411,35 @@ public static class VNN_Config
                 int value_colspan = int.Parse(cot.colspan.ToString()) + 1;
                 colspan_kq += "\ncolspanedit('tr_" + cot.ma_column + "','" + value_colspan + "'); $('.ui-jqdialog-content .CaptionTD').css('text-align','right');";
             }
-			else if(cot.edittype == "textarea") {
-				colspan_kq += "\n$('#"+ cot.ma_column +"').css({'height':'inherit','width':''});";
-			}
+            else if (cot.edittype == "textarea")
+            {
+                colspan_kq += "\n$('#" + cot.ma_column + "').css({'height':'inherit','width':''});";
+            }
+
+            if (cot.formatter == "vnn_number" | cot.formatter == "esc_date")
+            {
+                colspan_kq += "\n$('#" + cot.ma_column + "').attr('autocomplete','off');";
+            }
         }
 
-        kq[1] = colspan_kq + editoption_kq + "\n$('.changeValueToActiveFunc').change();";
-        kq[2] = colspan_kq + addoption_kq + "\n$('.changeValueToActiveFunc').change();";
+        string funcAddEdit = "";
+        funcAddEdit += "\nsetTimeout(function() {";
+        funcAddEdit += "\n    let eleFirstFocus = formid.find('input[id!=\"id_g\"]:not(:disabled):visible,textarea:not(:disabled):visible,select:not(:disabled):visible');";
+        funcAddEdit += "\n    let eleLastFocus = formid.find('input[id!=\"id_g\"]:not(:disabled),textarea:not(:disabled),select:not(:disabled)').last();";
+        funcAddEdit += "\n    $('.changeValueToActiveFunc').change();";
+        funcAddEdit += "\n    let eleFirstFocus1 = eleFirstFocus.not('.formatdate').first()";
+        funcAddEdit += "\n    let eleFirstFocus2 = eleFirstFocus.first();";
+        funcAddEdit += "\n    eleFirstFocus1.focus()";
+        funcAddEdit += "\n    eleLastFocus.off('keydown');";
+        funcAddEdit += "\n    eleLastFocus.keydown(function(e){ let code = e.keyCode || e.which; if(e.shiftKey) {  } else if(code == '9') { e.preventDefault(); eleFirstFocus2.focus(); } });";
+        funcAddEdit += "\n}, 10);";
+
+        funcAddEdit += string.Format("\nformVisible_Del_id = formVisible_addEdit_id = 'grid{0}';", ma_module);
+
+        kq[1] = colspan_kq + editoption_kq;
+        kq[2] = colspan_kq + addoption_kq;
+        kq[6] += funcAddEdit;
+        kq[7] += funcAddEdit;
         VNN_VariablePublic.Model_infor = model_infor;
         return kq;
     }
@@ -383,28 +459,31 @@ public static class VNN_Config
 
     public static string Select_sql(string ma_module, EntityContext db)
     {
-        string kq = "";
+        string kq = "", tuybien = "@TuyBien";
         ADmin_JSON json = new ADmin_JSON();
         var columns = json.ad_columnJSON();
         var columnsModule = columns.Where(s => s.ma_module == ma_module & s.hoatdong == true);
         foreach (ad_column cot in columnsModule.OrderBy(p => p.key_cot).OrderBy(p => p.sapxep))
         {
-            if (cot.mota != null & cot.mota != "")
+            if (cot.mota != tuybien & cot.ten_column != tuybien & cot.label != tuybien)
             {
-                kq += cot.mota + " as " + cot.ma_column + ",";
-            }
-            else
-            {
-                if (cot.index_cot != null & cot.index_cot != "")
-                    kq += cot.index_cot + " as " + cot.ma_column + ",";
+                if (cot.mota != null & cot.mota != "")
+                {
+                    kq += cot.mota + " as " + cot.ma_column + ",";
+                }
                 else
-                    kq += cot.ma_column + ",";
+                {
+                    if (cot.index_cot != null & cot.index_cot != "")
+                        kq += cot.index_cot + " as " + cot.ma_column + ",";
+                    else
+                        kq += cot.ma_column + ",";
+                }
             }
         }
 
-        if(kq == "")
+        if (kq == "")
         {
-            foreach (var cot in db.ad_column.Where(s=>s.ma_module == ma_module).OrderBy(p => p.key_cot).OrderBy(p => p.sapxep).ToList())
+            foreach (ad_column cot in db.ad_column.Where(s => s.ma_module == ma_module).OrderBy(p => p.key_cot).OrderBy(p => p.sapxep))
             {
                 if (cot.mota != null & cot.mota != "")
                 {
@@ -436,7 +515,7 @@ public static class VNN_Config
         string hamxuly_refresh = "click_refresh(tengrid)";
         string icon_refresh = "glyphicon glyphicon-refresh";
         string title_refresh = "Làm mới dữ liệu";
-        string hamxuly_clearserch = "click_refresh_clearsearch(tengrid)"; 
+        string hamxuly_clearserch = "click_refresh_clearsearch(tengrid)";
         string icon_clearserch = "glyphicon glyphicon-search";
         string title_clearserch = "Làm mới bộ tìm kiếm";
         string hamxuly_origination = "click_origination(tengrid)";
@@ -505,7 +584,7 @@ public static class VNN_Config
         return kq;
     }
 
-	public static string get_NavFunc2(System.Web.HttpContext context, string ma_module, int capmodule)
+    public static string get_NavFunc2(System.Web.HttpContext context, string ma_module, int capmodule)
     {
         ADmin_JSON json = new ADmin_JSON();
         var cases = json.ad_caseJSON().Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList();
@@ -518,7 +597,7 @@ public static class VNN_Config
         string hamxuly_refresh = "click_refresh(tengrid)";
         string icon_refresh = "glyphicon glyphicon-refresh";
         string title_refresh = "Làm mới dữ liệu";
-        string hamxuly_clearserch = "click_refresh_clearsearch(tengrid)"; 
+        string hamxuly_clearserch = "click_refresh_clearsearch(tengrid)";
         string icon_clearserch = "glyphicon glyphicon-search";
         string title_clearserch = "Làm mới bộ tìm kiếm";
         string hamxuly_origination = "click_origination(tengrid)";
@@ -528,19 +607,19 @@ public static class VNN_Config
         string icon_home = "glyphicon glyphicon-home";
         string title_home = "Trở về trang chủ";
         string kq_btnheader = "<div class=\"rightclick_header\" align=\"center\"><table align=\"center\"><tr>";
-		string id_img_btnorigination = "img_btnorigination_grid" + ma_module;
+        string id_img_btnorigination = "img_btnorigination_grid" + ma_module;
         kq_btnheader += "<td title = \"Làm mới dữ liệu\">" + VNN_Function.set_Icon(icon_refresh, "img_btnmacdinh", hamxuly_refresh, "img_btnrefresh", title_refresh) + "</td>";
         kq_btnheader += "<td title = \"Làm mới bộ tìm kiếm\">" + VNN_Function.set_Icon(icon_clearserch, "img_btnmacdinh", hamxuly_clearserch, "img_btnrefresh", title_clearserch) + "</td>";
         kq_btnheader += "<td title = \"Truy nguồn gốc\">" + VNN_Function.set_Icon(icon_origination, id_img_btnorigination + " img_btnmacdinh " + class_btnclick, hamxuly_origination, "", title_origination) + "</td>";
         kq_btnheader += "<td title = \"Trở về trang chủ\">" + VNN_Function.set_Icon(icon_home, "img_btnmacdinh", hamxuly_home, "img_btntrangchu", title_home) + "</td>";
         kq_btnheader += "</tr></table></div>";
         string kq = "";
-		if(capmodule == 0)
-			kq += "\nfunction taonut_header(tengrid_hd) {";
-		else if(capmodule == 1)
-			kq += "\nfunction taonut_header1(tengrid_hd) {";
-		else if(capmodule == 2)
-			kq += "\nfunction taonut_header2(tengrid_hd) {";
+        if (capmodule == 0)
+            kq += "\nfunction taonut_header(tengrid_hd) {";
+        else if (capmodule == 1)
+            kq += "\nfunction taonut_header1(tengrid_hd) {";
+        else if (capmodule == 2)
+            kq += "\nfunction taonut_header2(tengrid_hd) {";
 
         kq += "\n//lam moi nut header";
         kq += "\nvar nutnhan =  '<div style=\"margin: -5px 0 0 0; height:25px\">';";
@@ -559,8 +638,8 @@ public static class VNN_Config
                     string id_case = "img_btn" + cn.ma_case, title_case = cn.ten_case;
                     string mota = string.IsNullOrEmpty(cn.mota) ? "1==1" : cn.mota;
 
-                    kq += "\nnutnhan += '"+ VNN_Function.set_Icon(cn.logo, "img_btnmacdinh", hamxuly, id_case, title_case) + "';";
-                    kq += "\nchuotphai +='<tr id=\""+ cn.ma_case +"\" onclick=\"" + hamxuly + "\">' +";
+                    kq += "\nnutnhan += '" + VNN_Function.set_Icon(cn.logo, "img_btnmacdinh", hamxuly, id_case, title_case) + "';";
+                    kq += "\nchuotphai +='<tr id=\"" + cn.ma_case + "\" onclick=\"" + hamxuly + "\">' +";
                     kq += "\n'<td style=\"width: 25px;\">' +";
                     kq += "\n'" + VNN_Function.set_Icon(cn.logo, "img_rightdiv", "", "", "") + "' +";
                     kq += "\n'</td>' +";
@@ -568,9 +647,9 @@ public static class VNN_Config
                     kq += "\n'<a>" + cn.ten_case + "</a>' +";
                     kq += "\n'</td>' +";
                     kq += "\n'</tr>';";
-                    detailfncChuotPhai += "if("+ mota + ") {";
+                    detailfncChuotPhai += "if(" + mota + ") {";
                     detailfncChuotPhai += "$('#" + cn.ma_case + "').show();";
-                    detailfncChuotPhai += "$('#img_btn" + cn.ma_case+"').show();";
+                    detailfncChuotPhai += "$('#img_btn" + cn.ma_case + "').show();";
                     detailfncChuotPhai += "} else {";
                     detailfncChuotPhai += "$('#" + cn.ma_case + "').hide();";
                     detailfncChuotPhai += "$('#img_btn" + cn.ma_case + "').hide();";
@@ -598,19 +677,19 @@ public static class VNN_Config
         kq += "\nchuotphai += '</table></div>';";
         kq += "\nload_menurightclick(tengrid_hd, chuotphai, fncChuotPhai, nutnhan);";
         kq += "\nSetWidth_BtnHeader(10);";
-		kq += "\nload_menuleftclick(tengrid_hd, nutnhan, fncChuotPhai);";
-		kq += "\n$('#org_' + tengrid_hd).val(0);";
+        kq += "\nload_menuleftclick(tengrid_hd, nutnhan, fncChuotPhai);";
+        kq += "\n$('#org_' + tengrid_hd).val(0);";
         kq += "\n}";
-       
+
 
         if (VNN_VariablePublic.view_origination == true)
             VNN_VariablePublic.view_origination = false;
-        
-		return kq.Replace("tengrid","tengrid" + capmodule).Replace("id_parent","id_parent" + capmodule)
-		.Replace("Form_infor","Form_infor" + capmodule).Replace("Model_infor","Model_infor" + capmodule)
-		.Replace("load_stt","load_stt" + capmodule);
+
+        return kq.Replace("tengrid", "tengrid" + capmodule).Replace("id_parent", "id_parent" + capmodule)
+        .Replace("Form_infor", "Form_infor" + capmodule).Replace("Model_infor", "Model_infor" + capmodule)
+        .Replace("load_stt", "load_stt" + capmodule);
     }
-	
+
     //private static string get_CaseKT(ad_case cn, LinqDataContext db, System.Web.HttpContext context, string ma_case, bool id_parent)
     //{
     //    string kq = "";
@@ -669,10 +748,11 @@ public static class VNN_Config
             ma_module = ma_module,
             ma_moduletk = ma_moduletk,
             ten_module = mod.ten_module,
-            select_sql = mod.select_sql.ToString(),
-            from_sql = mod.from_sql.ToString(),
-            where_sql = mod.where_sql.ToString(),
-            orderby_sql = mod.orderby_sql.ToString(),
+            select_sql = mod.select_sql,
+            from_sql = mod.from_sql,
+            where_sql = mod.where_sql,
+            orderby_sql = mod.orderby_sql,
+            groupby_sql = mod.groupby_sql,
             procedure_sql = mod.procedure_sql,
             capmodule = mod.capmodule.Value,
             ma_modulecha = mod.ma_modulecha.ToString(),
@@ -733,15 +813,19 @@ public static class VNN_Config
                 else if (cn.hamxuly == ("click_view(tengrid)"))
                 {
                     i = 3;
-					default_title = "#edithd";
-					default_WH = "#editmod";
-					default_FWH = "#FrmGrid_";
+                    default_title = "#edithd";
+                    default_WH = "#editmod";
+                    default_FWH = "#FrmGrid_";
                 }
                 else
                     i = -1;
                 //Check data
                 if (i >= 0)
                 {
+                    if (i == 3)
+                    {
+                        kq[i][0] += "\n viewform(tengrid);";
+                    }
                     //Width of form
                     if (cn.dodaiForm != null & cn.dodaiForm != "")
                     {
@@ -769,23 +853,28 @@ public static class VNN_Config
                     kq[i][1] += "\n     if($('" + default_WH + "' + tengrid).height() > window.innerHeight - 6) { $('" + default_WH + "' + tengrid).height(window.innerHeight - 6); }";
                     kq[i][1] += "\n     if($('" + default_FWH + "' + tengrid).height() > window.innerHeight - 72) { $('" + default_FWH + "' + tengrid).height(window.innerHeight - 72); $('#FrmGrid_' + tengrid).closest('div.ui-jqdialog').css('top','0px'); }";
                     kq[i][1] += "\n}, 100);";
-					
-					//Center for form
+
+                    //Center for form
                     if (cn.canhgiua != null & cn.canhgiua == (false))
                         kq[i][2] = "";
-                    else if(i < 3)
+                    else if (i < 3)
                         kq[i][2] = default_canhgiua;
-					else
-						kq[i][2] = "$('#FrmGrid_' + tengrid).closest('div.ui-jqdialog').dialogCenter();";
+                    else
+                        kq[i][2] = "$('#FrmGrid_' + tengrid).closest('div.ui-jqdialog').dialogCenter();";
                     //Title of form
                     if (cn.tieude != null & cn.tieude != "")
+                    {
                         kq[i][3] = @"$('" + default_title + "'+tengrid +' span').empty(); $('" + default_title + "'+tengrid +' > .img_title_jqgrid').remove();" +
                             "$('" + default_title + "'+tengrid +' span').prepend('" + cn.tieude + " - [ '+ get_now() +' ]');" +
                             "$('" + default_title + "'+tengrid).prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
+                    }
                     else
+                    {
                         kq[i][3] = @"$('" + default_title + "'+tengrid +' span').empty(); $('" + default_title + "'+tengrid +' > .img_title_jqgrid').remove();" +
                             "$('" + default_title + "'+tengrid +' span').prepend('" + cn.ten_case + " - [ '+ get_now() +' ]');" +
                             "$('" + default_title + "'+tengrid).prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
+                    }
+
                     //Close form after modify
                     kq[i][4] = "$('.ui-state-error').css('display','none');";
                     if (cn.hidden_modify == true)
@@ -793,10 +882,7 @@ public static class VNN_Config
 
                     if (i == 3)
                     {
-                        kq[i][0] = "";
-                        kq[i][1] = "";
-                        kq[i][2] = "";
-                        kq[i][3] = "";
+                        kq[i][3] += "\n hideform(tengrid);";
                     }
                 }
                 else
@@ -818,10 +904,10 @@ public static class VNN_Config
         return kq;
     }
 
-	public static string[][] get_ModifyFormInfor2(string ma_module, int capmod)
+    public static string[][] get_ModifyFormInfor2(string ma_module, int capmod)
     {
-		string tengrid = "tengrid" + capmod;
-        int khaibaomang = 5;
+        string tengrid = "tengrid" + capmod;
+        int khaibaomang = 7;
         String[][] kq = new String[khaibaomang][];
         for (int dem = 0; dem < khaibaomang; dem++)
         {
@@ -836,7 +922,7 @@ public static class VNN_Config
             default_FWH = "#FrmGrid_";
 
         string form_infor = "";
-        foreach (ad_case cn in cases.Where(s => s.ma_module == ma_module & s.hoatdong == true).OrderBy(p => p.sapxep).ToList())
+        foreach (ad_case cn in cases.Where(s => s.ma_module == ma_module).OrderBy(p => p.sapxep).ToList())
         {
             if (cn.hamxuly != null)
             {
@@ -855,9 +941,9 @@ public static class VNN_Config
                 else if (cn.hamxuly == ("click_view(tengrid)"))
                 {
                     i = 3;
-					default_title = "#edithd";
-					default_WH = "#editmod";
-					default_FWH = "#FrmGrid_";
+                    default_title = "#edithd";
+                    default_WH = "#editmod";
+                    default_FWH = "#FrmGrid_";
                 }
                 else
                     i = -1;
@@ -867,13 +953,13 @@ public static class VNN_Config
                     //Width of form
                     if (cn.dodaiForm != null & cn.dodaiForm != "")
                     {
-                        kq[i][0] += "\n$('" + default_WH + "' + "+ tengrid +").css('width'," + cn.dodaiForm + ");";
-                        kq[i][0] += "\n$('" + default_FWH + "' + "+ tengrid +").css('width'," + cn.dodaiForm + ");";
+                        kq[i][0] += "\n$('" + default_WH + "' + " + tengrid + ").css('width'," + cn.dodaiForm + ");";
+                        kq[i][0] += "\n$('" + default_FWH + "' + " + tengrid + ").css('width'," + cn.dodaiForm + ");";
                     }
                     else
                     {
-                        kq[i][0] += "$('" + default_WH + "' + "+ tengrid +").css('width',500);";
-                        kq[i][0] += "$('" + default_FWH + "' + "+ tengrid +").css('width',500);";
+                        kq[i][0] += "$('" + default_WH + "' + " + tengrid + ").css('width',500);";
+                        kq[i][0] += "$('" + default_FWH + "' + " + tengrid + ").css('width',500);";
                     }
                     //Height of form
                     if (cn.docaoForm != null & cn.docaoForm != "")
@@ -890,38 +976,49 @@ public static class VNN_Config
                     kq[i][1] += "\nsetTimeout(function() {";
                     kq[i][1] += "\n     if($('" + default_WH + "' + " + tengrid + ").height() > window.innerHeight - 6) { $('" + default_WH + "' + " + tengrid + ").height(window.innerHeight - 6); }";
                     kq[i][1] += "\n     if($('" + default_FWH + "' + " + tengrid + ").height() > window.innerHeight - 72) { $('" + default_FWH + "' + " + tengrid + ").height(window.innerHeight - 72); $('#FrmGrid_' + " + tengrid + ").closest('div.ui-jqdialog').css('top','0px'); }";
+                    if (!Security.PhanQuyen_ChucNang(System.Web.HttpContext.Current, ma_module, cn.ad_case_id) | !cn.hoatdong)
+                    {
+                        kq[i][1] += string.Format("\n     $('td#edit_' + {1}).attr('typeE') ? $('td#edit_' + {1}).removeAttr('typeE') : $.jgrid.hideModal('{0}' + {1}, {{ gbox: '#gbox_'+ {1} }});", default_WH, tengrid);
+                    }
                     kq[i][1] += "\n}, 100);";
-					
+
                     //Center for form
-                    if (cn.canhgiua != null & cn.canhgiua == (false))
+                    if (cn.canhgiua != null & cn.canhgiua == false)
                         kq[i][2] = "";
-                    else if(i < 3)
-                        kq[i][2] = default_canhgiua;
-					else 
-						kq[i][2] = "$('#FrmGrid_' + "+ tengrid +").closest('div.ui-jqdialog').dialogCenter();";
+                    else if (i < 3)
+                        kq[i][2] = string.Format("{0} setTimeout(function() {{ {0} }},100); ", default_canhgiua);
+                    else
+                    {
+                        var dialogCenter = "$('#FrmGrid_' + " + tengrid + ").closest('div.ui-jqdialog').dialogCenter();";
+                        kq[i][2] = string.Format("{0} setTimeout(function() {{ {0} }}, 100);", dialogCenter);
+                    }
+
                     //Title of form
                     if (cn.tieude != null & cn.tieude != "")
-                        kq[i][3] = @"$('" + default_title + "'+"+ tengrid +" +' span').empty(); $('" + default_title + "'+ " + tengrid + " +' > .img_title_jqgrid').remove();" +
-                            "$('" + default_title + "'+ "+ tengrid +" +' span').prepend('" + cn.tieude + " - [ '+ get_now() +' ]');" +
-                            "$('" + default_title + "'+ "+ tengrid +").prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
+                        kq[i][3] = @"$('" + default_title + "'+" + tengrid + " +' span').empty(); $('" + default_title + "'+ " + tengrid + " +' > .img_title_jqgrid').remove();" +
+                            "$('" + default_title + "'+ " + tengrid + " +' span').prepend('" + cn.tieude + " - [ '+ get_now() +' ]');" +
+                            "$('" + default_title + "'+ " + tengrid + ").prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
                     else
-                        kq[i][3] = @"$('" + default_title + "'+ "+ tengrid +" +' span').empty(); $('" + default_title + "'+ " + tengrid + " +' > .img_title_jqgrid').remove();" +
-                            "$('" + default_title + "'+ "+ tengrid +" +' span').prepend('" + cn.ten_case + " - [ '+ get_now() +' ]');" +
-                            "$('" + default_title + "'+ "+ tengrid +").prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
+                        kq[i][3] = @"$('" + default_title + "'+ " + tengrid + " +' span').empty(); $('" + default_title + "'+ " + tengrid + " +' > .img_title_jqgrid').remove();" +
+                            "$('" + default_title + "'+ " + tengrid + " +' span').prepend('" + cn.ten_case + " - [ '+ get_now() +' ]');" +
+                            "$('" + default_title + "'+ " + tengrid + ").prepend('" + VNN_Function.set_Icon(cn.logo, "img_title_jqgrid", "", "", "") + "');";
                     //Close form after modify
                     kq[i][4] = "$('.ui-state-error').css('display','none');";
                     if (cn.hidden_modify == true)
-                        kq[i][4] += "$.jgrid.hideModal('" + default_WH + "' + "+ tengrid +", { gbox: '#gbox_'+ "+ tengrid +"});";
-					
-					if(i == 3) {
-                        kq[i][0] = "";
-                        kq[i][1] = "";
-                        kq[i][2] = "";
-                        kq[i][3] = "";
+                        kq[i][4] += "$.jgrid.hideModal('" + default_WH + "' + " + tengrid + ", { gbox: '#gbox_'+ " + tengrid + "});";
+
+                    if (i == 3)
+                    {
+                        kq[i][0] = "\nviewform(" + tengrid + ");" + kq[i][0];
+                        kq[i][3] += "\n hideform(" + tengrid + ");";
                     }
-					else if(i == 1){
-						kq[i][4] += "load_grid"+ capmod + " = 3;";
-					}
+                    else if (i == 1)
+                    {
+                        kq[i][4] += "load_grid" + capmod + " = 3;";
+                    }
+
+                    kq[i][5] = string.Format("\ninput_focus_public = $('{0}'+{1}).find(':focus');", default_FWH, tengrid);
+                    kq[i][6] = string.Format("\nsetTimeout(function(){{input_focus_public.focus();}}, 10);");
                 }
                 else
                 {
@@ -938,13 +1035,15 @@ public static class VNN_Config
                 }
             }
         }
+
+
         VNN_VariablePublic.Form_infor = form_infor;
         return kq;
     }
-	
+
     public static string[] get_IDParent_STTLoad(string ma_module)
     {
-        string[] number = new string[5];
+        string[] number = new string[6];
 
         //Tìm STT
         number[0] = "null";
@@ -967,6 +1066,8 @@ public static class VNN_Config
                     ad_module mod_cha_ = mods.Where(s => s.ad_module_id == mod_cha.thuake).Take(1).FirstOrDefault();
                     number[1] = "id_" + mod_cha_.ma_module;
                 }
+
+                number[1] = string.Format(@"checkPostParamsToServer({0}) ? {0} : null;", number[1]);
             }
             else
             {
@@ -1000,12 +1101,26 @@ public static class VNN_Config
             number[4] = hamxuly_case;
         }
         else { number[4] = ""; }
+
+        string str = "";
+        str += "jQuery('#' + tengrid).jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });";
+        str += "jQuery('#pager' + tengrid + '_left table').css('display', 'none');";
+        str += "jQuery('#' + tengrid).jqGrid('setFrozenColumns');";
+        str += "jQuery('#' + tengrid).jqGrid('bindKeys', {";
+        str += "    \"onEnter\":function(rowid) {";
+        str += "    }";
+        str += "});";
+
+        str += "\nformVisible_addEdit_id = formVisible_Del_id = tengrid;";
+
+        number[5] = str;
+
         return number;
     }
-	
-	public static string[] get_IDParent_STTLoad2(string ma_module, int capmodule)
+
+    public static string[] get_IDParent_STTLoad2(string ma_module, int capmodule)
     {
-        string[] number = new string[5];
+        string[] number = new string[6];
         //Tìm STT
         number[0] = "null";
         //Tìm Id cha
@@ -1056,17 +1171,33 @@ public static class VNN_Config
         if (mod.double_click != null)
         {
             string strReplace = mod.double_click.Replace(mod.ad_module_id, "");
-            var cas = cases.Where(s => s.ad_case_id == strReplace).Select(s => new {s.hamxuly, s.ma_case}).Take(1).FirstOrDefault();
-            if(cas != null){
-				number[4] = cas.hamxuly.Replace("tengrid","tengrid" + capmodule).Replace("id_parent","id_parent" + capmodule)
-				.Replace("Form_infor","Form_infor" + capmodule).Replace("Model_infor","Model_infor" + capmodule)
-				.Replace("load_stt","load_stt" + capmodule).Replace("ma_case","'"+ cas.ma_case +"'");
-			}
-			else {
-				number[4] = "";
-			}
+            var cas = cases.Where(s => s.ad_case_id == strReplace).Select(s => new { s.hamxuly, s.ma_case }).Take(1).FirstOrDefault();
+            if (cas != null)
+            {
+                number[4] = cas.hamxuly.Replace("tengrid", "tengrid" + capmodule).Replace("id_parent", "id_parent" + capmodule)
+                .Replace("Form_infor", "Form_infor" + capmodule).Replace("Model_infor", "Model_infor" + capmodule)
+                .Replace("load_stt", "load_stt" + capmodule).Replace("ma_case", "'" + cas.ma_case + "'");
+            }
+            else
+            {
+                number[4] = "";
+            }
         }
         else { number[4] = ""; }
+
+        string str = "";
+        str += "jQuery('#' + tengrid" + capmodule + ").jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });";
+        str += "jQuery('#pager' + tengrid" + capmodule + " + '_left table').css('display', 'none');";
+        str += "jQuery('#' + tengrid" + capmodule + ").jqGrid('setFrozenColumns');";
+        str += "jQuery('#' + tengrid" + capmodule + ").jqGrid('bindKeys', {";
+        str += "    \"onEnter\":function(rowid) {";
+        str += "    }";
+        str += "});";
+
+        if (capmodule == 0)
+            str += "\nformVisible_addEdit_id = formVisible_Del_id = tengrid" + capmodule + ";";
+
+        number[5] = str;
         return number;
     }
 }

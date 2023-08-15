@@ -152,9 +152,51 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
 
                 if (msg.Length <= 0)
                 {
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_id), sp.md_sanpham_id);
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), "VNN_notpost");
-                    VNN_Function.SetFormValue(object_.nameof(s => s.md_phienbangia_id), "VNN_notpost");
+                    var giaChoDuyet = context.Request.Form["giachoduyet"].ToNullableDecimal();
+                    if(giaChoDuyet != null)
+                    {
+                        var sxss = db.md_giasanpham_giaodich.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id & s.sapxepso != null).ToList();
+                        int? sapxepsoMax = null;
+                        if(sxss.Count > 0)
+                            sapxepsoMax = sxss.Max(s => s.sapxepso.GetValueOrDefault(0));
+
+                        var gd = db.md_giasanpham_giaodich.Where(s => s.md_giasanpham_id == object_.md_giasanpham_id & s.trangthai == Helper.CHODUYET).FirstOrDefault();
+                        var add = gd == null;
+                        if(add)
+                        {
+                            gd = new md_giasanpham_giaodich();
+                            gd.md_giasanpham_giaodich_id = Helper.getNewId();
+                            gd.md_giasanpham_id = object_.md_giasanpham_id;
+                            gd.md_banggia_id = object_.md_banggia_id;
+                            gd.md_phienbangia_id = object_.md_phienbangia_id;
+                            gd.md_donvitinhsanpham_id = object_.md_donvitinhsanpham_id;
+                            gd.md_sanpham_id = object_.md_sanpham_id;
+                            gd.trangthai = Helper.CHODUYET;
+                            gd.ngaydenghi = DateTime.Now;
+                            gd.hoatdong = true;
+                        }
+                        gd.sapxepso = sapxepsoMax.GetValueOrDefault(0) + 1;
+                        gd.giacu = object_.gia;
+                        gd.giamoi = giaChoDuyet;
+                        gd = Helper.setDefaultValueWhenInsertOrUpdate(gd, userTK, !add);
+
+                        if(add)
+                        {
+                            db.md_giasanpham_giaodich.Add(gd);
+                        }
+
+                        var gdlqs = db.md_giasanpham_giaodich.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id & s.md_sanpham_id == object_.md_sanpham_id).ToList();
+                        foreach(var gdlq in gdlqs)
+                        {
+                            gdlq.sapxepso = gd.sapxepso;
+                        }
+                    }
+
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_sanpham_id), Helper.VNN_notpost);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), Helper.VNN_notpost);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_phienbangia_id), Helper.VNN_notpost);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.md_donvitinhsanpham_id), Helper.VNN_notpost);
+                    VNN_Function.SetFormValue(object_.nameof(s => s.gia), Helper.VNN_notpost);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();
@@ -162,7 +204,7 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
+                msg = ex.ToString();
             }
 
             if (msg.Length <= 0)
@@ -211,6 +253,12 @@ public class JQGridMD_02_GiaSanPhamModify : IHttpHandler, System.Web.SessionStat
 
                 if (msg.Length <= 0)
                 {
+                    foreach(var gd in db.md_giasanpham_giaodich.Where(s=>
+                        s.md_giasanpham_id == object_.md_giasanpham_id
+                        & s.trangthai == Helper.CHODUYET).ToList())
+                    {
+                        db.md_giasanpham_giaodich.Remove(gd);
+                    }
                     var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id).Select(s=>s.ten_phienbangia).FirstOrDefault();
                     var sp = db.md_sanpham.Where(s => s.md_sanpham_id == object_.md_sanpham_id).Select(s=>s.ma_sanpham).FirstOrDefault();
                     VNN_Function.Write_log(context, ma_module, null, oper, "PBG:" + pbg + ", MSP:" + sp, db);

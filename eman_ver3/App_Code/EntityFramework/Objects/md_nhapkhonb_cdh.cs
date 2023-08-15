@@ -7,6 +7,12 @@
                     public partial class md_nhapkhonb_cdh
                     {
                         
+                        #region md_nhapkhonb_cdh_bomId_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_bomId_wintaFN
+                        public string bomId { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_bophancapnhat_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_bophancapnhat_wintaFN
@@ -17,6 +23,12 @@
                         
                         #endregion md_nhapkhonb_cdh_bophantao_wintaFN
                         public string bophantao { get; set; }
+                
+						
+                        #region md_nhapkhonb_cdh_cdhTsxLsxId_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_cdhTsxLsxId_wintaFN
+                        public string cdhTsxLsxId { get; set; }
                 
 						
                         #region md_nhapkhonb_cdh_check_kho_wintaFN
@@ -109,10 +121,22 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_pbgId_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_pbgId_wintaFN
+                        public string pbgId { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_sl_danhap_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_sl_danhap_wintaFN
                         public Decimal? sl_danhap { get; set; }
+                
+						
+                        #region md_nhapkhonb_cdh_sl_huy_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_sl_huy_wintaFN
+                        public Decimal? sl_huy { get; set; }
                 
 						
                         #region md_nhapkhonb_cdh_sl_muonnhap_wintaFN

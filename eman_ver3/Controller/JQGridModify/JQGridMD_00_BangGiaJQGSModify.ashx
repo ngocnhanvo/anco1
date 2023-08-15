@@ -54,7 +54,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         string str = "";
         string id = context.Request.QueryString["id"];
         str += firstnull ? string.Format("<option value=\"\"></option>") : "";
-        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & s.tuychon == "BANVT").OrderBy(s=>s.ten_banggia).ToList())
+        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & (s.tuychon == Helper.MUAVT | s.tuychon == Helper.MUATP)).OrderBy(s=>s.ten_banggia).ToList())
         {
             str += string.Format(@"<option dtkd='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, object_.lienket_bg);
         }
@@ -67,11 +67,9 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         string str = "";
         string id = context.Request.QueryString["id"];
         str += firstnull ? string.Format("<option value=\"\"></option>") : "";
-        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & s.tuychon == "NHANCONG").OrderBy(s=>s.ten_banggia).ToList())
+        foreach (var object_ in db.md_banggia.Where(s=>s.hoatdong == true & s.tuychon == Helper.NHANCONG).OrderBy(s=>s.ten_banggia).ToList())
         {
-            var kho = db.md_kho.Where(s => s.md_phanxuong_id == object_.md_phanxuong_id & s.md_to_id == object_.md_to_id & s.hangton == false).FirstOrDefault();
-            if(kho != null)
-                str += string.Format(@"<option kho='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, kho.md_kho_id);
+            str += string.Format(@"<option kho='{2}' style='display:none' value='{0}'>{1}</option>", object_.md_banggia_id, object_.ten_banggia, "");
         }
         context.Response.Write("<select>" + str + "</select>");
     }
@@ -102,10 +100,10 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         {
             try
             {
-                var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
+                var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
                 var object_ = new md_banggia();
                 object_.md_banggia_id = id_new;
-                object_.phongbanId = pxTrongQT.phongbanId;
+                object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                 db.md_banggia.Add(object_);
@@ -149,8 +147,8 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
                 }
                 else
                 {
-                    var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
-                    object_.phongbanId = pxTrongQT.phongbanId;
+                    var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
+                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
                     db.SaveChanges();
@@ -158,7 +156,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
+                msg = ex.ToString();
             }
 
             if (msg.Length <= 0)

@@ -575,3 +575,12 @@ input.format_vnn.formatfile {
     cursor: pointer;
     background-image: url(../images/icon/header_dktt.png)
 }
+
+.btnResizeGrid {
+    border: none !important;
+    padding: 0px 4px 4px 4px;
+    position: absolute !important;
+    right: 5px;
+    top: 2px !important;
+    z-index: 1;
+}

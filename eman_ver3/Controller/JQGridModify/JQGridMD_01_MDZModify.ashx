@@ -59,7 +59,6 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         string msg = "", id_new = Helper.getNewId();
         string ma_module_ = context.Request.QueryString["ma_module"];
         List<ad_module> lstAdModule = json.ad_moduleJSON();
-        bool update_linq = bool.Parse(context.Request.Form["update_linq"]);
         bool row_count = bool.Parse(context.Request.Form["row_count"]);
         string id = context.Request.QueryString["id"];
         string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
@@ -69,6 +68,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         string new_from = context.Request.Form["from_sql"];
         string new_where = context.Request.Form["where_sql"];
         string new_orderby = context.Request.Form["orderby_sql"];
+        string new_groupby = context.Request.Form["groupby_sql"];
         string loai_module = context.Request.Form["loai_module"];
         string url = context.Request.Form["url"];
         string thuake = context.Request.Form["thuake"];
@@ -142,6 +142,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                 Join_sql = "",
                 where_sql = new_where,
                 orderby_sql = new_orderby,
+                groupby_sql = new_groupby,
                 procedure_sql = context.Request.Form["procedure_sql"],
 
                 nguoitao = ad_user_id,
@@ -170,8 +171,12 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                     msg = Admin_CreateBasicFile.CreateFileLoad_Modify(context, mod_, int.Parse(capmodule));
                     string sql = "sELeCt " + mod_.select_sql + " fRoM " + mod_.from_sql + " WHeRe 1=1 " + mod_.where_sql;
                     //End Xet truong hop la module thua ke
-                    if (mod_.orderby_sql != null & mod_.orderby_sql != "")
+                    if (!string.IsNullOrEmpty(mod_.groupby_sql))
+                        sql += " GrOuP bY " + mod_.groupby_sql;
+
+                    if (!string.IsNullOrEmpty(mod_.orderby_sql))
                         sql += " OrDEr bY " + mod_.orderby_sql;
+
                     if (msg.Contains("\n Tạo grid thành công."))
                     {
                         Them_Column(context, mod, mod_, sql, bien_table, db);
@@ -211,8 +216,8 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module_ = context.Request.QueryString["ma_module"];
-        bool update_linq = bool.Parse(context.Request.Form["update_linq"]);
         bool row_count = bool.Parse(context.Request.Form["row_count"]);
+        bool updateColumn = context.Request.Form["updateColumn"] == "1";
         string chuoi_capmodule = context.Request.Form["capmodule"];
         //sort
         string id = context.Request.QueryString["id"];
@@ -233,6 +238,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         string old_from = mod.from_sql, new_from = context.Request.Form["from_sql"];
         string old_where = mod.where_sql, new_where = context.Request.Form["where_sql"];
         string old_orderby = mod.orderby_sql, new_orderby = context.Request.Form["orderby_sql"];
+        string old_groupby = mod.groupby_sql, new_groupby = context.Request.Form["groupby_sql"];
         string loai_module = mod.loai_module;
         string old_thuake = mod.thuake;
         string thuake = context.Request.Form["thuake"];
@@ -278,6 +284,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
             mod.Join_sql = "";
             mod.where_sql = new_where;
             mod.orderby_sql = new_orderby;
+            mod.groupby_sql = new_groupby;
             mod.procedure_sql = context.Request.Form["procedure_sql"];
             mod.row_count = row_count;
             if (thuake != null & thuake != "")
@@ -290,7 +297,11 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
             mod.hoatdong = hoatdong;
 
             string sql = "sELeCt " + new_select + " fRoM " + new_from + " WHeRe 1=1 " + new_where;
-            if (new_orderby != null & new_orderby != "")
+            
+            if (!string.IsNullOrEmpty(new_groupby))
+                sql += " GrOuP bY " + new_groupby;
+
+            if (!string.IsNullOrEmpty(new_orderby))
                 sql += " OrDEr bY " + new_orderby;
 
             Module_TK mod_ = VNN_Config.get_ModuleKeThua(mod, 0, ma_module, "", "", db);
@@ -298,7 +309,11 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
             {
                 new_select = mod_.select_sql;
                 sql = "sELeCt " + mod_.select_sql + " fRoM " + mod_.from_sql + " WHeRe 1=1 " + mod_.where_sql;
-                if (mod_.orderby_sql != null & mod_.orderby_sql != "")
+
+                if (!string.IsNullOrEmpty(mod_.groupby_sql))
+                    sql += " GrOuP bY " + mod_.groupby_sql;
+
+                if (!string.IsNullOrEmpty(mod_.orderby_sql))
                     sql += " OrDEr bY " + mod_.orderby_sql;
             }
 
@@ -323,7 +338,10 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                         new_select = new_select.Replace(" ", "");
                         old_select = old_select.Replace(" ", "");
                         if ((mod.thuake == null | mod.thuake == "") & new_select != old_select)
-                            Them_Column(context, mod, mod_, sql, bien_table, db);
+                        {
+                            if(updateColumn)
+                                Them_Column(context, mod, mod_, sql, bien_table, db);
+                        }
                     }
                 }
             }
@@ -874,17 +892,19 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
 
     public void Them_ChucNang_PhanQuyen(HttpContext context, string ma_module, string ad_module_id, ad_user tk, ad_menu mn, Module_TK mod_, EntityContext db, ADmin_JSON json)
     {
-        List<ad_case> lstAdCase = json.ad_caseJSON();
+        var lstAdCase = json.ad_caseJSON();
         if (mod_.ma_moduletk != mod_.ma_module)
         {
+            var count = 0;
             foreach (ad_case cn in db.ad_case.Where(s => s.ad_module_id == mod_.ad_module_id).ToList())
             {
+                count++;
                 string ad_case_id = Helper.getNewId();
                 ad_case cntk_ = new ad_case
                 {
                     ad_case_id = ad_case_id,
                     ad_module_id = ad_module_id,
-                    ma_case = "CA_01_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt"),
+                    ma_case = "CA_01_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt") + count,
                     ma_module = ma_module,
                     ma_menu = mn.ma_menu,
                     thuake = cn.@ad_case_id,
@@ -999,6 +1019,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                     mod_sel.select_sql = mod_copy.select_sql;
                     mod_sel.from_sql = mod_copy.from_sql;
                     mod_sel.where_sql = mod_copy.where_sql;
+                    mod_sel.groupby_sql = mod_copy.groupby_sql;
                     mod_sel.orderby_sql = mod_copy.orderby_sql;
                     mod_sel.row_count = mod_copy.row_count;
                     mod_sel.procedure_sql = mod_copy.procedure_sql;

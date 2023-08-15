@@ -9,12 +9,35 @@ using Newtonsoft.Json;
 
 public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
+    private class ColumnRole
+    {
+        public string text { get; set; }
+        public bool? selEdit { get; set; }
+        public bool? selView { get; set; }
+        public int? index { get; set; }
+    }
+
+    private class ColumnSort
+    {
+        public string maCot { get; set; }
+        public int? colpos { get; set; }
+        public int? rowpos { get; set; }
+        public int? colspan { get; set; }
+    }
+
+    public EntityContext db = new EntityContext();
+    public EntityFunction entityFunc = new EntityFunction();
+    User_TK userTK = null;
+
+    public string oper = "vnn";
+
     public void ProcessRequest(HttpContext context)
     {
-
-        string oper = "vnn";
         if (Security.id_taikhoan(context) != "")
+        {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
+            userTK = VNN_Function.get_user(Security.id_taikhoan(context), Security.id_vaitro(context), Security.id_phongban(context), db);
+        }
 
         switch (oper)
         {
@@ -30,16 +53,111 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
             case "sel_edittype":
                 this.sel_edittype(context);
                 break;
+            case "loadlist":
+                this.LoadList(context);
+                break;
+            case "loadFields":
+                this.loadFields(context);
+                break;
+            case "CA_01_SapXepTruongDuLieu":
+                this.CA_01_SapXepTruongDuLieu(context);
+                break;
             default:
                 break;
         }
     }
 
+    public void CA_01_SapXepTruongDuLieu(HttpContext context)
+    {
+        var id = context.Request.Form["id"];
+        var data = context.Request.Form["data"];
+        string msg = "";
+        try
+        {
+            var json = new ADmin_JSON();
+            var lstAdColumn = json.ad_columnJSON();
 
+            var jsonData = JsonConvert.DeserializeObject<List<ColumnSort>>(data);
+            foreach (var item in jsonData)
+            {
+                var formoptions = string.Format(@"'',colpos:{0},rowpos:{1}", item.colpos, item.rowpos);
+                var column = db.ad_column.Where(s => s.ad_module_id == id & s.ma_column == item.maCot).FirstOrDefault();
+                if (column != null)
+                {
+                    column.formoptions = formoptions;
+
+                    if (item.colspan != null)
+                        column.colspan = item.colspan.ToString();
+                    else
+                        column.colspan = " ";
+
+                    lstAdColumn = lstAdColumn.Where(s => s.ad_column_id != column.ad_column_id).ToList();
+                    lstAdColumn.Add(column);
+                }
+            }
+            db.SaveChanges();
+
+
+            string jsonStr = JsonConvert.SerializeObject(lstAdColumn, Formatting.Indented);
+            json.urlData = typeof(ad_column).Name;
+            json.WriteJson(jsonStr);
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        context.Response.Write(msg);
+    }
+
+    public void loadFields(HttpContext context)
+    {
+        var id = context.Request.QueryString["id"];
+        var json = db.ad_column.Where(s => s.ad_module_id == id & s.editable == "true").OrderBy(s=>s.sapxep).ToList();
+        context.Response.Write(JsonConvert.SerializeObject(json));
+    }
+
+    public void LoadList(HttpContext context)
+    {
+        var json = new ADmin_JSON();
+        var columns = json.ad_columnJSON();
+        var role_mmcols = json.ad_role_mmcolJSON();
+        var dataJS = new List<ColumnRole>();
+        dataJS.Add(new ColumnRole() {
+            text = "Tất cả",
+            selEdit = false,
+            selView = false,
+            index = 0
+        });
+
+        string id = context.Request.QueryString["id"];
+        string ad_module_id = context.Request.QueryString["ad_module_id"];
+
+        int i = 1;
+        foreach (var cn in columns.Where(s =>
+            s.ad_module_id == ad_module_id
+            & s.hoatdong == true
+            & s.key_cot != "true"
+            ).OrderBy(p => p.sapxep))
+        {
+            var itemCas = new ColumnRole();
+            itemCas.text = "<a style='display:none'>" + cn.ad_column_id + "</a><a>" + cn.ten_column + "</a>";
+            itemCas.selEdit = false;
+            itemCas.selView = false;
+            itemCas.index = i;
+            foreach (var pq in role_mmcols.Where(p => p.ad_module_id == cn.ad_module_id & p.ad_role_id == id & p.ad_column_id == cn.ad_column_id).ToList())
+            {
+                itemCas.selEdit = pq.disableEdit.GetValueOrDefault(false);
+                itemCas.selView = pq.disableView.GetValueOrDefault(false);
+            }
+            dataJS.Add(itemCas);
+            i++;
+        }
+        context.Response.Write(JsonConvert.SerializeObject(dataJS));
+    }
 
     public void add(HttpContext context)
     {
-        EntityContext db = new EntityContext();
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -74,7 +192,11 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
             string sql = "";
             sql += select_sql + " from " + mod.from_sql
                 + " where 1=1 " + mod.where_sql;
-            if (mod.orderby_sql != "" & mod.orderby_sql != null)
+
+            if (!string.IsNullOrEmpty(mod.groupby_sql))
+                sql += " group by " + mod.groupby_sql;
+
+            if (!string.IsNullOrEmpty(mod.orderby_sql))
                 sql += " order by " + mod.orderby_sql;
 
 
@@ -175,7 +297,6 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
     {
         ADmin_JSON json = new ADmin_JSON();
         List<ad_column> lstAdColumn = json.ad_columnJSON();
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -279,8 +400,13 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
                     string sql = "";
                     sql += "select " + select_sql + " from " + mod.from_sql
                         + " where 1=1 " + mod.where_sql;
-                    if (mod.orderby_sql != "" & mod.orderby_sql != null)
+
+                    if (!string.IsNullOrEmpty(mod.groupby_sql))
+                        sql += " group by " + mod.groupby_sql;
+
+                    if (!string.IsNullOrEmpty(mod.orderby_sql))
                         sql += " order by " + mod.orderby_sql;
+
                     if (VNN_Function.TestSQL(sql))
                     {
                         mod.select_sql = select_sql;
@@ -317,7 +443,6 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
         ADmin_JSON json = new ADmin_JSON();
         List<ad_column> LstAdColumn = json.ad_columnJSON();
         List<ad_module> LstAdModule = json.ad_moduleJSON();
-        EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         try
@@ -335,13 +460,10 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
 
                 if (msg.Length <= 0)
                 {
-                    //foreach (ad_module mod_ in db.ad_module.Where(s => s.thuake == (mod.ad_module_id)).ToList())
-                    //{
-                    //    foreach (ad_column col_ in db.ad_column.Where(s => s.ad_module_id == (mod_.ad_module_id) & s.ma_column == (cot.ma_column)).ToList())
-                    //    {
-                    //        db.ad_column.Remove(col_);
-                    //    }
-                    //}
+                    foreach (var pq in db.ad_role_mmcol.Where(s => s.ad_module_id == mod.ad_module_id & s.ad_column_id == cot.ad_column_id).ToList())
+                    {
+                        db.ad_role_mmcol.Remove(pq);
+                    }
                     db.ad_column.Remove(cot);
                     db.SaveChanges();
                     LstAdColumn = LstAdColumn.Where(s => s.ad_column_id != cot.ad_column_id).ToList();
@@ -371,7 +493,6 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
     public void sel_edittype(HttpContext context)
     {
         //khai bao
-        EntityContext db = new EntityContext();
         string id = context.Request.QueryString["id"];
         string kq = "";
         ad_editstyle ed = db.ad_editstyle.Where(p => p.ma_editstyle == (id)).Take(1).FirstOrDefault();
