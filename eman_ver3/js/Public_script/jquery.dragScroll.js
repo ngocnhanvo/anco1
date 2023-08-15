@@ -50,7 +50,7 @@
                         e.stopPropagation();
                         e = e.originalEvent.targetTouches[0];
 
-                        let moveX = 4;
+                        let moveX = 8;
                         if (e.clientX > x0) {
                             x0 = e.clientX;
                             let idx = parseInt($this.css("marginLeft").replace('px', ''));
