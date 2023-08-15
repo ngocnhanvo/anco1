@@ -25,20 +25,17 @@ namespace GenerateModels.Controllers
         public JsonResult WriteObject000()
         {
             string msg = "", link = "";
-            var modules = new List<string>();
+            List<string> modules = new List<string>();
             modules.Add("ad_menu");
             modules.Add("ad_module");
             modules.Add("ad_column");
             modules.Add("ad_case");
             modules.Add("ad_systemconfig");
             modules.Add("ad_user_mmc");
-            modules.Add("ad_role_mmc");
-            modules.Add("ad_selectoption");
-
             int status = 0;
             try
             {
-                foreach (var module in modules)
+                foreach(var module in modules)
                 {
                     if (!string.IsNullOrEmpty(module))
                     {

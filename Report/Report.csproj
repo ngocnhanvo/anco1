@@ -140,45 +140,19 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Compile Include="Report\[SX] Phiếu Xuất Kho.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[SX] Vật tư theo đơn đặt hàng PX.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[SX] Thẻ Giao Việc Sản Xuất.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[KT] Phiếu Nhập Kho.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[VT] Phiếu yêu cầu mua vật tư.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[VT] Phiếu xác nhận nhập kho vật tư.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[VT] Đơn đặt mua vật tư.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[KT] Phiếu Xuất Kho.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[KT] Phiếu Xuất Kho Kiêm Phiếu Chuyển Kho Nội Bộ.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\[KT] Bảng Kê Chi Tiết Mua Hàng.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Report\[SX] Phiếu Xuất Kho.cs" />
+    <Compile Include="Report\[SX] Bảng Kê Tiền Hàng Sản Phẩm Hoàn Thành.cs" />
+    <Compile Include="Report\[SX] Bảng Tổng Hợp Thanh Toán Tiền Hàng Sản Phẩm Hoàn Thành.cs" />
+    <Compile Include="Report\[SX] Phiếu Giao Nhận Sản Phẩm Hoàn Thành.cs" />
+    <Compile Include="Report\[SX] Vật tư theo đơn đặt hàng PX.cs" />
+    <Compile Include="Report\[SX] Thẻ Giao Việc Sản Xuất.cs" />
+    <Compile Include="Report\[KT] Phiếu Nhập Kho.cs" />
+    <Compile Include="Report\[VT] Phiếu yêu cầu mua vật tư.cs" />
+    <Compile Include="Report\[VT] Phiếu xác nhận nhập kho vật tư.cs" />
+    <Compile Include="Report\[VT] Đơn đặt mua vật tư.cs" />
+    <Compile Include="Report\[KT] Phiếu Xuất Kho.cs" />
+    <Compile Include="Report\[KT] Phiếu Xuất Kho Kiêm Phiếu Chuyển Kho Nội Bộ.cs" />
+    <Compile Include="Report\[KT] Bảng Kê Chi Tiết Mua Hàng.cs" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -243,33 +217,25 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Report\donDatHangPhanXuong.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Report\donDatHangPhanXuong.cs" />
     <Compile Include="Report\donDatHangPhanXuong.Designer.cs">
       <DependentUpon>donDatHangPhanXuong.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Report\phieuXuatKho.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Report\phieuXuatKho.cs" />
     <Compile Include="Report\phieuXuatKho.Designer.cs">
       <DependentUpon>phieuXuatKho.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Report\phieuYeuCauSuaChuaHangTon.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Report\phieuYeuCauSuaChuaHangTon.cs" />
     <Compile Include="Report\phieuYeuCauSuaChuaHangTon.Designer.cs">
       <DependentUpon>phieuYeuCauSuaChuaHangTon.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Report\lenhXuatKho.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Report\lenhXuatKho.cs" />
     <Compile Include="Report\lenhXuatKho.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
