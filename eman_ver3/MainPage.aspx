@@ -28,7 +28,6 @@
     <script src="js/VNN_script/GridFunction_View.js?ver=<%=version %>" type="text/javascript"></script>
     <script src="js/VNN_script/GridFunction_Admin.js?ver=<%=version %>" type="text/javascript"></script>
     <script async src="js/VNN_script/User_GridFormatter.js?ver=<%=version %>" type="text/javascript"></script>
-    <script src="js/Public_script/pdf.min.js"></script>
     <!-- layout -->
     <script src="js/Public_script/jquery.number.js" type="text/javascript"></script>
     <script src="js/Public_script/jquery.form.js" type="text/javascript"></script>
