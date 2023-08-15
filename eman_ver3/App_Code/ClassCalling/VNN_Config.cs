@@ -140,14 +140,20 @@ public static class VNN_Config
         for (var i = 0; i < colsFilter.Count; i++)
         {
             var editCol = col2s.Where(s => s.ma_column == lstDicShow[i]["name"].ToString()).FirstOrDefault();
-            editCol.sapxep = colsFilter[i].sapxep;
-            editCol.hidden = "false";
+            if (editCol != null)
+            {
+                editCol.sapxep = colsFilter[i].sapxep;
+                editCol.hidden = "false";
+            }
         }
 
         foreach (var item in lstDicHidden)
         {
             var editCol = col2s.Where(s => s.ma_column == item["name"].ToString()).FirstOrDefault();
-            editCol.hidden = "true";
+            if (editCol != null)
+            {
+                editCol.hidden = "true";
+            }
         }
 
         col2s = col2s.OrderBy(p => p.sapxep).ToList();
