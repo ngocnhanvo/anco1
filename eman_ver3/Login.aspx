@@ -13,8 +13,9 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" href="images/logo/anco_logo.ico"/>
-<title>eMan</title>
+	<link rel="shortcut icon" href="images/logo/anco_logo.ico"/>
+	<title>eMan</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/layout-default.css" rel="stylesheet" type="text/css" />
 	<link href="css/VNN_css/Content.css" rel="stylesheet" type="text/css" />
     <link href="css/style.css" rel="stylesheet" type="text/css" />
@@ -22,26 +23,52 @@
     <link href="css/VNN_css/Login.css" rel="stylesheet" type="text/css" />
 	<script src="js/Public_script/jquery-1.10.2.js" type="text/javascript"></script>
 	<script src="js/VNN_script/GridFunction_Admin.js" type="text/javascript"></script>
+    <style type="text/css">
+        @media (max-width: 400px) {
+            #form1 {
+                zoom: 95%;
+            }
+        }
+        @media (max-width: 811px) {
+            div.ui-layout-north.toolbar > div {
+                margin: 0px auto;
+                left: 0px !important;
+            }
+
+            #main1 > div > table {
+                float: none !important;
+                margin: 0px auto;
+                display: none;
+            }
+
+            #form1 {
+                margin: unset !important;
+                padding: unset !important;
+                box-shadow: unset !important;
+                margin-bottom: 20px !important;
+                margin-top: 20px !important;
+                text-align: center;
+            }
+
+            #btnLogin {
+                margin-top: unset;
+                margin-bottom: unset;
+                margin-left: unset;
+            }
+        }
+    </style>
 </head>
     <body>
 	    <div id="wapper-layout" class="ui-layout-center">
-		    <div id="main0" class="ui-layout-north toolbar">
-			    <div align="center" style="background: url('images/bg-logo.png') no-repeat center center; position: absolute; top: -8px; left: 10px; height: 105px; width: 200px;"> 
-                        <img class="img_updatelinq" style="margin-top: 20px;" src="<%=logo %>"/> </div><span class="close"></span>
-			    <table style="margin: 24px 0px 0px 200px">
-				    <tr>
-					    <td> </td>
-					    <td> </td>
-					    <td> </td>
-					    <td> </td>
-					    <td> </td>
-				    </tr>
-			    </table> <span style="position: absolute; top: 21px; right: 0px"> </span>
+		    <div style="background-color: #fff;" id="main0" class="ui-layout-north toolbar">
+			    <div align="center" style="background: url('images/bg-logo.png') no-repeat center center; position: relative; top: -8px; left: 10px; height: 105px; width: 200px;"> 
+                    <img class="img_updatelinq" style="margin-top: 10px; height: 75px;" src="<%=logo %>"/>
+			    </div>
 		    </div>
-		    <div class="ui-layout-center" style="background: #efefef; width:100%; min-width:880px">
-			    <div style="min-width:750px; background-color: #fff;">
-				    <div id="main1" style="width: 880px;margin: 0px auto">
-					    <div>
+		    <div class="ui-layout-center" style="background: #efefef; width:100%;">
+			    <div style="background-color: #fff;">
+				    <div id="main1" style="">
+					    <div style="display:table; margin: 0px auto;">
 						    <table style="float:left">
 							    <tr>
 								    <td colspan="3">
@@ -61,17 +88,18 @@
 							    <tr>
 								    <td></td>
 								    <td style="font-size:11px; text-align:left; color:#3883cc">
-									    <div class="nhan_div"><a class="nhan_a">Lấy đơn hàng từ phần mềm AncoTrading</a></div>
-									    <div class="nhan_div"><a class="nhan_a">Quản lý kế hoạch đặt hàng của bộ phận kế hoạch</a></div>
+										<div class="nhan_div"><a class="nhan_a">Lấy đơn hàng từ phần mềm AncoTrading</a></div>
+										<div class="nhan_div"><a class="nhan_a">Quản lý kế hoạch đặt hàng của bộ phận kế hoạch</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Quản lý đặt hàng phân xưởng của bộ phận kế hoạch</a></div>
-									    <div class="nhan_div"><a class="nhan_a">Tạo YC mua ngoài TP/BTP của phòng kế hoạch</a></div>
+										<div class="nhan_div"><a class="nhan_a">Tạo YC mua ngoài TP/BTP của phòng kế hoạch</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Tạo YC mua vật tư của bộ phận kế hoạch</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Đặt mua vật tư khác của xưởng</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Quản lý kế hoạch mua VT,BTP,TP của phòng VT-KT</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Quản lý nhập kho VT,BTP,TP của phòng VT – KT</a></div>
+										<div class="nhan_div"><a class="nhan_a">Quản lý kho, lịch sử nhập xuất kho</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Quản lý sản xuất của phân xưởng</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Cập nhật tiến độ sản xuất của phân xưởng</a></div>
-									    <div class="nhan_div"><a class="nhan_a">Quản lý xuất VT,PK,BTP ra phân xưởng</a></div>
+										<div class="nhan_div"><a class="nhan_a">Quản lý xuất VT,PK,BTP ra phân xưởng</a></div>
 									    <div class="nhan_div"><a class="nhan_a">Quản lý xuất bán hàng hóa</a></div>
 									    <div class="nhan_div_a" style="margin: 8px 0 0 0;"><span>Cùng nhiều tính năng ưu việt khác</span></div>
 								    </td>
@@ -115,48 +143,13 @@
 								    </tr>
 								    <tr>
 									    <td colspan="3">
-										    <asp:Label ID="lblCaption" ForeColor="Red" runat="server" Text=""></asp:Label>
+										    <asp:Label ID="lblCaption" style="color:red;margin-left:20px;position:relative;top:-20px;" runat="server" Text=""></asp:Label>
 									    </td>
-								    </tr>
-								    <tr>
-									    <td></td>
-									    <td></td>
-									    <td><span id="lblMessage" style="color:Red; font-size:11px"></span></td>
 								    </tr>
 							    </table>
 						    </form>
 					    </div>
 					    <div style="clear:both"> </div>
-				    </div>
-				    <div id="footer" style="background-color:#003467; margin:0px auto"> <br />
-					    <table id="tb_footer" style="width: 880px;margin: 0px auto">
-						    <tr>
-							    <td style=" padding: 5px 0px 0px 0px"><a style="color:White; font-size:13px;;"></a></td>
-							    <td></td>
-						    </tr>
-						    <tr>
-							    <td> <br /></td>
-						    </tr>
-						    <tr>
-							    <td></td>
-							    <td></td>
-						    </tr>
-						    <tr>
-							    <td></td>
-							    <td></td>
-						    </tr>
-						    <tr>
-							    <td> <br /></td>
-						    </tr>
-						    <tr>
-							    <td></td>
-							    <td></td>
-						    </tr>
-						    <tr>
-							    <td></td>
-							    <td></td>
-						    </tr>
-					    </table>
 				    </div>
 			    </div>
 		    </div>
