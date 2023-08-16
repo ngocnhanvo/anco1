@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Linq;
 namespace InfoDB
 {
+    //a
     public class Infomation
     {
         public string DataSource { get; set; }
@@ -94,14 +95,13 @@ namespace InfoDB
             {
                 whereEx = $"and TABLE_NAME = N'{table}'";
             }
-
             MSSQL mssqlDB = new MSSQL();
             string sql_table = $@"
                 SELECT 
                     TABLE_NAME as value, 
                     TABLE_NAME as name 
                 FROM [{InitialCatalog}].INFORMATION_SCHEMA.TABLES 
-                WHERE TABLE_TYPE = 'BASE TABLE' {whereEx}
+                WHERE TABLE_TYPE = 'BASE TABLE' and lower(TABLE_NAME) != 'sysdiagrams' {whereEx}
                 ORDER BY TABLE_NAME asc";
             var dt = mssqlDB.GetData(sql_table);
             return dt;
@@ -125,11 +125,14 @@ namespace InfoDB
                 col.DATA_TYPE, 
                 ku.CONSTRAINT_NAME as COLUMN_KEY, 
                 col.CHARACTER_MAXIMUM_LENGTH,
+                col.NUMERIC_PRECISION,
+                col.NUMERIC_PRECISION_RADIX,
+                col.NUMERIC_SCALE,
                 COLUMNPROPERTY(object_id(col.TABLE_SCHEMA + '.' + col.TABLE_NAME), col.COLUMN_NAME, 'IsIdentity') as Isidentity
                 from [{InitialCatalog}].information_schema.columns as col
                 left join [{InitialCatalog}].INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS ku on ku.table_name = col.table_name and ku.column_name = col.column_name
                 WHERE col.table_name = N'{table}' {whereEx}
-                order by col.column_name
+                order by ku.CONSTRAINT_NAME desc, col.column_name
             ";
             var dt = mssqlDB.GetData(sql_table);
             return dt;
@@ -138,6 +141,21 @@ namespace InfoDB
         public DataTable getValueTable(string table)
         {
             string sql = string.Format("select * from {0} with (nolock)", table);
+            MSSQL mssqlDB = new MSSQL();
+            var dt = mssqlDB.GetData(sql);
+            return dt;
+        }
+
+        public DataTable getALLCheckConstraints()
+        {
+            string sql = string.Format(@"
+                select col.name as tblName, con.name as chkName, con.definition
+                from sys.tables col
+                left join sys.check_constraints con on col.object_id = con.parent_object_id
+                where isnull(con.name,'') != '' 
+                "
+            );
+
             MSSQL mssqlDB = new MSSQL();
             var dt = mssqlDB.GetData(sql);
             return dt;

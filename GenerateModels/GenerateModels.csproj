@@ -148,9 +148,9 @@
       <HintPath>..\Framework\Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore.dll</HintPath>
     </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="newtonsoft.json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\GitKhaiNguyen\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\newtonsoft.json.dll</HintPath>
     </Reference>
     <Reference Include="Remotion.Linq">
       <HintPath>..\Framework\Remotion.Linq.dll</HintPath>
@@ -267,8 +267,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CompileController.cs" />
+    <Compile Include="Controllers\GitController.cs" />
     <Compile Include="Controllers\JsonController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SQLController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -320,6 +322,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Views\Json\Index.cshtml" />
     <Content Include="Views\Compile\Index.cshtml" />
+    <Content Include="Views\Git\Index.cshtml" />
+    <Content Include="Views\SQL\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gennerate Models from Database</title>
+    <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -26,6 +26,8 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Json", "Index", "Json")</li>
+                    <li>@Html.ActionLink("SQL", "Index", "SQL")</li>
+                    <li>@Html.ActionLink("Git", "Index", "Git")</li>
                     <li>@Html.ActionLink("Compile", "Index", "Compile")</li>
                 </ul>
             </div>
