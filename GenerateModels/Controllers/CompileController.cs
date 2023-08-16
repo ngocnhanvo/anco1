@@ -32,6 +32,10 @@ namespace GenerateModels.Controllers
             modules.Add("ad_case");
             modules.Add("ad_systemconfig");
             modules.Add("ad_user_mmc");
+            modules.Add("ad_role_mmc");
+            modules.Add("ad_role_mmcol");
+            modules.Add("ad_role_mmvalue");
+            modules.Add("ad_selectoption");
             int status = 0;
             try
             {
