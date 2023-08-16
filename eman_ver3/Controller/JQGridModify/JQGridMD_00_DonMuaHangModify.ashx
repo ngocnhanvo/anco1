@@ -455,6 +455,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
             if (msg.LastIndexOf("false#") <= -1)
             {
+                msg = "true#Cập nhật thành công";
                 transaction.Commit();
                 VNN_Function.loaddulieu_Auto(db, ma_module);
             }
