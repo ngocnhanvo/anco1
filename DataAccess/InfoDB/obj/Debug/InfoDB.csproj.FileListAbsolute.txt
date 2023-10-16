@@ -88,3 +88,4 @@ D:\ESC\Git Anco1\DataAccess\InfoDB\obj\Debug\InfoDB.pdb
 D:\ESC\Git Anco1\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CoreCompileInputs.cache
 D:\ESC\Git Anco1\DataAccess\InfoDB\obj\Debug\InfoDB.csproj.CopyComplete
 D:\ESC\Git Anco1\DataAccess\InfoDB\bin\Debug\newtonsoft.json.xml
+D:\ESC\Git Anco1\DataAccess\InfoDB\obj\Debug\InfoDB.csprojAssemblyReference.cache
