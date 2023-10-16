@@ -7,6 +7,12 @@
                     public partial class md_vanchuyennoibo_cdvc
                     {
                         
+                        #region md_vanchuyennoibo_cdvc_md_vanchuyennoibo_cdvc_id_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_md_vanchuyennoibo_cdvc_id_wintaFN
+                        public string md_vanchuyennoibo_cdvc_id { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_bophancapnhat_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_bophancapnhat_wintaFN
@@ -89,12 +95,6 @@
                         
                         #endregion md_vanchuyennoibo_cdvc_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
-                
-						
-                        #region md_vanchuyennoibo_cdvc_md_vanchuyennoibo_cdvc_id_wintaFN
-                        
-                        #endregion md_vanchuyennoibo_cdvc_md_vanchuyennoibo_cdvc_id_wintaFN
-                        public string md_vanchuyennoibo_cdvc_id { get; set; }
                 
 						
                         #region md_vanchuyennoibo_cdvc_md_vanchuyennoibo_id_wintaFN

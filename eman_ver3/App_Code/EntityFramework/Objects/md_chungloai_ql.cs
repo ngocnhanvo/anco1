@@ -7,6 +7,12 @@
                     public partial class md_chungloai_ql
                     {
                         
+                        #region md_chungloai_ql_md_chungloai_ql_id_wintaFN
+                        
+                        #endregion md_chungloai_ql_md_chungloai_ql_id_wintaFN
+                        public string md_chungloai_ql_id { get; set; }
+                
+						
                         #region md_chungloai_ql_ad_user_id_wintaFN
                         
                         #endregion md_chungloai_ql_ad_user_id_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_chungloai_ql_md_chungloai_id_wintaFN
                         public string md_chungloai_id { get; set; }
-                
-						
-                        #region md_chungloai_ql_md_chungloai_ql_id_wintaFN
-                        
-                        #endregion md_chungloai_ql_md_chungloai_ql_id_wintaFN
-                        public string md_chungloai_ql_id { get; set; }
                 
 						
                         #region md_chungloai_ql_mota_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_thue_sanpham
                     {
                         
+                        #region md_thue_sanpham_md_thue_sanpham_id_wintaFN
+                        
+                        #endregion md_thue_sanpham_md_thue_sanpham_id_wintaFN
+                        public string md_thue_sanpham_id { get; set; }
+                
+						
                         #region md_thue_sanpham_bophancapnhat_wintaFN
                         
                         #endregion md_thue_sanpham_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_thue_sanpham_macdinh_wintaFN
                         public bool? macdinh { get; set; }
-                
-						
-                        #region md_thue_sanpham_md_thue_sanpham_id_wintaFN
-                        
-                        #endregion md_thue_sanpham_md_thue_sanpham_id_wintaFN
-                        public string md_thue_sanpham_id { get; set; }
                 
 						
                         #region md_thue_sanpham_mota_wintaFN

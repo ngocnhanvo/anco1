@@ -7,6 +7,12 @@
                     public partial class md_lenhdonggoi_dh
                     {
                         
+                        #region md_lenhdonggoi_dh_md_lenhdonggoi_dh_id_wintaFN
+                        
+                        #endregion md_lenhdonggoi_dh_md_lenhdonggoi_dh_id_wintaFN
+                        public string md_lenhdonggoi_dh_id { get; set; }
+                
+						
                         #region md_lenhdonggoi_dh_bomdonggoi_id_wintaFN
                         
                         #endregion md_lenhdonggoi_dh_bomdonggoi_id_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_lenhdonggoi_dh_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_lenhdonggoi_dh_md_lenhdonggoi_dh_id_wintaFN
-                        
-                        #endregion md_lenhdonggoi_dh_md_lenhdonggoi_dh_id_wintaFN
-                        public string md_lenhdonggoi_dh_id { get; set; }
                 
 						
                         #region md_lenhdonggoi_dh_md_lenhdonggoi_id_wintaFN

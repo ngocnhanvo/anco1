@@ -7,6 +7,12 @@
                     public partial class md_lenhsanxuat_vattu
                     {
                         
+                        #region md_lenhsanxuat_vattu_md_lenhsanxuat_vattu_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_vattu_md_lenhsanxuat_vattu_id_wintaFN
+                        public string md_lenhsanxuat_vattu_id { get; set; }
+                
+						
                         #region md_lenhsanxuat_vattu_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_vattu_bophancapnhat_wintaFN
@@ -53,12 +59,6 @@
                         
                         #endregion md_lenhsanxuat_vattu_md_lenhsanxuat_tosx_id_wintaFN
                         public string md_lenhsanxuat_tosx_id { get; set; }
-                
-						
-                        #region md_lenhsanxuat_vattu_md_lenhsanxuat_vattu_id_wintaFN
-                        
-                        #endregion md_lenhsanxuat_vattu_md_lenhsanxuat_vattu_id_wintaFN
-                        public string md_lenhsanxuat_vattu_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_vattu_md_sanpham_id_wintaFN

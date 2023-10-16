@@ -7,6 +7,12 @@
                     public partial class ad_role_where
                     {
                         
+                        #region ad_role_where_ad_role_where_id_wintaFN
+                        
+                        #endregion ad_role_where_ad_role_where_id_wintaFN
+                        public string ad_role_where_id { get; set; }
+                
+						
                         #region ad_role_where_ad_menu_id_wintaFN
                         
                         #endregion ad_role_where_ad_menu_id_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion ad_role_where_ad_role_id_wintaFN
                         public string ad_role_id { get; set; }
-                
-						
-                        #region ad_role_where_ad_role_where_id_wintaFN
-                        
-                        #endregion ad_role_where_ad_role_where_id_wintaFN
-                        public string ad_role_where_id { get; set; }
                 
 						
                         #region ad_role_where_bophancapnhat_wintaFN

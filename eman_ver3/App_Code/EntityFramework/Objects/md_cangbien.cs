@@ -7,6 +7,12 @@
                     public partial class md_cangbien
                     {
                         
+                        #region md_cangbien_md_cangbien_id_wintaFN
+                        
+                        #endregion md_cangbien_md_cangbien_id_wintaFN
+                        public string md_cangbien_id { get; set; }
+                
+						
                         #region md_cangbien_anco_check_wintaFN
                         
                         #endregion md_cangbien_anco_check_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_cangbien_ma_cangbien_wintaFN
                         public string ma_cangbien { get; set; }
-                
-						
-                        #region md_cangbien_md_cangbien_id_wintaFN
-                        
-                        #endregion md_cangbien_md_cangbien_id_wintaFN
-                        public string md_cangbien_id { get; set; }
                 
 						
                         #region md_cangbien_mota_wintaFN

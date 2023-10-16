@@ -7,6 +7,12 @@
                     public partial class md_congthuctrongtinhgia_mausac
                     {
                         
+                        #region md_congthuctrongtinhgia_mausac_md_congthuctrongtinhgia_mausac_id_wintaFN
+                        
+                        #endregion md_congthuctrongtinhgia_mausac_md_congthuctrongtinhgia_mausac_id_wintaFN
+                        public string md_congthuctrongtinhgia_mausac_id { get; set; }
+                
+						
                         #region md_congthuctrongtinhgia_mausac_bophancapnhat_wintaFN
                         
                         #endregion md_congthuctrongtinhgia_mausac_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_congthuctrongtinhgia_mausac_md_congthuctrongtinhgia_id_wintaFN
                         public string md_congthuctrongtinhgia_id { get; set; }
-                
-						
-                        #region md_congthuctrongtinhgia_mausac_md_congthuctrongtinhgia_mausac_id_wintaFN
-                        
-                        #endregion md_congthuctrongtinhgia_mausac_md_congthuctrongtinhgia_mausac_id_wintaFN
-                        public string md_congthuctrongtinhgia_mausac_id { get; set; }
                 
 						
                         #region md_congthuctrongtinhgia_mausac_md_sanphammausac_id_wintaFN

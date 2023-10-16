@@ -7,6 +7,12 @@
                     public partial class md_congthuctrongtinhgia
                     {
                         
+                        #region md_congthuctrongtinhgia_md_congthuctrongtinhgia_id_wintaFN
+                        
+                        #endregion md_congthuctrongtinhgia_md_congthuctrongtinhgia_id_wintaFN
+                        public string md_congthuctrongtinhgia_id { get; set; }
+                
+						
                         #region md_congthuctrongtinhgia_bophancapnhat_wintaFN
                         
                         #endregion md_congthuctrongtinhgia_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_congthuctrongtinhgia_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_congthuctrongtinhgia_md_congthuctrongtinhgia_id_wintaFN
-                        
-                        #endregion md_congthuctrongtinhgia_md_congthuctrongtinhgia_id_wintaFN
-                        public string md_congthuctrongtinhgia_id { get; set; }
                 
 						
                         #region md_congthuctrongtinhgia_mota_wintaFN

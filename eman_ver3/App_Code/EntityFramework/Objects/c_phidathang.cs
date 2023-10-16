@@ -7,6 +7,12 @@
                     public partial class c_phidathang
                     {
                         
+                        #region c_phidathang_c_phidathang_id_wintaFN
+                        
+                        #endregion c_phidathang_c_phidathang_id_wintaFN
+                        public string c_phidathang_id { get; set; }
+                
+						
                         #region c_phidathang_anco_check_wintaFN
                         
                         #endregion c_phidathang_anco_check_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion c_phidathang_c_danhsachdathang_id_wintaFN
                         public string c_danhsachdathang_id { get; set; }
-                
-						
-                        #region c_phidathang_c_phidathang_id_wintaFN
-                        
-                        #endregion c_phidathang_c_phidathang_id_wintaFN
-                        public string c_phidathang_id { get; set; }
                 
 						
                         #region c_phidathang_hoatdong_wintaFN

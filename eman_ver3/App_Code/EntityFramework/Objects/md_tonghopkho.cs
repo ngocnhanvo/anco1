@@ -7,6 +7,12 @@
                     public partial class md_tonghopkho
                     {
                         
+                        #region md_tonghopkho_md_tonghopkho_id_wintaFN
+                        
+                        #endregion md_tonghopkho_md_tonghopkho_id_wintaFN
+                        public string md_tonghopkho_id { get; set; }
+                
+						
                         #region md_tonghopkho_bophancapnhat_wintaFN
                         
                         #endregion md_tonghopkho_bophancapnhat_wintaFN
@@ -59,12 +65,6 @@
                         
                         #endregion md_tonghopkho_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
-                
-						
-                        #region md_tonghopkho_md_tonghopkho_id_wintaFN
-                        
-                        #endregion md_tonghopkho_md_tonghopkho_id_wintaFN
-                        public string md_tonghopkho_id { get; set; }
                 
 						
                         #region md_tonghopkho_mota_wintaFN

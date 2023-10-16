@@ -9,6 +9,15 @@ namespace DataAcess
             #region Start Code
             modelBuilder.Entity<ad_role_mmc>().ToTable("ad_role_mmc");
                             modelBuilder.Entity<ad_role_mmc>()
+                            .Property(p => p.ad_role_mmc_id)
+                            .HasColumnName("ad_role_mmc_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_role_mmc>().HasKey<string>(p => p.ad_role_mmc_id);
+                            modelBuilder.Entity<ad_role_mmc>()
+                            .Property(p => p.ad_role_id)
+                            .HasColumnName("ad_role_id")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<ad_role_mmc>()
                             .Property(p => p.ad_case_id)
                             .HasColumnName("ad_case_id")
                             .HasColumnType("varchar");
@@ -20,15 +29,6 @@ namespace DataAcess
                             .Property(p => p.ad_module_id)
                             .HasColumnName("ad_module_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role_mmc>()
-                            .Property(p => p.ad_role_id)
-                            .HasColumnName("ad_role_id")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role_mmc>()
-                            .Property(p => p.ad_role_mmc_id)
-                            .HasColumnName("ad_role_mmc_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_role_mmc>().HasKey<string>(p => p.ad_role_mmc_id);
                             modelBuilder.Entity<ad_role_mmc>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -103,6 +103,11 @@ modelBuilder.Entity<ad_role_mmc>().HasKey<string>(p => p.ad_role_mmc_id);
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_role_mmcol>().ToTable("ad_role_mmcol");
                             modelBuilder.Entity<ad_role_mmcol>()
+                            .Property(p => p.ad_role_mmcol_id)
+                            .HasColumnName("ad_role_mmcol_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_role_mmcol>().HasKey<string>(p => p.ad_role_mmcol_id);
+                            modelBuilder.Entity<ad_role_mmcol>()
                             .Property(p => p.ad_column_id)
                             .HasColumnName("ad_column_id")
                             .HasColumnType("varchar");
@@ -118,11 +123,6 @@ modelBuilder.Entity<ad_role_mmcol>().ToTable("ad_role_mmcol");
                             .Property(p => p.ad_role_id)
                             .HasColumnName("ad_role_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role_mmcol>()
-                            .Property(p => p.ad_role_mmcol_id)
-                            .HasColumnName("ad_role_mmcol_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_role_mmcol>().HasKey<string>(p => p.ad_role_mmcol_id);
                             modelBuilder.Entity<ad_role_mmcol>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -205,6 +205,11 @@ modelBuilder.Entity<ad_role_mmcol>().HasKey<string>(p => p.ad_role_mmcol_id);
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_role_mmvalue>().ToTable("ad_role_mmvalue");
                             modelBuilder.Entity<ad_role_mmvalue>()
+                            .Property(p => p.ad_role_mmvalue_id)
+                            .HasColumnName("ad_role_mmvalue_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_role_mmvalue>().HasKey<string>(p => p.ad_role_mmvalue_id);
+                            modelBuilder.Entity<ad_role_mmvalue>()
                             .Property(p => p.ad_column_id)
                             .HasColumnName("ad_column_id")
                             .HasColumnType("varchar");
@@ -220,11 +225,6 @@ modelBuilder.Entity<ad_role_mmvalue>().ToTable("ad_role_mmvalue");
                             .Property(p => p.ad_role_id)
                             .HasColumnName("ad_role_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role_mmvalue>()
-                            .Property(p => p.ad_role_mmvalue_id)
-                            .HasColumnName("ad_role_mmvalue_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_role_mmvalue>().HasKey<string>(p => p.ad_role_mmvalue_id);
                             modelBuilder.Entity<ad_role_mmvalue>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -295,6 +295,11 @@ modelBuilder.Entity<ad_role_mmvalue>().HasKey<string>(p => p.ad_role_mmvalue_id)
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_role_where>().ToTable("ad_role_where");
                             modelBuilder.Entity<ad_role_where>()
+                            .Property(p => p.ad_role_where_id)
+                            .HasColumnName("ad_role_where_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_role_where>().HasKey<string>(p => p.ad_role_where_id);
+                            modelBuilder.Entity<ad_role_where>()
                             .Property(p => p.ad_menu_id)
                             .HasColumnName("ad_menu_id")
                             .HasColumnType("varchar");
@@ -306,11 +311,6 @@ modelBuilder.Entity<ad_role_where>().ToTable("ad_role_where");
                             .Property(p => p.ad_role_id)
                             .HasColumnName("ad_role_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role_where>()
-                            .Property(p => p.ad_role_where_id)
-                            .HasColumnName("ad_role_where_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_role_where>().HasKey<string>(p => p.ad_role_where_id);
                             modelBuilder.Entity<ad_role_where>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -505,14 +505,14 @@ modelBuilder.Entity<ad_selectoption>().HasKey<string>(p => p.ad_selectoption_id)
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_status>().ToTable("ad_status");
                             modelBuilder.Entity<ad_status>()
-                            .Property(p => p.ad_module_id)
-                            .HasColumnName("ad_module_id")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_status>()
                             .Property(p => p.ad_status_id)
                             .HasColumnName("ad_status_id")
                             .HasColumnType("varchar");
 modelBuilder.Entity<ad_status>().HasKey<string>(p => p.ad_status_id);
+                            modelBuilder.Entity<ad_status>()
+                            .Property(p => p.ad_module_id)
+                            .HasColumnName("ad_module_id")
+                            .HasColumnType("varchar");
                             modelBuilder.Entity<ad_status>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -723,14 +723,14 @@ modelBuilder.Entity<ad_table_manager>().HasKey<string>(p => p.ad_table_manager_i
                             .HasColumnType("varchar");
 modelBuilder.Entity<ad_user>().ToTable("ad_user");
                             modelBuilder.Entity<ad_user>()
-                            .Property(p => p.ad_role_id)
-                            .HasColumnName("ad_role_id")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_user>()
                             .Property(p => p.ad_user_id)
                             .HasColumnName("ad_user_id")
                             .HasColumnType("varchar");
 modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
+                            modelBuilder.Entity<ad_user>()
+                            .Property(p => p.ad_role_id)
+                            .HasColumnName("ad_role_id")
+                            .HasColumnType("varchar");
                             modelBuilder.Entity<ad_user>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -857,6 +857,11 @@ modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_user_mmc>().ToTable("ad_user_mmc");
                             modelBuilder.Entity<ad_user_mmc>()
+                            .Property(p => p.ad_user_mmc_id)
+                            .HasColumnName("ad_user_mmc_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_user_mmc>().HasKey<string>(p => p.ad_user_mmc_id);
+                            modelBuilder.Entity<ad_user_mmc>()
                             .Property(p => p.ad_case_id)
                             .HasColumnName("ad_case_id")
                             .HasColumnType("nvarchar");
@@ -876,11 +881,6 @@ modelBuilder.Entity<ad_user_mmc>().ToTable("ad_user_mmc");
                             .Property(p => p.ad_user_id)
                             .HasColumnName("ad_user_id")
                             .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_user_mmc>()
-                            .Property(p => p.ad_user_mmc_id)
-                            .HasColumnName("ad_user_mmc_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_user_mmc>().HasKey<string>(p => p.ad_user_mmc_id);
                             modelBuilder.Entity<ad_user_mmc>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -951,6 +951,11 @@ modelBuilder.Entity<ad_user_mmc>().HasKey<string>(p => p.ad_user_mmc_id);
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_user_role>().ToTable("ad_user_role");
                             modelBuilder.Entity<ad_user_role>()
+                            .Property(p => p.ad_user_role_id)
+                            .HasColumnName("ad_user_role_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_user_role>().HasKey<string>(p => p.ad_user_role_id);
+                            modelBuilder.Entity<ad_user_role>()
                             .Property(p => p.ad_role_id)
                             .HasColumnName("ad_role_id")
                             .HasColumnType("varchar");
@@ -958,11 +963,6 @@ modelBuilder.Entity<ad_user_role>().ToTable("ad_user_role");
                             .Property(p => p.ad_user_id)
                             .HasColumnName("ad_user_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_user_role>()
-                            .Property(p => p.ad_user_role_id)
-                            .HasColumnName("ad_user_role_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_user_role>().HasKey<string>(p => p.ad_user_role_id);
                             modelBuilder.Entity<ad_user_role>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
@@ -1037,6 +1037,15 @@ modelBuilder.Entity<ad_user_role>().HasKey<string>(p => p.ad_user_role_id);
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_danhsachdathang>().ToTable("c_danhsachdathang");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.c_danhsachdathang_id)
+                            .HasColumnName("c_danhsachdathang_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang_id);
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.sochungtu)
+                            .HasColumnName("sochungtu")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.anco_check)
                             .HasColumnName("anco_check")
                             .HasColumnType("bit");
@@ -1048,11 +1057,6 @@ modelBuilder.Entity<c_danhsachdathang>().ToTable("c_danhsachdathang");
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<c_danhsachdathang>()
-                            .Property(p => p.c_danhsachdathang_id)
-                            .HasColumnName("c_danhsachdathang_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang_id);
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.c_donhang_id)
                             .HasColumnName("c_donhang_id")
@@ -1073,6 +1077,10 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .Property(p => p.discount)
                             .HasColumnName("discount")
                             .HasColumnType("numeric").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.donhangtron)
+                            .HasColumnName("donhangtron")
+                            .HasColumnType("bit");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.grandtotal)
                             .HasColumnName("grandtotal")
@@ -1166,10 +1174,6 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("so_po")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
-                            .Property(p => p.sochungtu)
-                            .HasColumnName("sochungtu")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.thoigiansx)
                             .HasColumnName("thoigiansx")
                             .HasColumnType("int");
@@ -1215,14 +1219,14 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_danhsachdathang_nangluc>().ToTable("c_danhsachdathang_nangluc");
                             modelBuilder.Entity<c_danhsachdathang_nangluc>()
-                            .Property(p => p.c_danhsachdathang_id)
-                            .HasColumnName("c_danhsachdathang_id")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<c_danhsachdathang_nangluc>()
                             .Property(p => p.c_danhsachdathang_nangluc_id)
                             .HasColumnName("c_danhsachdathang_nangluc_id")
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_danhsachdathang_nangluc>().HasKey<string>(p => p.c_danhsachdathang_nangluc_id);
+                            modelBuilder.Entity<c_danhsachdathang_nangluc>()
+                            .Property(p => p.c_danhsachdathang_id)
+                            .HasColumnName("c_danhsachdathang_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang_nangluc>()
                             .Property(p => p.CBMdatduoc)
                             .HasColumnName("CBMdatduoc")
@@ -1277,6 +1281,11 @@ modelBuilder.Entity<c_danhsachdathang_nangluc>().HasKey<string>(p => p.c_danhsac
                             .HasColumnType("int");
 modelBuilder.Entity<c_doichieuhangton>().ToTable("c_doichieuhangton");
                             modelBuilder.Entity<c_doichieuhangton>()
+                            .Property(p => p.c_doichieuhangton_id)
+                            .HasColumnName("c_doichieuhangton_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton>().HasKey<string>(p => p.c_doichieuhangton_id);
+                            modelBuilder.Entity<c_doichieuhangton>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1288,11 +1297,6 @@ modelBuilder.Entity<c_doichieuhangton>().ToTable("c_doichieuhangton");
                             .Property(p => p.c_danhsachdathang_id)
                             .HasColumnName("c_danhsachdathang_id")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<c_doichieuhangton>()
-                            .Property(p => p.c_doichieuhangton_id)
-                            .HasColumnName("c_doichieuhangton_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton>().HasKey<string>(p => p.c_doichieuhangton_id);
                             modelBuilder.Entity<c_doichieuhangton>()
                             .Property(p => p.doichieuht)
                             .HasColumnName("doichieuht")
@@ -1387,6 +1391,11 @@ modelBuilder.Entity<c_doichieuhangton>().HasKey<string>(p => p.c_doichieuhangton
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_doichieuhangton_cddh>().ToTable("c_doichieuhangton_cddh");
                             modelBuilder.Entity<c_doichieuhangton_cddh>()
+                            .Property(p => p.c_doichieuhangton_cddh_id)
+                            .HasColumnName("c_doichieuhangton_cddh_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton_cddh>().HasKey<string>(p => p.c_doichieuhangton_cddh_id);
+                            modelBuilder.Entity<c_doichieuhangton_cddh>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1394,11 +1403,6 @@ modelBuilder.Entity<c_doichieuhangton_cddh>().ToTable("c_doichieuhangton_cddh");
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<c_doichieuhangton_cddh>()
-                            .Property(p => p.c_doichieuhangton_cddh_id)
-                            .HasColumnName("c_doichieuhangton_cddh_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton_cddh>().HasKey<string>(p => p.c_doichieuhangton_cddh_id);
                             modelBuilder.Entity<c_doichieuhangton_cddh>()
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
@@ -1485,6 +1489,11 @@ modelBuilder.Entity<c_doichieuhangton_cddh>().HasKey<string>(p => p.c_doichieuha
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_doichieuhangton_dkdh>().ToTable("c_doichieuhangton_dkdh");
                             modelBuilder.Entity<c_doichieuhangton_dkdh>()
+                            .Property(p => p.c_doichieuhangton_dkdh_id)
+                            .HasColumnName("c_doichieuhangton_dkdh_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton_dkdh>().HasKey<string>(p => p.c_doichieuhangton_dkdh_id);
+                            modelBuilder.Entity<c_doichieuhangton_dkdh>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1492,11 +1501,6 @@ modelBuilder.Entity<c_doichieuhangton_dkdh>().ToTable("c_doichieuhangton_dkdh");
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<c_doichieuhangton_dkdh>()
-                            .Property(p => p.c_doichieuhangton_dkdh_id)
-                            .HasColumnName("c_doichieuhangton_dkdh_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton_dkdh>().HasKey<string>(p => p.c_doichieuhangton_dkdh_id);
                             modelBuilder.Entity<c_doichieuhangton_dkdh>()
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
@@ -1603,6 +1607,11 @@ modelBuilder.Entity<c_doichieuhangton_dkdh>().HasKey<string>(p => p.c_doichieuha
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_doichieuhangton_dklht>().ToTable("c_doichieuhangton_dklht");
                             modelBuilder.Entity<c_doichieuhangton_dklht>()
+                            .Property(p => p.c_doichieuhangton_dklht_id)
+                            .HasColumnName("c_doichieuhangton_dklht_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton_dklht>().HasKey<string>(p => p.c_doichieuhangton_dklht_id);
+                            modelBuilder.Entity<c_doichieuhangton_dklht>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1610,11 +1619,6 @@ modelBuilder.Entity<c_doichieuhangton_dklht>().ToTable("c_doichieuhangton_dklht"
                             .Property(p => p.bophantao)
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
-                            modelBuilder.Entity<c_doichieuhangton_dklht>()
-                            .Property(p => p.c_doichieuhangton_dklht_id)
-                            .HasColumnName("c_doichieuhangton_dklht_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton_dklht>().HasKey<string>(p => p.c_doichieuhangton_dklht_id);
                             modelBuilder.Entity<c_doichieuhangton_dklht>()
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
@@ -1729,6 +1733,11 @@ modelBuilder.Entity<c_doichieuhangton_dklht>().HasKey<string>(p => p.c_doichieuh
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_doichieuhangton_thdh>().ToTable("c_doichieuhangton_thdh");
                             modelBuilder.Entity<c_doichieuhangton_thdh>()
+                            .Property(p => p.c_doichieuhangton_thdh_id)
+                            .HasColumnName("c_doichieuhangton_thdh_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton_thdh>().HasKey<string>(p => p.c_doichieuhangton_thdh_id);
+                            modelBuilder.Entity<c_doichieuhangton_thdh>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1740,11 +1749,6 @@ modelBuilder.Entity<c_doichieuhangton_thdh>().ToTable("c_doichieuhangton_thdh");
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
                             .HasColumnType("nvarchar");
-                            modelBuilder.Entity<c_doichieuhangton_thdh>()
-                            .Property(p => p.c_doichieuhangton_thdh_id)
-                            .HasColumnName("c_doichieuhangton_thdh_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton_thdh>().HasKey<string>(p => p.c_doichieuhangton_thdh_id);
                             modelBuilder.Entity<c_doichieuhangton_thdh>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
@@ -1843,6 +1847,11 @@ modelBuilder.Entity<c_doichieuhangton_thdh>().HasKey<string>(p => p.c_doichieuha
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<c_doichieuhangton_tk>().ToTable("c_doichieuhangton_tk");
                             modelBuilder.Entity<c_doichieuhangton_tk>()
+                            .Property(p => p.c_doichieuhangton_tk_id)
+                            .HasColumnName("c_doichieuhangton_tk_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<c_doichieuhangton_tk>().HasKey<string>(p => p.c_doichieuhangton_tk_id);
+                            modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -1854,11 +1863,6 @@ modelBuilder.Entity<c_doichieuhangton_tk>().ToTable("c_doichieuhangton_tk");
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
                             .HasColumnType("nvarchar");
-                            modelBuilder.Entity<c_doichieuhangton_tk>()
-                            .Property(p => p.c_doichieuhangton_tk_id)
-                            .HasColumnName("c_doichieuhangton_tk_id")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<c_doichieuhangton_tk>().HasKey<string>(p => p.c_doichieuhangton_tk_id);
                             modelBuilder.Entity<c_doichieuhangton_tk>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")

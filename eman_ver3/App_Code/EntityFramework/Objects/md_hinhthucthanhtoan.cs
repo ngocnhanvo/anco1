@@ -7,6 +7,12 @@
                     public partial class md_hinhthucthanhtoan
                     {
                         
+                        #region md_hinhthucthanhtoan_md_hinhthucthanhtoan_id_wintaFN
+                        
+                        #endregion md_hinhthucthanhtoan_md_hinhthucthanhtoan_id_wintaFN
+                        public string md_hinhthucthanhtoan_id { get; set; }
+                
+						
                         #region md_hinhthucthanhtoan_bophancapnhat_wintaFN
                         
                         #endregion md_hinhthucthanhtoan_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_hinhthucthanhtoan_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_hinhthucthanhtoan_md_hinhthucthanhtoan_id_wintaFN
-                        
-                        #endregion md_hinhthucthanhtoan_md_hinhthucthanhtoan_id_wintaFN
-                        public string md_hinhthucthanhtoan_id { get; set; }
                 
 						
                         #region md_hinhthucthanhtoan_mota_wintaFN

@@ -7,6 +7,12 @@
                     public partial class c_yeucaumuavt_cdh
                     {
                         
+                        #region c_yeucaumuavt_cdh_c_yeucaumuavt_cdh_id_wintaFN
+                        
+                        #endregion c_yeucaumuavt_cdh_c_yeucaumuavt_cdh_id_wintaFN
+                        public string c_yeucaumuavt_cdh_id { get; set; }
+                
+						
                         #region c_yeucaumuavt_cdh_bophancapnhat_wintaFN
                         
                         #endregion c_yeucaumuavt_cdh_bophancapnhat_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion c_yeucaumuavt_cdh_bophantao_wintaFN
                         public string bophantao { get; set; }
-                
-						
-                        #region c_yeucaumuavt_cdh_c_yeucaumuavt_cdh_id_wintaFN
-                        
-                        #endregion c_yeucaumuavt_cdh_c_yeucaumuavt_cdh_id_wintaFN
-                        public string c_yeucaumuavt_cdh_id { get; set; }
                 
 						
                         #region c_yeucaumuavt_cdh_c_yeucaumuavt_id_wintaFN

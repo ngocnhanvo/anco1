@@ -7,6 +7,18 @@
                     public partial class md_xuatban
                     {
                         
+                        #region md_xuatban_md_xuatban_id_wintaFN
+                        
+                        #endregion md_xuatban_md_xuatban_id_wintaFN
+                        public string md_xuatban_id { get; set; }
+                
+						
+                        #region md_xuatban_sochungtu_wintaFN
+                        
+                        #endregion md_xuatban_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_xuatban_bophancapnhat_wintaFN
                         
                         #endregion md_xuatban_bophancapnhat_wintaFN
@@ -53,12 +65,6 @@
                         
                         #endregion md_xuatban_md_doitackinhdoanh_id_wintaFN
                         public string md_doitackinhdoanh_id { get; set; }
-                
-						
-                        #region md_xuatban_md_xuatban_id_wintaFN
-                        
-                        #endregion md_xuatban_md_xuatban_id_wintaFN
-                        public string md_xuatban_id { get; set; }
                 
 						
                         #region md_xuatban_mota_wintaFN
@@ -119,12 +125,6 @@
                         
                         #endregion md_xuatban_sctdathang_wintaFN
                         public string sctdathang { get; set; }
-                
-						
-                        #region md_xuatban_sochungtu_wintaFN
-                        
-                        #endregion md_xuatban_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_xuatban_tiencongghep_wintaFN

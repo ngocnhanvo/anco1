@@ -7,6 +7,12 @@
                     public partial class md_sanpham_bom
                     {
                         
+                        #region md_sanpham_bom_md_sanpham_bom_id_wintaFN
+                        
+                        #endregion md_sanpham_bom_md_sanpham_bom_id_wintaFN
+                        public string md_sanpham_bom_id { get; set; }
+                
+						
                         #region md_sanpham_bom_bom_donggoi_wintaFN
                         
                         #endregion md_sanpham_bom_bom_donggoi_wintaFN
@@ -47,12 +53,6 @@
                         
                         #endregion md_sanpham_bom_md_phanxuong_id_wintaFN
                         public string md_phanxuong_id { get; set; }
-                
-						
-                        #region md_sanpham_bom_md_sanpham_bom_id_wintaFN
-                        
-                        #endregion md_sanpham_bom_md_sanpham_bom_id_wintaFN
-                        public string md_sanpham_bom_id { get; set; }
                 
 						
                         #region md_sanpham_bom_md_sanpham_id_wintaFN

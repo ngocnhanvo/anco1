@@ -7,16 +7,16 @@
                     public partial class md_hanngachPXTo_chitiet2
                     {
                         
-                        #region md_hanngachPXTo_chitiet2_hoatdong_wintaFN
-                        
-                        #endregion md_hanngachPXTo_chitiet2_hoatdong_wintaFN
-                        public bool? hoatdong { get; set; }
-                
-						
                         #region md_hanngachPXTo_chitiet2_md_hanngachPXTo_chitiet2_id_wintaFN
                         
                         #endregion md_hanngachPXTo_chitiet2_md_hanngachPXTo_chitiet2_id_wintaFN
                         public string md_hanngachPXTo_chitiet2_id { get; set; }
+                
+						
+                        #region md_hanngachPXTo_chitiet2_hoatdong_wintaFN
+                        
+                        #endregion md_hanngachPXTo_chitiet2_hoatdong_wintaFN
+                        public bool? hoatdong { get; set; }
                 
 						
                         #region md_hanngachPXTo_chitiet2_md_hanngachPXTo_id_wintaFN

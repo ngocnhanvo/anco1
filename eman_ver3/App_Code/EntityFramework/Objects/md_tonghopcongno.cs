@@ -7,6 +7,12 @@
                     public partial class md_tonghopcongno
                     {
                         
+                        #region md_tonghopcongno_md_tonghopcongno_id_wintaFN
+                        
+                        #endregion md_tonghopcongno_md_tonghopcongno_id_wintaFN
+                        public string md_tonghopcongno_id { get; set; }
+                
+						
                         #region md_tonghopcongno_cocuoiky_wintaFN
                         
                         #endregion md_tonghopcongno_cocuoiky_wintaFN
@@ -71,12 +77,6 @@
                         
                         #endregion md_tonghopcongno_md_namtaichinh_ky_id_wintaFN
                         public string md_namtaichinh_ky_id { get; set; }
-                
-						
-                        #region md_tonghopcongno_md_tonghopcongno_id_wintaFN
-                        
-                        #endregion md_tonghopcongno_md_tonghopcongno_id_wintaFN
-                        public string md_tonghopcongno_id { get; set; }
                 
 						
                         #region md_tonghopcongno_nam_wintaFN

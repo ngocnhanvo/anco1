@@ -90,6 +90,28 @@ function timkiem_lenhsx(id_elem, type) {
                             
                             return dkc;
                         }
+                        else if (tengrid0 == 'gridMD_00_Xuatnoibo_PDN') {
+                            let dkc = ` 
+                                and  dsdh.trangthai != 'KETTHUC'
+                                and dsdh.trangthai != 'HUYBO'
+                                and lsx.md_trangthai_id = 'DAXL'
+                            `;
+                            if ($('#bosung').val() == '4')
+                                dkc += ' and isnull(dsdh.donhangtron, 0) != 1';
+
+                            return dkc;
+                        }
+                        else if (tengrid0 == 'gridMD_00_PVCNoiBo_PDN') {
+                            let dkc = ` 
+                                and  dsdh.trangthai != 'KETTHUC'
+                                and dsdh.trangthai != 'HUYBO'
+                                and lsx.md_trangthai_id = 'DAXL'
+                            `;
+                            if ($('#loaichuyen').val() == 'VANCNBCTKGH')
+                                dkc += ' and isnull(dsdh.donhangtron, 0) != 1';
+
+                            return dkc;
+                        }
                         else if (['gridMD_00_Nhapnoibo', 'gridMD_00_Nhapnoibo_PDN'].lastIndexOf(tengrid0) > -1)
                             return ` 
                                 and  dsdh.trangthai != 'KETTHUC'

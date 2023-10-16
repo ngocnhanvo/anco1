@@ -7,6 +7,12 @@
                     public partial class md_thongbao
                     {
                         
+                        #region md_thongbao_md_thongbao_id_wintaFN
+                        
+                        #endregion md_thongbao_md_thongbao_id_wintaFN
+                        public string md_thongbao_id { get; set; }
+                
+						
                         #region md_thongbao_bophancapnhat_wintaFN
                         
                         #endregion md_thongbao_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_thongbao_ma_thongbao_wintaFN
                         public string ma_thongbao { get; set; }
-                
-						
-                        #region md_thongbao_md_thongbao_id_wintaFN
-                        
-                        #endregion md_thongbao_md_thongbao_id_wintaFN
-                        public string md_thongbao_id { get; set; }
                 
 						
                         #region md_thongbao_mota_wintaFN

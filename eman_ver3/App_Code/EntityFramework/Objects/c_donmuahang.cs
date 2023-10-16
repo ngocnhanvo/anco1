@@ -7,6 +7,18 @@
                     public partial class c_donmuahang
                     {
                         
+                        #region c_donmuahang_c_donmuahang_id_wintaFN
+                        
+                        #endregion c_donmuahang_c_donmuahang_id_wintaFN
+                        public string c_donmuahang_id { get; set; }
+                
+						
+                        #region c_donmuahang_sochungtu_wintaFN
+                        
+                        #endregion c_donmuahang_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region c_donmuahang_bophancapnhat_wintaFN
                         
                         #endregion c_donmuahang_bophancapnhat_wintaFN
@@ -23,12 +35,6 @@
                         
                         #endregion c_donmuahang_bosung_wintaFN
                         public bool? bosung { get; set; }
-                
-						
-                        #region c_donmuahang_c_donmuahang_id_wintaFN
-                        
-                        #endregion c_donmuahang_c_donmuahang_id_wintaFN
-                        public string c_donmuahang_id { get; set; }
                 
 						
                         #region c_donmuahang_c_kehoachdathang_dhncc_id_wintaFN
@@ -203,12 +209,6 @@
                         
                         #endregion c_donmuahang_so_donmuahang_wintaFN
                         public string so_donmuahang { get; set; }
-                
-						
-                        #region c_donmuahang_sochungtu_wintaFN
-                        
-                        #endregion c_donmuahang_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region c_donmuahang_tong_tatca_wintaFN

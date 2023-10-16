@@ -7,6 +7,18 @@
                     public partial class ad_role_mmc
                     {
                         
+                        #region ad_role_mmc_ad_role_mmc_id_wintaFN
+                        
+                        #endregion ad_role_mmc_ad_role_mmc_id_wintaFN
+                        public string ad_role_mmc_id { get; set; }
+                
+						
+                        #region ad_role_mmc_ad_role_id_wintaFN
+                        
+                        #endregion ad_role_mmc_ad_role_id_wintaFN
+                        public string ad_role_id { get; set; }
+                
+						
                         #region ad_role_mmc_ad_case_id_wintaFN
                         
                         #endregion ad_role_mmc_ad_case_id_wintaFN
@@ -23,18 +35,6 @@
                         
                         #endregion ad_role_mmc_ad_module_id_wintaFN
                         public string ad_module_id { get; set; }
-                
-						
-                        #region ad_role_mmc_ad_role_id_wintaFN
-                        
-                        #endregion ad_role_mmc_ad_role_id_wintaFN
-                        public string ad_role_id { get; set; }
-                
-						
-                        #region ad_role_mmc_ad_role_mmc_id_wintaFN
-                        
-                        #endregion ad_role_mmc_ad_role_mmc_id_wintaFN
-                        public string ad_role_mmc_id { get; set; }
                 
 						
                         #region ad_role_mmc_bophancapnhat_wintaFN

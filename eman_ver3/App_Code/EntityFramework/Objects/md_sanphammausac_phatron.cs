@@ -7,6 +7,12 @@
                     public partial class md_sanphammausac_phatron
                     {
                         
+                        #region md_sanphammausac_phatron_md_sanphammausac_phatron_id_wintaFN
+                        
+                        #endregion md_sanphammausac_phatron_md_sanphammausac_phatron_id_wintaFN
+                        public string md_sanphammausac_phatron_id { get; set; }
+                
+						
                         #region md_sanphammausac_phatron_bophancapnhat_wintaFN
                         
                         #endregion md_sanphammausac_phatron_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_sanphammausac_phatron_md_sanphammausac_id_wintaFN
                         public string md_sanphammausac_id { get; set; }
-                
-						
-                        #region md_sanphammausac_phatron_md_sanphammausac_phatron_id_wintaFN
-                        
-                        #endregion md_sanphammausac_phatron_md_sanphammausac_phatron_id_wintaFN
-                        public string md_sanphammausac_phatron_id { get; set; }
                 
 						
                         #region md_sanphammausac_phatron_mota_wintaFN

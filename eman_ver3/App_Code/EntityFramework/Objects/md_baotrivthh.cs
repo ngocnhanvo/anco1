@@ -7,6 +7,12 @@
                     public partial class md_baotrivthh
                     {
                         
+                        #region md_baotrivthh_md_baotrivthh_id_wintaFN
+                        
+                        #endregion md_baotrivthh_md_baotrivthh_id_wintaFN
+                        public string md_baotrivthh_id { get; set; }
+                
+						
                         #region md_baotrivthh_bophancapnhat_wintaFN
                         
                         #endregion md_baotrivthh_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_baotrivthh_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_baotrivthh_md_baotrivthh_id_wintaFN
-                        
-                        #endregion md_baotrivthh_md_baotrivthh_id_wintaFN
-                        public string md_baotrivthh_id { get; set; }
                 
 						
                         #region md_baotrivthh_md_kho_id_wintaFN

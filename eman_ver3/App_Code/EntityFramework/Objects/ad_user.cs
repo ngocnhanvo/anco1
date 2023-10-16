@@ -7,16 +7,16 @@
                     public partial class ad_user
                     {
                         
-                        #region ad_user_ad_role_id_wintaFN
-                        
-                        #endregion ad_user_ad_role_id_wintaFN
-                        public string ad_role_id { get; set; }
-                
-						
                         #region ad_user_ad_user_id_wintaFN
                         
                         #endregion ad_user_ad_user_id_wintaFN
                         public string ad_user_id { get; set; }
+                
+						
+                        #region ad_user_ad_role_id_wintaFN
+                        
+                        #endregion ad_user_ad_role_id_wintaFN
+                        public string ad_role_id { get; set; }
                 
 						
                         #region ad_user_bophancapnhat_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_nangluc
                     {
                         
+                        #region md_nangluc_md_nangluc_id_wintaFN
+                        
+                        #endregion md_nangluc_md_nangluc_id_wintaFN
+                        public string md_nangluc_id { get; set; }
+                
+						
                         #region md_nangluc_bophancapnhat_wintaFN
                         
                         #endregion md_nangluc_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_nangluc_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_nangluc_md_nangluc_id_wintaFN
-                        
-                        #endregion md_nangluc_md_nangluc_id_wintaFN
-                        public string md_nangluc_id { get; set; }
                 
 						
                         #region md_nangluc_mota_wintaFN

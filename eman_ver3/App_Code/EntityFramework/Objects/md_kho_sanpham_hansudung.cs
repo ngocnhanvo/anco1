@@ -7,6 +7,12 @@
                     public partial class md_kho_sanpham_hansudung
                     {
                         
+                        #region md_kho_sanpham_hansudung_md_kho_sanpham_hansudung_id_wintaFN
+                        
+                        #endregion md_kho_sanpham_hansudung_md_kho_sanpham_hansudung_id_wintaFN
+                        public string md_kho_sanpham_hansudung_id { get; set; }
+                
+						
                         #region md_kho_sanpham_hansudung_bophancapnhat_wintaFN
                         
                         #endregion md_kho_sanpham_hansudung_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_kho_sanpham_hansudung_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_kho_sanpham_hansudung_md_kho_sanpham_hansudung_id_wintaFN
-                        
-                        #endregion md_kho_sanpham_hansudung_md_kho_sanpham_hansudung_id_wintaFN
-                        public string md_kho_sanpham_hansudung_id { get; set; }
                 
 						
                         #region md_kho_sanpham_hansudung_md_kho_sanpham_id_wintaFN

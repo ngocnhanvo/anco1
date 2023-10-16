@@ -7,6 +7,12 @@
                     public partial class md_nhapkhonb_cdh
                     {
                         
+                        #region md_nhapkhonb_cdh_md_nhapkhonb_cdh_id_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_md_nhapkhonb_cdh_id_wintaFN
+                        public string md_nhapkhonb_cdh_id { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_bomId_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_bomId_wintaFN
@@ -43,6 +49,12 @@
                         public string ghichu_donvi2 { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_gianhancong_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_gianhancong_wintaFN
+                        public Decimal? gianhancong { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_hoatdong_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_hoatdong_wintaFN
@@ -65,12 +77,6 @@
                         
                         #endregion md_nhapkhonb_cdh_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
-                
-						
-                        #region md_nhapkhonb_cdh_md_nhapkhonb_cdh_id_wintaFN
-                        
-                        #endregion md_nhapkhonb_cdh_md_nhapkhonb_cdh_id_wintaFN
-                        public string md_nhapkhonb_cdh_id { get; set; }
                 
 						
                         #region md_nhapkhonb_cdh_md_nhapkhonb_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class c_kehoachdathang_dhcpx_hanngach
                     {
                         
+                        #region c_kehoachdathang_dhcpx_hanngach_c_kehoachdathang_dhcpx_hanngach_id_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_hanngach_c_kehoachdathang_dhcpx_hanngach_id_wintaFN
+                        public string c_kehoachdathang_dhcpx_hanngach_id { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_hanngach_bophancapnhat_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_hanngach_bophancapnhat_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion c_kehoachdathang_dhcpx_hanngach_bophantao_wintaFN
                         public string bophantao { get; set; }
-                
-						
-                        #region c_kehoachdathang_dhcpx_hanngach_c_kehoachdathang_dhcpx_hanngach_id_wintaFN
-                        
-                        #endregion c_kehoachdathang_dhcpx_hanngach_c_kehoachdathang_dhcpx_hanngach_id_wintaFN
-                        public string c_kehoachdathang_dhcpx_hanngach_id { get; set; }
                 
 						
                         #region c_kehoachdathang_dhcpx_hanngach_c_kehoachdathang_dhcpx_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_bo_chitiet
                     {
                         
+                        #region md_bo_chitiet_md_bo_chitiet_id_wintaFN
+                        
+                        #endregion md_bo_chitiet_md_bo_chitiet_id_wintaFN
+                        public string md_bo_chitiet_id { get; set; }
+                
+						
                         #region md_bo_chitiet_ghichu_wintaFN
                         
                         #endregion md_bo_chitiet_ghichu_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion md_bo_chitiet_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_bo_chitiet_md_bo_chitiet_id_wintaFN
-                        
-                        #endregion md_bo_chitiet_md_bo_chitiet_id_wintaFN
-                        public string md_bo_chitiet_id { get; set; }
                 
 						
                         #region md_bo_chitiet_md_bo_detail_wintaFN

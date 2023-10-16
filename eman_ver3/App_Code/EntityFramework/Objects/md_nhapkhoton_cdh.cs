@@ -7,6 +7,12 @@
                     public partial class md_nhapkhoton_cdh
                     {
                         
+                        #region md_nhapkhoton_cdh_md_nhapkhoton_cdh_id_wintaFN
+                        
+                        #endregion md_nhapkhoton_cdh_md_nhapkhoton_cdh_id_wintaFN
+                        public string md_nhapkhoton_cdh_id { get; set; }
+                
+						
                         #region md_nhapkhoton_cdh_bophancapnhat_wintaFN
                         
                         #endregion md_nhapkhoton_cdh_bophancapnhat_wintaFN
@@ -47,12 +53,6 @@
                         
                         #endregion md_nhapkhoton_cdh_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
-                
-						
-                        #region md_nhapkhoton_cdh_md_nhapkhoton_cdh_id_wintaFN
-                        
-                        #endregion md_nhapkhoton_cdh_md_nhapkhoton_cdh_id_wintaFN
-                        public string md_nhapkhoton_cdh_id { get; set; }
                 
 						
                         #region md_nhapkhoton_cdh_md_nhapkhoton_id_wintaFN

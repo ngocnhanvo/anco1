@@ -7,6 +7,24 @@
                     public partial class md_nhapkhonb
                     {
                         
+                        #region md_nhapkhonb_md_nhapkhonb_id_wintaFN
+                        
+                        #endregion md_nhapkhonb_md_nhapkhonb_id_wintaFN
+                        public string md_nhapkhonb_id { get; set; }
+                
+						
+                        #region md_nhapkhonb_sochungtu_wintaFN
+                        
+                        #endregion md_nhapkhonb_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
+                        #region md_nhapkhonb_banggiaNC_wintaFN
+                        
+                        #endregion md_nhapkhonb_banggiaNC_wintaFN
+                        public string banggiaNC { get; set; }
+                
+						
                         #region md_nhapkhonb_baotri_vattu_wintaFN
                         
                         #endregion md_nhapkhonb_baotri_vattu_wintaFN
@@ -91,12 +109,6 @@
                         public string md_lenhsanxuat_tosx_id { get; set; }
                 
 						
-                        #region md_nhapkhonb_md_nhapkhonb_id_wintaFN
-                        
-                        #endregion md_nhapkhonb_md_nhapkhonb_id_wintaFN
-                        public string md_nhapkhonb_id { get; set; }
-                
-						
                         #region md_nhapkhonb_md_phanxuong_id_wintaFN
                         
                         #endregion md_nhapkhonb_md_phanxuong_id_wintaFN
@@ -163,6 +175,12 @@
                         public string nhaptu { get; set; }
                 
 						
+                        #region md_nhapkhonb_phienbangiaNC_wintaFN
+                        
+                        #endregion md_nhapkhonb_phienbangiaNC_wintaFN
+                        public string phienbangiaNC { get; set; }
+                
+						
                         #region md_nhapkhonb_phieuXNNK_wintaFN
                         
                         #endregion md_nhapkhonb_phieuXNNK_wintaFN
@@ -173,12 +191,6 @@
                         
                         #endregion md_nhapkhonb_sctdathang_wintaFN
                         public string sctdathang { get; set; }
-                
-						
-                        #region md_nhapkhonb_sochungtu_wintaFN
-                        
-                        #endregion md_nhapkhonb_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_nhapkhonb_trangthai_wintaFN

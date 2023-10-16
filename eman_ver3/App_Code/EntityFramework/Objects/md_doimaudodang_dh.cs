@@ -7,6 +7,12 @@
                     public partial class md_doimaudodang_dh
                     {
                         
+                        #region md_doimaudodang_dh_md_doimaudodang_dh_id_wintaFN
+                        
+                        #endregion md_doimaudodang_dh_md_doimaudodang_dh_id_wintaFN
+                        public string md_doimaudodang_dh_id { get; set; }
+                
+						
                         #region md_doimaudodang_dh_bophancapnhat_wintaFN
                         
                         #endregion md_doimaudodang_dh_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_doimaudodang_dh_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_doimaudodang_dh_md_doimaudodang_dh_id_wintaFN
-                        
-                        #endregion md_doimaudodang_dh_md_doimaudodang_dh_id_wintaFN
-                        public string md_doimaudodang_dh_id { get; set; }
                 
 						
                         #region md_doimaudodang_dh_md_doimaudodang_id_wintaFN

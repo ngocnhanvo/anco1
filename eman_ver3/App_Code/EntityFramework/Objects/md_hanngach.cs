@@ -7,6 +7,18 @@
                     public partial class md_hanngach
                     {
                         
+                        #region md_hanngach_md_hanngach_id_wintaFN
+                        
+                        #endregion md_hanngach_md_hanngach_id_wintaFN
+                        public string md_hanngach_id { get; set; }
+                
+						
+                        #region md_hanngach_sochungtu_wintaFN
+                        
+                        #endregion md_hanngach_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_hanngach_c_danhsachdathang_id_wintaFN
                         
                         #endregion md_hanngach_c_danhsachdathang_id_wintaFN
@@ -17,12 +29,6 @@
                         
                         #endregion md_hanngach_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_hanngach_md_hanngach_id_wintaFN
-                        
-                        #endregion md_hanngach_md_hanngach_id_wintaFN
-                        public string md_hanngach_id { get; set; }
                 
 						
                         #region md_hanngach_mota_wintaFN
@@ -65,12 +71,6 @@
                         
                         #endregion md_hanngach_nguoitao_wintaFN
                         public string nguoitao { get; set; }
-                
-						
-                        #region md_hanngach_sochungtu_wintaFN
-                        
-                        #endregion md_hanngach_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_hanngach_trangthai_wintaFN

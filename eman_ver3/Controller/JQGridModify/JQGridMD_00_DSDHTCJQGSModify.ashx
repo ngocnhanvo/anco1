@@ -326,7 +326,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                             join b in khdhs on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
                             join c in db.c_danhsachdathang on b.sodonhang equals c.sochungtu
                             orderby a.md_phanxuong_id, c.hangiaohang_po ascending
-                            select new { khdhpx = a, c.sanxuatton }).ToList();
+                            select new { khdhpx = a, c.sanxuatton, c.donhangtron }).ToList();
 
             var msgDT = "";
             foreach(var item in khpxsDSX)
@@ -344,7 +344,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     dsdh.trangthai = Helper.SOANTHAO;
                 }
 
-                foreach(var kh in khdhs)
+                foreach (var kh in khdhs)
                 {
                     kh.hoatdong = false;
                 }
@@ -352,7 +352,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             }
             else
             {
-                foreach(var kh in khdhs)
+                foreach (var kh in khdhs)
                 {
                     kh.hoatdong = true;
                 }
@@ -363,6 +363,8 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 {
                     var khpx = item.khdhpx;
                     var sxt = item.sanxuatton.GetValueOrDefault(false);
+                    var dht = item.donhangtron.GetValueOrDefault(false);
+
 
                     var dhpx = db.md_dondathangphanxuong.Where(s => s.sochungtu == khpx.dongdathang).FirstOrDefault();
                     if (dhpx != null)
@@ -373,7 +375,15 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
                         if (tsx != null)
                         {
-                            if (sxt)
+                            if (dht)
+                            {
+                                lsx.dhtron = true;
+                                foreach (var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList())
+                                {
+                                    cdh.sl_datncc = 0;
+                                }
+                            }
+                            else if (sxt)
                             {
                                 tsx.hoatdong = false;
                                 tsx.tinhhangtontp = true;
@@ -393,7 +403,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                             {
                                 tsxTho.tinhhangton = true;
                                 tsxTho.phieulayht = null;
-                                foreach(var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s=>s.md_lenhsanxuat_tosx_id == tsxTho.md_lenhsanxuat_tosx_id).ToList())
+                                foreach (var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsxTho.md_lenhsanxuat_tosx_id).ToList())
                                 {
                                     cdh.sl_datncc = 0;
                                 }
@@ -402,6 +412,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                         }
                     }
                 }
+
                 db.SaveChanges();
             }
         }

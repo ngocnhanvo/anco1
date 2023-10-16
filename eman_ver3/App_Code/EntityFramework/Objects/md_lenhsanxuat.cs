@@ -7,6 +7,18 @@
                     public partial class md_lenhsanxuat
                     {
                         
+                        #region md_lenhsanxuat_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
+                
+						
+                        #region md_lenhsanxuat_sochungtu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_lenhsanxuat_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_bophancapnhat_wintaFN
@@ -25,6 +37,12 @@
                         public bool? check_dtvt { get; set; }
                 
 						
+                        #region md_lenhsanxuat_dhtron_wintaFN
+                        
+                        #endregion md_lenhsanxuat_dhtron_wintaFN
+                        public bool? dhtron { get; set; }
+                
+						
                         #region md_lenhsanxuat_hoatdong_wintaFN
                         
                         #endregion md_lenhsanxuat_hoatdong_wintaFN
@@ -41,12 +59,6 @@
                         
                         #endregion md_lenhsanxuat_md_dondathangphanxuong_id_wintaFN
                         public string md_dondathangphanxuong_id { get; set; }
-                
-						
-                        #region md_lenhsanxuat_md_lenhsanxuat_id_wintaFN
-                        
-                        #endregion md_lenhsanxuat_md_lenhsanxuat_id_wintaFN
-                        public string md_lenhsanxuat_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_md_phanxuong_id_wintaFN
@@ -131,12 +143,6 @@
                         
                         #endregion md_lenhsanxuat_phieuXK_wintaFN
                         public string phieuXK { get; set; }
-                
-						
-                        #region md_lenhsanxuat_sochungtu_wintaFN
-                        
-                        #endregion md_lenhsanxuat_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_lenhsanxuat_sxton_wintaFN

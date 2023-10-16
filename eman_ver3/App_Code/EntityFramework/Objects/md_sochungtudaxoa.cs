@@ -7,6 +7,12 @@
                     public partial class md_sochungtudaxoa
                     {
                         
+                        #region md_sochungtudaxoa_md_sochungtudaxoa_id_wintaFN
+                        
+                        #endregion md_sochungtudaxoa_md_sochungtudaxoa_id_wintaFN
+                        public string md_sochungtudaxoa_id { get; set; }
+                
+						
                         #region md_sochungtudaxoa_bophancapnhat_wintaFN
                         
                         #endregion md_sochungtudaxoa_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_sochungtudaxoa_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_sochungtudaxoa_md_sochungtudaxoa_id_wintaFN
-                        
-                        #endregion md_sochungtudaxoa_md_sochungtudaxoa_id_wintaFN
-                        public string md_sochungtudaxoa_id { get; set; }
                 
 						
                         #region md_sochungtudaxoa_mota_wintaFN

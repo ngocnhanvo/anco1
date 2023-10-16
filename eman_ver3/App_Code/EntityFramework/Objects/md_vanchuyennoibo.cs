@@ -7,6 +7,18 @@
                     public partial class md_vanchuyennoibo
                     {
                         
+                        #region md_vanchuyennoibo_md_vanchuyennoibo_id_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_md_vanchuyennoibo_id_wintaFN
+                        public string md_vanchuyennoibo_id { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_sochungtu_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_vanchuyennoibo_banggiaNC_wintaFN
                         
                         #endregion md_vanchuyennoibo_banggiaNC_wintaFN
@@ -121,12 +133,6 @@
                         public string md_trangthai_id { get; set; }
                 
 						
-                        #region md_vanchuyennoibo_md_vanchuyennoibo_id_wintaFN
-                        
-                        #endregion md_vanchuyennoibo_md_vanchuyennoibo_id_wintaFN
-                        public string md_vanchuyennoibo_id { get; set; }
-                
-						
                         #region md_vanchuyennoibo_mota_wintaFN
                         
                         #endregion md_vanchuyennoibo_mota_wintaFN
@@ -203,12 +209,6 @@
                         
                         #endregion md_vanchuyennoibo_sctdathang_wintaFN
                         public string sctdathang { get; set; }
-                
-						
-                        #region md_vanchuyennoibo_sochungtu_wintaFN
-                        
-                        #endregion md_vanchuyennoibo_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_vanchuyennoibo_tiencongDG_wintaFN

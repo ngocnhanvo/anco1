@@ -7,6 +7,12 @@
                     public partial class md_nhanphoisoi
                     {
                         
+                        #region md_nhanphoisoi_md_nhanphoisoi_id_wintaFN
+                        
+                        #endregion md_nhanphoisoi_md_nhanphoisoi_id_wintaFN
+                        public string md_nhanphoisoi_id { get; set; }
+                
+						
                         #region md_nhanphoisoi_bophancapnhat_wintaFN
                         
                         #endregion md_nhanphoisoi_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_nhanphoisoi_ma_sp_wintaFN
                         public string ma_sp { get; set; }
-                
-						
-                        #region md_nhanphoisoi_md_nhanphoisoi_id_wintaFN
-                        
-                        #endregion md_nhanphoisoi_md_nhanphoisoi_id_wintaFN
-                        public string md_nhanphoisoi_id { get; set; }
                 
 						
                         #region md_nhanphoisoi_md_to_id_wintaFN

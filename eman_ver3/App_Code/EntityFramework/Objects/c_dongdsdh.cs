@@ -7,6 +7,12 @@
                     public partial class c_dongdsdh
                     {
                         
+                        #region c_dongdsdh_c_dongdsdh_id_wintaFN
+                        
+                        #endregion c_dongdsdh_c_dongdsdh_id_wintaFN
+                        public string c_dongdsdh_id { get; set; }
+                
+						
                         #region c_dongdsdh_anco_check_wintaFN
                         
                         #endregion c_dongdsdh_anco_check_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion c_dongdsdh_c_dongdonhang_id_wintaFN
                         public string c_dongdonhang_id { get; set; }
-                
-						
-                        #region c_dongdsdh_c_dongdsdh_id_wintaFN
-                        
-                        #endregion c_dongdsdh_c_dongdsdh_id_wintaFN
-                        public string c_dongdsdh_id { get; set; }
                 
 						
                         #region c_dongdsdh_chenhlechgia_wintaFN

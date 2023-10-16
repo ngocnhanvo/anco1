@@ -7,6 +7,12 @@
                     public partial class md_taphopgia
                     {
                         
+                        #region md_taphopgia_md_taphopgia_id_wintaFN
+                        
+                        #endregion md_taphopgia_md_taphopgia_id_wintaFN
+                        public string md_taphopgia_id { get; set; }
+                
+						
                         #region md_taphopgia_bophancapnhat_wintaFN
                         
                         #endregion md_taphopgia_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_taphopgia_md_namtaichinh_ky_id_wintaFN
                         public string md_namtaichinh_ky_id { get; set; }
-                
-						
-                        #region md_taphopgia_md_taphopgia_id_wintaFN
-                        
-                        #endregion md_taphopgia_md_taphopgia_id_wintaFN
-                        public string md_taphopgia_id { get; set; }
                 
 						
                         #region md_taphopgia_md_trangthai_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_sochungtu
                     {
                         
+                        #region md_sochungtu_md_sochungtu_id_wintaFN
+                        
+                        #endregion md_sochungtu_md_sochungtu_id_wintaFN
+                        public string md_sochungtu_id { get; set; }
+                
+						
                         #region md_sochungtu_bophancapnhat_wintaFN
                         
                         #endregion md_sochungtu_bophancapnhat_wintaFN
@@ -59,12 +65,6 @@
                         
                         #endregion md_sochungtu_mau_hienthi_wintaFN
                         public string mau_hienthi { get; set; }
-                
-						
-                        #region md_sochungtu_md_sochungtu_id_wintaFN
-                        
-                        #endregion md_sochungtu_md_sochungtu_id_wintaFN
-                        public string md_sochungtu_id { get; set; }
                 
 						
                         #region md_sochungtu_md_trangthai_id_wintaFN

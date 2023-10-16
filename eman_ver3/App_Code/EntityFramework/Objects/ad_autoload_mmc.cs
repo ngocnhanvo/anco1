@@ -7,16 +7,16 @@
                     public partial class ad_autoload_mmc
                     {
                         
-                        #region ad_autoload_mmc_ad_autoload_id_wintaFN
-                        
-                        #endregion ad_autoload_mmc_ad_autoload_id_wintaFN
-                        public string ad_autoload_id { get; set; }
-                
-						
                         #region ad_autoload_mmc_ad_autoload_mmc_id_wintaFN
                         
                         #endregion ad_autoload_mmc_ad_autoload_mmc_id_wintaFN
                         public string ad_autoload_mmc_id { get; set; }
+                
+						
+                        #region ad_autoload_mmc_ad_autoload_id_wintaFN
+                        
+                        #endregion ad_autoload_mmc_ad_autoload_id_wintaFN
+                        public string ad_autoload_id { get; set; }
                 
 						
                         #region ad_autoload_mmc_ad_module_id_wintaFN

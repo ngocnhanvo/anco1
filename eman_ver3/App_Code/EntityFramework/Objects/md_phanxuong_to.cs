@@ -7,6 +7,12 @@
                     public partial class md_phanxuong_to
                     {
                         
+                        #region md_phanxuong_to_md_to_id_wintaFN
+                        
+                        #endregion md_phanxuong_to_md_to_id_wintaFN
+                        public string md_to_id { get; set; }
+                
+						
                         #region md_phanxuong_to_bophancapnhat_wintaFN
                         
                         #endregion md_phanxuong_to_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_phanxuong_to_md_phanxuong_id_wintaFN
                         public string md_phanxuong_id { get; set; }
-                
-						
-                        #region md_phanxuong_to_md_to_id_wintaFN
-                        
-                        #endregion md_phanxuong_to_md_to_id_wintaFN
-                        public string md_to_id { get; set; }
                 
 						
                         #region md_phanxuong_to_mota_wintaFN

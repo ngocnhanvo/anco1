@@ -7,6 +7,12 @@
                     public partial class md_chungloai
                     {
                         
+                        #region md_chungloai_md_chungloai_id_wintaFN
+                        
+                        #endregion md_chungloai_md_chungloai_id_wintaFN
+                        public string md_chungloai_id { get; set; }
+                
+						
                         #region md_chungloai_anco_check_wintaFN
                         
                         #endregion md_chungloai_anco_check_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_chungloai_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_chungloai_md_chungloai_id_wintaFN
-                        
-                        #endregion md_chungloai_md_chungloai_id_wintaFN
-                        public string md_chungloai_id { get; set; }
                 
 						
                         #region md_chungloai_mota_wintaFN

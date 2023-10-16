@@ -7,6 +7,12 @@
                     public partial class md_hoadon
                     {
                         
+                        #region md_hoadon_md_hoadon_id_wintaFN
+                        
+                        #endregion md_hoadon_md_hoadon_id_wintaFN
+                        public string md_hoadon_id { get; set; }
+                
+						
                         #region md_hoadon_bophancapnhat_wintaFN
                         
                         #endregion md_hoadon_bophancapnhat_wintaFN
@@ -53,12 +59,6 @@
                         
                         #endregion md_hoadon_md_doitackinhdoanh_id_wintaFN
                         public string md_doitackinhdoanh_id { get; set; }
-                
-						
-                        #region md_hoadon_md_hoadon_id_wintaFN
-                        
-                        #endregion md_hoadon_md_hoadon_id_wintaFN
-                        public string md_hoadon_id { get; set; }
                 
 						
                         #region md_hoadon_md_trangthai_id_wintaFN

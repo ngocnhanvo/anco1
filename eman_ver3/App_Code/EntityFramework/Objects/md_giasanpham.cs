@@ -7,6 +7,12 @@
                     public partial class md_giasanpham
                     {
                         
+                        #region md_giasanpham_md_giasanpham_id_wintaFN
+                        
+                        #endregion md_giasanpham_md_giasanpham_id_wintaFN
+                        public string md_giasanpham_id { get; set; }
+                
+						
                         #region md_giasanpham_bophancapnhat_wintaFN
                         
                         #endregion md_giasanpham_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_giasanpham_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
-                
-						
-                        #region md_giasanpham_md_giasanpham_id_wintaFN
-                        
-                        #endregion md_giasanpham_md_giasanpham_id_wintaFN
-                        public string md_giasanpham_id { get; set; }
                 
 						
                         #region md_giasanpham_md_phienbangia_id_wintaFN

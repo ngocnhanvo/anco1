@@ -7,6 +7,12 @@
                     public partial class md_doitackinhdoanh
                     {
                         
+                        #region md_doitackinhdoanh_md_doitackinhdoanh_id_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_md_doitackinhdoanh_id_wintaFN
+                        public string md_doitackinhdoanh_id { get; set; }
+                
+						
                         #region md_doitackinhdoanh_anco_check_wintaFN
                         
                         #endregion md_doitackinhdoanh_anco_check_wintaFN
@@ -101,12 +107,6 @@
                         
                         #endregion md_doitackinhdoanh_md_cangbien_id_wintaFN
                         public string md_cangbien_id { get; set; }
-                
-						
-                        #region md_doitackinhdoanh_md_doitackinhdoanh_id_wintaFN
-                        
-                        #endregion md_doitackinhdoanh_md_doitackinhdoanh_id_wintaFN
-                        public string md_doitackinhdoanh_id { get; set; }
                 
 						
                         #region md_doitackinhdoanh_md_khuvuc_id_wintaFN

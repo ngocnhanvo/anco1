@@ -7,6 +7,12 @@
                     public partial class md_phanxuong
                     {
                         
+                        #region md_phanxuong_md_phanxuong_id_wintaFN
+                        
+                        #endregion md_phanxuong_md_phanxuong_id_wintaFN
+                        public string md_phanxuong_id { get; set; }
+                
+						
                         #region md_phanxuong_bophancapnhat_wintaFN
                         
                         #endregion md_phanxuong_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_phanxuong_ma_phanxuong_wintaFN
                         public string ma_phanxuong { get; set; }
-                
-						
-                        #region md_phanxuong_md_phanxuong_id_wintaFN
-                        
-                        #endregion md_phanxuong_md_phanxuong_id_wintaFN
-                        public string md_phanxuong_id { get; set; }
                 
 						
                         #region md_phanxuong_mota_wintaFN

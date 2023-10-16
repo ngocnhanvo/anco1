@@ -7,6 +7,12 @@
                     public partial class md_loaicont
                     {
                         
+                        #region md_loaicont_md_loaicont_id_wintaFN
+                        
+                        #endregion md_loaicont_md_loaicont_id_wintaFN
+                        public string md_loaicont_id { get; set; }
+                
+						
                         #region md_loaicont_bophancapnhat_wintaFN
                         
                         #endregion md_loaicont_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_loaicont_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_loaicont_md_loaicont_id_wintaFN
-                        
-                        #endregion md_loaicont_md_loaicont_id_wintaFN
-                        public string md_loaicont_id { get; set; }
                 
 						
                         #region md_loaicont_mota_wintaFN

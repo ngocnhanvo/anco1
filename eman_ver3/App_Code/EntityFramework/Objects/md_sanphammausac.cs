@@ -7,6 +7,12 @@
                     public partial class md_sanphammausac
                     {
                         
+                        #region md_sanphammausac_md_sanphammausac_id_wintaFN
+                        
+                        #endregion md_sanphammausac_md_sanphammausac_id_wintaFN
+                        public string md_sanphammausac_id { get; set; }
+                
+						
                         #region md_sanphammausac_bophancapnhat_wintaFN
                         
                         #endregion md_sanphammausac_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_sanphammausac_ma_mausac_wintaFN
                         public string ma_mausac { get; set; }
-                
-						
-                        #region md_sanphammausac_md_sanphammausac_id_wintaFN
-                        
-                        #endregion md_sanphammausac_md_sanphammausac_id_wintaFN
-                        public string md_sanphammausac_id { get; set; }
                 
 						
                         #region md_sanphammausac_mota_wintaFN

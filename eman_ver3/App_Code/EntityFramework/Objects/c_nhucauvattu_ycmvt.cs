@@ -7,6 +7,12 @@
                     public partial class c_nhucauvattu_ycmvt
                     {
                         
+                        #region c_nhucauvattu_ycmvt_c_nhucauvattu_ycmvt_id_wintaFN
+                        
+                        #endregion c_nhucauvattu_ycmvt_c_nhucauvattu_ycmvt_id_wintaFN
+                        public string c_nhucauvattu_ycmvt_id { get; set; }
+                
+						
                         #region c_nhucauvattu_ycmvt_bophancapnhat_wintaFN
                         
                         #endregion c_nhucauvattu_ycmvt_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion c_nhucauvattu_ycmvt_c_nhucauvattu_id_wintaFN
                         public string c_nhucauvattu_id { get; set; }
-                
-						
-                        #region c_nhucauvattu_ycmvt_c_nhucauvattu_ycmvt_id_wintaFN
-                        
-                        #endregion c_nhucauvattu_ycmvt_c_nhucauvattu_ycmvt_id_wintaFN
-                        public string c_nhucauvattu_ycmvt_id { get; set; }
                 
 						
                         #region c_nhucauvattu_ycmvt_dongyeucau_wintaFN

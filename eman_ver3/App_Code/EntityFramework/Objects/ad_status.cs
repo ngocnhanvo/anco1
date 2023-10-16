@@ -7,16 +7,16 @@
                     public partial class ad_status
                     {
                         
-                        #region ad_status_ad_module_id_wintaFN
-                        
-                        #endregion ad_status_ad_module_id_wintaFN
-                        public string ad_module_id { get; set; }
-                
-						
                         #region ad_status_ad_status_id_wintaFN
                         
                         #endregion ad_status_ad_status_id_wintaFN
                         public string ad_status_id { get; set; }
+                
+						
+                        #region ad_status_ad_module_id_wintaFN
+                        
+                        #endregion ad_status_ad_module_id_wintaFN
+                        public string ad_module_id { get; set; }
                 
 						
                         #region ad_status_bophancapnhat_wintaFN

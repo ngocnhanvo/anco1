@@ -24,6 +24,12 @@ function timkiem_sanpham(id_elem, type) {
     if ($('.module_spanselect').attr('id') == 'span_MD_00_DSDHTCJQGS') {
         vattu = true;
         tp = true;
+        let datagrid0 = $('#gridMD_00_DSDHTCJQGS').getRowData(id_parent1);
+        let sxton = datagrid0.sanxuatton == 'True';
+        let dhtron = datagrid0.donhangtron == 'True';
+        if (sxton | dhtron) {
+            where_ex += ` and sp.ban_thanhpham = 1 and kmd.ma_kho = 'KHO100'`;
+        }
     }
 
     id_elem = $(id_elem).prev();

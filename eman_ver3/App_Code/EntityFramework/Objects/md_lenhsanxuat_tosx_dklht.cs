@@ -7,6 +7,12 @@
                     public partial class md_lenhsanxuat_tosx_dklht
                     {
                         
+                        #region md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_dklht_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_dklht_id_wintaFN
+                        public string md_lenhsanxuat_tosx_dklht_id { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_dklht_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_dklht_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_lenhsanxuat_tosx_dklht_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
-                
-						
-                        #region md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_dklht_id_wintaFN
-                        
-                        #endregion md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_dklht_id_wintaFN
-                        public string md_lenhsanxuat_tosx_dklht_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_taphopgia_cdh
                     {
                         
+                        #region md_taphopgia_cdh_md_taphopgia_cdh_id_wintaFN
+                        
+                        #endregion md_taphopgia_cdh_md_taphopgia_cdh_id_wintaFN
+                        public string md_taphopgia_cdh_id { get; set; }
+                
+						
                         #region md_taphopgia_cdh_bophancapnhat_wintaFN
                         
                         #endregion md_taphopgia_cdh_bophancapnhat_wintaFN
@@ -53,12 +59,6 @@
                         
                         #endregion md_taphopgia_cdh_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
-                
-						
-                        #region md_taphopgia_cdh_md_taphopgia_cdh_id_wintaFN
-                        
-                        #endregion md_taphopgia_cdh_md_taphopgia_cdh_id_wintaFN
-                        public string md_taphopgia_cdh_id { get; set; }
                 
 						
                         #region md_taphopgia_cdh_md_taphopgia_id_wintaFN

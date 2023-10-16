@@ -7,6 +7,12 @@
                     public partial class md_dondathangphanxuong_tinhhinh
                     {
                         
+                        #region md_dondathangphanxuong_tinhhinh_md_dondathangphanxuong_tinhhinh_id_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_tinhhinh_md_dondathangphanxuong_tinhhinh_id_wintaFN
+                        public string md_dondathangphanxuong_tinhhinh_id { get; set; }
+                
+						
                         #region md_dondathangphanxuong_tinhhinh_bophancapnhat_wintaFN
                         
                         #endregion md_dondathangphanxuong_tinhhinh_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_dondathangphanxuong_tinhhinh_md_dondathangphanxuong_id_wintaFN
                         public string md_dondathangphanxuong_id { get; set; }
-                
-						
-                        #region md_dondathangphanxuong_tinhhinh_md_dondathangphanxuong_tinhhinh_id_wintaFN
-                        
-                        #endregion md_dondathangphanxuong_tinhhinh_md_dondathangphanxuong_tinhhinh_id_wintaFN
-                        public string md_dondathangphanxuong_tinhhinh_id { get; set; }
                 
 						
                         #region md_dondathangphanxuong_tinhhinh_md_donvitinhsanpham_id_wintaFN

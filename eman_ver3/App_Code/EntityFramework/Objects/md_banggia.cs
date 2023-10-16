@@ -7,6 +7,12 @@
                     public partial class md_banggia
                     {
                         
+                        #region md_banggia_md_banggia_id_wintaFN
+                        
+                        #endregion md_banggia_md_banggia_id_wintaFN
+                        public string md_banggia_id { get; set; }
+                
+						
                         #region md_banggia_banggiaban_wintaFN
                         
                         #endregion md_banggia_banggiaban_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_banggia_lienket_bg_wintaFN
                         public string lienket_bg { get; set; }
-                
-						
-                        #region md_banggia_md_banggia_id_wintaFN
-                        
-                        #endregion md_banggia_md_banggia_id_wintaFN
-                        public string md_banggia_id { get; set; }
                 
 						
                         #region md_banggia_md_dongtien_id_wintaFN

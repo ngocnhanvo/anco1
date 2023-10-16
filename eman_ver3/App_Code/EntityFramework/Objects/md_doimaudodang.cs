@@ -7,6 +7,18 @@
                     public partial class md_doimaudodang
                     {
                         
+                        #region md_doimaudodang_md_doimaudodang_id_wintaFN
+                        
+                        #endregion md_doimaudodang_md_doimaudodang_id_wintaFN
+                        public string md_doimaudodang_id { get; set; }
+                
+						
+                        #region md_doimaudodang_sochungtu_wintaFN
+                        
+                        #endregion md_doimaudodang_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_doimaudodang_bophancapnhat_wintaFN
                         
                         #endregion md_doimaudodang_bophancapnhat_wintaFN
@@ -41,12 +53,6 @@
                         
                         #endregion md_doimaudodang_ketoan_wintaFN
                         public bool? ketoan { get; set; }
-                
-						
-                        #region md_doimaudodang_md_doimaudodang_id_wintaFN
-                        
-                        #endregion md_doimaudodang_md_doimaudodang_id_wintaFN
-                        public string md_doimaudodang_id { get; set; }
                 
 						
                         #region md_doimaudodang_mota_wintaFN
@@ -95,12 +101,6 @@
                         
                         #endregion md_doimaudodang_sctdathang_wintaFN
                         public string sctdathang { get; set; }
-                
-						
-                        #region md_doimaudodang_sochungtu_wintaFN
-                        
-                        #endregion md_doimaudodang_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_doimaudodang_trangthai_wintaFN

@@ -7,6 +7,12 @@
                     public partial class c_doichieuhangton_thdh
                     {
                         
+                        #region c_doichieuhangton_thdh_c_doichieuhangton_thdh_id_wintaFN
+                        
+                        #endregion c_doichieuhangton_thdh_c_doichieuhangton_thdh_id_wintaFN
+                        public string c_doichieuhangton_thdh_id { get; set; }
+                
+						
                         #region c_doichieuhangton_thdh_bophancapnhat_wintaFN
                         
                         #endregion c_doichieuhangton_thdh_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion c_doichieuhangton_thdh_c_doichieuhangton_id_wintaFN
                         public string c_doichieuhangton_id { get; set; }
-                
-						
-                        #region c_doichieuhangton_thdh_c_doichieuhangton_thdh_id_wintaFN
-                        
-                        #endregion c_doichieuhangton_thdh_c_doichieuhangton_thdh_id_wintaFN
-                        public string c_doichieuhangton_thdh_id { get; set; }
                 
 						
                         #region c_doichieuhangton_thdh_hoatdong_wintaFN

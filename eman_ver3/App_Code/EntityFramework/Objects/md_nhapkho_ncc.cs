@@ -7,6 +7,18 @@
                     public partial class md_nhapkho_ncc
                     {
                         
+                        #region md_nhapkho_ncc_md_nhapkho_ncc_id_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_md_nhapkho_ncc_id_wintaFN
+                        public string md_nhapkho_ncc_id { get; set; }
+                
+						
+                        #region md_nhapkho_ncc_sochungtu_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_nhapkho_ncc_bophancapnhat_wintaFN
                         
                         #endregion md_nhapkho_ncc_bophancapnhat_wintaFN
@@ -59,12 +71,6 @@
                         
                         #endregion md_nhapkho_ncc_md_doitackinhdoanh_id_wintaFN
                         public string md_doitackinhdoanh_id { get; set; }
-                
-						
-                        #region md_nhapkho_ncc_md_nhapkho_ncc_id_wintaFN
-                        
-                        #endregion md_nhapkho_ncc_md_nhapkho_ncc_id_wintaFN
-                        public string md_nhapkho_ncc_id { get; set; }
                 
 						
                         #region md_nhapkho_ncc_mota_wintaFN
@@ -143,12 +149,6 @@
                         
                         #endregion md_nhapkho_ncc_so_donmuahang_wintaFN
                         public string so_donmuahang { get; set; }
-                
-						
-                        #region md_nhapkho_ncc_sochungtu_wintaFN
-                        
-                        #endregion md_nhapkho_ncc_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_nhapkho_ncc_ten_dtkd_wintaFN

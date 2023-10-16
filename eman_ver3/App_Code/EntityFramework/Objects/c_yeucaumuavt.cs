@@ -7,6 +7,18 @@
                     public partial class c_yeucaumuavt
                     {
                         
+                        #region c_yeucaumuavt_c_yeucaumuavt_id_wintaFN
+                        
+                        #endregion c_yeucaumuavt_c_yeucaumuavt_id_wintaFN
+                        public string c_yeucaumuavt_id { get; set; }
+                
+						
+                        #region c_yeucaumuavt_sochungtu_wintaFN
+                        
+                        #endregion c_yeucaumuavt_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region c_yeucaumuavt_bophancapnhat_wintaFN
                         
                         #endregion c_yeucaumuavt_bophancapnhat_wintaFN
@@ -35,12 +47,6 @@
                         
                         #endregion c_yeucaumuavt_c_nhucauvattu_id_wintaFN
                         public string c_nhucauvattu_id { get; set; }
-                
-						
-                        #region c_yeucaumuavt_c_yeucaumuavt_id_wintaFN
-                        
-                        #endregion c_yeucaumuavt_c_yeucaumuavt_id_wintaFN
-                        public string c_yeucaumuavt_id { get; set; }
                 
 						
                         #region c_yeucaumuavt_donhang_thamchieu_wintaFN
@@ -131,12 +137,6 @@
                         
                         #endregion c_yeucaumuavt_sct_donhang_wintaFN
                         public string sct_donhang { get; set; }
-                
-						
-                        #region c_yeucaumuavt_sochungtu_wintaFN
-                        
-                        #endregion c_yeucaumuavt_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region c_yeucaumuavt_vaitrocapnhat_wintaFN

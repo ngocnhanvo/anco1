@@ -7,6 +7,12 @@
                     public partial class c_nhucauvattu_dhpx
                     {
                         
+                        #region c_nhucauvattu_dhpx_c_nhucauvattu_dhpx_id_wintaFN
+                        
+                        #endregion c_nhucauvattu_dhpx_c_nhucauvattu_dhpx_id_wintaFN
+                        public string c_nhucauvattu_dhpx_id { get; set; }
+                
+						
                         #region c_nhucauvattu_dhpx_bophancapnhat_wintaFN
                         
                         #endregion c_nhucauvattu_dhpx_bophancapnhat_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion c_nhucauvattu_dhpx_bophantao_wintaFN
                         public string bophantao { get; set; }
-                
-						
-                        #region c_nhucauvattu_dhpx_c_nhucauvattu_dhpx_id_wintaFN
-                        
-                        #endregion c_nhucauvattu_dhpx_c_nhucauvattu_dhpx_id_wintaFN
-                        public string c_nhucauvattu_dhpx_id { get; set; }
                 
 						
                         #region c_nhucauvattu_dhpx_c_nhucauvattu_id_wintaFN

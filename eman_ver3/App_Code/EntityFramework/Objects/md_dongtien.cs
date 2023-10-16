@@ -7,6 +7,12 @@
                     public partial class md_dongtien
                     {
                         
+                        #region md_dongtien_md_dongtien_id_wintaFN
+                        
+                        #endregion md_dongtien_md_dongtien_id_wintaFN
+                        public string md_dongtien_id { get; set; }
+                
+						
                         #region md_dongtien_bieutuong_wintaFN
                         
                         #endregion md_dongtien_bieutuong_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_dongtien_ma_iso_wintaFN
                         public string ma_iso { get; set; }
-                
-						
-                        #region md_dongtien_md_dongtien_id_wintaFN
-                        
-                        #endregion md_dongtien_md_dongtien_id_wintaFN
-                        public string md_dongtien_id { get; set; }
                 
 						
                         #region md_dongtien_mota_wintaFN

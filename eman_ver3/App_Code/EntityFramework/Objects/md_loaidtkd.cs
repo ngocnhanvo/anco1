@@ -7,6 +7,12 @@
                     public partial class md_loaidtkd
                     {
                         
+                        #region md_loaidtkd_md_loaidtkd_id_wintaFN
+                        
+                        #endregion md_loaidtkd_md_loaidtkd_id_wintaFN
+                        public string md_loaidtkd_id { get; set; }
+                
+						
                         #region md_loaidtkd_anco_check_wintaFN
                         
                         #endregion md_loaidtkd_anco_check_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_loaidtkd_ma_loaidtkd_wintaFN
                         public string ma_loaidtkd { get; set; }
-                
-						
-                        #region md_loaidtkd_md_loaidtkd_id_wintaFN
-                        
-                        #endregion md_loaidtkd_md_loaidtkd_id_wintaFN
-                        public string md_loaidtkd_id { get; set; }
                 
 						
                         #region md_loaidtkd_mota_wintaFN

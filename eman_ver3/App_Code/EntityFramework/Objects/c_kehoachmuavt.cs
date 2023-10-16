@@ -7,6 +7,18 @@
                     public partial class c_kehoachmuavt
                     {
                         
+                        #region c_kehoachmuavt_c_kehoachmuavt_id_wintaFN
+                        
+                        #endregion c_kehoachmuavt_c_kehoachmuavt_id_wintaFN
+                        public string c_kehoachmuavt_id { get; set; }
+                
+						
+                        #region c_kehoachmuavt_sochungtu_wintaFN
+                        
+                        #endregion c_kehoachmuavt_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region c_kehoachmuavt_bophancapnhat_wintaFN
                         
                         #endregion c_kehoachmuavt_bophancapnhat_wintaFN
@@ -35,12 +47,6 @@
                         
                         #endregion c_kehoachmuavt_c_donmuavattu_id_wintaFN
                         public string c_donmuavattu_id { get; set; }
-                
-						
-                        #region c_kehoachmuavt_c_kehoachmuavt_id_wintaFN
-                        
-                        #endregion c_kehoachmuavt_c_kehoachmuavt_id_wintaFN
-                        public string c_kehoachmuavt_id { get; set; }
                 
 						
                         #region c_kehoachmuavt_denngay_wintaFN
@@ -107,12 +113,6 @@
                         
                         #endregion c_kehoachmuavt_sapxep_wintaFN
                         public string sapxep { get; set; }
-                
-						
-                        #region c_kehoachmuavt_sochungtu_wintaFN
-                        
-                        #endregion c_kehoachmuavt_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region c_kehoachmuavt_ten_kehoach_wintaFN

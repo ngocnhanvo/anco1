@@ -7,6 +7,12 @@
                     public partial class md_khuvuc
                     {
                         
+                        #region md_khuvuc_md_khuvuc_id_wintaFN
+                        
+                        #endregion md_khuvuc_md_khuvuc_id_wintaFN
+                        public string md_khuvuc_id { get; set; }
+                
+						
                         #region md_khuvuc_anco_check_wintaFN
                         
                         #endregion md_khuvuc_anco_check_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_khuvuc_ma_khuvuc_wintaFN
                         public string ma_khuvuc { get; set; }
-                
-						
-                        #region md_khuvuc_md_khuvuc_id_wintaFN
-                        
-                        #endregion md_khuvuc_md_khuvuc_id_wintaFN
-                        public string md_khuvuc_id { get; set; }
                 
 						
                         #region md_khuvuc_mota_wintaFN

@@ -16,6 +16,7 @@ public static class Helper
     public static string HIEULUC = "HIEULUC";
     public static string KETTHUC = "KETTHUC";
     public static string CHUAHOANTHANH = "CHUAHOANTHANH";
+    public static string HOANTHANH = "HOANTHANH";
     public static string KHDXL = "KHDXL";
     public static string MUAVT = "MUAVT";
     public static string MUATP = "MUATP";

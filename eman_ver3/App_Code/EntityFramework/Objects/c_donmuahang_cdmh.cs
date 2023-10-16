@@ -7,6 +7,12 @@
                     public partial class c_donmuahang_cdmh
                     {
                         
+                        #region c_donmuahang_cdmh_c_donmuahang_cdmh_id_wintaFN
+                        
+                        #endregion c_donmuahang_cdmh_c_donmuahang_cdmh_id_wintaFN
+                        public string c_donmuahang_cdmh_id { get; set; }
+                
+						
                         #region c_donmuahang_cdmh_bophancapnhat_wintaFN
                         
                         #endregion c_donmuahang_cdmh_bophancapnhat_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion c_donmuahang_cdmh_bophantao_wintaFN
                         public string bophantao { get; set; }
-                
-						
-                        #region c_donmuahang_cdmh_c_donmuahang_cdmh_id_wintaFN
-                        
-                        #endregion c_donmuahang_cdmh_c_donmuahang_cdmh_id_wintaFN
-                        public string c_donmuahang_cdmh_id { get; set; }
                 
 						
                         #region c_donmuahang_cdmh_c_donmuahang_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_kho_sanpham
                     {
                         
+                        #region md_kho_sanpham_md_kho_sanpham_id_wintaFN
+                        
+                        #endregion md_kho_sanpham_md_kho_sanpham_id_wintaFN
+                        public string md_kho_sanpham_id { get; set; }
+                
+						
                         #region md_kho_sanpham_bophancapnhat_wintaFN
                         
                         #endregion md_kho_sanpham_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_kho_sanpham_md_kho_id_wintaFN
                         public string md_kho_id { get; set; }
-                
-						
-                        #region md_kho_sanpham_md_kho_sanpham_id_wintaFN
-                        
-                        #endregion md_kho_sanpham_md_kho_sanpham_id_wintaFN
-                        public string md_kho_sanpham_id { get; set; }
                 
 						
                         #region md_kho_sanpham_md_sanpham_id_wintaFN

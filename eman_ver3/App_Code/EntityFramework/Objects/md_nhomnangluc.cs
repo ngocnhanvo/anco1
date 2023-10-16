@@ -7,6 +7,12 @@
                     public partial class md_nhomnangluc
                     {
                         
+                        #region md_nhomnangluc_md_nhomnangluc_id_wintaFN
+                        
+                        #endregion md_nhomnangluc_md_nhomnangluc_id_wintaFN
+                        public string md_nhomnangluc_id { get; set; }
+                
+						
                         #region md_nhomnangluc_hoatdong_wintaFN
                         
                         #endregion md_nhomnangluc_hoatdong_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion md_nhomnangluc_ma_nhom_wintaFN
                         public string ma_nhom { get; set; }
-                
-						
-                        #region md_nhomnangluc_md_nhomnangluc_id_wintaFN
-                        
-                        #endregion md_nhomnangluc_md_nhomnangluc_id_wintaFN
-                        public string md_nhomnangluc_id { get; set; }
                 
 						
                         #region md_nhomnangluc_mota_wintaFN

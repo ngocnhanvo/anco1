@@ -7,6 +7,12 @@
                     public partial class ad_user_role
                     {
                         
+                        #region ad_user_role_ad_user_role_id_wintaFN
+                        
+                        #endregion ad_user_role_ad_user_role_id_wintaFN
+                        public string ad_user_role_id { get; set; }
+                
+						
                         #region ad_user_role_ad_role_id_wintaFN
                         
                         #endregion ad_user_role_ad_role_id_wintaFN
@@ -17,12 +23,6 @@
                         
                         #endregion ad_user_role_ad_user_id_wintaFN
                         public string ad_user_id { get; set; }
-                
-						
-                        #region ad_user_role_ad_user_role_id_wintaFN
-                        
-                        #endregion ad_user_role_ad_user_role_id_wintaFN
-                        public string ad_user_role_id { get; set; }
                 
 						
                         #region ad_user_role_bophancapnhat_wintaFN

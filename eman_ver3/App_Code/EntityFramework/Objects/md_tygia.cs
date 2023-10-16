@@ -7,6 +7,12 @@
                     public partial class md_tygia
                     {
                         
+                        #region md_tygia_md_tygia_id_wintaFN
+                        
+                        #endregion md_tygia_md_tygia_id_wintaFN
+                        public string md_tygia_id { get; set; }
+                
+						
                         #region md_tygia_bophancapnhat_wintaFN
                         
                         #endregion md_tygia_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_tygia_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_tygia_md_tygia_id_wintaFN
-                        
-                        #endregion md_tygia_md_tygia_id_wintaFN
-                        public string md_tygia_id { get; set; }
                 
 						
                         #region md_tygia_mota_wintaFN

@@ -7,16 +7,16 @@
                     public partial class ad_removeline
                     {
                         
-                        #region ad_removeline_ad_remove_id_wintaFN
-                        
-                        #endregion ad_removeline_ad_remove_id_wintaFN
-                        public string ad_remove_id { get; set; }
-                
-						
                         #region ad_removeline_ad_removeline_id_wintaFN
                         
                         #endregion ad_removeline_ad_removeline_id_wintaFN
                         public string ad_removeline_id { get; set; }
+                
+						
+                        #region ad_removeline_ad_remove_id_wintaFN
+                        
+                        #endregion ad_removeline_ad_remove_id_wintaFN
+                        public string ad_remove_id { get; set; }
                 
 						
                         #region ad_removeline_bophancapnhat_wintaFN

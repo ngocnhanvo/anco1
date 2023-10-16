@@ -7,6 +7,18 @@
                     public partial class md_lenhdonggoi
                     {
                         
+                        #region md_lenhdonggoi_md_lenhdonggoi_id_wintaFN
+                        
+                        #endregion md_lenhdonggoi_md_lenhdonggoi_id_wintaFN
+                        public string md_lenhdonggoi_id { get; set; }
+                
+						
+                        #region md_lenhdonggoi_sochungtu_wintaFN
+                        
+                        #endregion md_lenhdonggoi_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_lenhdonggoi_bophancapnhat_wintaFN
                         
                         #endregion md_lenhdonggoi_bophancapnhat_wintaFN
@@ -29,12 +41,6 @@
                         
                         #endregion md_lenhdonggoi_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_lenhdonggoi_md_lenhdonggoi_id_wintaFN
-                        
-                        #endregion md_lenhdonggoi_md_lenhdonggoi_id_wintaFN
-                        public string md_lenhdonggoi_id { get; set; }
                 
 						
                         #region md_lenhdonggoi_md_trangthai_id_wintaFN
@@ -89,12 +95,6 @@
                         
                         #endregion md_lenhdonggoi_nguoitao_wintaFN
                         public string nguoitao { get; set; }
-                
-						
-                        #region md_lenhdonggoi_sochungtu_wintaFN
-                        
-                        #endregion md_lenhdonggoi_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_lenhdonggoi_vaitrocapnhat_wintaFN

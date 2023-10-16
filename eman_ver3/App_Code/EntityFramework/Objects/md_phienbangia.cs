@@ -7,6 +7,12 @@
                     public partial class md_phienbangia
                     {
                         
+                        #region md_phienbangia_md_phienbangia_id_wintaFN
+                        
+                        #endregion md_phienbangia_md_phienbangia_id_wintaFN
+                        public string md_phienbangia_id { get; set; }
+                
+						
                         #region md_phienbangia_bophancapnhat_wintaFN
                         
                         #endregion md_phienbangia_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_phienbangia_md_banggia_id_wintaFN
                         public string md_banggia_id { get; set; }
-                
-						
-                        #region md_phienbangia_md_phienbangia_id_wintaFN
-                        
-                        #endregion md_phienbangia_md_phienbangia_id_wintaFN
-                        public string md_phienbangia_id { get; set; }
                 
 						
                         #region md_phienbangia_md_trangthai_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_quocgia
                     {
                         
+                        #region md_quocgia_md_quocgia_id_wintaFN
+                        
+                        #endregion md_quocgia_md_quocgia_id_wintaFN
+                        public string md_quocgia_id { get; set; }
+                
+						
                         #region md_quocgia_anco_check_wintaFN
                         
                         #endregion md_quocgia_anco_check_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_quocgia_ma_quocgia_wintaFN
                         public string ma_quocgia { get; set; }
-                
-						
-                        #region md_quocgia_md_quocgia_id_wintaFN
-                        
-                        #endregion md_quocgia_md_quocgia_id_wintaFN
-                        public string md_quocgia_id { get; set; }
                 
 						
                         #region md_quocgia_mota_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_namtaichinh_ky
                     {
                         
+                        #region md_namtaichinh_ky_md_namtaichinh_ky_id_wintaFN
+                        
+                        #endregion md_namtaichinh_ky_md_namtaichinh_ky_id_wintaFN
+                        public string md_namtaichinh_ky_id { get; set; }
+                
+						
                         #region md_namtaichinh_ky_bophancapnhat_wintaFN
                         
                         #endregion md_namtaichinh_ky_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_namtaichinh_ky_md_namtaichinh_id_wintaFN
                         public string md_namtaichinh_id { get; set; }
-                
-						
-                        #region md_namtaichinh_ky_md_namtaichinh_ky_id_wintaFN
-                        
-                        #endregion md_namtaichinh_ky_md_namtaichinh_ky_id_wintaFN
-                        public string md_namtaichinh_ky_id { get; set; }
                 
 						
                         #region md_namtaichinh_ky_mota_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_donvitinhsanpham_cddv
                     {
                         
+                        #region md_donvitinhsanpham_cddv_md_donvitinhsanpham_cddv_id_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_cddv_md_donvitinhsanpham_cddv_id_wintaFN
+                        public string md_donvitinhsanpham_cddv_id { get; set; }
+                
+						
                         #region md_donvitinhsanpham_cddv_bophancapnhat_wintaFN
                         
                         #endregion md_donvitinhsanpham_cddv_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_donvitinhsanpham_cddv_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_donvitinhsanpham_cddv_md_donvitinhsanpham_cddv_id_wintaFN
-                        
-                        #endregion md_donvitinhsanpham_cddv_md_donvitinhsanpham_cddv_id_wintaFN
-                        public string md_donvitinhsanpham_cddv_id { get; set; }
                 
 						
                         #region md_donvitinhsanpham_cddv_md_donvitinhsanpham_id_wintaFN

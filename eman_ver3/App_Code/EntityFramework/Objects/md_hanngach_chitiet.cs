@@ -7,16 +7,16 @@
                     public partial class md_hanngach_chitiet
                     {
                         
-                        #region md_hanngach_chitiet_hoatdong_wintaFN
-                        
-                        #endregion md_hanngach_chitiet_hoatdong_wintaFN
-                        public bool? hoatdong { get; set; }
-                
-						
                         #region md_hanngach_chitiet_md_hanngach_chitiet_id_wintaFN
                         
                         #endregion md_hanngach_chitiet_md_hanngach_chitiet_id_wintaFN
                         public string md_hanngach_chitiet_id { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_hoatdong_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_hoatdong_wintaFN
+                        public bool? hoatdong { get; set; }
                 
 						
                         #region md_hanngach_chitiet_md_hanngach_id_wintaFN

@@ -7,6 +7,12 @@
                     public partial class md_vanchuyennoibo_dalayton
                     {
                         
+                        #region md_vanchuyennoibo_dalayton_md_vanchuyennoibo_dalayton_id_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_dalayton_md_vanchuyennoibo_dalayton_id_wintaFN
+                        public string md_vanchuyennoibo_dalayton_id { get; set; }
+                
+						
                         #region md_vanchuyennoibo_dalayton_bophancapnhat_wintaFN
                         
                         #endregion md_vanchuyennoibo_dalayton_bophancapnhat_wintaFN
@@ -47,12 +53,6 @@
                         
                         #endregion md_vanchuyennoibo_dalayton_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
-                
-						
-                        #region md_vanchuyennoibo_dalayton_md_vanchuyennoibo_dalayton_id_wintaFN
-                        
-                        #endregion md_vanchuyennoibo_dalayton_md_vanchuyennoibo_dalayton_id_wintaFN
-                        public string md_vanchuyennoibo_dalayton_id { get; set; }
                 
 						
                         #region md_vanchuyennoibo_dalayton_md_vanchuyennoibo_id_wintaFN

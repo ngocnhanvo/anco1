@@ -7,6 +7,12 @@
                     public partial class c_donmuahang_thue
                     {
                         
+                        #region c_donmuahang_thue_c_donmuahang_thue_id_wintaFN
+                        
+                        #endregion c_donmuahang_thue_c_donmuahang_thue_id_wintaFN
+                        public string c_donmuahang_thue_id { get; set; }
+                
+						
                         #region c_donmuahang_thue_bophancapnhat_wintaFN
                         
                         #endregion c_donmuahang_thue_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion c_donmuahang_thue_c_donmuahang_id_wintaFN
                         public string c_donmuahang_id { get; set; }
-                
-						
-                        #region c_donmuahang_thue_c_donmuahang_thue_id_wintaFN
-                        
-                        #endregion c_donmuahang_thue_c_donmuahang_thue_id_wintaFN
-                        public string c_donmuahang_thue_id { get; set; }
                 
 						
                         #region c_donmuahang_thue_doanhnghiep_wintaFN

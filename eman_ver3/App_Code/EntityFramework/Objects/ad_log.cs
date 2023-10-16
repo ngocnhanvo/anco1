@@ -7,16 +7,16 @@
                     public partial class ad_log
                     {
                         
-                        #region ad_log_ad_case_id_wintaFN
-                        
-                        #endregion ad_log_ad_case_id_wintaFN
-                        public string ad_case_id { get; set; }
-                
-						
                         #region ad_log_ad_log_id_wintaFN
                         
                         #endregion ad_log_ad_log_id_wintaFN
                         public string ad_log_id { get; set; }
+                
+						
+                        #region ad_log_ad_case_id_wintaFN
+                        
+                        #endregion ad_log_ad_case_id_wintaFN
+                        public string ad_case_id { get; set; }
                 
 						
                         #region ad_log_ad_module_id_wintaFN

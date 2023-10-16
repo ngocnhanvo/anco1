@@ -7,6 +7,12 @@
                     public partial class md_dbbiendong
                     {
                         
+                        #region md_dbbiendong_md_dbbiendong_id_wintaFN
+                        
+                        #endregion md_dbbiendong_md_dbbiendong_id_wintaFN
+                        public string md_dbbiendong_id { get; set; }
+                
+						
                         #region md_dbbiendong_bophancapnhat_wintaFN
                         
                         #endregion md_dbbiendong_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_dbbiendong_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_dbbiendong_md_dbbiendong_id_wintaFN
-                        
-                        #endregion md_dbbiendong_md_dbbiendong_id_wintaFN
-                        public string md_dbbiendong_id { get; set; }
                 
 						
                         #region md_dbbiendong_mota_wintaFN

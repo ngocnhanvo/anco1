@@ -7,6 +7,12 @@
                     public partial class md_sanpham
                     {
                         
+                        #region md_sanpham_md_sanpham_id_wintaFN
+                        
+                        #endregion md_sanpham_md_sanpham_id_wintaFN
+                        public string md_sanpham_id { get; set; }
+                
+						
                         #region md_sanpham_anco_check_wintaFN
                         
                         #endregion md_sanpham_anco_check_wintaFN
@@ -191,12 +197,6 @@
                         
                         #endregion md_sanpham_md_phanxuong_id_wintaFN
                         public string md_phanxuong_id { get; set; }
-                
-						
-                        #region md_sanpham_md_sanpham_id_wintaFN
-                        
-                        #endregion md_sanpham_md_sanpham_id_wintaFN
-                        public string md_sanpham_id { get; set; }
                 
 						
                         #region md_sanpham_md_thue_sanpham_id_wintaFN

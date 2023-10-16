@@ -7,6 +7,12 @@
                     public partial class md_phannnhommx_tlkthh
                     {
                         
+                        #region md_phannnhommx_tlkthh_md_phannnhommx_tlkthh_id_wintaFN
+                        
+                        #endregion md_phannnhommx_tlkthh_md_phannnhommx_tlkthh_id_wintaFN
+                        public string md_phannnhommx_tlkthh_id { get; set; }
+                
+						
                         #region md_phannnhommx_tlkthh_bophancapnhat_wintaFN
                         
                         #endregion md_phannnhommx_tlkthh_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_phannnhommx_tlkthh_md_phannnhommx_id_wintaFN
                         public string md_phannnhommx_id { get; set; }
-                
-						
-                        #region md_phannnhommx_tlkthh_md_phannnhommx_tlkthh_id_wintaFN
-                        
-                        #endregion md_phannnhommx_tlkthh_md_phannnhommx_tlkthh_id_wintaFN
-                        public string md_phannnhommx_tlkthh_id { get; set; }
                 
 						
                         #region md_phannnhommx_tlkthh_md_sanpham_id_wintaFN

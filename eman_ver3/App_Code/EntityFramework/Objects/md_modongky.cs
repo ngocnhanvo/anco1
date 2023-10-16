@@ -7,6 +7,12 @@
                     public partial class md_modongky
                     {
                         
+                        #region md_modongky_md_modongky_id_wintaFN
+                        
+                        #endregion md_modongky_md_modongky_id_wintaFN
+                        public string md_modongky_id { get; set; }
+                
+						
                         #region md_modongky_bophancapnhat_wintaFN
                         
                         #endregion md_modongky_bophancapnhat_wintaFN
@@ -47,12 +53,6 @@
                         
                         #endregion md_modongky_loai_baocao_wintaFN
                         public string loai_baocao { get; set; }
-                
-						
-                        #region md_modongky_md_modongky_id_wintaFN
-                        
-                        #endregion md_modongky_md_modongky_id_wintaFN
-                        public string md_modongky_id { get; set; }
                 
 						
                         #region md_modongky_md_namtaichinh_id_wintaFN

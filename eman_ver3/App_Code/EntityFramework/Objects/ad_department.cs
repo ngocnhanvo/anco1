@@ -7,6 +7,12 @@
                     public partial class ad_department
                     {
                         
+                        #region ad_department_md_phongban_id_wintaFN
+                        
+                        #endregion ad_department_md_phongban_id_wintaFN
+                        public string md_phongban_id { get; set; }
+                
+						
                         #region ad_department_bophancapnhat_wintaFN
                         
                         #endregion ad_department_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion ad_department_md_doitackinhdoanh_id_wintaFN
                         public string md_doitackinhdoanh_id { get; set; }
-                
-						
-                        #region ad_department_md_phongban_id_wintaFN
-                        
-                        #endregion ad_department_md_phongban_id_wintaFN
-                        public string md_phongban_id { get; set; }
                 
 						
                         #region ad_department_mota_wintaFN

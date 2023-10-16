@@ -7,6 +7,12 @@
                     public partial class md_phannnhommx_cdpk
                     {
                         
+                        #region md_phannnhommx_cdpk_md_phannnhommx_cdpk_id_wintaFN
+                        
+                        #endregion md_phannnhommx_cdpk_md_phannnhommx_cdpk_id_wintaFN
+                        public string md_phannnhommx_cdpk_id { get; set; }
+                
+						
                         #region md_phannnhommx_cdpk_bophancapnhat_wintaFN
                         
                         #endregion md_phannnhommx_cdpk_bophancapnhat_wintaFN
@@ -23,12 +29,6 @@
                         
                         #endregion md_phannnhommx_cdpk_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_phannnhommx_cdpk_md_phannnhommx_cdpk_id_wintaFN
-                        
-                        #endregion md_phannnhommx_cdpk_md_phannnhommx_cdpk_id_wintaFN
-                        public string md_phannnhommx_cdpk_id { get; set; }
                 
 						
                         #region md_phannnhommx_cdpk_md_phannnhommx_id_wintaFN

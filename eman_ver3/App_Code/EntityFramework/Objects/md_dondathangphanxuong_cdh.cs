@@ -7,6 +7,12 @@
                     public partial class md_dondathangphanxuong_cdh
                     {
                         
+                        #region md_dondathangphanxuong_cdh_md_dondathangphanxuong_cdh_id_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_cdh_md_dondathangphanxuong_cdh_id_wintaFN
+                        public string md_dondathangphanxuong_cdh_id { get; set; }
+                
+						
                         #region md_dondathangphanxuong_cdh_bophancapnhat_wintaFN
                         
                         #endregion md_dondathangphanxuong_cdh_bophancapnhat_wintaFN
@@ -41,12 +47,6 @@
                         
                         #endregion md_dondathangphanxuong_cdh_macuoi_wintaFN
                         public string macuoi { get; set; }
-                
-						
-                        #region md_dondathangphanxuong_cdh_md_dondathangphanxuong_cdh_id_wintaFN
-                        
-                        #endregion md_dondathangphanxuong_cdh_md_dondathangphanxuong_cdh_id_wintaFN
-                        public string md_dondathangphanxuong_cdh_id { get; set; }
                 
 						
                         #region md_dondathangphanxuong_cdh_md_dondathangphanxuong_id_wintaFN

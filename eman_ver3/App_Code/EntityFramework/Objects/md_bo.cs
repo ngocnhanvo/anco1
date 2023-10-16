@@ -7,6 +7,12 @@
                     public partial class md_bo
                     {
                         
+                        #region md_bo_md_bo_id_wintaFN
+                        
+                        #endregion md_bo_md_bo_id_wintaFN
+                        public string md_bo_id { get; set; }
+                
+						
                         #region md_bo_ghichu_wintaFN
                         
                         #endregion md_bo_ghichu_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_bo_ma_bo_cha_wintaFN
                         public string ma_bo_cha { get; set; }
-                
-						
-                        #region md_bo_md_bo_id_wintaFN
-                        
-                        #endregion md_bo_md_bo_id_wintaFN
-                        public string md_bo_id { get; set; }
                 
 						
                         #region md_bo_mota_wintaFN

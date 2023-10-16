@@ -7,6 +7,12 @@
                     public partial class ad_user_mmc
                     {
                         
+                        #region ad_user_mmc_ad_user_mmc_id_wintaFN
+                        
+                        #endregion ad_user_mmc_ad_user_mmc_id_wintaFN
+                        public string ad_user_mmc_id { get; set; }
+                
+						
                         #region ad_user_mmc_ad_case_id_wintaFN
                         
                         #endregion ad_user_mmc_ad_case_id_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion ad_user_mmc_ad_user_id_wintaFN
                         public string ad_user_id { get; set; }
-                
-						
-                        #region ad_user_mmc_ad_user_mmc_id_wintaFN
-                        
-                        #endregion ad_user_mmc_ad_user_mmc_id_wintaFN
-                        public string ad_user_mmc_id { get; set; }
                 
 						
                         #region ad_user_mmc_bophancapnhat_wintaFN

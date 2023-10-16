@@ -7,6 +7,12 @@
                     public partial class md_kiemke
                     {
                         
+                        #region md_kiemke_md_kiemke_id_wintaFN
+                        
+                        #endregion md_kiemke_md_kiemke_id_wintaFN
+                        public string md_kiemke_id { get; set; }
+                
+						
                         #region md_kiemke_bophancapnhat_wintaFN
                         
                         #endregion md_kiemke_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_kiemke_md_kho_id_wintaFN
                         public string md_kho_id { get; set; }
-                
-						
-                        #region md_kiemke_md_kiemke_id_wintaFN
-                        
-                        #endregion md_kiemke_md_kiemke_id_wintaFN
-                        public string md_kiemke_id { get; set; }
                 
 						
                         #region md_kiemke_mota_wintaFN

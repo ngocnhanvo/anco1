@@ -7,6 +7,12 @@
                     public partial class md_lenhsanxuat_ddsx
                     {
                         
+                        #region md_lenhsanxuat_ddsx_md_lenhsanxuat_ddsx_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_ddsx_md_lenhsanxuat_ddsx_id_wintaFN
+                        public string md_lenhsanxuat_ddsx_id { get; set; }
+                
+						
                         #region md_lenhsanxuat_ddsx_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_ddsx_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_lenhsanxuat_ddsx_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_lenhsanxuat_ddsx_md_lenhsanxuat_ddsx_id_wintaFN
-                        
-                        #endregion md_lenhsanxuat_ddsx_md_lenhsanxuat_ddsx_id_wintaFN
-                        public string md_lenhsanxuat_ddsx_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_ddsx_md_lenhsanxuat_id_wintaFN

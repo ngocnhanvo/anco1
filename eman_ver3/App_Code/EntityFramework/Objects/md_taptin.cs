@@ -7,6 +7,12 @@
                     public partial class md_taptin
                     {
                         
+                        #region md_taptin_md_taptin_id_wintaFN
+                        
+                        #endregion md_taptin_md_taptin_id_wintaFN
+                        public string md_taptin_id { get; set; }
+                
+						
                         #region md_taptin_bophancapnhat_wintaFN
                         
                         #endregion md_taptin_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_taptin_hoatdong_wintaFN
                         public bool? hoatdong { get; set; }
-                
-						
-                        #region md_taptin_md_taptin_id_wintaFN
-                        
-                        #endregion md_taptin_md_taptin_id_wintaFN
-                        public string md_taptin_id { get; set; }
                 
 						
                         #region md_taptin_mimetype_wintaFN

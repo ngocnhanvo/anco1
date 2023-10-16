@@ -7,16 +7,16 @@
                     public partial class c_danhsachdathang_nangluc
                     {
                         
-                        #region c_danhsachdathang_nangluc_c_danhsachdathang_id_wintaFN
-                        
-                        #endregion c_danhsachdathang_nangluc_c_danhsachdathang_id_wintaFN
-                        public string c_danhsachdathang_id { get; set; }
-                
-						
                         #region c_danhsachdathang_nangluc_c_danhsachdathang_nangluc_id_wintaFN
                         
                         #endregion c_danhsachdathang_nangluc_c_danhsachdathang_nangluc_id_wintaFN
                         public string c_danhsachdathang_nangluc_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_nangluc_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_nangluc_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
                 
 						
                         #region c_danhsachdathang_nangluc_CBMdatduoc_wintaFN

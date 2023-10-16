@@ -47,19 +47,22 @@ function timkiem_donhang(id_elem, type) {
                         if ($('#' + id_elem).prop('disabled') != true) {
                             $('#' + id_elem).val(cell['sochungtu']);
                             $('#donhang_thamchieu').val(cell['so_po']);
+                            $('#hangiaohang_po').val(cell['hangiaohang_po']);
+                            $('#ngaybatdausx').val(cell['ngaytao']);
                         }
                     }
                 },
                 colModel: [
                     { key: true, fixed: true, label: 'c_danhsachdathang_id', name: 'c_danhsachdathang_id', index: ' dsdh.c_danhsachdathang_id ', width: 120, editable: false, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: true, formoptions: { label: 'c_danhsachdathang_id' } },
-                    { key: false, fixed: true, label: 'Trạng thái', name: 'trangthai', index: 'dsdh.trangthai', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: Frm_MD_01_DSDatHang_trangthaigui, unformat: disable_formatter, align: 'left', stype: 'select', searchoptions: { sopt: ['bw'], value: { '': '', 'DAGUI': 'Chưa Nhận', 'DANHAN': 'Đã Nhận', 'SOANTHAO': 'Soạn thảo', 'HIEULUC': 'Hiệu lực' } }, edittype: 'select', editoptions: { value: { 'SOANTHAO': 'Soạn thảo', 'HIEULUC': 'Hiệu lực' } }, frozen: false, formoptions: { label: 'Trạng thái' } },
+                    { key: false, fixed: true, label: 'Trạng thái', name: 'trangthai', index: 'dsdh.trangthai', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: Frm_MD_01_DSDatHang_trangthaigui, unformat: disable_formatter, align: 'left', stype: 'select', searchoptions: { sopt: ['bw'], value: { '': '', 'DAGUI': 'Chưa Nhận', 'DANHAN': 'Đã Nhận', 'SOANTHAO': 'Soạn thảo', 'HIEULUC': 'Hiệu lực' } }, edittype: 'select', editoptions: { value: { 'SOANTHAO': 'Soạn thảo', 'HIEULUC': 'Hiệu lực' } }, frozen: false },
                     { key: false, fixed: true, label: 'Số Chứng Từ', name: 'sochungtu', index: ' dsdh.sochungtu ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Số Chứng Từ' } },
                     { key: false, fixed: true, label: 'Số Đơn Hàng', name: 'so_po', index: ' dsdh.so_po ', width: 170, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Số Đơn Hàng' } },
-                    { key: false, fixed: true, label: 'Ngày Bắt Đầu SX', name: 'ngaybatdau', index: 'dsdh.ngaybatdau', width: 130, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày Bắt Đầu SX' } },
-                    { key: false, fixed: true, label: 'Thời Hạn SX', name: 'thoigiansx', index: 'dsdh.thoigiansx', width: 113, editable: true, editrules: { edithidden: true }, hidden: false, formatter: 'number', unformat: disable_formatter, align: 'center', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_number(elem, 1); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 0, suffix: '' }, formoptions: { label: 'Thời Hạn SX' } },
-                    { key: false, fixed: true, label: 'Hạn Giao Hàng PO', name: 'hangiaohang_po', index: ' dsdh.hangiaohang_po ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Hạn Giao Hàng PO' } },
-                    { key: false, fixed: true, label: 'Nhà Cung Ứng', name: 'md_doitackinhdoanh_id', index: 'dtkd.ma_dtkd', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Nhà Cung Ứng' } },
-                    { key: false, fixed: true, label: 'Nơi Giao Hàng', name: 'diachigiaohang', index: ' dsdh.diachigiaohang ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, edittype: 'textarea', frozen: false, formoptions: { label: 'Nơi Giao Hàng' } },
+                    { key: false, fixed: true, label: 'Ngày Bắt Đầu SX', name: 'ngaybatdau', index: 'dsdh.ngaybatdau', width: 130, editable: true, editrules: { edithidden: true }, hidden: true, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() } },
+                    { key: false, fixed: true, label: 'Thời Hạn SX', name: 'thoigiansx', index: 'dsdh.thoigiansx', width: 113, editable: true, editrules: { edithidden: true }, hidden: true, formatter: 'number', unformat: disable_formatter, align: 'center', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_number(elem, 1); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 0, suffix: '' } },
+                    { key: false, fixed: true, label: 'Hạn Giao Hàng', name: 'hangiaohang_po', index: ' dsdh.hangiaohang_po ', width: 110, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() } },
+                    { key: false, fixed: true, label: 'Ngày nhận', name: 'ngaytao', index: ' dsdh.ngaytao ', width: 110, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() } },
+                    { key: false, fixed: true, label: 'Khách hàng', name: 'md_doitackinhdoanh_id', index: 'dtkd.ma_dtkd', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Nhà Cung Ứng' } },
+                    { key: false, fixed: true, label: 'Nơi Giao Hàng', name: 'diachigiaohang', index: ' dsdh.diachigiaohang ', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, edittype: 'textarea', frozen: false, formoptions: { label: 'Nơi Giao Hàng' } },
                 ],
                 postData: {
                     where_ex: function () {
@@ -75,6 +78,18 @@ function timkiem_donhang(id_elem, type) {
                                 where 
                                     c_danhsachdathang_id = dsdh.c_danhsachdathang_id
                                     and (sl_dathang - isnull(sl_giamhanngach,0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                            ) > 0
+                            `;
+
+                        if (tengrid0 == 'gridMD_00_KeHoachDatHangTongHop')
+                            whereSQL += ` 
+                            and (
+                                select top 1 1
+                                from c_kehoachdathang
+                                where 
+                                    sodonhang = dsdh.sochungtu
+                                    and isnull(nhomKH, '') = ''
+                                    and trangthai = 'SOANTHAO'
                             ) > 0
                             `;
 

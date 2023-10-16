@@ -7,6 +7,12 @@
                     public partial class md_donvitinh
                     {
                         
+                        #region md_donvitinh_md_donvitinh_id_wintaFN
+                        
+                        #endregion md_donvitinh_md_donvitinh_id_wintaFN
+                        public string md_donvitinh_id { get; set; }
+                
+						
                         #region md_donvitinh_bophancapnhat_wintaFN
                         
                         #endregion md_donvitinh_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_donvitinh_ma_edi_wintaFN
                         public string ma_edi { get; set; }
-                
-						
-                        #region md_donvitinh_md_donvitinh_id_wintaFN
-                        
-                        #endregion md_donvitinh_md_donvitinh_id_wintaFN
-                        public string md_donvitinh_id { get; set; }
                 
 						
                         #region md_donvitinh_mota_wintaFN

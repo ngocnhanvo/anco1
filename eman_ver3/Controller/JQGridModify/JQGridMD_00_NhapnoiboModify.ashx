@@ -32,6 +32,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
     EntityContext db;
     EntityFunction entityFunc;
     User_TK userTK = null;
+    Public pub = new Public();
 
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
@@ -83,6 +84,15 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
 
         try
         {
+            var bgncs = pub.layBGGiaNhanCongs(db);
+            var pbgnc = pub.layPBGGiaNhanCong(db, bgncs);
+
+            if(pbgnc == null)
+            {
+                msg = string.Format(fmtErr, string.Format(@"Lỗi: Không tìm thấy phiên bản giá nhân công."));
+                goto EndEventHandler;
+            }
+
             var ngayKCS = VNN_Config.setDateTime(context.Request.Form["ngayKCS"]);
             if(!ngayKCS.IsDate())
             {
@@ -137,8 +147,10 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 goto EndEventHandler;
             }
 
+
             var msgErrs = new List<maHHVT_SLThieu_LaBTP>();
             var vts = new List<md_lenhsanxuat_tosx_vattu>();
+            var lsxIds = new List<string>();
             foreach (var dh1 in md_nhapkhonb_cdhs.ToList())
             {
                 var tsxId = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_cdh_id == dh1.cdhTsxLsxId).Select(s => s.md_lenhsanxuat_tosx_id).FirstOrDefault();
@@ -179,7 +191,17 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 {
                     decimal sl_nhap = dh.sl_nhap.Value;
                     //--cap nhat so luong xuat
-                    edit_nhap(db, dh, userTK);
+                    dh.sl_danhap = sl_nhap;
+
+                    var giasp = db.md_giasanpham.Where(s =>
+                        s.md_sanpham_id == dh.md_sanpham_id
+                        & s.md_donvitinhsanpham_id == dh.md_donvitinhsanpham_id
+                        & s.md_phienbangia_id == pbgnc.md_phienbangia_id
+                        ).FirstOrDefault();
+
+                    if (giasp != null)
+                        dh.gianhancong = giasp.gia.GetValueOrDefault(0);
+
                     //--cap nhat vao kho
                     string khospId = nhap_kho(db, dh, nk, 1, userTK);
                     //--tao lich su nhap kho
@@ -218,6 +240,8 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                         //    ck_dh.tong_sl_dat = ck_dh.sl_muonnhap;
                         //}
 
+                        lsxIds.Add(tsx.md_lenhsanxuat_id);
+
                         msg_success += string.Format(@"
                                 <div style='color:blue'>
                                     Dòng ""{0}"" của ""{1}"" đã nhập kho thành công, số lượng nhập là: ""{2}""
@@ -233,10 +257,49 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 {
                     vt.sl_backup = vt.sl_backup2;
                 }
+
                 msg = msg_success + msg;
                 nk.trangthai = Helper.HIEULUC;
                 nk.ngaychuyen = ngayKCS;
+                nk.banggiaNC = pbgnc.md_banggia_id;
+                nk.phienbangiaNC = pbgnc.md_phienbangia_id;
                 db.SaveChanges();
+
+                var updated = false;
+                foreach(var lsx in db.md_lenhsanxuat.Where(s=>lsxIds.Contains(s.md_lenhsanxuat_id)).ToList())
+                {
+                    if(lsx.dhtron.GetValueOrDefault(false))
+                    {
+                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id).FirstOrDefault();
+                        var cdh = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id & s.sl_chiato > s.sl_dahoanthanh).Count() <= 0;
+                        if (cdh)
+                        {
+                            updated = true;
+                            lsx.md_trangthai_id = Helper.HOANTHANH;
+
+                            var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).FirstOrDefault();
+                            if (dhpx != null)
+                            {
+                                dhpx.md_trangthai_id = Helper.KETTHUC;
+                            }
+
+                            var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == dhpx.sctdathang).FirstOrDefault();
+                            if (dsdh != null)
+                            {
+                                dsdh.trangthai = Helper.KETTHUC;
+                                var dsdhDHs = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList();
+                                foreach (var dsdhDH in dsdhDHs)
+                                {
+                                    dsdhDH.sl_nhaphang = dsdhDH.sl_dathang.GetValueOrDefault(0) - dsdhDH.sl_giamhanngach.GetValueOrDefault(0);
+                                    dsdhDH.sl_conlai = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(updated)
+                    db.SaveChanges();
             }
         }
         catch (Exception ex)
@@ -246,21 +309,6 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
 
     EndEventHandler:;
         context.Response.Write(msg);
-    }
-    //--cap nhat so luong xuat
-    public string edit_nhap(EntityContext db, md_nhapkhonb_cdh dh, User_TK us)
-    {
-        string id_new = dh.md_nhapkhonb_id;
-        decimal sl_danhap = dh.sl_danhap.Value + dh.sl_nhap.Value;
-        if (dh.tong_sl_dat <= dh.sl_danhap + dh.sl_nhap)
-        {
-            sl_danhap = dh.tong_sl_dat.Value;
-            dh.check_kho = true;
-        }
-
-        dh.sl_danhap = sl_danhap;
-        dh.ngaycapnhat = DateTime.Now;
-        return id_new;
     }
 
     //nhap kho

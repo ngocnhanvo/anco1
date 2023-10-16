@@ -7,6 +7,18 @@
                     public partial class c_danhsachdathang
                     {
                         
+                        #region c_danhsachdathang_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
+                        #region c_danhsachdathang_sochungtu_wintaFN
+                        
+                        #endregion c_danhsachdathang_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region c_danhsachdathang_anco_check_wintaFN
                         
                         #endregion c_danhsachdathang_anco_check_wintaFN
@@ -23,12 +35,6 @@
                         
                         #endregion c_danhsachdathang_bophantao_wintaFN
                         public string bophantao { get; set; }
-                
-						
-                        #region c_danhsachdathang_c_danhsachdathang_id_wintaFN
-                        
-                        #endregion c_danhsachdathang_c_danhsachdathang_id_wintaFN
-                        public string c_danhsachdathang_id { get; set; }
                 
 						
                         #region c_danhsachdathang_c_donhang_id_wintaFN
@@ -59,6 +65,12 @@
                         
                         #endregion c_danhsachdathang_discount_wintaFN
                         public Decimal? discount { get; set; }
+                
+						
+                        #region c_danhsachdathang_donhangtron_wintaFN
+                        
+                        #endregion c_danhsachdathang_donhangtron_wintaFN
+                        public bool? donhangtron { get; set; }
                 
 						
                         #region c_danhsachdathang_grandtotal_wintaFN
@@ -197,12 +209,6 @@
                         
                         #endregion c_danhsachdathang_so_po_wintaFN
                         public string so_po { get; set; }
-                
-						
-                        #region c_danhsachdathang_sochungtu_wintaFN
-                        
-                        #endregion c_danhsachdathang_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region c_danhsachdathang_thoigiansx_wintaFN

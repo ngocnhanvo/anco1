@@ -7,6 +7,12 @@
                     public partial class md_hoadon_chitiet
                     {
                         
+                        #region md_hoadon_chitiet_md_hoadon_chitiet_id_wintaFN
+                        
+                        #endregion md_hoadon_chitiet_md_hoadon_chitiet_id_wintaFN
+                        public string md_hoadon_chitiet_id { get; set; }
+                
+						
                         #region md_hoadon_chitiet_bophancapnhat_wintaFN
                         
                         #endregion md_hoadon_chitiet_bophancapnhat_wintaFN
@@ -35,12 +41,6 @@
                         
                         #endregion md_hoadon_chitiet_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
-                
-						
-                        #region md_hoadon_chitiet_md_hoadon_chitiet_id_wintaFN
-                        
-                        #endregion md_hoadon_chitiet_md_hoadon_chitiet_id_wintaFN
-                        public string md_hoadon_chitiet_id { get; set; }
                 
 						
                         #region md_hoadon_chitiet_md_hoadon_id_wintaFN

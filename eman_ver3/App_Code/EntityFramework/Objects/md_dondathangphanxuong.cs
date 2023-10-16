@@ -7,6 +7,18 @@
                     public partial class md_dondathangphanxuong
                     {
                         
+                        #region md_dondathangphanxuong_md_dondathangphanxuong_id_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_md_dondathangphanxuong_id_wintaFN
+                        public string md_dondathangphanxuong_id { get; set; }
+                
+						
+                        #region md_dondathangphanxuong_sochungtu_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_sochungtu_wintaFN
+                        public string sochungtu { get; set; }
+                
+						
                         #region md_dondathangphanxuong_bophancapnhat_wintaFN
                         
                         #endregion md_dondathangphanxuong_bophancapnhat_wintaFN
@@ -59,12 +71,6 @@
                         
                         #endregion md_dondathangphanxuong_ketthucDHPX_wintaFN
                         public bool? ketthucDHPX { get; set; }
-                
-						
-                        #region md_dondathangphanxuong_md_dondathangphanxuong_id_wintaFN
-                        
-                        #endregion md_dondathangphanxuong_md_dondathangphanxuong_id_wintaFN
-                        public string md_dondathangphanxuong_id { get; set; }
                 
 						
                         #region md_dondathangphanxuong_md_phanxuong_id_wintaFN
@@ -143,12 +149,6 @@
                         
                         #endregion md_dondathangphanxuong_sctdathang_wintaFN
                         public string sctdathang { get; set; }
-                
-						
-                        #region md_dondathangphanxuong_sochungtu_wintaFN
-                        
-                        #endregion md_dondathangphanxuong_sochungtu_wintaFN
-                        public string sochungtu { get; set; }
                 
 						
                         #region md_dondathangphanxuong_vaitrocapnhat_wintaFN

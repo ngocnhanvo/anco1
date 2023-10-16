@@ -7,6 +7,12 @@
                     public partial class md_vattutrongtinhbom
                     {
                         
+                        #region md_vattutrongtinhbom_md_vattutrongtinhbom_id_wintaFN
+                        
+                        #endregion md_vattutrongtinhbom_md_vattutrongtinhbom_id_wintaFN
+                        public string md_vattutrongtinhbom_id { get; set; }
+                
+						
                         #region md_vattutrongtinhbom_bophancapnhat_wintaFN
                         
                         #endregion md_vattutrongtinhbom_bophancapnhat_wintaFN
@@ -29,12 +35,6 @@
                         
                         #endregion md_vattutrongtinhbom_md_sanpham_id_wintaFN
                         public string md_sanpham_id { get; set; }
-                
-						
-                        #region md_vattutrongtinhbom_md_vattutrongtinhbom_id_wintaFN
-                        
-                        #endregion md_vattutrongtinhbom_md_vattutrongtinhbom_id_wintaFN
-                        public string md_vattutrongtinhbom_id { get; set; }
                 
 						
                         #region md_vattutrongtinhbom_mota_wintaFN
