@@ -217,7 +217,7 @@ public class Public
         return msgEX;
     }
 
-    public string taoDongHangXuongTron(EntityContext db, User_TK userTK, string tsxDucId, string tsxTronId, string msgEx)
+    public string taoDongHangXuongTron(EntityContext db, User_TK userTK, string tsxDucId, string tsxTronId, int? stt, string msgEx)
     {
         //Xuong Tron
         var DuclsxTSXCDHServer = db.md_lenhsanxuat_tosx_vattu.Where(s => s.md_lenhsanxuat_tosx_id == tsxDucId & s.hoatdong == false).ToList();
@@ -264,6 +264,8 @@ public class Public
             TronlsxTSXCDH.sl_chiato2 = TronlsxTSXCDH.sl_chiato;
             TronlsxTSXCDH.sl_tinhvattu = TronlsxTSXCDH.sl_tinhvattu.GetValueOrDefault(0) + sltd;
             TronlsxTSXCDH.sl_dahoanthanh = 0;
+            if(stt == 0)
+                TronlsxTSXCDH.sl_dahoanthanh = TronlsxTSXCDH.sl_chiato;
 
             if (add)
             {
@@ -285,13 +287,13 @@ public class Public
         {
             msgEX += kiemtraBomVaGia(db, TSXHT, kiemtragia, msgEX);
             if(tsxHTT != null)
-                taoDongHangXuongTron(db, userTK, TSXHT.md_lenhsanxuat_tosx_id, tsxHTT.md_lenhsanxuat_tosx_id, msgEX);
+                taoDongHangXuongTron(db, userTK, TSXHT.md_lenhsanxuat_tosx_id, tsxHTT.md_lenhsanxuat_tosx_id, tsxHTT.stt, msgEX);
         }
         //hoan tat tho
         if (tsxHTT != null)
         {
             msgEX += kiemtraBomVaGia(db, tsxHTT, kiemtragia, msgEX);
-            taoDongHangXuongTron(db, userTK, tsxHTT.md_lenhsanxuat_tosx_id, tsxTron.md_lenhsanxuat_tosx_id, msgEX);
+            taoDongHangXuongTron(db, userTK, tsxHTT.md_lenhsanxuat_tosx_id, tsxTron.md_lenhsanxuat_tosx_id, tsxTron.stt, msgEX);
         }
         //duc
         //if (tsxDuc != null)

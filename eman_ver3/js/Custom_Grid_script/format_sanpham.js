@@ -15,20 +15,25 @@ function format_sanpham(elem) {
 
 function timkiem_sanpham(id_elem, type) {
     var load_sp = 0;
-    $('body').append('<div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục hàng hóa/vật tư">' +
-        '<table id="gridMD_00_DSHangHoaVG_cp"></table>' +
-        '<div id="pagergridMD_00_DSHangHoaVG_cp"></div>' +
-        '</div>');
+    $('body').append(`
+        <div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục hàng hóa/vật tư">
+            <table id="gridMD_00_DSHangHoaVG_cp"></table>
+            <div id="pagergridMD_00_DSHangHoaVG_cp"></div>
+        </div>`
+    );
 
-    var where_ex = 'and sp.hoatdong = 1', vattu = false, btp = false, tp = false;
+    let where_ex = 'and sp.hoatdong = 1', vattu = false, btp = false, tp = false;
     if ($('.module_spanselect').attr('id') == 'span_MD_00_DSDHTCJQGS') {
         vattu = true;
         tp = true;
         let datagrid0 = $('#gridMD_00_DSDHTCJQGS').getRowData(id_parent1);
         let sxton = datagrid0.sanxuatton == 'True';
         let dhtron = datagrid0.donhangtron == 'True';
-        if (sxton | dhtron) {
+        if (dhtron) {
             where_ex += ` and sp.ban_thanhpham = 1 and kmd.ma_kho = 'KHO100'`;
+        }
+        else if (sxton) {
+            where_ex += ` and sp.ban_thanhpham = 1 and kmd.ma_kho = 'KHO110'`;
         }
     }
 
