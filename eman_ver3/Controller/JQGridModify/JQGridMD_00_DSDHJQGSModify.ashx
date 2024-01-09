@@ -705,7 +705,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 </div>", dh.md_sanpham_id);
                             else
                             {
-                                var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db);
+                                var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db, dsdh1.ngaytao);
                                 if (string.IsNullOrEmpty(bom))
                                 {
                                     msgDetail += string.Format(@"
