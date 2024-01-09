@@ -172,7 +172,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                 }
                                 tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
 
-                                if (row > 5 & activeWS.Cells.Rows.Count > 2)
+                                if (row > 2 & activeWS.Cells.Rows.Count > 2)
                                 {
                                     tblRow += string.Format(@"<tr><td colspan='{0}' style='background-color:rgb(240, 248, 255);text-align:left;'><b>{1} dòng đã được ẩn...</b></td></tr>",
                                         activeWS.Cells.LastColIndex + 1,
