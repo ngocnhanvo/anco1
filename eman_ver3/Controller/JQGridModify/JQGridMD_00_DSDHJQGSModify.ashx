@@ -710,7 +710,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                                 {
                                     msgDetail += string.Format(@"
                                     <div style='color:red'>
-                                        Lỗi: HHVT ""{0}"" không  BOM.
+                                        Lỗi: HHVT ""{0}"" không  BOM sản xuất.
                                     </div>", dh.md_sanpham_id);
                                 }
                                 else

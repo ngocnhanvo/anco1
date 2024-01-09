@@ -909,7 +909,7 @@ public class Public
         string bomId = (from a in db.md_sanpham_bom
                         where a.md_sanpham_id == spId
                         & string.IsNullOrEmpty(a.md_phanxuong_id)
-                        & string.IsNullOrEmpty(a.md_to_id)
+                        & !string.IsNullOrEmpty(a.md_to_id)
                         & (a.bom_donggoi == null | a.bom_donggoi == false)
                         orderby a.ngay_hieuluc descending
                         select a.md_sanpham_bom_id).FirstOrDefault();
