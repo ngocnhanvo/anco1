@@ -1233,7 +1233,7 @@ public class Public
                         lht.md_sanpham_id = cdh.md_sanpham_id;
                         lht.macuoi = cdh.macuoi;
                         lht.md_donvitinhsanpham_id = cdh.md_donvitinhsanpham_id;
-                        var kspSLT = ksp.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.md_to_id == tsx.phongbanId).ToList().Sum(s => s.soluong.GetValueOrDefault(0));
+                        var kspSLT = ksp.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).ToList().Sum(s => s.soluong.GetValueOrDefault(0));
                         lht.sl_lsx = cdh.sl_chiato;
                         lht.sl_tonkho = kspSLT;
 
@@ -1301,7 +1301,7 @@ public class Public
             var lsx = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).FirstOrDefault();
             var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).FirstOrDefault();
             var kho = db.md_kho.Where(s => s.md_to_id == tsx.phongbanId & (s.hangton ?? false) == false & s.hoatdong == true).FirstOrDefault();
-            var khoTonTho = db.md_kho.Where(s => s.md_to_id == tsx.phongbanId & (s.hangton ?? false) == true & s.hoatdong == true).FirstOrDefault();
+            var khoTonTho = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTHO).FirstOrDefault();
             var khoTonTP = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTP).FirstOrDefault();
 
             if (tsx.stt == 9999)
