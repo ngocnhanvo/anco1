@@ -103,9 +103,8 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.so_po = item["so_po"] + "";
                         c_dsdh.total = Convert.ToDecimal(item["total"]);
                         c_dsdh.trangthai = item["trangthai"] + "";
-                        db.c_danhsachdathang.Add(c_dsdh);
-                        db.SaveChanges();
 
+                        decimal cbmAll = 0;
                         foreach (var b in lstItem)
                         {
                             string ma_sanpham = b["md_sanpham_id"] + "";
@@ -116,6 +115,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.vl = Convert.ToDecimal(b["vl"] == null ? "0" : b["vl"]);
                             c_dongdsdh.vd = Convert.ToDecimal(b["vd"] == null ? "0" : b["vd"]);
                             c_dongdsdh.v2 = Convert.ToDecimal(b["v2"] == null ? "0" : b["v2"]);
+                            cbmAll += c_dongdsdh.v2.GetValueOrDefault(0);
                             c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"] == null ? "0" : b["sl_huy"]);
                             c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
                             c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
@@ -123,7 +123,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.dvt_outer = b["dvt_outer"] + "";
                             c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
                             c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
-                            
+
                             c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
                             c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
                             c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
@@ -140,15 +140,18 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.h2 = Convert.ToDecimal(b["h2"]);
                             c_dongdsdh.h1 = Convert.ToDecimal(b["h1"]);
                             c_dongdsdh.gianhap = Convert.ToDecimal(b["gianhap"]);
-							c_dongdsdh.giachuan = Convert.ToDecimal(b["giachuan"] == null ? "0" : b["giachuan"]);
+                            c_dongdsdh.giachuan = Convert.ToDecimal(b["giachuan"] == null ? "0" : b["giachuan"]);
                             c_dongdsdh.ghichu_vachngan = b["ghichu_vachngan"] + "";
                             c_dongdsdh.c_dongdsdh_id = b["c_dongdsdh_id"] + "";
                             c_dongdsdh.c_dongdonhang_id = b["c_dongdonhang_id"] + "";
                             c_dongdsdh.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
                             c_dongdsdh.anco_check = true;
                             db.c_dongdsdh.Add(c_dongdsdh);
-                            db.SaveChanges();
                         }
+
+                        db.c_danhsachdathang.Add(c_dsdh);
+                        c_dsdh.discount = cbmAll;
+                        db.SaveChanges();
                     }
 
                     foreach (var b in lstItem2)

@@ -89,7 +89,7 @@ function timkiem_donhang(id_elem, type) {
                                 where 
                                     sodonhang = dsdh.sochungtu
                                     and isnull(nhomKH, '') = ''
-                                    and trangthai = 'SOANTHAO'
+                                    and trangthai = 'HIEULUC'
                             ) > 0
                             `;
 

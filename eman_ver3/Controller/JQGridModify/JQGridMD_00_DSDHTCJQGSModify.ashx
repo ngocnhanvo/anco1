@@ -201,103 +201,168 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 }
                 else
                 {
-                    VNN_Function.SetFormValue("id", dsdh.c_danhsachdathang_id);
-                    string msgTNL = "";
-                    if (msgTNL.ToLower().Contains("Hủy bắt lỗi khi năng lực không đủ."))
+                    int tgsx = -1;
+                    var c_dongdsdhs = new List<c_dongdsdh>();
+                    var msgDT = new List<string>();
+                    foreach (var dh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
                     {
-                        msg += "<div style='color:red'>Lỗi:không đủ năng lực để nhận Đơn hàng " + dsdh.sochungtu + " .</div>";
-                        msg += msgTNL;
-                    }
-                    else
-                    {
-                        var hieulucthanhcong = false;
-                        var dchtExist = db.c_doichieuhangton.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).Take(1).FirstOrDefault();
-                        if (dchtExist != null)
+                        var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == dh.md_sanpham_id).FirstOrDefault();
+                        if(sp == null)
+                            sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+
+                        if (sp == null)
+                            msgDT.Add(string.Format(@"
+                                <div style='color:red'>
+                                    Lỗi: HHVT ""{0}"" không tồn tại.
+                                </div>", dh.md_sanpham_id));
+                        else if (sp.trangthai == "NHD")
                         {
-                            dchtIds.Add(dchtExist.c_doichieuhangton_id);
-                            hieulucthanhcong = true;
+                            msgDT.Add(string.Format(@"
+                                <div style='color:red'>
+                                    Lỗi:Mã hàng hóa ""{0}"" đang có trạng thái ""Ngưng hoạt động"".
+                                </div>", sp.ma_sanpham));
                         }
                         else
                         {
-                            string id_dc = Helper.getNewId();
-                            dchtIds.Add(id_dc);
-                            var dc = new c_doichieuhangton
+                            var bom = pub.getBOMHieuLuc(sp.md_sanpham_id, db, dsdh.ngaytao);
+                            if (string.IsNullOrEmpty(bom))
                             {
-                                c_doichieuhangton_id = id_dc,
-                                c_danhsachdathang_id = dsdh.c_danhsachdathang_id,
-                                so_donhang = dsdh.sochungtu,
-                                ten_donhang = "KHDH-" + dsdh.sochungtu,
-                                donhang_thamchieu = dsdh.so_po,
-                                kehoach = " ",
-                                doichieuht = true,
-                                phieuhangton = " ",
-                                ngaykehoach = DateTime.Now,
-                                ngayhoanthanh = dsdh.ngayhoanthanh,
-                                hoatdong = true
-                            };
-                            dc = Helper.setDefaultValueWhenInsertOrUpdate(dc, userTK, false);
-                            db.c_doichieuhangton.Add(dc);
+                                msgDT.Add(string.Format(@"
+                                    <div style='color:red'>
+                                        Lỗi: HHVT ""{0}"" không  BOM sản xuất.
+                                    </div>", dh.md_sanpham_id));
+                            }
+                            else
+                            {
+                                dh.md_sanpham_id = sp.md_sanpham_id;
+                                dh.han_giaohang = dsdh.hangiaohang_po;
+                                dh.md_sanpham_bom_id = bom;
+                                dh.sl_giamhanngach = 0;
+                                dh.sl_hanngach = 0;
+                                dh.sl_dagiao = 0;
 
-                            //tao cac dong don hang
-                            foreach (var ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
-                            {
-                                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
-                                if (sp == null)
+                                dh.giadoichieu = (decimal?)Mbg.Data.SqlClient.SqlHelper.ExecuteScalar("select isnull([dbo].[GET_GiaBanSP](N'{0}', N'{1}'),0)", dh.md_sanpham_id, "ANCOTRADING");
+                                dh.chenhlechgia = dh.gianhap.GetValueOrDefault(0) - dh.giadoichieu.GetValueOrDefault(0);
+
+                                var nnl = db.md_chungloai.Where(s => s.md_chungloai_id == sp.md_nhomnangluc_id).FirstOrDefault();
+                                if (nnl != null)
                                 {
-                                    msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa có dữ liệu của hàng hóa.</div>";
+                                    if (tgsx < nnl.songaysx.GetValueOrDefault(-1))
+                                        tgsx = nnl.songaysx.GetValueOrDefault(0);
+                                }
+                                c_dongdsdhs.Add(dh);
+                            }
+                        }
+                    }
+
+                    if (msgDT.Count > 0)
+                        msg += string.Join("", msgDT.Distinct());
+                    else if (c_dongdsdhs.Count <= 0)
+                        msg += string.Format(@"
+                        <div style='color:red'>
+                            Lỗi: Đơn hàng ""{0}"" không có dòng hàng.
+                        </div>", dsdh.so_po);
+
+                    if (msg.Length <= 0)
+                    {
+                        VNN_Function.SetFormValue("id", dsdh.c_danhsachdathang_id);
+                        string msgTNL = "";
+                        if (msgTNL.ToLower().Contains("Hủy bắt lỗi khi năng lực không đủ."))
+                        {
+                            msg += "<div style='color:red'>Lỗi:không đủ năng lực để nhận Đơn hàng " + dsdh.sochungtu + " .</div>";
+                            msg += msgTNL;
+                        }
+                        else
+                        {
+                            var hieulucthanhcong = false;
+                            var dchtExist = db.c_doichieuhangton.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).Take(1).FirstOrDefault();
+                            if (dchtExist != null)
+                            {
+                                dchtIds.Add(dchtExist.c_doichieuhangton_id);
+                                hieulucthanhcong = true;
+                            }
+                            else
+                            {
+                                string id_dc = Helper.getNewId();
+                                dchtIds.Add(id_dc);
+                                var dc = new c_doichieuhangton
+                                {
+                                    c_doichieuhangton_id = id_dc,
+                                    c_danhsachdathang_id = dsdh.c_danhsachdathang_id,
+                                    so_donhang = dsdh.sochungtu,
+                                    ten_donhang = "KHDH-" + dsdh.sochungtu,
+                                    donhang_thamchieu = dsdh.so_po,
+                                    kehoach = " ",
+                                    doichieuht = true,
+                                    phieuhangton = " ",
+                                    ngaykehoach = DateTime.Now,
+                                    ngayhoanthanh = dsdh.ngayhoanthanh,
+                                    hoatdong = true
+                                };
+                                dc = Helper.setDefaultValueWhenInsertOrUpdate(dc, userTK, false);
+                                db.c_doichieuhangton.Add(dc);
+
+                                //tao cac dong don hang
+                                foreach (var ddsdh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
+                                {
+                                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
+                                    if (sp == null)
+                                    {
+                                        msg += "<div style='color:red'>Lỗi:Đơn hàng " + dsdh.sochungtu + " chưa có dữ liệu của hàng hóa.</div>";
+                                    }
+
+                                    var cddh = new c_doichieuhangton_cddh
+                                    {
+                                        c_doichieuhangton_cddh_id = Helper.getNewId(),
+                                        c_doichieuhangton_id = id_dc,
+                                        md_sanpham_id = ddsdh.md_sanpham_id,
+                                        md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
+                                        mota_tiengviet = sp.mota_tiengviet,
+                                        mota_tienganh = sp.mota_tienganh,
+                                        sl_dathang = ddsdh.sl_dathang,
+                                        sl_giamhanngach = ddsdh.sl_giamhanngach,
+                                        mota = dsdh.mota,
+                                        hoatdong = true
+                                    };
+                                    cddh = Helper.setDefaultValueWhenInsertOrUpdate(cddh, userTK, false);
+                                    db.c_doichieuhangton_cddh.Add(cddh);
+
+                                    var dkdh = new c_doichieuhangton_dkdh
+                                    {
+                                        c_doichieuhangton_dkdh_id = Helper.getNewId(),
+                                        c_doichieuhangton_id = id_dc,
+                                        md_sanpham_id = ddsdh.md_sanpham_id,
+                                        md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
+                                        sl_dathang = ddsdh.sl_dathang,
+                                        sl_giamhanngach = ddsdh.sl_giamhanngach,
+                                        sl_conlai = 0,
+                                        sl_dat = ddsdh.sl_dathang - ddsdh.sl_giamhanngach.GetValueOrDefault(0),
+                                        sl_dathang_cp = ddsdh.sl_dathang,
+                                        mota = dsdh.mota,
+                                        macuoi = sp.ma_sanpham,
+                                        macuoi_id = sp.md_sanpham_id,
+                                        issanpham = true,
+                                        hoatdong = true
+                                    };
+                                    dkdh = Helper.setDefaultValueWhenInsertOrUpdate(dkdh, userTK, false);
+                                    db.c_doichieuhangton_dkdh.Add(dkdh);
+                                }
+                                db.SaveChanges();
+                                if (dsdh.anco_check == true)
+                                {
+                                    dsdhIds.Add(dsdh.c_danhsachdathang_id);
                                 }
 
-                                var cddh = new c_doichieuhangton_cddh
-                                {
-                                    c_doichieuhangton_cddh_id = Helper.getNewId(),
-                                    c_doichieuhangton_id = id_dc,
-                                    md_sanpham_id = ddsdh.md_sanpham_id,
-                                    md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                                    mota_tiengviet = sp.mota_tiengviet,
-                                    mota_tienganh = sp.mota_tienganh,
-                                    sl_dathang = ddsdh.sl_dathang,
-                                    sl_giamhanngach = ddsdh.sl_giamhanngach,
-                                    mota = dsdh.mota,
-                                    hoatdong = true
-                                };
-                                cddh = Helper.setDefaultValueWhenInsertOrUpdate(cddh, userTK, false);
-                                db.c_doichieuhangton_cddh.Add(cddh);
-
-                                var dkdh = new c_doichieuhangton_dkdh
-                                {
-                                    c_doichieuhangton_dkdh_id = Helper.getNewId(),
-                                    c_doichieuhangton_id = id_dc,
-                                    md_sanpham_id = ddsdh.md_sanpham_id,
-                                    md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                                    sl_dathang = ddsdh.sl_dathang,
-                                    sl_giamhanngach = ddsdh.sl_giamhanngach,
-                                    sl_conlai = 0,
-                                    sl_dat = ddsdh.sl_dathang - ddsdh.sl_giamhanngach.GetValueOrDefault(0),
-                                    sl_dathang_cp = ddsdh.sl_dathang,
-                                    mota = dsdh.mota,
-                                    macuoi = sp.ma_sanpham,
-                                    macuoi_id = sp.md_sanpham_id,
-                                    issanpham = true,
-                                    hoatdong = true
-                                };
-                                dkdh = Helper.setDefaultValueWhenInsertOrUpdate(dkdh, userTK, false);
-                                db.c_doichieuhangton_dkdh.Add(dkdh);
+                                hieulucthanhcong = true;
                             }
-                            db.SaveChanges();
-                            if (dsdh.anco_check == true)
+
+                            if (hieulucthanhcong)
                             {
-                                dsdhIds.Add(dsdh.c_danhsachdathang_id);
+                                dsdh.trangthai = Helper.HIEULUC;
+                                dsdh.md_trangthai_id = "CHUAXULY";
+                                dsdh.dg_nangluc = true;
+                                msg_success += "<div style='color:blue'>Đơn hàng " + dsdh.sochungtu + " được hiệu lực thành công.</div>";
                             }
-
-                            hieulucthanhcong = true;
-                        }
-
-                        if(hieulucthanhcong)
-                        {
-                            dsdh.trangthai = Helper.HIEULUC;
-                            dsdh.md_trangthai_id = "CHUAXULY";
-                            dsdh.dg_nangluc = true;
-                            msg_success += "<div style='color:blue'>Đơn hàng " + dsdh.sochungtu + " được hiệu lực thành công.</div>";
                         }
                     }
                 }

@@ -198,16 +198,22 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_TDDHPX(HttpContext context)
     {
-        string msg = "",id_new = Helper.getNewId();
+        string msg = "", msgSuccess = "", id_new = Helper.getNewId();
         string id = context.Request.Form["id"];
+        var laTrienKhaiSX = context.Request.Form["laTrienKhaiSX"] == "1";
+
         var kh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == id).FirstOrDefault();
-        if(kh == null)
+        if (kh == null)
         {
             msg = string.Format("<div class='error' style='color:red'>Kế hoạch không tồn tại.</div>");
         }
-        else if(kh.trangthai != Helper.SOANTHAO)
+        else if (!string.IsNullOrWhiteSpace(kh.nhomKH))
         {
-            msg = string.Format("<div class='error' style='color:red'>Kế hoạch không ở trạng thái Soạn Thảo.</div>");
+            msg = string.Format("<div class='error' style='color:red'>Kế hoạch đã được tổng hợp.</div>");
+        }
+        else if (kh.trangthai != Helper.SOANTHAO & kh.trangthai != Helper.HIEULUC)
+        {
+            msg = string.Format("<div class='error' style='color:red'>Kế hoạch đã triển khai sản xuất.</div>");
         }
         else
         {
@@ -217,33 +223,35 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
             {
                 var dhpx = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == khpx.c_kehoachdathang_dhcpx_id).FirstOrDefault();
 
-                if(khpx.ngayBDSX == null)
+                if (khpx.ngayBDSX == null)
                 {
-                    msg += string.Format(@"<div class='error' style='color:red'>Đơn hàng {0}, Quy trình {1} chưa có ngày bắt đầu sản xuất</div>",
+                    msg += string.Format(@"<div class='error' style='color:red'>Đơn hàng <b>{0}</b>, Quy trình <b>{1}</b> chưa có ngày bắt đầu sản xuất</div>",
                         dhpx.donhang_thamchieu,
                         db.md_phanxuong.Where(s => s.md_phanxuong_id == dhpx.md_phanxuong_id).Select(s => s.ten_phanxuong).FirstOrDefault());
                 }
                 else
                 {
-                    dhpx.ngay_hieuluc = khpx.ngayBDSX;
-                    var lsx = db.md_lenhsanxuat.Where(s => s.md_dondathangphanxuong_id == dhpx.md_dondathangphanxuong_id).FirstOrDefault();
-                    if(lsx != null)
-                        lsx.md_trangthai_id = Helper.KHDXL;
+                    if (laTrienKhaiSX)
+                    {
+                        dhpx.ngay_hieuluc = khpx.ngayBDSX;
+                        var lsx = db.md_lenhsanxuat.Where(s => s.md_dondathangphanxuong_id == dhpx.md_dondathangphanxuong_id).FirstOrDefault();
+                        if (lsx != null)
+                            lsx.md_trangthai_id = Helper.KHDXL;
+                        kh.trangthai = "DAHET";
+                        msgSuccess = "Triển khai sản xuất thành công";
+                    }
+                    else
+                    {
+                        kh.trangthai = Helper.HIEULUC;
+                        msgSuccess = "Hiệu lực thành công";
+                    }
                 }
             }
 
             if (msg.Length <= 0)
             {
-                kh.trangthai = "DAHET";
-
-                var kht = db.c_kehoachdathangtong.Where(s => s.ten_kh == kh.nhomKH).FirstOrDefault();
-                if (kht != null)
-                {
-                    kht.trangthai = Helper.DATSX;
-                }
-
                 db.SaveChanges();
-                msg = string.Format("<div id='trangthaiKHT' tt='{0}' style='color:blue'>Triển khai sản xuất thành công.</div>", kh.trangthai);
+                msg = string.Format("<div id='trangthaiKHT' tt='{0}' style='color:blue'>{1}</div>", kh.trangthai, msgSuccess);
             }
         }
         context.Response.Write(msg);
@@ -270,13 +278,28 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
+            }
+
+            var dmh = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).FirstOrDefault();
+            var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).FirstOrDefault();
+            if (khdh == null)
+            {
+                msg = "false#Lỗi:Không tìm thấy kế hoạch ";
+                goto EndEventHandler;
+            }
+
+            if (khdh.trangthai != Helper.SOANTHAO & khdh.trangthai != Helper.HIEULUC)
+            {
+                msg = "false#Lỗi:Kế hoạch đã triển khai sản xuất";
+                goto EndEventHandler;
             }
 
             if (msg.Length <= 0)
             {
                 object_.ngayBDSX = VNN_Config.setDateTime(context.Request.Form["ngayBDSX"]);
                 object_.ngayHTcham = VNN_Config.setDateTime(context.Request.Form["ngayHTcham"]);
-                var dmh = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == object_.c_kehoachdathang_dhcpx_id).FirstOrDefault();
+
                 if (dmh != null)
                 {
                     if (dmh.md_trangthai_id == Helper.SOANTHAO)
@@ -322,6 +345,8 @@ public class JQGridMD_01_DHCPXJQGSModify : IHttpHandler, System.Web.SessionState
         {
             msg = "false#" + ex.Message;
         }
+
+    EndEventHandler:;
         context.Response.Write(msg);
     }
 
