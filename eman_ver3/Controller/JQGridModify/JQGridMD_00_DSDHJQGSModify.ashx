@@ -840,17 +840,26 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         EntityContext db = new EntityContext();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string id = context.Request.Form["id"];
         try
         {
-            string id = context.Request.Form["id"];
             var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id.Equals(id)).Take(1).FirstOrDefault();
             if (object_ == null)
             {
                 msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
 
+            var arrTT = new string[] { Helper.HIEULUC, Helper.KETTHUC, Helper.HUYBO };
+            if (arrTT.Contains(object_.trangthai))
+            {
+                msg = "false#Lỗi:Đơn hàng không thể chỉnh sửa khi đã Hiệu Lưc, Hủy bỏ hoặc Kết thúc ";
+                goto EndEventHandler;
+            }
+            
             if (msg.Length <= 0)
             {
+                object_.slcont = context.Request.Form["slcont"];
                 object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";
@@ -860,6 +869,8 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         {
             msg = "false#" + ex.Message;
         }
+
+    EndEventHandler:;
         context.Response.Write(msg);
     }
 

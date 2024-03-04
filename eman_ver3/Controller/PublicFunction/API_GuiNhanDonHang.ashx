@@ -150,7 +150,8 @@ public class API_GuiNhanDonHang : IHttpHandler
                         }
 
                         db.c_danhsachdathang.Add(c_dsdh);
-                        c_dsdh.discount = cbmAll;
+                        //c_dsdh.discount = cbmAll;
+                        c_dsdh.cbm = cbmAll;
                         db.SaveChanges();
                     }
 

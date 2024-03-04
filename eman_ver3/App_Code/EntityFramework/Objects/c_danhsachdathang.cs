@@ -43,6 +43,12 @@
                         public string c_donhang_id { get; set; }
                 
 						
+                        #region c_danhsachdathang_cbm_wintaFN
+                        
+                        #endregion c_danhsachdathang_cbm_wintaFN
+                        public Decimal? cbm { get; set; }
+                
+						
                         #region c_danhsachdathang_check_nangluc_wintaFN
                         
                         #endregion c_danhsachdathang_check_nangluc_wintaFN
@@ -199,10 +205,22 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_danhsachdathang_reportKCS_wintaFN
+                        
+                        #endregion c_danhsachdathang_reportKCS_wintaFN
+                        public string reportKCS { get; set; }
+                
+						
                         #region c_danhsachdathang_sanxuatton_wintaFN
                         
                         #endregion c_danhsachdathang_sanxuatton_wintaFN
                         public bool? sanxuatton { get; set; }
+                
+						
+                        #region c_danhsachdathang_slcont_wintaFN
+                        
+                        #endregion c_danhsachdathang_slcont_wintaFN
+                        public string slcont { get; set; }
                 
 						
                         #region c_danhsachdathang_so_po_wintaFN

@@ -596,3 +596,47 @@ input.format_vnn.formatfile {
     font-size: 30px !important;
     font-weight: bold;
 }
+
+td[role="gridcell"][title="err"],
+td[role="gridcell"][title="-999,999,999"],
+td[role="gridcell"][title="01-01-1000 00:00"] {
+    font-size: 0px !important;
+}
+
+    td[role="gridcell"][title="err"] > input,
+    td[role="gridcell"][title="-999,999,999"] > input,
+    td[role="gridcell"][title="01-01-1000 00:00"] > input {
+        display: none;
+    }
+
+    td[role="gridcell"][title="err"]::after,
+    td[role="gridcell"][title="-999,999,999"]::after,
+    td[role="gridcell"][title="01-01-1000 00:00"]::after {
+        content: 'Not Data (404)';
+        color: red;
+        font-size: 0.65rem !important;
+        display: block;
+        overflow: hidden;
+        text-align: center;
+        user-select: none;
+    }
+
+.btnVNN {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btnChonTapTin {
+    border: 1px solid #000000;
+    border-radius: 6px;
+    background-image: linear-gradient(360deg, #000000, #88aecf);
+    padding: 4px 7px 5px 7px;
+    color: #FFF;
+    cursor: pointer !important;
+    letter-spacing: 0.5px;
+}
+
+.btnChonTapTin:hover {
+    background-image: linear-gradient(120deg, #000000, #88aecf) !important;
+}

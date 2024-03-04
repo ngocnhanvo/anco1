@@ -37,6 +37,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_taptin_lienket_wintaFN
+                        
+                        #endregion md_taptin_lienket_wintaFN
+                        public string lienket { get; set; }
+                
+						
                         #region md_taptin_mimetype_wintaFN
                         
                         #endregion md_taptin_mimetype_wintaFN

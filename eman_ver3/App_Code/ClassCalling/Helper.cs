@@ -10,10 +10,12 @@ using System.Collections.Generic;
 /// </summary>
 public static class Helper
 {
+    public static string[] mimeTypes = { ".jpg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".pdf" }; 
     public static string VNN_notpost = "VNN_notpost";
     public static string SOANTHAO = "SOANTHAO";
     public static string DANHAN = "DANHAN";
     public static string HIEULUC = "HIEULUC";
+    public static string HUYBO = "HUYBO";
     public static string KETTHUC = "KETTHUC";
     public static string CHUAHOANTHANH = "CHUAHOANTHANH";
     public static string HOANTHANH = "HOANTHANH";

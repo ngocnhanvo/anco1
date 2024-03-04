@@ -28,7 +28,18 @@ namespace Mbg.Web.JqGrid
                 {
                     try
                     {
-                        dataSource.Rows[0][i] = "<a style='color:red'>Không có dữ liệu (404)</a>";
+                        var type = dataSource.Columns[i].DataType;
+                        var typeNumbers = new List<Type>() {
+                            Type.GetType("System.Int"),
+                            Type.GetType("System.Decimal"),
+                            Type.GetType("System.Double")
+                        };
+                        if (type == Type.GetType("System.String"))
+                            dataSource.Rows[0][i] = "err";
+                        else if (typeNumbers.Contains(type))
+                            dataSource.Rows[0][i] = -999999999;
+                        else if (type == Type.GetType("System.DateTime"))
+                            dataSource.Rows[0][i] = new DateTime(1000, 01, 01, 0, 0, 0);
                     }
                     catch { }
                 }
@@ -70,7 +81,18 @@ namespace Mbg.Web.JqGrid
                 {
                     try
                     {
-                        dataSource.Rows[0][i] = "<a style='color:red'>Không có dữ liệu (404)</a>";
+                        var type = dataSource.Columns[i].DataType;
+                        var typeNumbers = new List<Type>() {
+                            Type.GetType("System.Int"),
+                            Type.GetType("System.Decimal"),
+                            Type.GetType("System.Double")
+                        };
+                        if (type == Type.GetType("System.String"))
+                            dataSource.Rows[0][i] = "err";
+                        else if (typeNumbers.Contains(type))
+                            dataSource.Rows[0][i] = -999999999;
+                        else if (type == Type.GetType("System.DateTime"))
+                            dataSource.Rows[0][i] = new DateTime(1000, 01, 01, 0, 0, 0);
                     }
                     catch { }
                 }

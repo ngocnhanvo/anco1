@@ -1756,6 +1756,10 @@ modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.lienket)
+                            .HasColumnName("lienket")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
                             .Property(p => p.mimetype)
                             .HasColumnName("mimetype")
                             .HasColumnType("nvarchar");

@@ -1062,6 +1062,10 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("c_donhang_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.cbm)
+                            .HasColumnName("cbm")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.check_nangluc)
                             .HasColumnName("check_nangluc")
                             .HasColumnType("bit");
@@ -1166,9 +1170,17 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.reportKCS)
+                            .HasColumnName("reportKCS")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.sanxuatton)
                             .HasColumnName("sanxuatton")
                             .HasColumnType("bit");
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.slcont)
+                            .HasColumnName("slcont")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.so_po)
                             .HasColumnName("so_po")
