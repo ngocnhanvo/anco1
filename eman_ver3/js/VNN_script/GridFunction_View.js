@@ -330,3 +330,32 @@ var set_height_tabs = function (elem, grid) {
         }
     }
 };
+
+var excelToJSON = {
+    json: [],
+    parseExcel: function (file, callback) {
+        excelToJSON.json = [];
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var data = e.target.result;
+            var workbook = XLSX.read(data, {
+                type: 'binary'
+            });
+            let jsonLc = [];
+            workbook.SheetNames.forEach(function (sheetName) {
+                // Here is your object
+                let XL_row_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+                jsonLc.push(XL_row_object);
+            });
+            excelToJSON.json = jsonLc;
+            callback();
+        };
+
+        reader.onerror = function (ex) {
+            console.log(ex);
+        };
+
+        reader.readAsBinaryString(file);
+    }
+};

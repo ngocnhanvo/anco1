@@ -356,6 +356,41 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
     public void edit(HttpContext context)
     {
         string msg = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                string id = context.Request.Form["id"];
+                var object_ = db.md_banggia.Where(p => p.md_banggia_id == id).Take(1).FirstOrDefault();
+                if (object_ == null)
+                {
+                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                }
+                else
+                {
+                    object_.mota = context.Request.Form["mota"];
+                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.ToString();
+            }
+
+            if (msg.Length <= 0)
+            {
+                msg = string.Format(@"true#Cập nhật thành công");
+                transaction.Commit();
+                VNN_Function.loaddulieu_Auto(db, ma_module);
+            }
+            else
+            {
+                msg = string.Format(@"false#{0}", msg);
+                transaction.Rollback();
+            }
+        }
         context.Response.Write(msg);
     }
 

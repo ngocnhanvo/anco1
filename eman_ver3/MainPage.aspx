@@ -49,6 +49,8 @@
     <link href="js/ComboGrid/css/jquery.ui.combogrid.css" rel="stylesheet" />
 
     <script src="js/Public_script/moment.js"></script> 
+    <script src="extension/mess/tableToExcel.js"></script>
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <!--/ layout -->
     
     <!--Script Module-->

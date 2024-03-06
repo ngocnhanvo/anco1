@@ -13,6 +13,18 @@ public class Public
 
     }
 
+    public class BaoLoiKhiHieuLuc
+    {
+        public string msp { get; set; }
+        public string loi { get; set; }
+    }
+
+    public class BaoLoiKhiTaoDHSX
+    {
+        public string msg { get; set; }
+        public List<BaoLoiKhiHieuLuc> msgBLHLs { get; set; }
+    }
+
     private class lsxTSX
     {
         public md_lenhsanxuat lsx { get; set; }
@@ -93,8 +105,10 @@ public class Public
                    .FirstOrDefault();
     }
 
-    private string kiemtraBomVaGia(EntityContext db, md_lenhsanxuat_tosx item1, bool kiemtragia, string msgEX)
+    private BaoLoiKhiTaoDHSX kiemtraBomVaGia(EntityContext db, md_lenhsanxuat_tosx item1, bool kiemtragia, string msgEX, List<BaoLoiKhiHieuLuc> msgBLHLs = null)
     {
+        if (msgBLHLs == null)
+            msgBLHLs = new List<BaoLoiKhiHieuLuc>();
         var bgncs = layBGGiaNhanCongs(db);
         var pbgnc = layPBGGiaNhanCong(db, bgncs);
         string pbgId = pbgnc == null ? "" : pbgnc.md_phienbangia_id;
@@ -112,6 +126,9 @@ public class Public
 
         foreach (var item2 in lsxTSXCDHLocal)
         {
+            var sp = db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).FirstOrDefault();
+            var mspCha = string.IsNullOrWhiteSpace(item2.macuoi) ? sp.ma_sanpham : item2.macuoi;
+
             var giasp = db.md_giasanpham.Where(s =>
                 s.md_sanpham_id == item2.md_sanpham_id
                 & s.md_donvitinhsanpham_id == item2.md_donvitinhsanpham_id
@@ -122,11 +139,12 @@ public class Public
             {
                 if (kiemtragia == true)
                 {
-                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).FirstOrDefault();
-                    string err = string.Format(@"<br class='error'>HHVT ""{0}"" chưa có giá cho ""{1}"""
-                        , sp.ma_sanpham
-                        , db.ad_department.Where(s => s.md_phongban_id == item1.phongbanId).Select(s => s.ten_phongban).FirstOrDefault());
+                    string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có giá nhân công";
                     msgEX += err;
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == mspCha))
+                    {
+                        item.loi += $"{sp.ma_sanpham} chưa có giá nhân công";
+                    }
                 }
             }
             else
@@ -202,19 +220,21 @@ public class Public
             }
             else
             {
-                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == item2.md_sanpham_id).FirstOrDefault();
-
-                string err = string.Format(@"<br class='error'>HHVT ""{0}"" chưa có BOM cho ""{1}""",
-                    sp.ma_sanpham,
-                    db.ad_department.Where(s => s.md_phongban_id == item1.phongbanId).Select(s => s.ten_phongban).FirstOrDefault());
+                string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có BOM";
+                    
                 if (!msgEX.Contains(err))
                 {
                     msgEX += err;
                 }
+
+                foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == mspCha))
+                {
+                    item.loi += $"{sp.ma_sanpham} chưa có BOM";
+                }
             }
         }
 
-        return msgEX;
+        return new BaoLoiKhiTaoDHSX() { msgBLHLs = msgBLHLs, msg = msgEX };
     }
 
     public string taoDongHangXuongTron(EntityContext db, User_TK userTK, string tsxDucId, string tsxTronId, int? stt, string msgEx)
@@ -276,8 +296,11 @@ public class Public
         return msgEx;
     }
 
-    public string kiemTraBomVaGiaTatCaCongDoan(EntityContext db, User_TK userTK, bool kiemtragia, string msgEX, List<md_lenhsanxuat_tosx> tsxs)
+    public BaoLoiKhiTaoDHSX kiemTraBomVaGiaTatCaCongDoan(EntityContext db, User_TK userTK, bool kiemtragia, string msgEX, List<md_lenhsanxuat_tosx> tsxs, List<BaoLoiKhiHieuLuc> msgBLHLs = null)
     {
+        if (msgBLHLs == null)
+            msgBLHLs = new List<BaoLoiKhiHieuLuc>();
+
         var TSXHT = tsxs.Where(s => s.stt == 9999).FirstOrDefault();
         var tsxHTT = tsxs.Where(s => s.stt == 9998).FirstOrDefault();
         //var tsxDuc = tsxs.Where(s => s.stt == 1).FirstOrDefault();
@@ -285,14 +308,18 @@ public class Public
         //hoan tat
         if (TSXHT != null)
         {
-            msgEX += kiemtraBomVaGia(db, TSXHT, kiemtragia, msgEX);
+            var item = kiemtraBomVaGia(db, TSXHT, kiemtragia, msgEX, msgBLHLs);
+            msgBLHLs = item.msgBLHLs;
+            msgEX += item.msg;
             if(tsxHTT != null)
                 taoDongHangXuongTron(db, userTK, TSXHT.md_lenhsanxuat_tosx_id, tsxHTT.md_lenhsanxuat_tosx_id, tsxHTT.stt, msgEX);
         }
         //hoan tat tho
         if (tsxHTT != null)
         {
-            msgEX += kiemtraBomVaGia(db, tsxHTT, kiemtragia, msgEX);
+            var item = kiemtraBomVaGia(db, tsxHTT, kiemtragia, msgEX, msgBLHLs);
+            msgBLHLs = item.msgBLHLs;
+            msgEX += item.msg;
             taoDongHangXuongTron(db, userTK, tsxHTT.md_lenhsanxuat_tosx_id, tsxTron.md_lenhsanxuat_tosx_id, tsxTron.stt, msgEX);
         }
         //duc
@@ -304,13 +331,18 @@ public class Public
         //tron
         if (tsxTron != null)
         {
-            msgEX += kiemtraBomVaGia(db, tsxTron, kiemtragia, msgEX);
+            var item = kiemtraBomVaGia(db, tsxTron, kiemtragia, msgEX, msgBLHLs);
+            msgBLHLs = item.msgBLHLs;
+            msgEX += item.msg;
         }
-        return msgEX;
+        return new BaoLoiKhiTaoDHSX() { msg = msgEX, msgBLHLs = msgBLHLs };
     }
 
-    public string TaoLenhSanXuat(EntityContext db, md_dondathangphanxuong object_, User_TK userTK, bool kiemtragia)
+    public List<Public.BaoLoiKhiHieuLuc> TaoLenhSanXuat(EntityContext db, md_dondathangphanxuong object_, User_TK userTK, bool kiemtragia, List<Public.BaoLoiKhiHieuLuc> msgBLHLs = null)
     {
+        if (msgBLHLs == null)
+            msgBLHLs = new List<BaoLoiKhiHieuLuc>();
+
         var lsxId = Helper.getNewId();
         var pbids = new List<string>();
         string sochungtu = VNN_VariablePublic.sochungtu(db, "LSX", 1);
@@ -415,18 +447,27 @@ public class Public
 
                         if (spCai == null)
                         {
-                            msgEX = string.Format(@"<br class='error'>Mã bộ {0} thiếu mã cái {1}, hãy kiểm tra dữ liệu gốc hàng hóa.", ma_bo, ma_cai);
+                            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                            {
+                                item.loi += $"Thiếu mã cái {ma_cai}, hãy kiểm tra dữ liệu gốc hàng hóa";
+                            }
                         }
                         else
                         {
                             var khomd = db.md_kho.Where(s => s.md_kho_id == spCai.khomacdinh).FirstOrDefault();
                             if (khomd == null)
                             {
-                                msgEX = string.Format(@"<br class='error'>Mã cái {0} phải có kho mặc định.", ma_cai);
+                                foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                                {
+                                    item.loi += $"Mã cái {ma_cai} phải có kho mặc định là kho sản xuất";
+                                }
                             }
                             else if (!pbids.Contains(khomd.md_to_id))
                             {
-                                msgEX = string.Format(@"<br class='error'>Mã cái {0} phải có kho mặc định là kho sản xuất.", ma_cai);
+                                foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                                {
+                                    item.loi += $"Mã cái {ma_cai} phải có kho mặc định là kho sản xuất";
+                                }
                             }
                             else if (khomd.md_to_id == px_to.phongbanId)
                             {
@@ -507,13 +548,18 @@ public class Public
             }
         }
 
-        msgEX += kiemTraBomVaGiaTatCaCongDoan(db, userTK, kiemtragia, msgEX, lsxTSXLocal);
-
-        return msgEX;
+        msgBLHLs = kiemTraBomVaGiaTatCaCongDoan(db, userTK, kiemtragia, msgEX, lsxTSXLocal, msgBLHLs).msgBLHLs;
+        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+        {
+            item.loi += msgEX;
+        }
+        return msgBLHLs;
     }
 
-    public string LapKeHoachDatHang(EntityContext db, User_TK userTK, List<string> vnn)
+    public List<BaoLoiKhiHieuLuc> LapKeHoachDatHang(EntityContext db, User_TK userTK, List<string> vnn, List<BaoLoiKhiHieuLuc> msgBLHLs = null)
     {
+        if (msgBLHLs == null)
+            msgBLHLs = new List<BaoLoiKhiHieuLuc>();
         string msg = "", msg_success = "";
         List<string> khdhids = new List<string>();
         try
@@ -522,11 +568,17 @@ public class Public
             {
                 if (dcht.kehoach != null & dcht.kehoach != "" & dcht.kehoach != " ")
                 {
-                    msg += "<div style='color:red'>Lỗi: dòng " + dcht.ten_donhang + " đã được lập kế hoạch.</div>";
+                    //foreach (var item in msgBLHLs.Where(s=>string.IsNullOrWhiteSpace(s.loi)))
+                    //{
+                    //    item.loi += $"Dòng {dcht.ten_donhang} đã được lập kế hoạch.</div>";
+                    //}
                 }
                 else if (dcht.doichieuht != true)
                 {
-                    msg += "<div style='color:red'>Lỗi: dòng " + dcht.ten_donhang + " Chưa được đối chiếu hàng tồn.</div>";
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+                    {
+                        item.loi += $"Dòng {dcht.ten_donhang} chưa được đối chiếu hàng tồn.</div>";
+                    }
                 }
                 else if (db.c_kehoachdathang.Where(s => s.c_doichieuhangton_id == dcht.c_doichieuhangton_id).Take(1).Count() <= 0)
                 {
@@ -602,11 +654,14 @@ public class Public
 
             db.SaveChanges();
 
-            xuLyKeHoachDatHang(db, userTK, string.Join(",", khdhids), "MD_00_KHDHJQGS", "7");
+            msg += xuLyKeHoachDatHang(db, userTK, string.Join(",", khdhids), "MD_00_KHDHJQGS", "7", msgBLHLs);
         }
         catch (Exception ex)
         {
-            msg += string.Format(@"<div style='color:red'>Lỗi: {0}.</div>", ex.Message);
+            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+            {
+                item.loi += ex.Message;
+            }
         }
 
         if (msg.Length <= 0)
@@ -614,10 +669,10 @@ public class Public
             msg = msg_success;
         }
 
-        return msg;
+        return msgBLHLs;
     }
 
-    public string xuLyKeHoachDatHang(EntityContext db, User_TK userTK, string id, string ma_module, string thoigianht)
+    public List<BaoLoiKhiHieuLuc> xuLyKeHoachDatHang(EntityContext db, User_TK userTK, string id, string ma_module, string thoigianht, List<BaoLoiKhiHieuLuc> msgBLHLs)
     {
         string msg = "", msg_success = "";
         string[] vnn = id.Split(',');
@@ -627,7 +682,7 @@ public class Public
             var candat = from a in db.c_kehoachdathang_cdhcd
                          join b in db.c_kehoachdathang on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
                          join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
-                         join e in db.c_doichieuhangton on b.c_doichieuhangton_id equals e.c_doichieuhangton_id
+                         join e in db.c_danhsachdathang on b.donhang_thamchieu equals e.so_po
                          select new
                          {
                              a.md_phanxuong_id,
@@ -642,19 +697,25 @@ public class Public
                              b.sodonhang,
                              b.mota,
                              c.md_donvitinhsanpham_id,
-                             e.ngayhoanthanh
+                             ngayhoanthanh = e.hangiaohang_po
                          };
 
             foreach (var khdh in db.c_kehoachdathang.Where(s => vnn.Contains(s.c_kehoachdathang_id) & s.hoatdong == true).ToList())
             {
                 if (khdh.trangthai != Helper.SOANTHAO)
                 {
-                    msg += string.Format(@"<div style='color:red'>Dòng {0} không phải trạng thái 'Soạn Thảo'.</div>", khdh.ten_kh);
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+                    {
+                        item.loi = $"{khdh.ten_kh} không phải trạng thái 'Soạn Thảo'";
+                    }
                 }
                 else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id
                      & db.c_nhucauvattu_dhpx.Where(t => t.md_dondathangphanxuong_id == s.c_kehoachdathang_dhcpx_id).Count() > 0).Count() > 0)
                 {
-                    msg += string.Format(@"<div style='color:red'>Dòng {0} đã tạo nhu cầu mua vật tư.</div>", khdh.ten_kh);
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+                    {
+                        item.loi = $"{khdh.ten_kh} đã tạo nhu cầu mua vật tư";
+                    }
                 }
 
                 foreach (var dhcpx1 in db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id).ToList())
@@ -674,28 +735,31 @@ public class Public
                     var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dhcpx1.md_sanpham_id).FirstOrDefault();
                     if (dhcpx1.sl_phanphoi == dhcpx1.sl_candat & pxId.Length < 1)
                     {
-                        msg += string.Format(@"
-                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"".</div>",
-                        sp == null ? "(unknown)" : sp.ma_sanpham);
+                        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                        {
+                            item.loi = $@"không thể bỏ trống ""Phân xưởng sản xuất""";
+                        }
                     }
                     else if (dhcpx1.sl_phanphoi == 0 & dtkdId.Length < 1)
                     {
-                        msg += string.Format(@"
-                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Đối tác kinh doanh"".</div>",
-                        sp == null ? "(unknown)" : sp.ma_sanpham);
+                        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                        {
+                            item.loi = $@"không thể bỏ trống ""Nhà cung cấp""";
+                        }
                     }
                     else if (dhcpx1.sl_phanphoi != dhcpx1.sl_candat & (pxId.Length < 1 | dtkdId.Length < 1))
                     {
-                        msg += string.Format(@"
-                                <div style='color:red'>Dòng {0} không thể bỏ trống ""Phân xưởng sản xuất"" và ""Đối tác kinh doanh"".</div>",
-                        sp == null ? "(unknown)" : sp.ma_sanpham);
+                        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                        {
+                            item.loi = $@"không thể bỏ trống ""Phân xưởng sản xuất"" và ""Nhà cung cấp""";
+                        }
                     }
                     else if (pxId.Length < 1 & dtkdId.Length < 1)
                     {
-
-                        msg += string.Format(@"
-                                <div style='color:red'>Dòng {0} không thể bỏ trống một trong 2 dữ liêu: Đối tác kinh doanh và phân xưởng sản xuất.</div>",
-                        sp == null ? "(unknown)" : sp.ma_sanpham);
+                        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                        {
+                            item.loi = $@"không thể bỏ trống ""Phân xưởng sản xuất"" hoặc ""Nhà cung cấp""";
+                        }
                     }
                 }
 
@@ -709,7 +773,7 @@ public class Public
                     {
                         //--Them moi dong dat hang cho phan xuong
                         add_phanxuong(db, khdh.c_kehoachdathang_id, item.md_phanxuong_id,
-                        item.donhang_thamchieu, item.ngayhoanthanh.Value, item.mota, item.sodonhang, thoigianht,
+                        item.donhang_thamchieu, item.ngayhoanthanh, item.mota, item.sodonhang, thoigianht,
                         1, userTK);
                     }
                     //end
@@ -756,7 +820,10 @@ public class Public
         }
         catch (Exception ex)
         {
-            msg += string.Format(@"<div style='color:red'>Lỗi: {0}</div>", ex + "");
+            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+            {
+                item.loi = "KHDH:" + ex.ToString();
+            }
         }
 
         if (msg.Length <= 0)
@@ -764,7 +831,7 @@ public class Public
             msg = msg_success;
         }
         
-        return msg;
+        return msgBLHLs;
     }
 
     //them cac dong hang cua phan xuong
@@ -809,7 +876,7 @@ public class Public
         return id_new;
     }
     //them dat hang cho phan xuong
-    private string add_phanxuong(EntityContext db, string c_kehoachdathang_id, string md_phanxuong_id, string donhang_thamchieu, DateTime ngayhoanthanh, string mota, string sodonhang, string thoigianht, int i, User_TK us)
+    private string add_phanxuong(EntityContext db, string c_kehoachdathang_id, string md_phanxuong_id, string donhang_thamchieu, DateTime? ngayhoanthanh, string mota, string sodonhang, string thoigianht, int i, User_TK us)
     {
         string id_new = Helper.getNewId();
         var dhcpx = db.c_kehoachdathang_dhcpx.FirstOrDefault(s => s.md_phanxuong_id == md_phanxuong_id & s.c_kehoachdathang_id == c_kehoachdathang_id);
@@ -952,9 +1019,11 @@ public class Public
         return giaBanSP.Take(1).FirstOrDefault().GetValueOrDefault(0);
     }
 
-    public string CA_01_TDDHPX(EntityContext db, User_TK userTK, string ma_module, string id, string kiemtragiaStr)
+    public List<Public.BaoLoiKhiHieuLuc> CA_01_TDDHPX(EntityContext db, User_TK userTK, string ma_module, string id, string kiemtragiaStr, List<Public.BaoLoiKhiHieuLuc> msgBLHLs = null)
     {
-        string msg = "", msg_success = "";
+        if (msgBLHLs == null)
+            msgBLHLs = new List<BaoLoiKhiHieuLuc>();
+        string msg = "";
         string[] vnn = id.Split(',');
         md_dondathangphanxuong id_px = null;
         bool kiemtragia = (kiemtragiaStr + "").ToLower() == "true";
@@ -963,46 +1032,49 @@ public class Public
         {
             foreach (var dhcpx in db.c_kehoachdathang_dhcpx.Where(s => vnn.Contains(s.c_kehoachdathang_dhcpx_id)).ToList())
             {
-                if (dhcpx.md_phanxuong_id == "" || dhcpx.md_phanxuong_id == null || dhcpx.md_phanxuong_id == " ")
-                {
-                    msg = "<div class='error' style='color:red'>Dòng " + dhcpx.donhang + " chưa có phân xưởng không thể tạo</div>";
-                    break;
-                }
                 //khai bao
                 var px = db.md_phanxuong.FirstOrDefault(s => s.md_phanxuong_id == dhcpx.md_phanxuong_id);
-                var c_kehoachdathang_dhcpx_cdhs = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
-                var ddhpxExist = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).Take(1).FirstOrDefault();
-
-                if (msg.Length <= 0)
+                if (px == null)
                 {
-                    if (ddhpxExist == null)
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
                     {
-                        //--them dong don dat hang phan xuong
-                        id_px = add_px(db, dhcpx, 1, userTK);
-
-                        //start
-                        foreach (var dhcpx_cdh in c_kehoachdathang_dhcpx_cdhs.ToList())
-                        {
-                            add_px_cd(db, id_px.md_dondathangphanxuong_id, dhcpx_cdh.md_sanpham_id, dhcpx_cdh.noigiaohang, dhcpx_cdh.soluong.Value, dhcpx_cdh.md_donvitinhsanpham_id, dhcpx_cdh.mota, 1, userTK, dhcpx.c_danhsachdathang_id, dhcpx_cdh.c_kehoachdathang_dhcpx_id);
-                        }
-                        //end             
+                        item.loi += $"không tìm thấy Phân xưởng";
                     }
-                    
-                    msg += TaoLenhSanXuat(db, id_px, userTK, kiemtragia);
+                }
+                else
+                {
+                    var c_kehoachdathang_dhcpx_cdhs = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id);
+                    var ddhpxExist = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).Take(1).FirstOrDefault();
+
+                    if (msg.Length <= 0)
+                    {
+                        if (ddhpxExist == null)
+                        {
+                            //--them dong don dat hang phan xuong
+                            id_px = add_px(db, dhcpx, 1, userTK);
+
+                            //start
+                            foreach (var dhcpx_cdh in c_kehoachdathang_dhcpx_cdhs.ToList())
+                            {
+                                add_px_cd(db, id_px.md_dondathangphanxuong_id, dhcpx_cdh.md_sanpham_id, dhcpx_cdh.noigiaohang, dhcpx_cdh.soluong.Value, dhcpx_cdh.md_donvitinhsanpham_id, dhcpx_cdh.mota, 1, userTK, dhcpx.c_danhsachdathang_id, dhcpx_cdh.c_kehoachdathang_dhcpx_id);
+                            }
+                            //end             
+                        }
+
+                        msgBLHLs= TaoLenhSanXuat(db, id_px, userTK, kiemtragia, msgBLHLs);
+                    }
                 }
             }
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi)))
+            {
+                item.loi += ex.ToString();
+            }
         }
 
-        if (msg.Length <= 0)
-        {
-            msg = msg_success;
-        }
-
-        return msg;
+        return msgBLHLs;
     }
     //cac dong
     public string add_px_cd(EntityContext db, string md_dondathangphanxuong_id, string md_sanpham_id, string noigiaohang, decimal soluong, string md_donvitinhsanpham_id, string mota, int i, User_TK us, string c_danhsachdathang_id, string c_kehoachdathang_dhcpx_id)
