@@ -162,8 +162,8 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             khmvt_cdh.sl_tonkho_toithieu = sp.sl_tonkho_toithieu.GetValueOrDefault(0);
                             //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
                             khmvt_cdh.sl_layton = 0;
-                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
-                                    + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            var sldn = (khmvt_cdh.sl_can.GetValueOrDefault(0) - khmvt_cdh.sl_layton.GetValueOrDefault(0)
+                                    + khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0) - khmvt_cdh.sl_tonkho.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
                             khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
                         else
@@ -172,8 +172,8 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                             //khmvt_cdh.sl_layton = khmvt_cdh.sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : khmvt_cdh.sl_tonkho;
                             //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
                             khmvt_cdh.sl_layton = 0;
-                            var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
-                                + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            var sldn = (khmvt_cdh.sl_can.GetValueOrDefault(0) - khmvt_cdh.sl_layton.GetValueOrDefault(0)
+                                + khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0) - khmvt_cdh.sl_tonkho.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
                             khmvt_cdh.sl_denghi = sldn <= 0 ? 0 : sldn;
                         }
 
@@ -356,15 +356,13 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
             {
                 transaction.Commit();
 
-                string postData = "";
-                postData += "oper=CA_01_LamMoiHangTonKho";
-                postData += string.Format(@"&id={0}", id_new);
-                msg = VNN_VariablePublic.GetModule("Controller/JQGridModify/JQGridMD_01_CDKHVattuModify.ashx", postData);
+                //string postData = "";
+                //postData += "oper=CA_01_LamMoiHangTonKho";
+                //postData += string.Format(@"&id={0}", id_new);
+                //msg = VNN_VariablePublic.GetModule("Controller/JQGridModify/JQGridMD_01_CDKHVattuModify.ashx", postData);
 
-                if (msg.Length <= 0)
-                {
-                    msg = string.Format("<div style='color:blue'>{0}</div>", msg_success);
-                }
+
+                msg = string.Format("<div style='color:blue'>{0}</div>", msg_success);
             }
             else
             {
@@ -490,7 +488,18 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     {
                         var ncvt = db.c_nhucauvattu.Where(s => s.c_nhucauvattu_id == object_.c_nhucauvattu_id).Take(1).FirstOrDefault();
                         if (ncvt != null)
+                        {
+                            var khdhs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+                            foreach(var khdh in khdhs)
+                            {
+                                var khdhLK = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id).FirstOrDefault();
+                                if(khdhLK != null)
+                                {
+                                    khdhLK.xulyNCVT = false;
+                                }
+                            }
                             ncvt.c_yeucaumuavt_id = " ";
+                        }
 
                         foreach (var dhpx in db.md_dondathangphanxuong.Where(s => s.yeucaumuavattu == object_.sochungtu).ToList())
                         {

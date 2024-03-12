@@ -24,8 +24,10 @@ public static class Helper
     public static string MUATP = "MUATP";
     public static string BANTP = "BANTP";
     public static string NHANCONG = "NHANCONG";
-    public static string LAYTONTP = "LAYTONTP";
-    public static string LAYTONTHO = "LAYTONTHO";
+    public static string ChoTTP = "ChoTTP";
+    public static string DaXLTTP = "DaXLTTP";
+    public static string ChoTBTP = "ChoTBTP";
+    public static string DaXLTBTP = "DaXLTBTP";
     public static string DATNCC = "DATNCC";
     public static string DATSX = "DATSX";
     public static string CHODUYET = "CHODUYET";
@@ -177,6 +179,23 @@ public static class Helper
             {
                 f = jqGridHelper.Filter.CreateFilter(_filters);
                 filter = f.ToScript();
+            }
+        }
+        return filter;
+    }
+
+    public static string getFilterP(HttpContext context)
+    {
+        string filter = "";
+        jqGridHelper.Filter f = new jqGridHelper.Filter();
+        bool _search = bool.Parse(context.Request.QueryString["_search"]);
+        if (_search)
+        {
+            String _filters = context.Request.QueryString["filters"];
+            if (_filters != null & _filters != "")
+            {
+                f = jqGridHelper.Filter.CreateFilter(_filters);
+                filter = f.ToScriptP();
             }
         }
         return filter;

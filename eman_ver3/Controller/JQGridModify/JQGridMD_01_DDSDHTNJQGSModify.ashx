@@ -114,18 +114,34 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         if(string.IsNullOrWhiteSpace(id))
             id = context.Request.Form["id_parent"];
 
-        if (string.IsNullOrWhiteSpace(sldathang))
-            sl_dathang = int.Parse(context.Request.Form["sl_dathang"]);
-        else
-            sl_dathang = int.Parse(sldathang);
-
-        if (string.IsNullOrWhiteSpace(cbmStr))
-            cbm = decimal.Parse(context.Request.Form["v2"]);
-        else
-            cbm = decimal.Parse(cbmStr);
-
         try
         {
+            var slDatHang = context.Request.Form["sl_dathang"];
+            if (string.IsNullOrWhiteSpace(sldathang))
+            {
+                if(slDatHang.ToNullableDouble() == null)
+                {
+                    msg = "SL đặt hàng không thể bỏ trống";
+                    goto EndEventHandler;
+                }
+                sl_dathang = int.Parse(slDatHang);
+            }
+            else
+                sl_dathang = int.Parse(sldathang);
+
+            var v2CBM = context.Request.Form["v2"];
+            if (string.IsNullOrWhiteSpace(cbmStr))
+            {
+                if(v2CBM.ToNullableDouble() == null)
+                {
+                    msg = "CBM không thể bỏ trống";
+                    goto EndEventHandler;
+                }
+                cbm = decimal.Parse(v2CBM);
+            }
+            else
+                cbm = decimal.Parse(cbmStr);
+
             var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
             if(sp == null)
             {

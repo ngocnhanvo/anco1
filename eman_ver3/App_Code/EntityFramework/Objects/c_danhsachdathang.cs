@@ -55,6 +55,30 @@
                         public bool? check_nangluc { get; set; }
                 
 						
+                        #region c_danhsachdathang_cont20_wintaFN
+                        
+                        #endregion c_danhsachdathang_cont20_wintaFN
+                        public Decimal? cont20 { get; set; }
+                
+						
+                        #region c_danhsachdathang_cont40_wintaFN
+                        
+                        #endregion c_danhsachdathang_cont40_wintaFN
+                        public Decimal? cont40 { get; set; }
+                
+						
+                        #region c_danhsachdathang_cont40hc_wintaFN
+                        
+                        #endregion c_danhsachdathang_cont40hc_wintaFN
+                        public Decimal? cont40hc { get; set; }
+                
+						
+                        #region c_danhsachdathang_contle_wintaFN
+                        
+                        #endregion c_danhsachdathang_contle_wintaFN
+                        public Decimal? contle { get; set; }
+                
+						
                         #region c_danhsachdathang_dg_nangluc_wintaFN
                         
                         #endregion c_danhsachdathang_dg_nangluc_wintaFN

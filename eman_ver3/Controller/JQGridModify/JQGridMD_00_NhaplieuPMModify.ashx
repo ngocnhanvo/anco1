@@ -46,6 +46,13 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                 db.md_sanpham_bom_vattu.Remove(vt);
             }
         }
+        else if(ip.ma_import == "IP_BOM_01")
+        {
+            foreach(var vt in db.md_sanpham_bom_vattu.Where(s => s.soluong == null).ToList())
+            {
+                db.md_sanpham_bom_vattu.Remove(vt);
+            }
+        }
 
         VNN_Function.loaddulieu_Auto(db, "MD_00_NhaplieuPM");
 

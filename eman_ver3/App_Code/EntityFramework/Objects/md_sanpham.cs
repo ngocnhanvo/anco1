@@ -271,6 +271,12 @@
                         public string noigiaohang { get; set; }
                 
 						
+                        #region md_sanpham_phongbanId_wintaFN
+                        
+                        #endregion md_sanpham_phongbanId_wintaFN
+                        public string phongbanId { get; set; }
+                
+						
                         #region md_sanpham_quycachdonggoi_wintaFN
                         
                         #endregion md_sanpham_quycachdonggoi_wintaFN

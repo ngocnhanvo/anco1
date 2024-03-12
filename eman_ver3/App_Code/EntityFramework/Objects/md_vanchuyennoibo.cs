@@ -91,6 +91,12 @@
                         public bool? laytonTP { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_laytonTPhoacBTP_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_laytonTPhoacBTP_wintaFN
+                        public bool? laytonTPhoacBTP { get; set; }
+                
+						
                         #region md_vanchuyennoibo_loaichuyen_wintaFN
                         
                         #endregion md_vanchuyennoibo_loaichuyen_wintaFN

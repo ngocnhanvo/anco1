@@ -362,7 +362,7 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
             try
             {
                 string id = context.Request.Form["id"];
-                var object_ = db.md_banggia.Where(p => p.md_banggia_id == id).Take(1).FirstOrDefault();
+                var object_ = db.c_kehoachdathang.Where(p => p.c_kehoachdathang_id == id).Take(1).FirstOrDefault();
                 if (object_ == null)
                 {
                     msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";

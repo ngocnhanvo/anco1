@@ -91,6 +91,12 @@
                         public string nhomKH { get; set; }
                 
 						
+                        #region c_kehoachdathang_nhomKHBTP_wintaFN
+                        
+                        #endregion c_kehoachdathang_nhomKHBTP_wintaFN
+                        public string nhomKHBTP { get; set; }
+                
+						
                         #region c_kehoachdathang_sodonhang_wintaFN
                         
                         #endregion c_kehoachdathang_sodonhang_wintaFN
@@ -101,6 +107,12 @@
                         
                         #endregion c_kehoachdathang_ten_kh_wintaFN
                         public string ten_kh { get; set; }
+                
+						
+                        #region c_kehoachdathang_tinhNCVT_wintaFN
+                        
+                        #endregion c_kehoachdathang_tinhNCVT_wintaFN
+                        public bool? tinhNCVT { get; set; }
                 
 						
                         #region c_kehoachdathang_trangthai_wintaFN
@@ -161,6 +173,12 @@
                         
                         #endregion c_kehoachdathang_xulykehoach_wintaFN
                         public bool? xulykehoach { get; set; }
+                
+						
+                        #region c_kehoachdathang_xulyNCVT_wintaFN
+                        
+                        #endregion c_kehoachdathang_xulyNCVT_wintaFN
+                        public bool? xulyNCVT { get; set; }
                 
 						
                     }

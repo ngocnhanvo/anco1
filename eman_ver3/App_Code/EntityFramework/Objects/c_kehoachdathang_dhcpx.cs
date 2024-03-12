@@ -67,6 +67,18 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region c_kehoachdathang_dhcpx_lenhSXBTP_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_lenhSXBTP_wintaFN
+                        public string lenhSXBTP { get; set; }
+                
+						
+                        #region c_kehoachdathang_dhcpx_lenhSXTP_wintaFN
+                        
+                        #endregion c_kehoachdathang_dhcpx_lenhSXTP_wintaFN
+                        public string lenhSXTP { get; set; }
+                
+						
                         #region c_kehoachdathang_dhcpx_md_phanxuong_id_wintaFN
                         
                         #endregion c_kehoachdathang_dhcpx_md_phanxuong_id_wintaFN

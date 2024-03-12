@@ -504,55 +504,10 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         //Cap nhat ke hoach dat hang NCC
                         var cdmhs = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).ToList();
                         var cdmhIds = cdmhs.Select(s => s.md_sanpham_id).ToList();
-                        var kht = db.c_kehoachdathangtong.Where(s => s.c_kehoachdathangtong_id == c_kehoachdathang_dhncc_id).Take(1).FirstOrDefault();
                         var khmvtt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == c_kehoachmuavt_id).Take(1).FirstOrDefault();
                         var kh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == c_kehoachdathang_dhncc_id).Take(1).FirstOrDefault();
-                        if (kht != null)
-                        {
-                            if (kht.trangthai != Helper.DATNCC)
-                            {
-                                msg += string.Format(@"<br><b>{0}</b>: Trạng thái của kế hoạch <b>{2}</b> không đúng (phải là đang đặt NCC).", object_.sochungtu, object_.so_donmuahang, kht.ten_kh);
-                            }
-                            else
-                            {
-                                var lsxs = db.md_lenhsanxuat.Where(s => s.nhomKH == kht.ten_kh & (s.sxton ?? false) == false).OrderBy(s => s.ngayketthuc).ToList();
-                                foreach (var lsx in lsxs)
-                                {
-                                    var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt == 9998).FirstOrDefault();
-                                    var cdhs = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                        & s.sl_datncc > 0
-                                        & cdmhIds.Contains(s.md_sanpham_id)).ToList();
 
-                                    foreach (var cdh in cdhs)
-                                    {
-                                        cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) + cdh.sl_datncc.GetValueOrDefault(0);
-                                        cdh.sl_datncc = null;
-                                    }
-                                }
-                                db.SaveChanges();
-
-                                foreach (var lsx in lsxs)
-                                {
-                                    var tsxTBs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt != 9999 & s.hoatdong == true).ToList();
-                                    pub.kiemTraBomVaGiaTatCaCongDoan(db, userTK, false, "", tsxTBs);
-                                }
-                                db.SaveChanges();
-
-                                var lsxIds = lsxs.Select(s=>s.md_lenhsanxuat_id).ToList();
-                                var tsxIds = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id)).Select(s=>s.md_lenhsanxuat_tosx_id).ToList();
-                                var checkDNCC = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    tsxIds.Contains(s.md_lenhsanxuat_tosx_id)
-                                    & s.sl_datncc > 0
-                                    ).Count() <= 0;
-
-                                if(checkDNCC & kht.trangthai == Helper.DATNCC)
-                                {
-                                    kht.trangthai = Helper.LAYTONTHO;
-                                }
-                            }
-                        }
-                        else if (khmvtt != null)
+                        if (khmvtt != null)
                         {
                             khmvtt.c_donmuavattu_id = khmvtt.c_donmuavattu_id.Replace("," + sct, "").Replace(sct + ",", "").Replace(sct, "");
                             if (khmvtt.c_donmuavattu_id == "") { khmvtt.c_donmuavattu_id = " "; }
@@ -560,6 +515,12 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         }
                         else if (kh != null)
                         {
+                            if(kh.trangthai != Helper.DATNCC)
+                            {
+                                msg = $@"Kế hoạch {kh.donhang_thamchieu} phải ở trạng thái ""Đặt NCC""";
+                                goto EndEventHandler;
+                            }
+
                             var khdhpxIds = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kh.c_kehoachdathang_id).Select(s => s.c_kehoachdathang_dhcpx_id).ToList();
 
                             var dhpxIds = db.md_dondathangphanxuong.Where(s => khdhpxIds.Contains(s.c_kehoachdathang_dhcpx_id)).Select(s => s.md_dondathangphanxuong_id).ToList();
@@ -567,48 +528,29 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                             var lsxs = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).OrderBy(s => s.ngayketthuc).ToList();
                             foreach (var lsx in lsxs)
                             {
-
-                                var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt == 9998).FirstOrDefault();
-                                var cdhs = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                    & s.sl_datncc > 0
-                                    & cdmhIds.Contains(s.md_sanpham_id)).ToList();
-
-                                if (lsx.md_trangthai_id != Helper.SOANTHAO & cdhs.Count > 0)
+                                var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt >= 9998).OrderByDescending(s=>s.stt).ToList();
+                                foreach (var tsx in tsxs)
                                 {
-                                    msg += string.Format(@"<br>Đã triển khai sản xuất.");
-                                    goto EndEventHandler;
-                                }
+                                    var cdhs = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                        s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                        & s.sl_datncc > 0
+                                        & cdmhIds.Contains(s.md_sanpham_id)).ToList();
 
-                                foreach (var cdh in cdhs)
-                                {
-                                    cdh.sl_chiato = cdh.sl_chiato.GetValueOrDefault(0) + cdh.sl_datncc.GetValueOrDefault(0);
-                                    cdh.sl_datncc = null;
-                                }
-                            }
-                            db.SaveChanges();
+                                    if (lsx.md_trangthai_id != Helper.CHUAHOANTHANH & cdhs.Count > 0)
+                                    {
+                                        msg += string.Format(@"<br>Đã triển khai sản xuất.");
+                                        goto EndEventHandler;
+                                    }
 
-                            foreach (var lsx in lsxs)
-                            {
-                                var tsxTBs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt != 9999 & s.hoatdong == true).ToList();
-                                pub.kiemTraBomVaGiaTatCaCongDoan(db, userTK, false, "", tsxTBs);
-                            }
-
-                            kht = db.c_kehoachdathangtong.Where(s => s.ten_kh == kh.nhomKH).FirstOrDefault();
-                            if(kht != null)
-                            {
-                                var lsxIds = db.md_lenhsanxuat.Where(s => s.nhomKH == kht.ten_kh).Select(s=>s.md_lenhsanxuat_id).ToList();
-                                var tsxIds = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id)).Select(s=>s.md_lenhsanxuat_tosx_id).ToList();
-                                var checkDNCC = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    tsxIds.Contains(s.md_lenhsanxuat_tosx_id)
-                                    & s.sl_datncc > 0
-                                    ).Count() <= 0;
-
-                                if(checkDNCC & kht.trangthai == Helper.DATNCC)
-                                {
-                                    kht.trangthai = Helper.LAYTONTHO;
+                                    foreach (var cdh in cdhs)
+                                    {
+                                        pub.truVatTuSauKhiDatNCC(db, tsx, cdh.md_sanpham_id, 0 - cdh.sl_datncc.GetValueOrDefault(0));
+                                        cdh.sl_datncc = null;
+                                        cdh.sl_datncc2 = null;
+                                    }
                                 }
                             }
+                            kh.trangthai = Helper.DaXLTBTP;
                             db.SaveChanges();
                         }
                         else

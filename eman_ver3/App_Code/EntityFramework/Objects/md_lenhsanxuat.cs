@@ -139,6 +139,12 @@
                         public string nhomKH { get; set; }
                 
 						
+                        #region md_lenhsanxuat_nhomKHBTP_wintaFN
+                        
+                        #endregion md_lenhsanxuat_nhomKHBTP_wintaFN
+                        public string nhomKHBTP { get; set; }
+                
+						
                         #region md_lenhsanxuat_phieuXK_wintaFN
                         
                         #endregion md_lenhsanxuat_phieuXK_wintaFN

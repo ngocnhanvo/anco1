@@ -129,6 +129,8 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                     db.c_kehoachmuavt_dklht.RemoveRange(db.c_kehoachmuavt_dklht.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id));
                     foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == idparent).ToList())
                     {
+                        var spvt = db.md_sanpham.Where(s => s.md_sanpham_id == khmvt_cdh.md_sanpham_id).FirstOrDefault();
+
                         var tonkho = (from a in db.md_kho_sanpham
                                       join b in db.md_kho on a.md_kho_id equals b.md_kho_id
                                       where b.vattu == true & a.md_sanpham_id == khmvt_cdh.md_sanpham_id
@@ -166,14 +168,15 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                             }
                         }
 
+                        khmvt_cdh.sl_tonkho_toithieu = spvt.sl_tonkho_toithieu.GetValueOrDefault(0);
                         khmvt_cdh.sl_tonkho = sl_tonkho;
                         sl_tonkho = (sl_tonkho - khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
                         khmvt_cdh.sl_layton = 0;
                         //khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
                         //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
 
-                        var sldn = khmvt_cdh.sl_can - khmvt_cdh.sl_layton
-                                    + (khmvt_cdh.sl_tonkho_toithieu - khmvt_cdh.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                        var sldn = (khmvt_cdh.sl_can.GetValueOrDefault(0) - khmvt_cdh.sl_layton.GetValueOrDefault(0)
+                                    + khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0) - khmvt_cdh.sl_tonkho.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
                         khmvt_cdh.sl_denghi = sldn;
                         khmvt_cdh.sl_duyet = null;
                     }

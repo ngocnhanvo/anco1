@@ -654,7 +654,9 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
 
             if (msg.Length <= 0)
             {
-                object_.slcont = context.Request.Form["slcont"];
+                object_.cont20 = context.Request.Form["cont20"].ToNullableDecimal();
+                object_.cont40 = context.Request.Form["cont40"].ToNullableDecimal();
+                object_.cont40hc = context.Request.Form["cont40hc"].ToNullableDecimal();
                 object_.mota = context.Request.Form["mota"];
                 VNN_Function.loaddulieu_Auto(db, ma_module);
                 msg = "true#Cập nhật thành công.";

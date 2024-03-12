@@ -376,6 +376,10 @@ modelBuilder.Entity<md_vanchuyennoibo>().HasKey<string>(p => p.md_vanchuyennoibo
                             .HasColumnName("laytonTP")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.laytonTPhoacBTP)
+                            .HasColumnName("laytonTPhoacBTP")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.loaichuyen)
                             .HasColumnName("loaichuyen")
                             .HasColumnType("nvarchar");

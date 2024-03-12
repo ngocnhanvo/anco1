@@ -64,29 +64,45 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                 if (object_ == null)
                 {
                     msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
+                    goto EndEventHandler;
                 }
-                else if (dongiamua > giachuan)
+
+                if (dongiamua > giachuan)
                 {
                     msg = "false#\"Đơn giá mua\" không thể lớn hơn \"Giá chuẩn\".";
+                    goto EndEventHandler;
                 }
-                else if (sl_dadat > sl_duyet)
+
+                if (sl_dadat > sl_duyet)
                 {
                     msg = "false#\"Số lượng mua\" không thể lớn hơn \"Số lượng kế hoạch\".";
+                    goto EndEventHandler;
                 }
-                else
-                {
-                    dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Take(1).FirstOrDefault();
-                    if (dmh == null)
-                    {
-                        msg = "false#Không tìm thấy đơn mua hàng.";
-                    }
-                    else if (dmh.md_trangthai_id != "SOANTHAO")
-                    {
-                        msg = "false#Đơn mua hàng không phải trạng thái 'Soạn Thảo', không thể sửa.";
-                    }
 
-                    VNN_Function.SetFormValue(object_.nameof(s=>s.ngay_hethan), "VNN_notpost");
+                dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Take(1).FirstOrDefault();
+                if (dmh == null)
+                {
+                    msg = "false#Không tìm thấy đơn mua hàng.";
+                    goto EndEventHandler;
                 }
+
+                if (dmh.md_trangthai_id != Helper.SOANTHAO)
+                {
+                    msg = "false#Đơn mua hàng không phải trạng thái 'Soạn Thảo', không thể sửa.";
+                    goto EndEventHandler;
+                }
+
+                var kh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dmh.c_kehoachdathang_dhncc_id).FirstOrDefault();
+                if(kh != null)
+                {
+                    if(object_.sl_dadat.GetValueOrDefault(0) != sl_dadat)
+                    {
+                        msg = $"false#Không thể sửa <b>số lượng đặt</b> khi có liên kết với đơn hàng <b>{kh.donhang_thamchieu}</b>.";
+                        goto EndEventHandler;
+                    }
+                }
+
+                VNN_Function.SetFormValue(object_.nameof(s=>s.ngay_hethan), Helper.VNN_notpost);
 
                 if (msg.Length <= 0)
                 {
@@ -171,6 +187,8 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
             {
                 msg = "false#" + ex.ToString();
             }
+
+        EndEventHandler:;
 
             if (msg.LastIndexOf("false#") <= -1)
             {

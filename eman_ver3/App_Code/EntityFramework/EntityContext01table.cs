@@ -1070,6 +1070,22 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("check_nangluc")
                             .HasColumnType("bit");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.cont20)
+                            .HasColumnName("cont20")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.cont40)
+                            .HasColumnName("cont40")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.cont40hc)
+                            .HasColumnName("cont40hc")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.contle)
+                            .HasColumnName("contle")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.dg_nangluc)
                             .HasColumnName("dg_nangluc")
                             .HasColumnType("bit");

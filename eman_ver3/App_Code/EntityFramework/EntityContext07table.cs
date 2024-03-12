@@ -804,6 +804,10 @@ modelBuilder.Entity<md_sanpham>().HasKey<string>(p => p.md_sanpham_id);
                             .HasColumnName("noigiaohang")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_sanpham>()
+                            .Property(p => p.phongbanId)
+                            .HasColumnName("phongbanId")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_sanpham>()
                             .Property(p => p.quycachdonggoi)
                             .HasColumnName("quycachdonggoi")
                             .HasColumnType("nvarchar");

@@ -363,17 +363,17 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             var msgDT = "";
             var pub = new Public();
             msgBLHLs = pub.LapKeHoachDatHang(db, userTK, dchtIds, msgBLHLs);
-            var khdhs = db.c_kehoachdathang.Where(s => dchtIds.Contains(s.c_doichieuhangton_id)).ToList();
+
             if (msgBLHLs.Where(s => !string.IsNullOrWhiteSpace(s.loi)).Count() > 0)
             {
                 msgDT = $@"<div error style='color:red'>Lỗi: Đơn hàng thiếu số liệu</div>";
             }
-
+            var khdhs = db.c_kehoachdathang.Where(s => dchtIds.Contains(s.c_doichieuhangton_id)).ToList();
             var khdhIds = khdhs.Select(s => s.c_kehoachdathang_id).ToList();
             var khpxs = db.c_kehoachdathang_dhcpx.Where(s => khdhIds.Contains(s.c_kehoachdathang_id)).ToList();
             var khpxsDSX = (from a in khpxs
                             join b in khdhs on a.c_kehoachdathang_id equals b.c_kehoachdathang_id
-                            join c in db.c_danhsachdathang on b.sodonhang equals c.sochungtu
+                            join c in db.c_danhsachdathang on b.donhang_thamchieu equals c.so_po
                             orderby a.md_phanxuong_id, c.hangiaohang_po ascending
                             select new { khdhpx = a, c.sanxuatton, c.donhangtron }).ToList();
 
@@ -479,7 +479,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
         var result = new Dictionary<string, object>();
         result["msg"] = msg;
-        result["json"] = msgBLHLs.Where(s => !string.IsNullOrWhiteSpace(s.loi)).ToList();
+        result["json"] = msgBLHLs.Where(s => !string.IsNullOrWhiteSpace(s.loi)).OrderBy(s => s.msp).ToList();
         context.Response.Write(JsonConvert.SerializeObject(result));
     }
 
@@ -566,6 +566,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     object_.ngayhoanthanh = ngayhoanthanh;
                     object_.anco_check = false;
                     object_.md_doitackinhdoanh_id = dtk_id;
+                    object_.sochungtu = sochungtu;
                     VNN_Function.SetFormValue(object_.nameof(s=>s.ngayhoanthanh), ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
                     VNN_Function.SetFormValue(object_.nameof(s=>s.sochungtu), sochungtu);
                     //VNN_Function.SetFormValue(object_.nameof(s=>s.thoigiansx), thoigiansx.ToString());

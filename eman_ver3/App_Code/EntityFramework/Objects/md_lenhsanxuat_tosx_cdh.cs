@@ -187,6 +187,12 @@
                         public Decimal? sl_datncc { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sl_datncc2_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sl_datncc2_wintaFN
+                        public Decimal? sl_datncc2 { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_sl_giamhanngach_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_sl_giamhanngach_wintaFN
