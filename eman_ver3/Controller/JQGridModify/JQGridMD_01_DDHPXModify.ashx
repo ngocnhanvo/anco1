@@ -51,73 +51,63 @@ public class JQGridMD_01_DDHPXModify : IHttpHandler, System.Web.SessionState.IRe
     {
         string msg = "", msg_del = "", msg_success = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        string id = "";
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+
+            var iddels = context.Request.Form["id"].Split(',');
+            var object_s = db.c_nhucauvattu_dhpx.Where(p => iddels.Contains(p.c_nhucauvattu_dhpx_id)).ToList();
+            if(object_s.Count <= 0)
             {
-                int count = context.Request.Form["id"].Split(',').Count();
-                string[] id_del = new string[count];
-                id_del = context.Request.Form["id"].Split(',');
-
-                for (int i = 0; i < count; i++)
-                {
-                    msg_del = ""; var id_del_ = id_del[i];
-                    c_nhucauvattu_dhpx object_ = db.c_nhucauvattu_dhpx.Where(p => p.c_nhucauvattu_dhpx_id == id_del_).Take(1).FirstOrDefault();
-                    c_nhucauvattu nc = db.c_nhucauvattu.FirstOrDefault(s => s.c_nhucauvattu_id == object_.c_nhucauvattu_id);
-                    if (object_ == null)
-                    {
-                        msg_del = "Lỗi:Không tìm thấy đối tượng cần xóa " + i;
-                        msg += msg_del + "\n";
-                    }
-                    else if (nc.c_yeucaumuavt_id != null & nc.c_yeucaumuavt_id != "" & nc.c_yeucaumuavt_id != " ")
-                    {
-                        msg_del = "Lỗi:Đã tạo yêu cầu : \"" + nc.c_yeucaumuavt_id + "\" không thể xóa " + i;
-                        msg += msg_del + "\n";
-                    }
-                    if (msg_del.Length <= 0)
-                    {
-                        id = object_.c_nhucauvattu_id;
-                        db.c_nhucauvattu_dhpx.Remove(object_);
-                        var khdh_px = db.c_kehoachdathang_dhcpx.Where(s =>
-                            s.c_kehoachdathang_dhcpx_id == object_.md_dondathangphanxuong_id).FirstOrDefault();
-                        if (khdh_px != null)
-                            khdh_px.tinh_ncvt = false;
-                        db.SaveChanges();
-                    }
-                }
-
-                var ncvt = db.c_nhucauvattu.Where(s => s.c_nhucauvattu_id == id).Take(1).FirstOrDefault();
-                if (ncvt == null & msg == "")
-                    msg = "Lỗi:Không tìm thấy nhu cầu vật tư.";
-
-                if (msg.Length <= 0)
-                {
-                    db.c_nhucauvattu_ddhpx.RemoveRange(db.c_nhucauvattu_ddhpx.Where(s => s.c_nhucauvattu_id == id));
-                    db.c_nhucauvattu_ycmvt.RemoveRange(db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == id));
-                    ncvt.datinh_nhucau = false;
-                    db.SaveChanges();
-                    msg_success = "true#Xóa thành công.";
-                }
-                else
-                {
-                    msg = "false#" + msg;
-                }
+                msg = $"Không tìm thấy các đơn hàng đã chọn";
+                goto EndEventHandler;
             }
-            catch (Exception ex)
+            var ncvtid = object_s.Select(s => s.c_nhucauvattu_id).FirstOrDefault();
+            var ncvt = db.c_nhucauvattu.Where(s => s.c_nhucauvattu_id == ncvtid).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(ncvt.c_yeucaumuavt_id))
             {
-                msg = "false#Lỗi: " + ex.Message;
+                msg = $"Lỗi: Đã tạo yêu cầu mua vật tư";
+                goto EndEventHandler;
+            }
+
+            var ncvtDHPXs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+            if(ncvtDHPXs.Count <= 1)
+            {
+                msg = $"NCVT phải có ít nhất 1 đơn hàng";
+                goto EndEventHandler;
+            }
+
+            foreach (var object_ in object_s)
+            {
+                db.c_nhucauvattu_dhpx.Remove(object_);
+                var khdh = db.c_kehoachdathang.Where(s =>
+                    s.c_kehoachdathang_id == object_.c_kehoachdathang_id).FirstOrDefault();
+                if (khdh != null)
+                    khdh.tinhNCVT = false;
             }
 
             if (msg.Length <= 0)
             {
-                msg = msg_success;
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                db.c_nhucauvattu_ddhpx.RemoveRange(db.c_nhucauvattu_ddhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
+                db.c_nhucauvattu_ycmvt.RemoveRange(db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id));
+                ncvt.datinh_nhucau = false;
+                db.SaveChanges();
             }
-            else
-                transaction.Rollback();
         }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = "true#Xóa thành công";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+            msg = $"false#Lỗi: {msg}";
+
         context.Response.Write(msg);
     }
 

@@ -1334,6 +1334,10 @@ modelBuilder.Entity<c_doichieuhangton>().HasKey<string>(p => p.c_doichieuhangton
                             .HasColumnName("donhang_thamchieu")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_doichieuhangton>()
+                            .Property(p => p.hangiaohangPO)
+                            .HasColumnName("hangiaohangPO")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_doichieuhangton>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");

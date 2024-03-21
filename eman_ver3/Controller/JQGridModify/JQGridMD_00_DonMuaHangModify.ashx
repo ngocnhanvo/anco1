@@ -521,11 +521,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                                 goto EndEventHandler;
                             }
 
-                            var khdhpxIds = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == kh.c_kehoachdathang_id).Select(s => s.c_kehoachdathang_dhcpx_id).ToList();
-
-                            var dhpxIds = db.md_dondathangphanxuong.Where(s => khdhpxIds.Contains(s.c_kehoachdathang_dhcpx_id)).Select(s => s.md_dondathangphanxuong_id).ToList();
-
-                            var lsxs = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).OrderBy(s => s.ngayketthuc).ToList();
+                            var lsxs = db.md_lenhsanxuat.Where(s => s.c_kehoachdathang_id == kh.c_kehoachdathang_id).OrderBy(s => s.ngayketthuc).ToList();
                             foreach (var lsx in lsxs)
                             {
                                 var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt >= 9998).OrderByDescending(s=>s.stt).ToList();
@@ -544,7 +540,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
                                     foreach (var cdh in cdhs)
                                     {
-                                        pub.truVatTuSauKhiDatNCC(db, tsx, cdh.md_sanpham_id, 0 - cdh.sl_datncc.GetValueOrDefault(0));
+                                        var masp = db.md_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault();
+                                        pub.truVatTuSauKhiDatNCC(db, tsx, cdh.md_sanpham_id, 0 - cdh.sl_datncc.GetValueOrDefault(0), masp, cdh.macuoi, cdh.mathaydoi);
                                         cdh.sl_datncc = null;
                                         cdh.sl_datncc2 = null;
                                     }

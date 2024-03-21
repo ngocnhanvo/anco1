@@ -1649,6 +1649,10 @@ modelBuilder.Entity<md_dondathangphanxuong>().HasKey<string>(p => p.md_dondathan
                             .HasColumnName("c_kehoachdathang_dhcpx_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_dondathangphanxuong>()
+                            .Property(p => p.c_kehoachdathang_id)
+                            .HasColumnName("c_kehoachdathang_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_dondathangphanxuong>()
                             .Property(p => p.donhang_thamchieu)
                             .HasColumnName("donhang_thamchieu")
                             .HasColumnType("nvarchar");

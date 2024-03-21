@@ -43,6 +43,12 @@
                         public string md_donvitinhsanpham_id { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_tonkho_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_tonkho_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_tonkho_md_lenhsanxuat_tosx_id_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_tonkho_md_lenhsanxuat_tosx_id_wintaFN

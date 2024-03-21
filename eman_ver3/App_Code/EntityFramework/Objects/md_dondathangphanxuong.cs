@@ -37,6 +37,12 @@
                         public string c_kehoachdathang_dhcpx_id { get; set; }
                 
 						
+                        #region md_dondathangphanxuong_c_kehoachdathang_id_wintaFN
+                        
+                        #endregion md_dondathangphanxuong_c_kehoachdathang_id_wintaFN
+                        public string c_kehoachdathang_id { get; set; }
+                
+						
                         #region md_dondathangphanxuong_donhang_thamchieu_wintaFN
                         
                         #endregion md_dondathangphanxuong_donhang_thamchieu_wintaFN

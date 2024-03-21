@@ -25,6 +25,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region c_kehoachdathang_c_danhsachdathang_id_wintaFN
+                        
+                        #endregion c_kehoachdathang_c_danhsachdathang_id_wintaFN
+                        public string c_danhsachdathang_id { get; set; }
+                
+						
                         #region c_kehoachdathang_c_doichieuhangton_id_wintaFN
                         
                         #endregion c_kehoachdathang_c_doichieuhangton_id_wintaFN
@@ -35,6 +41,18 @@
                         
                         #endregion c_kehoachdathang_donhang_thamchieu_wintaFN
                         public string donhang_thamchieu { get; set; }
+                
+						
+                        #region c_kehoachdathang_donhangtron_wintaFN
+                        
+                        #endregion c_kehoachdathang_donhangtron_wintaFN
+                        public bool? donhangtron { get; set; }
+                
+						
+                        #region c_kehoachdathang_hangiaohangPO_wintaFN
+                        
+                        #endregion c_kehoachdathang_hangiaohangPO_wintaFN
+                        public DateTime? hangiaohangPO { get; set; }
                 
 						
                         #region c_kehoachdathang_hoatdong_wintaFN
@@ -59,6 +77,12 @@
                         
                         #endregion c_kehoachdathang_ngaycapnhat_wintaFN
                         public DateTime? ngaycapnhat { get; set; }
+                
+						
+                        #region c_kehoachdathang_ngayhoanthanh_wintaFN
+                        
+                        #endregion c_kehoachdathang_ngayhoanthanh_wintaFN
+                        public DateTime? ngayhoanthanh { get; set; }
                 
 						
                         #region c_kehoachdathang_ngaykehoach_wintaFN
@@ -95,6 +119,12 @@
                         
                         #endregion c_kehoachdathang_nhomKHBTP_wintaFN
                         public string nhomKHBTP { get; set; }
+                
+						
+                        #region c_kehoachdathang_sanxuatton_wintaFN
+                        
+                        #endregion c_kehoachdathang_sanxuatton_wintaFN
+                        public bool? sanxuatton { get; set; }
                 
 						
                         #region c_kehoachdathang_sodonhang_wintaFN

@@ -26,12 +26,12 @@ public static class VNN_JQGridver2
                 if (mod_0.thuake != "")
                 {
                     arr_mod0_tk[dem_mod0] = mod_0.thuake;
-                    li_mod0 += "<li sel_mod='" + mod_0.thuake + "'><a onclick=\"load_detail(0,'" + mod_0.ma_module + "',0, '" + mod_0.thuake + "', 0)\" href=\"#tabs_" + mod_0.ma_module + "\">" + mod_0.ten_module + "</a></li>";
+                    li_mod0 += $@"<li sel_mod='{mod_0.thuake}'><a style='cursor:pointer;' href=""#tabs_{mod_0.ma_module}"">{mod_0.ten_module}</a></li>";
                 }
                 else
                 {
                     arr_mod0_tk[dem_mod0] = mod_0.ad_module_id;
-                    li_mod0 += "<li sel_mod='" + mod_0.ad_module_id + "'><a onclick=\"load_detail(0,'" + mod_0.ma_module + "',0, '" + mod_0.ad_module_id + "', 0)\" href=\"#tabs_" + mod_0.ma_module + "\">" + mod_0.ten_module + "</a></li>";
+                    li_mod0 += $@"<li sel_mod='{mod_0.ad_module_id}'><a style='cursor:pointer;' href=""#tabs_{mod_0.ma_module}"">{mod_0.ten_module}</a></li>";
                 }
                 div_mod0 += "<div id=\"tabs_" + mod_0.ma_module + "\">";
                 div_mod0 += "<table id='grid" + mod_0.ma_module + "'></table>";
@@ -55,15 +55,15 @@ public static class VNN_JQGridver2
                 if (mod_1.thuake != "")
                 {
                     arr_mod1_tk[dem_mod1] = mod_1.thuake;
-                    li_mod1 += "<li sel_mod='" + mod_1.thuake + "' class='modcha_" + mod_1.ma_modulecha + "'><a onclick=\"load_detail(0,'" + mod_1.ma_module + "',0,'" + mod_1.thuake + "',1)\" href=\"#tabs_" + mod_1.ma_module + "\">" + mod_1.ten_module + "</a></li>";
+                    li_mod1 += $@"<li sel_mod='{mod_1.thuake}' class='modcha_{mod_1.ma_modulecha}'><a style='cursor:pointer;' onclick=""load_detail(0,'{mod_1.ma_module}',0,'{mod_1.thuake}',1)"" href=""#tabs_{mod_1.ma_module}"">{mod_1.ten_module}</a></li>";
                 }
                 else
                 {
                     arr_mod1_tk[dem_mod1] = mod_1.ad_module_id;
-                    li_mod1 += "<li sel_mod='" + mod_1.ad_module_id + "' class='modcha_" + mod_1.ma_modulecha + "'><a onclick=\"load_detail(0,'" + mod_1.ma_module + "',0,'" + mod_1.ad_module_id + "',1)\" href=\"#tabs_" + mod_1.ma_module + "\">" + mod_1.ten_module + "</a></li>";
+                    li_mod1 += $@"<li sel_mod='{mod_1.ad_module_id}' class='modcha_{mod_1.ma_modulecha}'><a style='cursor:pointer;' onclick=""load_detail(0,'{mod_1.ma_module}',0,'{mod_1.ad_module_id}',1)"" href=""#tabs_{mod_1.ma_module}"">{mod_1.ten_module}</a></li>";
                 }
                 firstMod1 = mod_1.ad_module_id;
-                div_mod1 += "<div class='modcha_" + mod_1.ma_modulecha + "' id=\"tabs_" + mod_1.ma_module + "\"></div>";
+                div_mod1 += $@"<div class='modcha_{mod_1.ma_modulecha}' id=""tabs_{mod_1.ma_module}""></div>";
                 dem_mod1++;
             }
         }
@@ -81,8 +81,8 @@ public static class VNN_JQGridver2
                 if (mod_2.ma_modulecha == firstMod1)
                     firstMod2 = mod_2.ma_modulecha;
 
-                li_mod2 += "<li sel_mod='" + mod_2.ad_module_id + "' class='modcha_" + mod_2.ma_modulecha + "'><a mod_parent='" + mod_2.ma_modulecha + "' onclick=\"load_detail(0,'" + mod_2.ma_module + "',0, '" + mod_2.ad_module_id + "',2)\" href=\"#tabs_" + mod_2.ma_module + "\">" + mod_2.ten_module + "</a></li>";
-                div_mod2 += "<div class='modcha_" + mod_2.ma_modulecha + "' id=\"tabs_" + mod_2.ma_module + "\"></div>";
+                li_mod2 += $@"<li sel_mod='{mod_2.ad_module_id}' class='modcha_{mod_2.ma_modulecha}'><a style='cursor:pointer;' mod_parent='{mod_2.ma_modulecha}' onclick=""load_detail(0,'{mod_2.ma_module}',0,'{mod_2.ad_module_id}',2)"" href=""#tabs_{mod_2.ma_module}"">{mod_2.ten_module}</a></li>";
+                div_mod2 += $@"<div class='modcha_{mod_2.ma_modulecha}' id=""tabs_{mod_2.ma_module}""></div>";
             }
         }
 

@@ -764,8 +764,16 @@ modelBuilder.Entity<md_kiemke>().HasKey<string>(p => p.md_kiemke_id);
                             .HasColumnName("ngaydenghi")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_kiemke>()
+                            .Property(p => p.ngayhieuluc)
+                            .HasColumnName("ngayhieuluc")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_kiemke>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_kiemke>()
+                            .Property(p => p.ngayxacnhan)
+                            .HasColumnName("ngayxacnhan")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_kiemke>()
                             .Property(p => p.nguoicapnhat)
@@ -1230,6 +1238,10 @@ modelBuilder.Entity<md_lenhsanxuat>().HasKey<string>(p => p.md_lenhsanxuat_id);
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_lenhsanxuat>()
+                            .Property(p => p.c_kehoachdathang_id)
+                            .HasColumnName("c_kehoachdathang_id")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.check_dtvt)
                             .HasColumnName("check_dtvt")
                             .HasColumnType("bit");
@@ -1237,6 +1249,10 @@ modelBuilder.Entity<md_lenhsanxuat>().HasKey<string>(p => p.md_lenhsanxuat_id);
                             .Property(p => p.dhtron)
                             .HasColumnName("dhtron")
                             .HasColumnType("bit");
+                            modelBuilder.Entity<md_lenhsanxuat>()
+                            .Property(p => p.donhang_thamchieu)
+                            .HasColumnName("donhang_thamchieu")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
@@ -1601,6 +1617,14 @@ modelBuilder.Entity<md_lenhsanxuat_tosx>().HasKey<string>(p => p.md_lenhsanxuat_
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.xuongChinh)
+                            .HasColumnName("xuongChinh")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx>()
+                            .Property(p => p.xuongPhu)
+                            .HasColumnName("xuongPhu")
+                            .HasColumnType("varchar");
 modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().ToTable("md_lenhsanxuat_tosx_cdh");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.md_lenhsanxuat_tosx_cdh_id)
@@ -1628,6 +1652,14 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.lsxCT)
+                            .HasColumnName("lsxCT")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.mabo)
+                            .HasColumnName("mabo")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.macuoi)
                             .HasColumnName("macuoi")
                             .HasColumnType("nvarchar");
@@ -1639,6 +1671,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
@@ -1760,6 +1796,14 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .HasColumnName("sl_tinhvattu")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.sp1)
+                            .HasColumnName("sp1")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.stt)
+                            .HasColumnName("stt")
+                            .HasColumnType("int");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");
@@ -1791,6 +1835,14 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.xuongChinh)
+                            .HasColumnName("xuongChinh")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.xuongPhu)
+                            .HasColumnName("xuongPhu")
+                            .HasColumnType("varchar");
 modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>().ToTable("md_lenhsanxuat_tosx_dklht");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
                             .Property(p => p.md_lenhsanxuat_tosx_dklht_id)
@@ -1814,9 +1866,17 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>().HasKey<string>(p => p.md_lenhsa
                             .HasColumnName("macuoi")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
+                            .Property(p => p.mathaydoi)
+                            .HasColumnName("mathaydoi")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
@@ -1919,6 +1979,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>().HasKey<string>(p => p.md_lenh
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>()
                             .Property(p => p.md_lenhsanxuat_tosx_dklht_id)
                             .HasColumnName("md_lenhsanxuat_tosx_dklht_id")
@@ -2026,6 +2090,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_tonkho>().HasKey<string>(p => p.md_lenhs
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_tonkho>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_tonkho>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
                             .HasColumnType("nvarchar");
@@ -2096,6 +2164,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>().ToTable("md_lenhsanxuat_tosx_va
                             .HasColumnType("nvarchar");
 modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>().HasKey<string>(p => p.md_lenhsanxuat_tosx_vattu_id);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.bantp)
+                            .HasColumnName("bantp")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
                             .Property(p => p.bophancapnhat)
                             .HasColumnName("bophancapnhat")
                             .HasColumnType("varchar");
@@ -2111,6 +2183,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>().HasKey<string>(p => p.md_lenhsa
                             .Property(p => p.md_donvitinhsanpham_id)
                             .HasColumnName("md_donvitinhsanpham_id")
                             .HasColumnType("varchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.md_lenhsanxuat_id)
+                            .HasColumnName("md_lenhsanxuat_id")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
                             .Property(p => p.md_lenhsanxuat_tosx_id)
                             .HasColumnName("md_lenhsanxuat_tosx_id")
@@ -2164,6 +2240,22 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>().HasKey<string>(p => p.md_lenhsa
                             .HasColumnName("soluong")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.sp1)
+                            .HasColumnName("sp1")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.sp2)
+                            .HasColumnName("sp2")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.sp3)
+                            .HasColumnName("sp3")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.tp)
+                            .HasColumnName("tp")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");
@@ -2195,6 +2287,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>().HasKey<string>(p => p.md_lenhsa
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_vattu>()
+                            .Property(p => p.vattu)
+                            .HasColumnName("vattu")
+                            .HasColumnType("bit");
                     
                     
             #endregion End Code

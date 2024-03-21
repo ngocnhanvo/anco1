@@ -763,6 +763,10 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.c_danhsachdathang_id)
+                            .HasColumnName("c_danhsachdathang_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.c_doichieuhangton_id)
                             .HasColumnName("c_doichieuhangton_id")
                             .HasColumnType("varchar");
@@ -770,6 +774,14 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             .Property(p => p.donhang_thamchieu)
                             .HasColumnName("donhang_thamchieu")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.donhangtron)
+                            .HasColumnName("donhangtron")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.hangiaohangPO)
+                            .HasColumnName("hangiaohangPO")
+                            .HasColumnType("datetime");
                             modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
@@ -785,6 +797,10 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.ngayhoanthanh)
+                            .HasColumnName("ngayhoanthanh")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.ngaykehoach)
@@ -810,6 +826,10 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             .Property(p => p.nhomKHBTP)
                             .HasColumnName("nhomKHBTP")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.sanxuatton)
+                            .HasColumnName("sanxuatton")
+                            .HasColumnType("bit");
                             modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.sodonhang)
                             .HasColumnName("sodonhang")

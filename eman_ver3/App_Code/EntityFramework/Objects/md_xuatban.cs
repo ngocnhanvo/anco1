@@ -97,10 +97,22 @@
                         public DateTime? ngaydonhang { get; set; }
                 
 						
+                        #region md_xuatban_ngayhieuluc_wintaFN
+                        
+                        #endregion md_xuatban_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_xuatban_ngaytao_wintaFN
                         
                         #endregion md_xuatban_ngaytao_wintaFN
                         public DateTime? ngaytao { get; set; }
+                
+						
+                        #region md_xuatban_ngayxacnhan_wintaFN
+                        
+                        #endregion md_xuatban_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region md_xuatban_nguoicapnhat_wintaFN

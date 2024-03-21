@@ -25,6 +25,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         public string tenhang { get; set; }
         public string bomId { get; set; }
         public string cdhTsxLsxId { get; set; }
+        public string lsx_to { get; set; }
         public string md_sanpham_id { get; set; }
         public decimal? sl_nhap1 { get; set; }
         public decimal? sl_nhap2 { get; set; }
@@ -96,11 +97,10 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
             var ngayKCS = VNN_Config.setDateTime(context.Request.Form["ngayKCS"]);
             if(!ngayKCS.IsDate())
             {
-                msg = string.Format(fmtErr, string.Format(@"Lỗi: Ngày KCS có giá trị sai."));
+                msg = string.Format(fmtErr, string.Format(@"Lỗi: Ngày nhập kho có giá trị sai."));
                 goto EndEventHandler;
             }
 
-            string sochungtu = VNN_VariablePublic.sochungtu(db, "PNKNB", 1);
             //Xu Ly nhap kho
             var nk = db.md_nhapkhonb.Where(s => vnn.Contains(s.md_nhapkhonb_id)).FirstOrDefault();
             if (nk == null)
@@ -137,51 +137,73 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                                          sl_nhap2 = a.sl_nhap,
                                          bomId = a.bomId,
                                          cdhTsxLsxId = a.cdhTsxLsxId,
+                                         lsx_to = a.lsx_to,
                                          tenhang = a.tenhang
                                      })
                                     .ToList();
 
             if (md_nhapkhonb_cdhs.Sum(s => s.sl_nhap2.GetValueOrDefault(0)) <= 0)
             {
-                msg = string.Format(fmtErr, string.Format(@"Lỗi: phải có ít nhất 1 dòng có số lượng KCS lớn hơn 0."));
+                msg = string.Format(fmtErr, string.Format(@"Lỗi: phải có ít nhất 1 dòng có số lượng nhập kho lớn hơn 0."));
                 goto EndEventHandler;
             }
 
 
             var msgErrs = new List<maHHVT_SLThieu_LaBTP>();
             var vts = new List<md_lenhsanxuat_tosx_vattu>();
+            var cdhSXs = new List<md_lenhsanxuat_tosx_cdh>();
             var lsxIds = new List<string>();
             foreach (var dh1 in md_nhapkhonb_cdhs.ToList())
             {
-                var tsxId = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_cdh_id == dh1.cdhTsxLsxId).Select(s => s.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                var sp1 = dh1.ma_sanpham;
+                var cdhids = dh1.lsx_to.Split(',').ToList();
+                cdhSXs = db.md_lenhsanxuat_tosx_cdh.Where(s => cdhids.Contains(s.md_lenhsanxuat_tosx_cdh_id)).ToList()
+                        .OrderBy(s => cdhids.IndexOf(s.md_lenhsanxuat_tosx_cdh_id)).ToList();
 
-                var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == tsxId).FirstOrDefault();
+                var tsxIds = cdhSXs.Select(s=>s.md_lenhsanxuat_tosx_id).Distinct().ToList();
 
                 var bomSPs = db.md_lenhsanxuat_tosx_vattuBackup
                 .Join(db.md_sanpham, a => a.vt, b => b.md_sanpham_id, (a, b) => new { a, b })
-                .Where(s => s.a.md_lenhsanxuat_tosx_id == tsxId & s.a.sp == dh1.md_sanpham_id & (s.a.soluong ?? 0) > 0)
-                .OrderBy(s => s.b.ma_sanpham)
+                .Where(s => tsxIds.Contains(s.a.md_lenhsanxuat_tosx_id) & s.a.sp == dh1.md_sanpham_id & (s.a.soluong ?? 0) > 0)
+                .GroupBy(s=>new { s.a.vt, s.b.ma_sanpham, s.a.sp })
+                .Select(s=> new {
+                    idVT = s.Key.vt,
+                    maVT = s.Key.ma_sanpham,
+                    s.Key.sp,
+                    soluong = s.Max(t=>t.a.soluong)
+                })
+                .Distinct()
+                .OrderBy(s => s.maVT)
                 .ToList();
 
                 foreach (var vtB in bomSPs)
                 {
-                    var slth1 = (decimal)vtB.a.soluong.GetValueOrDefault(0) * dh1.sl_nhap1.GetValueOrDefault(0);
-                    var slth2 = (decimal)vtB.a.soluong.GetValueOrDefault(0) * dh1.sl_nhap2.GetValueOrDefault(0);
+                    var slth1 = (decimal)vtB.soluong.GetValueOrDefault(0) * dh1.sl_nhap1.GetValueOrDefault(0);
+                    var slth2 = (decimal)vtB.soluong.GetValueOrDefault(0) * dh1.sl_nhap2.GetValueOrDefault(0);
 
-                    var vtServer = db.md_lenhsanxuat_tosx_vattu.Where(s => s.md_lenhsanxuat_tosx_id == tsxId & s.md_sanpham_id == vtB.a.vt).FirstOrDefault();
-                    var vt = db.md_lenhsanxuat_tosx_vattu.Local.Where(s => s.md_lenhsanxuat_tosx_id == tsxId & s.md_sanpham_id == vtB.a.vt).FirstOrDefault();
+                    var vt2sServer = db.md_lenhsanxuat_tosx_vattu.Where(s => tsxIds.Contains(s.md_lenhsanxuat_tosx_id) & s.md_sanpham_id == vtB.idVT & s.sp1 == sp1).ToList().OrderBy(s => tsxIds.IndexOf(s.md_lenhsanxuat_tosx_id)).ToList();
+                    var vt2s = db.md_lenhsanxuat_tosx_vattu.Local.Where(s => tsxIds.Contains(s.md_lenhsanxuat_tosx_id) & s.md_sanpham_id == vtB.idVT & s.sp1 == sp1).ToList().OrderBy(s => tsxIds.IndexOf(s.md_lenhsanxuat_tosx_id)).ToList();
 
-                    if (vt == null)
+                    if (vt2s.Count <= 0)
                     {
-                        msg += string.Format(@"
-                                    <div style='color:red;padding:4px;'>
-                                        Lỗi: <span style='color: blue'>{0}</span> ({2}) cần vật tư <span style='color: blue'>{1}</span>.
-                                    </div>", dh1.ma_sanpham, vtB.b.ma_sanpham, dh1.tenhang);
+                        msg += $@"
+                        <div style='color:red;padding:4px;'>
+                            Lỗi: <span style='color: blue'>{dh1.ma_sanpham}</span> ({vtB.maVT}) cần vật tư <span style='color: blue'>{dh1.tenhang}</span>.
+                        </div>";
                     }
                     else
                     {
-                        vt.sl_backup2 = vt.sl_backup2.GetValueOrDefault(0) + slth2;
-                        vts.Add(vt);
+                        foreach (var vt2 in vt2s)
+                        {
+                            var sltd = vt2.sl_hanngach.GetValueOrDefault(0) - vt2.sl_backup2.GetValueOrDefault(0);
+                            if (sltd > 0)
+                            {
+                                var slct = sltd > slth2 ? slth2 : sltd;
+                                vt2.sl_backup2 = vt2.sl_backup2.GetValueOrDefault(0) + slct;
+                                slth2 = slth2 - slct;
+                            }
+                            vts.Add(vt2);
+                        }
                     }
                 }
 
@@ -205,42 +227,24 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                     //--cap nhat vao kho
                     string khospId = nhap_kho(db, dh, nk, 1, userTK);
                     //--tao lich su nhap kho
-                    add_kho_ls(db, dh, nk, 1, userTK, tsx);
+                    add_kho_ls(db, dh, nk, 1, userTK);
                     //--cap nhat lenh san xuat
                     if (sl_nhap > 0)
                     {
-                        foreach (var lsx_to_cdh in db.md_lenhsanxuat_tosx_cdh.
-                                Where(s =>
-                                s.md_sanpham_id == dh1.md_sanpham_id &
-                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList())
+                        var sl_nhapSav = sl_nhap;
+                        foreach (var cdhLSX in cdhSXs)
                         {
-                            lsx_to_cdh.sl_dahoanthanh = lsx_to_cdh.sl_dahoanthanh.GetValueOrDefault(0) + sl_nhap;
+                            if (sl_nhapSav > 0)
+                            {
+                                var sltd = cdhLSX.sl_chiato.GetValueOrDefault(0) - cdhLSX.sl_chiato2.GetValueOrDefault(0)
+                                    - cdhLSX.sl_datncc.GetValueOrDefault(0) - cdhLSX.sl_datncc2.GetValueOrDefault(0)
+                                    - cdhLSX.sl_danhapkho.GetValueOrDefault(0);
+                                var sln = sl_nhapSav > sltd ? sltd : sl_nhapSav;
+                                cdhLSX.sl_danhapkho = cdhLSX.sl_danhapkho.GetValueOrDefault(0) + sln;
+                                sl_nhapSav = sl_nhapSav - sln;
+                                lsxIds.Add(cdhLSX.md_lenhsanxuat_id);
+                            }
                         }
-
-                        var ck_dhSTs = db.md_nhapkhonb_cdh.Where(s =>
-                            s.md_nhapkhonb_id != nk.md_nhapkhonb_id
-                            & s.md_sanpham_id == dh.md_sanpham_id
-                            & s.lsx_to == dh.lsx_to
-                            & db.md_nhapkhonb.Where(t => t.md_nhapkhonb_id == s.md_nhapkhonb_id & t.trangthai == Helper.SOANTHAO).Count() > 0).ToList();
-                        foreach (var ck_dh in ck_dhSTs)
-                        {
-                            var tsldSav = ck_dh.tong_sl_dat.GetValueOrDefault(0);
-                            ck_dh.tong_sl_dat = (ck_dh.tong_sl_dat - dh.sl_danhap).GetValueOrDefault(0).Set0WhenlessThan0();
-                            if(tsldSav != ck_dh.tong_sl_dat.GetValueOrDefault(0))
-                                ck_dh.sl_nhap = 0;
-                        }
-
-                        //var ck_dhXNs = db.md_nhapkhonb_cdh.Where(s =>
-                        //    s.md_nhapkhonb_id != nk.md_nhapkhonb_id
-                        //    & s.md_sanpham_id == dh.md_sanpham_id
-                        //    & s.lsx_to == dh.lsx_to
-                        //    & db.md_nhapkhonb.Where(t => t.md_nhapkhonb_id == s.md_nhapkhonb_id & t.trangthai == Helper.DANHAN).Count() > 0).ToList();
-                        //foreach (var ck_dh in ck_dhXNs)
-                        //{
-                        //    ck_dh.tong_sl_dat = ck_dh.sl_muonnhap;
-                        //}
-
-                        lsxIds.Add(tsx.md_lenhsanxuat_id);
 
                         msg_success += string.Format(@"
                                 <div style='color:blue'>
@@ -261,29 +265,27 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 msg = msg_success + msg;
                 nk.trangthai = Helper.HIEULUC;
                 nk.ngaychuyen = ngayKCS;
+                nk.ngayhieuluc = DateTime.Now;
                 nk.banggiaNC = pbgnc.md_banggia_id;
                 nk.phienbangiaNC = pbgnc.md_phienbangia_id;
                 db.SaveChanges();
 
                 var updated = false;
+                lsxIds = lsxIds.Distinct().ToList();
                 foreach(var lsx in db.md_lenhsanxuat.Where(s=>lsxIds.Contains(s.md_lenhsanxuat_id)).ToList())
                 {
                     if(lsx.dhtron.GetValueOrDefault(false))
                     {
-                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id).FirstOrDefault();
-                        var cdh = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id & s.sl_chiato > s.sl_dahoanthanh).Count() <= 0;
+                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id).ToList();
+                        var tsxIds = tsxs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
+                        var cdh = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                            tsxIds.Contains(s.md_lenhsanxuat_tosx_id) &
+                            (s.sl_chiato ?? 0) - (s.sl_chiato2 ?? 0) - (s.sl_datncc ?? 0) - (s.sl_datncc2 ?? 0) - (s.sl_danhapkho ?? 0) > 0
+                            ).Count() <= 0;
                         if (cdh)
                         {
                             updated = true;
-                            lsx.md_trangthai_id = Helper.HOANTHANH;
-
-                            var dhpx = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == lsx.md_dondathangphanxuong_id).FirstOrDefault();
-                            if (dhpx != null)
-                            {
-                                dhpx.md_trangthai_id = Helper.KETTHUC;
-                            }
-
-                            var dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == dhpx.sctdathang).FirstOrDefault();
+                            var dsdh = db.c_danhsachdathang.Where(s => s.so_po == lsx.donhang_thamchieu).FirstOrDefault();
                             if (dsdh != null)
                             {
                                 dsdh.trangthai = Helper.KETTHUC;
@@ -304,7 +306,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         }
         catch (Exception ex)
         {
-            msg = string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
+            msg = $@"<div style='color:red'>{ex.ToString()}</div>";
         }
 
     EndEventHandler:;
@@ -361,7 +363,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
     }
 
     //--tao lich su nhap kho
-    public string add_kho_ls(EntityContext db, md_nhapkhonb_cdh dh, md_nhapkhonb nk, decimal nhanvoi, User_TK us, md_lenhsanxuat_tosx tsx)
+    public string add_kho_ls(EntityContext db, md_nhapkhonb_cdh dh, md_nhapkhonb nk, decimal nhanvoi, User_TK us)
     {
         string id_new = Helper.getNewId();
         md_kho_giaodich giao = new md_kho_giaodich();
@@ -370,14 +372,14 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         giao.md_sanpham_id = dh.md_sanpham_id;
         giao.soluong_dichchuyen = dh.sl_nhap * nhanvoi;
         giao.ngaychuyen = nk.ngaychuyen;
-        giao.kieuchuyen = "Nhập kho";
+        giao.kieuchuyen = Helper.NhapKho;
         giao.dongnhapxuat = nk.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
         giao.mota = dh.tenhang;
         giao.md_to_id = nk.md_to_id;
         giao.sanxuat = 1;
-        giao.lsx = dh.lsx_to.Substring(0, 13);
-        giao.tosxId = tsx.md_lenhsanxuat_tosx_id;
+        giao.lsx = dh.cdhTsxLsxId;
+        giao.tosxId = dh.lsx_to;
         giao.nguoitao = us.ad_user_id;
         giao.vaitrotao = us.ad_role_id;
         giao.bophantao = us.md_phongban_id;

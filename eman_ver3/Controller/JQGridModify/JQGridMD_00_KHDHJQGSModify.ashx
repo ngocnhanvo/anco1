@@ -398,157 +398,72 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+            var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            var object_s = db.c_kehoachdathang.Where(p => ids.Contains(p.c_kehoachdathang_id)).ToList();
+            if (object_s.Count <= 0)
             {
-                var ids = context.Request.Form["id"].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).ToList();
-                foreach (var id_del_ in ids)
-                {
-                    var object_ = db.c_kehoachdathang.Where(p => p.c_kehoachdathang_id == id_del_).Take(1).FirstOrDefault();
-                    if (object_ == null)
-                    {
-                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
-                    }
-                    else
-                    {
-                        if (db.c_kehoachdathang_cdhcd.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id & object_.trangthai != Helper.SOANTHAO).Count() > 0)
-                        {
-                            msg += string.Format(@"<br><b>{0}</b>: Đã hiệu lực.", object_.ten_kh);
-                        }
-                        else if (db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id
-                            & db.c_nhucauvattu_dhpx.Where(t => t.md_dondathangphanxuong_id == s.c_kehoachdathang_dhcpx_id).Count() > 0).Count() > 0)
-                        {
-                            msg += string.Format(@"<br><b>{0}</b>: Đã tạo nhu cầu mua vật tư.", object_.ten_kh);
-                        }
-                        else if(!string.IsNullOrWhiteSpace(object_.nhomKH))
-                        {
-                            msg += string.Format(@"<br>Kế hoạch này đang thuộc <b>kế hoạch tổng</b> có tên là <b>""{0}""</b>", object_.nhomKH);
-                        }
-                        else
-                        {
-                            var khdhpxOlds = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).ToList();
-                            var khdhpxIds = khdhpxOlds.Select(s => s.c_kehoachdathang_dhcpx_id).ToList();
-                            var dhpxOlds = db.md_dondathangphanxuong.Where(s => khdhpxIds.Contains(s.c_kehoachdathang_dhcpx_id)).ToList();
-                            var dhpxIds = dhpxOlds.Select(s => s.md_dondathangphanxuong_id).ToList();
-                            var lsxOlds = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).ToList();
-
-                            //Kiểm tra tình trạng xử lý hàng tồn và đặt mua ngoài
-                            var xlht = false;
-                            foreach (var lsxOld in lsxOlds)
-                            {
-                                if(lsxOld.md_trangthai_id != Helper.CHUAHOANTHANH)
-                                {
-                                    xlht = true;
-                                    msg += string.Format(@"<br><b>{0}</b>: đã xử lý hàng tồn.", object_.ten_kh);
-                                    break;
-                                }
-                                else
-                                {
-                                    foreach (var tsx in db.md_lenhsanxuat_tosx.Where(s=>s.md_lenhsanxuat_id == lsxOld.md_lenhsanxuat_id).ToList())
-                                    {
-                                        if(!string.IsNullOrWhiteSpace(tsx.phieulayhttp) & tsx.phieulayhttp != "-")
-                                        {
-                                            xlht = true;
-                                            msg += string.Format(@"<br><b>{0}</b>: kế hoạch này đã xử lý hàng tồn TP.", object_.ten_kh);
-                                            break;
-                                        }
-
-                                        if(!string.IsNullOrWhiteSpace(tsx.phieulayht) & tsx.phieulayht != "-")
-                                        {
-                                            xlht = true;
-                                            msg += string.Format(@"<br><b>{0}</b>: kế hoạch này đã xử lý hàng tồn thô.", object_.ten_kh);
-                                            break;
-                                        }
-
-                                        var sldncc = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList().Sum(s => s.sl_datncc.GetValueOrDefault(0));
-                                        if(sldncc > 0)
-                                        {
-                                            xlht = true;
-                                            msg += string.Format(@"<br><b>{0}</b>: kế hoạch này đã đặt hàng NCC.", object_.ten_kh);
-                                            break;
-                                        }
-                                    }
-
-                                    if (xlht)
-                                    {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        db.md_lenhsanxuat.Remove(lsxOld);
-                                    }
-                                }
-                            }
-                            //Kiểm tra tình trạng triển khai sản xuất
-                            var tksx = false;
-                            if (!xlht)
-                            {
-                                foreach (var dhpxOld in dhpxOlds)
-                                {
-                                    if (dhpxOld.md_trangthai_id != Helper.SOANTHAO)
-                                    {
-                                        tksx = true;
-                                        msg += string.Format(@"<br><b>{0}</b>: đã triển khai sản xuất.", object_.ten_kh);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        db.md_dondathangphanxuong.Remove(dhpxOld);
-                                    }
-                                }
-                            }
-                            //Kiểm tra tình trạng mua vật tư
-                            var mvt = false;
-                            if (!tksx)
-                            {
-                                foreach (var khdhpx in khdhpxOlds)
-                                {
-                                    if (khdhpx.tinh_ncvt.GetValueOrDefault(false))
-                                    {
-                                        mvt = true;
-                                        msg += string.Format(@"<br><b>{0}</b>: đã tính nhu cầu vật tư.", object_.ten_kh);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            //Nếu không phát hiện vấn đề thì cho phép xóa kế hoạch
-                            if (!mvt)
-                            {
-                                var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).Take(1).FirstOrDefault();
-                                var ds = db.c_danhsachdathang.FirstOrDefault(s => s.c_danhsachdathang_id == dcht.c_danhsachdathang_id);
-                                if (dcht != null)
-                                {
-                                    db.c_doichieuhangton.Remove(dcht);
-                                    ds.md_trangthai_id = Helper.HIEULUC;
-                                    ds.trangthai = Helper.SOANTHAO;
-                                }
-
-                                VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
-                                db.c_kehoachdathang.Remove(object_);
-                                db.SaveChanges();
-                            }
-                        }
-                    }
-                }
+                msg = $@"<br>Không tìm thấy đối tượng cần xóa.";
+                goto EndEventHandler;
             }
-            catch (Exception ex)
+
+            foreach (var object_ in object_s)
             {
-                msg = "Lỗi: " + ex.Message;
+                if (object_.trangthai != Helper.SOANTHAO)
+                {
+                    msg += string.Format(@"<br><b>{0}</b>: chỉ xóa được khi ở trạng thái Soạn Thảo.", object_.ten_kh);
+                }
+                else if (!string.IsNullOrWhiteSpace(object_.nhomKH))
+                {
+                    msg += string.Format(@"<br>Kế hoạch này đang thuộc <b>kế hoạch tổng</b> có tên là <b>""{0}""</b>", object_.nhomKH);
+                }
+                else
+                {
+                    var dhpxOlds = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).ToList();
+                    var dhpxIds = dhpxOlds.Select(s => s.md_dondathangphanxuong_id).ToList();
+                    var lsxOlds = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).ToList();
+
+                    foreach (var lsxOld in lsxOlds)
+                    {
+                        db.md_lenhsanxuat.Remove(lsxOld);
+                    }
+
+                    foreach (var dhpxOld in dhpxOlds)
+                    {
+                        db.md_dondathangphanxuong.Remove(dhpxOld);
+                    }
+
+                    var ds = db.c_danhsachdathang.FirstOrDefault(s => s.so_po == object_.donhang_thamchieu);
+                    if (ds != null)
+                    {
+                        ds.md_trangthai_id = Helper.HIEULUC;
+                        ds.trangthai = Helper.SOANTHAO;
+                    }
+
+                    VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
+                    db.c_kehoachdathang.Remove(object_);
+                }
             }
 
             if (msg.Length <= 0)
-            {
-                msg = string.Format(@"true#Xóa kế hoạch đặt hàng đã chọn thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg.Substring(4));
-                transaction.Rollback();
-            }
+                db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = $"Lỗi: {ex.Message}";
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"true#Xóa kế hoạch đặt hàng đã chọn thành công";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg.Substring(4)}";
         }
         context.Response.Write(msg);
     }

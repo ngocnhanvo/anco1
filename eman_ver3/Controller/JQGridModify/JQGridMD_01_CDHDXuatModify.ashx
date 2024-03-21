@@ -248,141 +248,136 @@ public class JQGridMD_01_CDHDXuatModify : IHttpHandler, System.Web.SessionState.
     public void CA_01_CapnhatSLXNB(HttpContext context)
     {
         string msg = "";
-        //using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+            string sel_val = context.Request.Form["sel_val"];
+            decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
+            string[] vnn = context.Request.Form["id"].Split(',');
+
+            md_xuatkhonb xnb = null;
+            foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
             {
-                string sel_val = context.Request.Form["sel_val"];
-                decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
-                string[] vnn = context.Request.Form["id"].Split(',');
+                var errorExist = false;
+                if (xnb == null)
+                    xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
 
-                md_xuatkhonb xnb = null;
-                foreach (var xb_cdh in db.md_xuatkhonb_cdh.Where(s => vnn.Contains(s.md_xuatkhonb_cdh_id)).ToList())
+                if (xnb.trangthai == "HIEULUC")
                 {
-                    var errorExist = false;
-                    if (xnb == null)
-                        xnb = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == xb_cdh.md_xuatkhonb_id).FirstOrDefault();
+                    msg = "Dòng " + xnb.sochungtu + " đã Hiệu lực.";
+                    break;
+                }
+                else
+                {
+                    var sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
 
-                    if (xnb.trangthai == "HIEULUC")
+                    decimal sltd = xb_cdh.tong_sl_xuat.GetValueOrDefault(0);
+                    if (sel_val == "0")
+                        slvc_case = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
+
+                    if (xnb.bosung == 4)
                     {
-                        msg = "Dòng " + xnb.sochungtu + " đã Hiệu lực.";
-                        break;
-                    }
-                    else
-                    {
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
+                        var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
+                        var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
+                        var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
+                            s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                            & s.md_sanpham_id == xb_cdh.md_sanpham_id
+                            ).FirstOrDefault();
 
-                        decimal sltd = xb_cdh.tong_sl_xuat.Value - xb_cdh.sl_daxuat.Value;
-                        if (sel_val == "0")
-                            slvc_case = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
 
-                        if (xnb.bosung == 4)
+                        foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
+                                & s.md_sanpham_id == sp.md_sanpham_id).ToList())
                         {
-                            var lsxTsx = Extension.getLSXToId2(xb_cdh.lsx_to, db);
-                            var lsxTSX_prevChk = Extension.getLSXToId_Prev(lsxTsx.tsx, db);
-                            var spCDT = db.md_lenhsanxuat_tosx_cdh.Where(
-                                s => s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
-                                & s.md_sanpham_id == xb_cdh.md_sanpham_id
-                                ).FirstOrDefault();
-
-
-                            foreach (var ddhpx_cdh in db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    s.md_lenhsanxuat_tosx_id == lsxTSX_prevChk.md_lenhsanxuat_tosx_id
-                                    & s.md_sanpham_id == sp.md_sanpham_id).ToList())
+                            var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
+                            var slcto = ddhpx_cdh.sl_chiato.GetValueOrDefault(0) + ddhpx_cdh.sl_nhapkho.GetValueOrDefault(0);
+                            slvc_case = sel_val == "2" ? (sltdChuyen >= 0 ? (sltdChuyen > slcto ? slcto : sltdChuyen) : 0) : slvc_case;
+                            if (sltdChuyen < slvc_case)
                             {
-                                var sltdChuyen = ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0) - ddhpx_cdh.sl_dagiao.GetValueOrDefault(0);
-                                var slcto = ddhpx_cdh.sl_chiato.GetValueOrDefault(0) + ddhpx_cdh.sl_nhapkho.GetValueOrDefault(0);
-                                slvc_case = sel_val == "2" ? (sltdChuyen >= 0 ? (sltdChuyen > slcto ? slcto : sltdChuyen) : 0) : slvc_case;
-                                if (sltdChuyen < slvc_case)
-                                {
-                                    errorExist = true;
-                                    msg +=  string.Format(@"
+                                errorExist = true;
+                                msg += string.Format(@"
                                         <div style='margin: 2px 0 2px 0;'>
                                             Lỗi: <b>""{0}"" thuộc ĐH ""({4})""</b>
                                             <br>- SL xuất lớn hơn (SL đã nhập - SL đã giao).
                                             <br>-- SL xuất:  <b>""{1}""</b>, SL đã nhập:  <b>""{2}""</b>, SL đã giao:  <b>""{3}""</b>
                                         </div>
                                     ",
-                                    sp.ma_sanpham
-                                    , slvc_case.DropTrailingZeros()
-                                    , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
-                                    , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
-                                    , xb_cdh.tenhang
-                                    );
-                                    break;
-                                }
-                            }
-
-                            if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case & errorExist == false)
-                            {
-                                errorExist = true;
-                                msg += string.Format(
-                                    @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
-                                    sp.ma_sanpham,
-                                    xb_cdh.tenhang,
-                                    spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros());
+                                sp.ma_sanpham
+                                , slvc_case.DropTrailingZeros()
+                                , ddhpx_cdh.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros()
+                                , ddhpx_cdh.sl_dagiao.GetValueOrDefault(0).DropTrailingZeros()
+                                , xb_cdh.tenhang
+                                );
+                                break;
                             }
                         }
 
-                        var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, xb_cdh.md_sanpham_id, db);
-                        if (sltkTT < slvc_case & errorExist == false)
+                        if (spCDT.sl_dahoanthanh.GetValueOrDefault(0) < slvc_case & errorExist == false)
                         {
                             errorExist = true;
                             msg += string.Format(
-                               @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL tồn kho thực tế: <b>{2}</b></div>",
-                               sp.ma_sanpham,
-                               xb_cdh.tenhang,
-                               sltkTT.DropTrailingZeros());
+                                @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL công đoạn trước: <b>{2}</b></div>",
+                                sp.ma_sanpham,
+                                xb_cdh.tenhang,
+                                spCDT.sl_dahoanthanh.GetValueOrDefault(0).DropTrailingZeros());
                         }
+                    }
 
-                        if (errorExist == false)
+                    var sltkTT = Helper.soLuongTonKhoThucTe(xnb.tukho, xb_cdh.md_sanpham_id, db);
+                    if (sltkTT < slvc_case & errorExist == false)
+                    {
+                        errorExist = true;
+                        msg += string.Format(
+                           @"<div style='margin: 2px 0 2px 0;'><b>{0}</b> ({1}) SL tồn kho thực tế: <b>{2}</b></div>",
+                           sp.ma_sanpham,
+                           xb_cdh.tenhang,
+                           sltkTT.DropTrailingZeros());
+                    }
+
+                    if (errorExist == false)
+                    {
+                        if (xnb.bosung == 0 | xnb.bosung == 3)
                         {
-                            if (xnb.bosung == 0 | xnb.bosung == 3)
-                            {
-                                xb_cdh.sl_xuat = slvc_case;
-                                xb_cdh.sl_xuat2 = slvc_case;
-                                xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                                xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
-                            }
-                            else if (slvc_case <= sltd)
-                            {
-                                xb_cdh.sl_xuat = slvc_case;
-                                xb_cdh.sl_xuat2 = slvc_case;
-                                xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
-                                xb_cdh.ghino = 0;
-                            }
-                            else
-                            {
-                                errorExist = true;
-                                msg += string.Format(
-                                    @"<div style='margin: 2px 0 2px 0;'>Lỗi: Dòng <b>{0}</b> ({1}) SL tối đa là: <b>{1}</b></div>",
-                                    sp.ma_sanpham,
-                                    xb_cdh.tenhang,
-                                    sltd.DropTrailingZeros()
-                                    );
-                            }
+                            xb_cdh.sl_xuat = slvc_case;
+                            xb_cdh.sl_xuat2 = slvc_case;
+                            xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                            xb_cdh.ghino = (xb_cdh.sl_thucxuat.GetValueOrDefault(0) - sltd + xb_cdh.truno).GetValueOrDefault(0).Set0WhenlessThan0();
+                        }
+                        else if (slvc_case <= sltd)
+                        {
+                            xb_cdh.sl_xuat = slvc_case;
+                            xb_cdh.sl_xuat2 = slvc_case;
+                            xb_cdh.sl_thucxuat = xb_cdh.sl_xuat2;
+                            xb_cdh.ghino = 0;
+                        }
+                        else
+                        {
+                            errorExist = true;
+                            msg += string.Format(
+                                @"<div style='margin: 2px 0 2px 0;'>Lỗi: Dòng <b>{0}</b> ({1}) SL tối đa là: <b>{1}</b></div>",
+                                sp.ma_sanpham,
+                                xb_cdh.tenhang,
+                                sltd.DropTrailingZeros()
+                                );
                         }
                     }
                 }
-
-                if (msg.Length <= 0)
-                    db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                msg += ex.Message;
             }
 
             if (msg.Length <= 0)
-            {
-                msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
-                //transaction.Commit();
-            }
-            else
-            {
-                msg = string.Format("<div style='color:red'>Lỗi {0}</div>", msg);
-                //transaction.Rollback();
-            }
+                db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg += ex.ToString();
+        }
+
+        if (msg.Length <= 0)
+        {
+            msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
+        }
+        else
+        {
+            msg = string.Format("<div style='color:red'>Lỗi {0}</div>", msg);
         }
         context.Response.Write(msg);
     }

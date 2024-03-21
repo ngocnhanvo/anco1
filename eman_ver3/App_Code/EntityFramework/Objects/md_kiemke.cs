@@ -67,10 +67,22 @@
                         public DateTime? ngaydenghi { get; set; }
                 
 						
+                        #region md_kiemke_ngayhieuluc_wintaFN
+                        
+                        #endregion md_kiemke_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_kiemke_ngaytao_wintaFN
                         
                         #endregion md_kiemke_ngaytao_wintaFN
                         public DateTime? ngaytao { get; set; }
+                
+						
+                        #region md_kiemke_ngayxacnhan_wintaFN
+                        
+                        #endregion md_kiemke_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region md_kiemke_nguoicapnhat_wintaFN

@@ -103,10 +103,22 @@
                         public DateTime? ngaygiaohang { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_ngayhieuluc_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_nhapkho_ncc_ngaytao_wintaFN
                         
                         #endregion md_nhapkho_ncc_ngaytao_wintaFN
                         public DateTime? ngaytao { get; set; }
+                
+						
+                        #region md_nhapkho_ncc_ngayxacnhan_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region md_nhapkho_ncc_nguoicapnhat_wintaFN

@@ -60,9 +60,12 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
                 cn.md_to_id,
                 cn.phongbanId,
                 cn.vattu == true ? "KVT" :
-                    !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == false ? "KSX" :
-                        !string.IsNullOrEmpty(cn.md_to_id) & cn.hangton.GetValueOrDefault(false) == true ? "KTSX" :
-                            cn.hangton == true ? "KTTP" : cn.ma_kho.StartsWith("KHO4") ? "KDG" : "KTP"
+                    cn.ma_kho == Helper.KhoThoChoHoanThien ? "KSX1" :
+                        cn.ma_kho == Helper.KhoHangSauHoanThien ? "KSX2" :
+                            cn.ma_kho == Helper.KHOTRON ? "KHH" :
+                                cn.ma_kho == Helper.KHOTONTHO ? "KTSX" :
+                                    cn.ma_kho == Helper.KHOTONTP ? "KTTP" :
+                                        cn.ma_kho.StartsWith("KHO4") ? "KDG" : "KTP"
             );
         }
         str += "</select>";

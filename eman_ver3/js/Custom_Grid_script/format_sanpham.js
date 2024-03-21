@@ -1,10 +1,13 @@
 ﻿//Start San pham
 function format_sanpham(elem) {
-    $(elem).keypress(function (e) {
-        if (e.which == '13') {
-            timkiem_sanpham($(this).next(), 1);
-        }
-    });
+    if (!$(elem)[0].keyPressF) {
+        $(elem)[0].keyPressF = 1;
+        $(elem).keypress(function (e) {
+            if (e.which == '13') {
+                timkiem_sanpham($(this).next(), 1);
+            }
+        });
+    }
     
     $(elem).parent().append(`<span onclick="timkiem_sanpham(this)"
         class="span_format_sanpham glyphicon glyphicon-search" 

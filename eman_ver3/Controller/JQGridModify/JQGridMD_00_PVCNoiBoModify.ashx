@@ -157,7 +157,8 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     else
                     {
                         var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp == object_.sochungtu).ToList();
-                        if(tsxs.Count <= 0)
+                        var tsxThos = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht == object_.sochungtu).ToList();
+                        if(tsxs.Count <= 0 & tsxThos.Count <= 0)
                         {
                             object_.md_trangthai_id = "SOANTHAO";
                         }
@@ -166,13 +167,22 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                             foreach (var tsx in tsxs)
                             {
                                 tsx.phieulayhttp = "";
-                                var dhpxid = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s => s.md_dondathangphanxuong_id).FirstOrDefault();
-                                var dhcpxid = db.md_dondathangphanxuong.Where(s => s.md_dondathangphanxuong_id == dhpxid).Select(s => s.c_kehoachdathang_dhcpx_id).FirstOrDefault();
-                                var khdhid = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpxid).Select(s => s.c_kehoachdathang_id).FirstOrDefault();
+                                var khdhid = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s => s.c_kehoachdathang_id).FirstOrDefault();
                                 var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdhid).FirstOrDefault();
                                 if (khdh != null)
                                 {
                                     khdh.trangthai = Helper.SOANTHAO;
+                                }
+                            }
+
+                            foreach (var tsx in tsxThos)
+                            {
+                                tsx.phieulayht = "";
+                                var khdhid = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s => s.c_kehoachdathang_id).FirstOrDefault();
+                                var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdhid).FirstOrDefault();
+                                if (khdh != null)
+                                {
+                                    khdh.trangthai = Helper.DaXLTTP;
                                 }
                             }
                             db.md_vanchuyennoibo.Remove(object_);

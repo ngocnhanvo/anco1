@@ -13,6 +13,12 @@
                         public string md_lenhsanxuat_tosx_vattu_id { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_vattu_bantp_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_bantp_wintaFN
+                        public bool? bantp { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_vattu_bophancapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_vattu_bophancapnhat_wintaFN
@@ -35,6 +41,12 @@
                         
                         #endregion md_lenhsanxuat_tosx_vattu_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_vattu_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_vattu_md_lenhsanxuat_tosx_id_wintaFN
@@ -115,6 +127,30 @@
                         public Decimal? soluong { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_vattu_sp1_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_sp1_wintaFN
+                        public string sp1 { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_vattu_sp2_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_sp2_wintaFN
+                        public string sp2 { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_vattu_sp3_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_sp3_wintaFN
+                        public string sp3 { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_vattu_tp_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_tp_wintaFN
+                        public bool? tp { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_vattu_vaitrocapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_vattu_vaitrocapnhat_wintaFN
@@ -161,6 +197,12 @@
                         
                         #endregion md_lenhsanxuat_tosx_vattu_value_vaitrotao_wintaFN
                         public string value_vaitrotao { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_vattu_vattu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_vattu_vattu_wintaFN
+                        public bool? vattu { get; set; }
                 
 						
                     }

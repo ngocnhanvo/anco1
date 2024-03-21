@@ -30,16 +30,20 @@ public static class Helper
     public static string DaXLTBTP = "DaXLTBTP";
     public static string DATNCC = "DATNCC";
     public static string DATSX = "DATSX";
+    public static string DATHET = "DATHET";
+
     public static string CHODUYET = "CHODUYET";
     public static string DADUYET = "DADUYET";
+
     public static string TUCHOI = "TUCHOI";
+    public static string NhapKho = "Nhập kho";
+    public static string XuatKho = "Xuất kho";
 
     public static string KHOTRON = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTRON"];
-    public static string KHODUC = System.Web.Configuration.WebConfigurationManager.AppSettings["KHODUC"];
-    public static string KHOHTTHO = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOHTTHO"];
-    public static string KHOHT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOHT"];
     public static string KHOTONTHO = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTHO"];
     public static string KHOTONTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTP"];
+    public static string KhoThoChoHoanThien = System.Web.Configuration.WebConfigurationManager.AppSettings["KhoThoChoHoanThien"];
+    public static string KhoHangSauHoanThien = System.Web.Configuration.WebConfigurationManager.AppSettings["KhoHangSauHoanThien"];
     public static string KHOTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTP"];
     public static string KHOVT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOVT"];
 

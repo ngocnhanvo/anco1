@@ -1,257 +1,453 @@
 ﻿//Start Lệnh sản xuất
-function format_lenhsx(elem) {
-    var id_elem = $(elem).attr('id');
-    $(elem).parent().append('<span onclick="timkiem_lenhsx(\'' + id_elem + '\')" ' +
-        'class="span_format_lenhsx glyphicon glyphicon-search" style="position: absolute;margin: 1px 0 0 -21px;background-color: rgb(248, 249, 243);padding: 3.5px;cursor: pointer;border-left: 1px solid rgba(204, 204, 204, 0.63)" />');
-    $(elem).attr('readonly', true);
-    $(elem).css('cursor', 'default');
-    $(elem).keypress(function (e) {
-        if (e.which == '13') {
-            $(elem).next().click();
-        }
-    });
-}
+var format_lenhsx = {
+    create: function (elem) {
+        $(elem).parent().append(`
+            <span
+                class="format_lenhsx glyphicon glyphicon-search" 
+                style="position:absolute;margin:1px 0 0 -21px;background-color:rgb(248, 249, 243);padding: 3.5px;cursor:pointer;border-left:1px solid rgba(204, 204, 204, 0.63)"
+            />`
+        );
 
-function timkiem_lenhsx(id_elem, type) {
-    if ($(`#${id_elem}`).prop('disabled') == true)
-        return;
-    var load_sp = 0;
-    var namegrid = "gridMD_00_Lenhsanxuat_cp";
-    $('body').append(`
-        <div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục Lệnh sản xuất">
-            <table id="gridMD_00_Lenhsanxuat_cp"></table>
-            <div id="pagergridMD_00_Lenhsanxuat_cp"></div>
-        </div>`
-    );
+        $(elem).attr('readonly', true);
+        $(elem).css('cursor', 'default');
+        $(elem).next().click(function () {
+            format_lenhsx.search($(this));
+        });
 
-    var multi = false;
-    if (tengrid0 == 'gridMD_00_Xuatnoibo_PDN' | tengrid0 == 'gridMD_00_Nhapnoibo_PDN' | tengrid0 == 'gridMD_00_PVCNoiBo_PDN')
-    {
-        multi = true;
-    }
-    
-    $('#dlg_gridSmal_2').dialog({
-        modal: true,
-        dialogClass: "dialog_index",
-        width: 650,
-        height: window.innerHeight - 10,
-        open: function (event, ui) {
-            jQuery('#gridMD_00_Lenhsanxuat_cp').jqGrid({
-                url: 'Controller/JqGrid/JQGridMD_00_LenhsanxuatLoad.ashx?ma_module=MD_00_Lenhsanxuat&ma_menu=MN_01_Lenhsanxuat&id=null&id_sel=&module_select=1',
-                editurl: '',
-                height: window.innerHeight - 220,
-                datatype: 'json',
-                autowidth: true,
-                shrinkToFit: true,
-                rownumbers: true,
-                viewrecords: true,
-                search: true,
-                scroll: false,
-                rowNum: 100,
-                multiselect: multi,
-                multiboxonly: false,
-                rowList: [10, 50, 100, 1000],
-                pager: '#pagergridMD_00_Lenhsanxuat_cp',
-                onSelectRow: function (ids) {
-                    if (multi)
-                        checkbox_JQgrid(namegrid, 0);
-                    if (ids != '<a style=\'color:red\'>Not data (404)</a>') {
-                        cell = $('#gridMD_00_Lenhsanxuat_cp').getRowData(ids);
-                        if ($('#' + id_elem).prop('disabled') != true) {
-                            if (multi != true) {
-                                $('#' + id_elem).val(cell['sochungtu']);
-                                $('#sctdathang').val(cell['sctdathang']);
-                                $('#donhang_thamchieu').val(cell['donhang_thamchieu']);
-                                $('#xuatden').val(cell['md_phanxuong_id2']);
-                                $('#nhaptu').val(cell['md_phanxuong_id2']);
-                            }
-                        }
-                    }
-                },
-                colModel: [
-                    { key: true, fixed: true, label: 'md_lenhsanxuat_id', name: 'md_lenhsanxuat_id', index: '  lsx.md_lenhsanxuat_id ', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'md_lenhsanxuat_id' } },
-                    { key: false, fixed: true, label: 'Trạng thái', name: 'md_trangthai_id', index: ' lsx.md_trangthai_id ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, formatter: Frm_MD_00_Lenhsanxuat_trangthai, unformat: disable_formatter, align: 'left', stype: 'select', searchoptions: { sopt: ['eq'], value: { '': '', 'CHUAHOANTHANH': 'Chưa hoàn thành', 'HOANTHANH': 'Hoàn thành' } }, edittype: 'select', editoptions: { value: { 'CHUAHOANTHANH': 'Chưa hoàn thành', 'HOANTHANH': 'Hoàn thành' } }, frozen: false, formoptions: { label: 'Trạng thái' } },
-                    { key: false, fixed: true, label: 'Số Chứng Từ', name: 'sochungtu', index: '  lsx.sochungtu ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Số Chứng Từ' } },
-                    { key: false, fixed: true, label: 'ĐĐH phân xưởng', name: 'md_dondathangphanxuong_id', index: '  lsx.md_dondathangphanxuong_id ', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'ĐĐH phân xưởng' } },
-                    { key: false, fixed: true, label: 'Đơn hàng TC', name: 'donhang_thamchieu', index: 'ddhpx.donhang_thamchieu', width: 120, editable: false, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Đơn hàng tham chiếu' } },
-                    { key: false, fixed: true, label: 'Quy trình', name: 'md_phanxuong_id', index: '  px.ten_phanxuong ', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Phân xưởng' } },
-                    { key: false, fixed: true, label: 'ID Phân xưởng', name: 'md_phanxuong_id2', index: 'lsx.md_phanxuong_id ', width: 170, editable: false, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'ID Phân xưởng' } },
-                    { key: false, fixed: true, label: 'Ngày BĐSX', name: 'ngay_hieuluc', index: ' ddhpx.ngay_hieuluc', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày Lập' } },
-                    { key: false, fixed: true, label: 'Ngày kết thúc', name: 'ngayketthuc', index: '  lsx.ngayketthuc ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày kết thúc' } },
-                    { key: false, fixed: true, label: 'Ngày hoàn thành', name: 'ngayhoanthanh', index: '  lsx.ngayhoanthanh ', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, formatter: esc_date, align: 'center', searchoptions: { sopt: ['cn'], dataInit: function (elem) { search_datetime(elem); } }, editoptions: { dataInit: function (elem) { format_datetime(elem); } }, frozen: false, formatoptions: { srcformat: 'm/d/Y', newformat: format_srcdatetime() }, formoptions: { label: 'Ngày hoàn thành' } },
-                ],
-                postData: {
-                    where_ex: function () {
-                        if (tengrid0 == 'gridMD_00_Xuatnoibo') {
-                            let khdhpx = $('#kh_ddhpx').val();
-                            let dkc = " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.phieuXK != 'DAXUATHET' and lsx.md_trangthai_id = 'DAXL'";
-                            if ($('#bosung').val() == '3')
-                                dkc = `${dkc} and lsx.md_dondathangphanxuong_id in (select md_dondathangphanxuong_id from md_dondathangphanxuong where N'${khdhpx}' like N'%' + c_kehoachdathang_dhcpx_id + '%')`;
-                            
-                            return dkc;
-                        }
-                        else if (tengrid0 == 'gridMD_00_Xuatnoibo_PDN') {
-                            let dkc = ` 
-                                and  dsdh.trangthai != 'KETTHUC'
-                                and dsdh.trangthai != 'HUYBO'
-                                and lsx.md_trangthai_id = 'DAXL'
-                            `;
-                            if ($('#bosung').val() == '4')
-                                dkc += ' and isnull(dsdh.donhangtron, 0) != 1';
-
-                            return dkc;
-                        }
-                        else if (tengrid0 == 'gridMD_00_PVCNoiBo_PDN') {
-                            let dkc = ` 
-                                and  dsdh.trangthai != 'KETTHUC'
-                                and dsdh.trangthai != 'HUYBO'
-                                and lsx.md_trangthai_id = 'DAXL'
-                            `;
-                            if ($('#loaichuyen').val() == 'VANCNBCTKGH')
-                                dkc += ' and isnull(dsdh.donhangtron, 0) != 1';
-
-                            return dkc;
-                        }
-                        else if (['gridMD_00_Nhapnoibo', 'gridMD_00_Nhapnoibo_PDN'].lastIndexOf(tengrid0) > -1)
-                            return ` 
-                                and  dsdh.trangthai != 'KETTHUC'
-                                and dsdh.trangthai != 'HUYBO'
-                                and lsx.md_trangthai_id = 'DAXL'
-                                and isnull((
-                                    select 
-                                        top 1 1
-                                    from 
-                                        md_lenhsanxuat_tosx_cdh cdh
-                                        left join md_lenhsanxuat_tosx tsx on cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
-                                    where 
-                                        tsx.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
-                                        and tsx.hoatdong = 1
-                                        and cdh.md_lenhsanxuat_tosx_id = tsx.md_lenhsanxuat_tosx_id
-                                        and isnull(cdh.sl_chiato, 0) > isnull(cdh.sl_dahoanthanh, 0)
-                                ), 0) > 0
-                            `;
-                        else if (tengrid0 == 'gridMD_00_PVCNoiBo')
-                            return " and  dsdh.trangthai != 'KETTHUC' and dsdh.trangthai != 'HUYBO' and lsx.md_trangthai_id = 'DAXL'";
-                        else
-                            return `
-                                and  dsdh.trangthai != 'KETTHUC'
-                                and dsdh.trangthai != 'HUYBO'
-                                and lsx.md_trangthai_id = 'DAXL'
-                            `;
-                    }
-                },
-                beforeRequest: function () {
-                    //giữ focus
-                    if ($('#' + id_elem).val() != '' & load_sp == 0) {
-                        var val_lsxid = $('#' + id_elem).val();
-                        if (id_elem == 'md_lenhsanxuat_id')
-                            $('#gridMD_00_Lenhsanxuat_cp').jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" lsx.sochungtu ","op":"eq","data":"' + val_lsxid + '"}]}';
-                        else if (multi == false)
-                            $('#gridMD_00_Lenhsanxuat_cp').jqGrid('getGridParam', 'postData').filters = '{"groupOp":"AND","rules":[{"field":" lsx.sochungtu ","op":"eq","data":"' + val_lsxid + '"}]}';
-
-                    }
-                    input_focus = $('input:focus').attr('class');
-                },
-                ondblClickRow: function () {
-                    if (multi != true) {
-                        $('#dlg_gridSmal_2').dialog('destroy').remove();
-                    }
-                },
-                gridComplete: function () {
-                    $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width() - 5);
-                },
-                loadComplete: function (data) {
-                    var top_rowid = $('#gridMD_00_Lenhsanxuat_cp tr:nth-child(2)').attr('id');
-                    var countrow = jQuery("#gridMD_00_Lenhsanxuat_cp").jqGrid('getGridParam', 'records');
-                    if (load_sp == 0) {
-                        var val_lsxid = $('#' + id_elem).val();
-                        if (id_elem == 'md_lenhsanxuat_id')
-                            $('.gs_sochungtu.gs_gridMD_00_Lenhsanxuat_cp').val(val_lsxid);
-                        else if (multi == false)
-                            $('.gs_sochungtu.gs_gridMD_00_Lenhsanxuat_cp').val(val_lsxid);
-
-
-                        //$('#gridMD_00_Lenhsanxuat_cp').jqGrid('setSelection', val_lsxid);
-                        var grid = jQuery("#gridMD_00_Lenhsanxuat_cp");
-                        var grid_ids = grid.jqGrid('getDataIDs');
-                        for (var i = 0; i < grid_ids.length; i++) {
-                            var rowid = grid_ids[i];
-                            var aRow = grid.jqGrid('getRowData', rowid);
-                            var book_id = aRow['sochungtu'];
-                            if (val_lsxid.indexOf(book_id) > -1) {
-                                var chk_ipu_lsx = 'jqg_gridMD_00_Lenhsanxuat_cp_' + rowid;
-                                grid.jqGrid('setSelection', rowid);
-                            }
-                        }
-                        load_sp = 1;
-                        if (top_rowid.indexOf('<a style=\'color:red\'>') <= -1 & type == 1 & countrow == 1) {
-                            $('#dlg_gridSmal_2').dialog('destroy').remove();
-                        }
-                    }
-                    Focus_Selection('gridMD_00_Lenhsanxuat_cp');
-                    checkbox_JQgrid('gridMD_00_Lenhsanxuat_cp', 1);
-                    //giữ focus end
-                    $('.' + input_focus).focus();
-                },
-                caption: ' '
-            });
-            jQuery('#gridMD_00_Lenhsanxuat_cp').jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });
-            Logo_Center("glyphicon glyphicon-search", true, 'dlg_gridSmal_2');
-        },
-        close: function () {
-            $(this).dialog('destroy').remove();
-        },
-        buttons: [
-            {
-                id: 'btn-ok_',
-                text: 'OK',
-                click: function () {
-                    if (multi == true)
-                    {
-                        let ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
-                        let dhtcs = [];
-                        for (var i = 0; i < ids_sel.length; i++) {
-                            var cel_s = $('#' + namegrid).getRowData(ids_sel[i]);
-                            sct_pnk += cel_s['sochungtu'] + '\n';
-                            sct_dhtc += cel_s['sctdathang'] + '\n';
-                            val_dhtc += cel_s['donhang_thamchieu'] + '\n';
-                            dhtcs.push(cel_s['donhang_thamchieu']);
-                        }
-                        if (sct_pnk != '') {
-                            sct_pnk = sct_pnk.substring(0, sct_pnk.length - 1);
-                            sct_dhtc = sct_dhtc.substring(0, sct_dhtc.length - 1);
-                            val_dhtc = val_dhtc.substring(0, val_dhtc.length - 1);
-                        }
-
-                        $('#chungtu_lenhsx').val(sct_pnk);
-                        $('#sctdathang').val(sct_dhtc);
-                        $('#donhang_thamchieu').val(val_dhtc);
-                        $('#md_lenhsanxuat_tosx_id').val('');
-                        khoa_column('sctdathang');
-
-                        if (tengrid0 == 'gridMD_00_PVCNoiBo_PDN') {
-                            let dhtcsDis = dhtcs.filter(function onlyUnique(value, index, array) {
-                                return array.indexOf(value) === index;
-                            });
-
-                            console.log(dhtcsDis);
-                            if (dhtcsDis.length > 1) {
-                                alert('Đơn hàng bạn chọn phải trùng nhau');
-                                return;
-                            }
-                        }
-                    }
-                    $(this).dialog('destroy').remove();
-                }
-            },
-            {
-                id: 'btn-close_',
-                text: 'Cancel',
-                click: function () {
-                    $(this).dialog("destroy").remove();
-                }
+        $(elem).keypress(function (e) {
+            if (e.which == '13') {
+                format_lenhsx.search($(this), 1);
             }
-        ]
-    });
-}
+        });
+    },
+    search: function ($elem, type) {
+        let $id_elem = $elem.prev();
+        if ($id_elem.prop('disabled'))
+            return;
+        let load_sp = 0, multi = false;
+        let namegrid = "gridMD_00_Lenhsanxuat_cp";
+        $('body').append(`
+            <div id="dlg_gridSmal_2" style="margin: 4px 0 0 0; background-color: rgba(165, 121, 255, 0.07);" title="Danh mục Lệnh sản xuất">
+                <table id="${namegrid}"></table>
+                <div id="pager${namegrid}"></div>
+            </div>
+        `);
+
+        let gridSel = $('.module_spanselect').attr('id').substring(5);
+        let nhapkhoNB = gridSel.startsWith('MD_00_Nhapnoibo');
+        let xuatkhoNB = gridSel.startsWith('MD_00_Xuatnoibo');
+        let chuyenkhoNB = gridSel.startsWith('MD_00_PVCNoiBo');
+        let bosung = $(`#bosung`).val();
+        let loaichuyen = $('#loaichuyen').val();
+        let xuatVTtheoBOM = bosung == 0 & xuatkhoNB;
+        let xuatVTBoSung = bosung == 1 & xuatkhoNB;
+        let xuatHangTho = bosung == 3 & xuatkhoNB;
+        let nhapKhoHH = bosung == 0 & nhapkhoNB;
+        let giaoHangTP = loaichuyen == 'VANCNBCTKGH' & chuyenkhoNB;
+        let $dlgGridS2 = $('#dlg_gridSmal_2');
+        let $gridLSXCP = $('#gridMD_00_Lenhsanxuat_cp');
+        $dlgGridS2.dialog({
+            modal: true,
+            dialogClass: "dialog_index",
+            width: 650,
+            height: window.innerHeight - 10,
+            open: function (event, ui) {
+                $gridLSXCP.jqGrid({
+                    url: `Controller/JqGrid/JQGridMD_00_LenhSanXuatKHLoad.ashx?ma_module=MD_00_LenhSanXuatKH&ma_menu=${$('#input_idmenu').val()}`,
+                    editurl: '',
+                    height: window.innerHeight - 220,
+                    datatype: 'json',
+                    autowidth: true,
+                    shrinkToFit: true,
+                    rownumbers: true,
+                    viewrecords: true,
+                    search: true,
+                    scroll: false,
+                    rowNum: 100,
+                    multiselect: multi,
+                    multiboxonly: false,
+                    rowList: [10, 50, 100, 1000],
+                    pager: '#pagergridMD_00_Lenhsanxuat_cp',
+                    onSelectRow: function (ids) {
+                        let cell = $gridLSXCP.getRowData(ids);
+                        $id_elem.val(cell.sochungtu);
+                        $('#sctdathang').val(cell['sctdathang']);
+                        $('#donhang_thamchieu').val(cell['donhang_thamchieu']);
+                        $('#xuatden').val(cell.xuongPhu);
+                        $('#nhaptu').val(cell.xuongPhu);
+                        
+                        if (nhapKhoHH) {
+                            $('#denkho').val(cell.khomd);
+                        }
+                        else if (giaoHangTP) {
+                            $('#tukho').val(cell.khomd);
+                        }
+                    },
+                    colModel: [{
+                        key: true,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'md_lenhsanxuat2_id',
+                        name: 'md_lenhsanxuat2_id',
+                        index: ' lsx2.md_lenhsanxuat2_id ',
+                        width: 120,
+                        editable: false,
+                        hidden: true,
+                        align: 'left',
+                        searchoptions: {
+                            sopt: ['bw']
+                        },
+                        editoptions: {
+                            maxLength: 32
+                        },
+                        formoptions: {
+                            label: 'md_lenhsanxuat2_id'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Trạng thái',
+                        name: 'trangthai',
+                        index: ' lsx2.trangthai ',
+                        width: 120,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        formatter: Frm_MD_00_Lenhsanxuat2_trangthai,
+                        unformat: disable_formatter,
+                        align: 'left',
+                        stype: 'select',
+                        searchoptions: {
+                            sopt: ['bw'],
+                            value: ':;SOANTHAO:Chờ xác nhận;HIEULUC:Đã nhận;KETTHUC:Kết thúc'
+                        },
+                        edittype: 'select',
+                        editoptions: {
+                            value: 'SOANTHAO:Chờ xác nhận;HIEULUC:Đã nhận;KETTHUC:Kết thúc'
+                        },
+                        frozen: false,
+                        formoptions: {
+                            label: 'Trạng thái'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Số chứng từ',
+                        name: 'sochungtu',
+                        index: ' lsx2.sochungtu ',
+                        width: 100,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        align: 'center',
+                        searchoptions: {
+                            sopt: ['bw']
+                        },
+                        frozen: false,
+                        formoptions: {
+                            label: 'Số chứng từ'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Tên LSX',
+                        name: 'donhang',
+                        index: ' lsx2.donhang ',
+                        width: 120,
+                        editable: false,
+                        hidden: false,
+                        align: 'left',
+                        searchoptions: {
+                            sopt: ['bw']
+                        },
+                        editoptions: {
+                            maxLength: 50
+                        },
+                        frozen: false,
+                        formoptions: {
+                            label: 'Tên LSX'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Xưởng SX',
+                        name: 'xuongPhu',
+                        index: 'pb.ten_phongban',
+                        width: 120,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        align: 'left',
+                        edittype: 'select',
+                        frozen: false,
+                        formoptions: {
+                            label: 'Xưởng SX'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Ngày bắt đầu',
+                        name: 'ngaybatdau',
+                        index: ' lsx2.ngaybatdau ',
+                        width: 104,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        formatter: esc_date,
+                        align: 'center',
+                        searchoptions: {
+                            sopt: ['cn'],
+                            dataInit: function (elem) {
+                                search_datetime(elem);
+                            }
+                        },
+                        frozen: false,
+                        formatoptions: {
+                            srcformat: 'm/d/Y',
+                            newformat: format_srcdatetime()
+                        },
+                        formoptions: {
+                            label: 'Ngày bắt đầu'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Ngày kết thúc',
+                        name: 'ngayketthuc',
+                        index: ' lsx2.ngayketthuc ',
+                        width: 104,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        formatter: esc_date,
+                        align: 'center',
+                        searchoptions: {
+                            sopt: ['cn'],
+                            dataInit: function (elem) {
+                                search_datetime(elem);
+                            }
+                        },
+                        frozen: false,
+                        formatoptions: {
+                            srcformat: 'm/d/Y',
+                            newformat: format_srcdatetime()
+                        },
+                        formoptions: {
+                            label: 'Ngày kết thúc'
+                        }
+                    }, {
+                        key: false,
+                        xuatExcel: 1,
+                        khoaTuyChinh: false,
+                        fixed: true,
+                        label: 'Hạn giao hàng',
+                        name: 'ngayhoanthanh',
+                        index: ' lsx2.ngayhoanthanh ',
+                        width: 104,
+                        editable: true,
+                        editrules: {
+                            edithidden: true
+                        },
+                        hidden: false,
+                        formatter: esc_date,
+                        align: 'center',
+                        searchoptions: {
+                            sopt: ['cn'],
+                            dataInit: function (elem) {
+                                search_datetime(elem);
+                            }
+                        },
+                        frozen: false,
+                        formatoptions: {
+                            srcformat: 'm/d/Y',
+                            newformat: format_srcdatetime()
+                        },
+                        formoptions: {
+                            label: 'Hạn giao hàng'
+                        }
+                    }, {
+                        key: false,
+                        label: 'khoMD',
+                        name: 'khomd',
+                        hidden: true
+                    }],
+                    postData: {
+                        where_ex: function () {
+                            let whereAll = `and lsx2.trangthai = 'HIEULUC'`;
+                            if (xuatVTtheoBOM) {
+                                return `
+                                    ${whereAll}
+                                    and (
+	                                    select 
+		                                    top 1 1
+	                                    from 
+		                                    md_lenhsanxuat_tosx_vattu vt 
+		                                    left join md_lenhsanxuat_tosx_cdh cdh on vt.sp2 = cdh.macuoi and vt.sp3 = cdh.mathaydoi 
+	                                    where 
+		                                    1=1 
+		                                    and cdh.lsxCT = lsx2.sochungtu
+		                                    and vt.sp1 in (select ma_sanpham from md_sanpham where md_sanpham_id = cdh.md_sanpham_id) 
+		                                    and cdh.md_lenhsanxuat_tosx_id = vt.md_lenhsanxuat_tosx_id 
+		                                    and isnull(vt.vattu, 0) = 1
+                                            and isnull(vt.soluong, 0) > isnull(vt.sl_hanngach, 0)
+                                    ) > 0
+                                `;
+                            }
+                            else if (xuatVTBoSung) {
+                                return `
+                                    ${whereAll}
+                                `;
+                            }
+                            else if (xuatHangTho) {
+                                return `
+                                    ${whereAll}
+                                    and (
+	                                    select 
+		                                    top 1 1
+	                                    from 
+		                                    md_lenhsanxuat_tosx_vattu vt 
+		                                    left join md_lenhsanxuat_tosx_cdh cdh on vt.sp2 = cdh.macuoi and vt.sp3 = cdh.mathaydoi 
+	                                    where 
+		                                    1=1 
+		                                    and cdh.lsxCT = lsx2.sochungtu
+		                                    and vt.sp1 in (select ma_sanpham from md_sanpham where md_sanpham_id = cdh.md_sanpham_id) 
+		                                    and cdh.md_lenhsanxuat_tosx_id = vt.md_lenhsanxuat_tosx_id 
+		                                    and isnull(vt.bantp, 0) = 1
+                                            and isnull(vt.vattu, 0) = 0
+                                            and isnull(vt.soluong, 0) > isnull(vt.sl_hanngach, 0)
+                                    ) > 0
+                                `;
+                            }
+                            else if (nhapKhoHH) {
+                                return `
+                                    ${whereAll}
+                                    and (
+	                                    select 
+		                                    sum(cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) - isnull(cdh.sl_danhapkho, 0))
+	                                    from 
+		                                    md_lenhsanxuat_tosx_cdh cdh
+	                                    where 
+		                                    1=1 
+		                                    and cdh.lsxCT = lsx2.sochungtu
+		                                    and cdh.xuongPhu = lsx2.xuongPhu
+                                    ) > 0
+                                `;
+                            }
+                            else if (giaoHangTP) {
+                                return `
+                                    ${whereAll}
+                                    and (
+	                                    select 
+		                                    sum(cdh.sl_danhapkho - isnull(cdh.sl_dagiao, 0))
+	                                    from 
+		                                    md_lenhsanxuat_tosx_cdh cdh
+	                                    where 
+		                                    1=1 
+		                                    and cdh.lsxCT = lsx2.sochungtu
+		                                    and cdh.xuongPhu = lsx2.xuongPhu
+                                            and cdh.xuongPhu = cdh.xuongChinh
+                                    ) > 0
+                                `;
+                            }
+                            else {
+                                return ``;
+                            }
+                        }
+                    },
+                    beforeRequest: function () {
+                        
+                    },
+                    ondblClickRow: function () {
+                        $dlgGridS2.dialog('destroy').remove();
+                    },
+                    gridComplete: function () {
+                        $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width() - 5);
+                    },
+                    loadComplete: function (data) {
+
+                    },
+                    caption: ' '
+                });
+                $gridLSXCP.jqGrid('filterToolbar', { searchOnEnter: false, stringResult: true });
+                Logo_Center("glyphicon glyphicon-search", true, $dlgGridS2.attr('id'));
+            },
+            close: function () {
+                $(this).dialog('destroy').remove();
+            },
+            buttons: [
+                {
+                    id: 'btn-ok_',
+                    text: 'OK',
+                    click: function () {
+                        if (multi == true) {
+                            let ids_sel = $('#' + namegrid).jqGrid('getGridParam', 'selarrrow'), sct_pnk = '', sct_dhtc = '', val_dhtc = '';
+                            let dhtcs = [];
+                            for (var i = 0; i < ids_sel.length; i++) {
+                                var cel_s = $('#' + namegrid).getRowData(ids_sel[i]);
+                                sct_pnk += cel_s['sochungtu'] + '\n';
+                                sct_dhtc += cel_s['sctdathang'] + '\n';
+                                val_dhtc += cel_s['donhang_thamchieu'] + '\n';
+                                dhtcs.push(cel_s['donhang_thamchieu']);
+                            }
+                            if (sct_pnk != '') {
+                                sct_pnk = sct_pnk.substring(0, sct_pnk.length - 1);
+                                sct_dhtc = sct_dhtc.substring(0, sct_dhtc.length - 1);
+                                val_dhtc = val_dhtc.substring(0, val_dhtc.length - 1);
+                            }
+
+                            $('#chungtu_lenhsx').val(sct_pnk);
+                            $('#sctdathang').val(sct_dhtc);
+                            $('#donhang_thamchieu').val(val_dhtc);
+                            $('#md_lenhsanxuat_tosx_id').val('');
+                            khoa_column('sctdathang');
+
+                            if (tengrid0 == 'gridMD_00_PVCNoiBo_PDN') {
+                                let dhtcsDis = dhtcs.filter(function onlyUnique(value, index, array) {
+                                    return array.indexOf(value) === index;
+                                });
+
+                                console.log(dhtcsDis);
+                                if (dhtcsDis.length > 1) {
+                                    alert('Đơn hàng bạn chọn phải trùng nhau');
+                                    return;
+                                }
+                            }
+                        }
+                        $(this).dialog('destroy').remove();
+                    }
+                },
+                {
+                    id: 'btn-close_',
+                    text: 'Cancel',
+                    click: function () {
+                        $(this).dialog("destroy").remove();
+                    }
+                }
+            ]
+        });
+    }
+};
 //End Lệnh sản xuất

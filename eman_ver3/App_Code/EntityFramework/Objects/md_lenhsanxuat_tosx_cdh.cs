@@ -43,6 +43,18 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_lsxCT_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_lsxCT_wintaFN
+                        public string lsxCT { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_mabo_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_mabo_wintaFN
+                        public string mabo { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_macuoi_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_macuoi_wintaFN
@@ -59,6 +71,12 @@
                         
                         #endregion md_lenhsanxuat_tosx_cdh_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_cdh_md_lenhsanxuat_tosx_id_wintaFN
@@ -241,6 +259,18 @@
                         public Decimal? sl_tinhvattu { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_sp1_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_sp1_wintaFN
+                        public string sp1 { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_stt_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_stt_wintaFN
+                        public int? stt { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_vaitrocapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_vaitrocapnhat_wintaFN
@@ -287,6 +317,18 @@
                         
                         #endregion md_lenhsanxuat_tosx_cdh_value_vaitrotao_wintaFN
                         public string value_vaitrotao { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_xuongChinh_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_xuongChinh_wintaFN
+                        public string xuongChinh { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_cdh_xuongPhu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_xuongPhu_wintaFN
+                        public string xuongPhu { get; set; }
                 
 						
                     }

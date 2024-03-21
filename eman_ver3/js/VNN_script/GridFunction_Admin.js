@@ -490,7 +490,7 @@ function addremove_gridSmall(ma_row) {
     var $grid_add = $("#gridDSPB_VT"), selectedrows_add = $grid_add.jqGrid("getGridParam", "selarrrow");
     var chuoi_add = "";
     if (selectedrows_add.length) {
-        for (var i_add = 0; i_add < selectedrows_add.length; i_add++) {
+        for (let i_add = 0; i_add < selectedrows_add.length; i_add++) {
             var chen = $grid_add.jqGrid("getCell", selectedrows_add[i_add], 1);
             chuoi_add += chen + "#";
         }
@@ -500,9 +500,9 @@ function addremove_gridSmall(ma_row) {
     var $grid_remove = $("#gridDSPB_VT"), selectedrows_remove = $grid_remove.jqGrid("getRowData");
     var chuoi_remove = "";
     if (selectedrows_remove.length) {
-        for (var i_remove = 0; i_remove < selectedrows_remove.length; i_remove++) {
-            var dem = 0;
-            for (var i_add = 0; i_add < selectedrows_add.length; i_add++) {
+        for (let i_remove = 0; i_remove < selectedrows_remove.length; i_remove++) {
+            let dem = 0;
+            for (let i_add = 0; i_add < selectedrows_add.length; i_add++) {
                 if (selectedrows_add[i_add] == selectedrows_remove[i_remove][ma_row])
                     dem++;
             }
@@ -1139,7 +1139,7 @@ function click_rutgon_div(t) {
         check_click_rutgon($(".btn_check_div" + t), t);
 }
 
-function load_detail(t, a, i, e, n) {
+function load_detail(t, a, i, e, n, mutilLoad) {
     let s = ".ui-layout-center > .ui-tabs-nav > .ui-state-active",
         l = ".ui-layout-south > .ui-tabs-nav > .ui-state-active",
         r = "";
@@ -1173,32 +1173,36 @@ function load_detail(t, a, i, e, n) {
 
         if ("" != r) {
             1 == n && $("div.modcha_" + e).html(""),
-            $("#tabs_" + r).html('<div class="nhan_loading0"></div>');
+                $("#tabs_" + r).html('<div class="nhan_loading0"></div>');
 
-            try { xhr_menu.abort() } catch (c) { }
+            try { xhr_menu.abort(); } catch (c) { console.log('Huy XHR'); }
             enable_timer = !1,
-            xhr_menu = $.get("View/Menu/Content/Module/" + r + ".aspx", function (t) {
-                $("#tabs_" + r).html(t),
-                2 != n && check_click_rutgon3(".btn_check_div"),
-                enable_timer = !0
-            })
+                xhr_menu = $.get("View/Menu/Content/Module/" + r + ".aspx", function (t) {
+                    $("#tabs_" + r).html(t),
+                        2 != n && check_click_rutgon3(".btn_check_div"),
+                        enable_timer = !0;
+                });
         }
     } else {
         try {
             if (0 == i) {
                 var u = $("#" + tengrid0).jqGrid("getGridParam", "selrow");
-                if (id_parent1 != u | 1 == load_grid0) {
+                if (id_parent1 != u | mutilLoad) {
+                    try { jqgridXHR[tengrid1].abort(); } catch (c) { console.log(''); }
                     switch (id_parent1 = u, load_grid0) {
                         case "3": $("#" + tengrid1).trigger("reloadGrid"); break;
-                        default: $("#" + tengrid1)[0].triggerToolbar()
+                        default: $("#" + tengrid1)[0].triggerToolbar();
                     }
-                    load_grid0 = 2
+                    load_grid0 = 2;
                 }
             } else if (1 == i) {
+                try { jqgridXHR[tengrid2].abort(); } catch (c) { console.log(''); }
                 var u = $("#" + tengrid1).jqGrid("getGridParam", "selrow");
-                id_parent2 != u | 1 == load_grid1 && (id_parent2 = u, load_grid1 = 2, $("#" + tengrid2)[0].triggerToolbar())
+                id_parent2 != u | 1 == load_grid1 | mutilLoad && (id_parent2 = u, load_grid1 = 2, $("#" + tengrid2)[0].triggerToolbar());
             }
-        } catch (c) { }
+        } catch (c) {
+            console.log('');
+        }
     }
 }
 function display_hidden(t, a) {

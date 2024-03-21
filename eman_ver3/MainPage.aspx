@@ -50,13 +50,14 @@
 
     <script src="js/Public_script/moment.js"></script> 
     <script src="extension/mess/tableToExcel.js"></script>
-    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script lang="javascript" src="js/Public_script/xlsx.full.min.js"></script>
     <!--/ layout -->
     
     <!--Script Module-->
     <%=kq_script[0]%>
 
     <script type="text/javascript">
+        var jqgridXHR = [];
         var click_reloadJavascript = function () {
             let countModuleTotal = 0, countModuleLoaded = 0;
             let divScript = $('#divScript');

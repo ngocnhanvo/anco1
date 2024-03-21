@@ -43,6 +43,12 @@
                         public string donhang_thamchieu { get; set; }
                 
 						
+                        #region c_doichieuhangton_hangiaohangPO_wintaFN
+                        
+                        #endregion c_doichieuhangton_hangiaohangPO_wintaFN
+                        public DateTime? hangiaohangPO { get; set; }
+                
+						
                         #region c_doichieuhangton_hoatdong_wintaFN
                         
                         #endregion c_doichieuhangton_hoatdong_wintaFN

@@ -157,10 +157,22 @@
                         public DateTime? ngaydenghi { get; set; }
                 
 						
+                        #region md_xuatkhonb_ngayhieuluc_wintaFN
+                        
+                        #endregion md_xuatkhonb_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_xuatkhonb_ngaytao_wintaFN
                         
                         #endregion md_xuatkhonb_ngaytao_wintaFN
                         public DateTime? ngaytao { get; set; }
+                
+						
+                        #region md_xuatkhonb_ngayxacnhan_wintaFN
+                        
+                        #endregion md_xuatkhonb_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region md_xuatkhonb_nguoicapnhat_wintaFN

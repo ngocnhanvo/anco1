@@ -706,6 +706,10 @@ modelBuilder.Entity<ad_department>().HasKey<string>(p => p.md_phongban_id);
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<ad_department>()
+                            .Property(p => p.md_kho_id)
+                            .HasColumnName("md_kho_id")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<ad_department>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");

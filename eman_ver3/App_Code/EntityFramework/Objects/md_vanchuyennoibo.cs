@@ -175,6 +175,12 @@
                         public DateTime? ngaytao { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_ngayxacnhan_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
+                
+						
                         #region md_vanchuyennoibo_nguoicapnhat_wintaFN
                         
                         #endregion md_vanchuyennoibo_nguoicapnhat_wintaFN

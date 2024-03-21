@@ -365,7 +365,7 @@ System.Web.SessionState.IRequiresSessionState
         string id = context.Request.Form["id"];
         var vnn = id.Split(',').ToList();
         var pub = new Public();
-        pub.LapKeHoachDatHang(db, userTK, vnn);
+        //pub.LapKeHoachDatHang(db, userTK, vnn);
     }
 
     public void CA_01_UpdateTHDH(HttpContext context)

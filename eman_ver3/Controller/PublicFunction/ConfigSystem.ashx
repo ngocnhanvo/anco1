@@ -182,13 +182,16 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
         if (id == "null" | id == "undefined") { id = null; }
         ad_module mod0 = db.ad_module.Where(s => s.ma_module == ma_module).FirstOrDefault();
 
-        string sql_count = string.Format(@"select count(1) from {0} where 1=1 {1}", mod0.from_sql, mod0.where_sql);
+        string groupby = "";
+        if (mod0.groupby_sql != null & mod0.groupby_sql != "")
+            groupby = $"group by {mod0.groupby_sql}";
+        string sql_count = $@"select 1 from {mod0.from_sql} where 1=1 {mod0.where_sql} {groupby}";
         sql_count = ADmin_ConvertStringToCode.Avariable(context, sql_count, "", id, null, db);
-        System.Data.DataTable dt_count = Mbg.Data.SqlClient.SqlHelper.GetData(sql_count);
+        var dt_count = Mbg.Data.SqlClient.SqlHelper.GetData(sql_count);
 
         if (dt_count.Rows.Count > 0)
         {
-            msg = dt_count.Rows[0][0].ToString();
+            msg = dt_count.Rows.Count.ToString();
         }
         context.Response.Write(msg);
     }

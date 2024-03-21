@@ -43,12 +43,12 @@ public class VNN_VariablePublic
                 kq[3] += string.Format(@"loadScriptUrl('{0}','{1}');{2}", src_link, src_text, Environment.NewLine);
 
                 kq[1] += "<input type='hidden' id=\"org_grid" + mod.ma_module + "\"/>";
-                kq[2] += string.Format(@"let id_{0} = 0;", mod.ma_module);
-                kq[2] += string.Format(@"let filter_{0} = null, filterVal_{0} = null;", mod.ma_module);
-                kq[2] += string.Format(@"let page_{0} = null;", mod.ma_module);
-                kq[2] += string.Format(@"let sidx_{0} = null;", mod.ma_module);
-                kq[2] += string.Format(@"let sord_{0} = null;", mod.ma_module);
-                kq[2] += string.Format(@"let header_{0} = null;", mod.ma_module);
+                kq[2] += $@"let id_{mod.ma_module} = 0;";
+                kq[2] += $@"let filter_{mod.ma_module} = null, filterVal_{mod.ma_module} = null;";
+                kq[2] += $@"let page_{mod.ma_module} = null;";
+                kq[2] += $@"let sidx_{mod.ma_module} = null;";
+                kq[2] += $@"let sord_{mod.ma_module} = null;";
+                kq[2] += $@"let header_{mod.ma_module} = null;";
             }
         }
 
@@ -58,18 +58,16 @@ public class VNN_VariablePublic
         //lst.Add("lvvuong00000");
         //lst.Add("ptttrang00000");
 
-        foreach (var nameFld in lst)
+        
+        var d = new DirectoryInfo(ExcuteSignalRStatic.mapPathSignalR("~/js/Custom_Grid_script"));
+        FileInfo[] Files = d.GetFiles("*.js");
+        foreach (FileInfo file in Files)
         {
-            var d = new DirectoryInfo(ExcuteSignalRStatic.mapPathSignalR("~/js/Custom_Grid_script/" + nameFld));
-            FileInfo[] Files = d.GetFiles("*.js");
-            foreach (FileInfo file in Files)
-            {
-                string srcD_text = string.Format("js/Custom_Grid_script/" + nameFld + "/" + file.Name);
-                string srcD_link = string.Format(Security.UrlBase() + srcD_text + "?ver=" + Guid.NewGuid());
+            string srcD_text = $@"js/Custom_Grid_script/{file.Name}";
+            string srcD_link = $@"{Security.UrlBase()}{srcD_text}?ver={Guid.NewGuid()}";
 
-                kq[0] += string.Format(@"<script src=""{0}"" type=""text/javascript""></script>", srcD_link);
-                kq[3] += string.Format(@"loadScriptUrl('{0}','{1}');{2}", srcD_link, srcD_text, Environment.NewLine);
-            }
+            kq[0] += $@"<script src=""{srcD_link}"" type=""text/javascript""></script>";
+            kq[3] += $@"loadScriptUrl('{srcD_link}','{srcD_text}');{Environment.NewLine}";
         }
 
         return kq;

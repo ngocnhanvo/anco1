@@ -39,14 +39,14 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
             case "CA_01_Taodomuavattu":
                 this.CA_01_Taodomuavattu(context);
                 break;
-            case "CA_01_CopyKehoach":
-                this.CA_01_CopyKehoach(context);
-                break;
             case "load_khmvt":
                 this.load_khmvt(context);
                 break;
             case "CA_01_TongHopLHMVT":
                 this.CA_01_TongHopLHMVT(context);
+                break;
+            case "CA_01_CopyKehoach":
+                this.CA_01_CopyKehoach(context);
                 break;
             default:
                 break;
@@ -55,65 +55,86 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
 
     public void CA_01_TongHopLHMVT(HttpContext context)
     {
-        string msg = "";
-        string[] id = context.Request.Form["id"].Split(',');
-        var khmvts = db.c_kehoachmuavt.Where(s => id.Contains(s.c_kehoachmuavt_id)).OrderByDescending(s => s.sochungtu);
-        c_kehoachmuavt khmvt_sel = khmvts.FirstOrDefault();
-
-        if (khmvts.Where(s => s.md_trangthai_id == Helper.SOANTHAO).Count() == khmvts.Count())
+        var msg = "";
+        var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(false).Split(',').ToList();
+        try
         {
-            foreach (var khmvt in khmvts.Where(s => s.c_kehoachmuavt_id != khmvt_sel.c_kehoachmuavt_id).ToList())
+            var khmvts = db.c_kehoachmuavt.Where(s => ids.Contains(s.c_kehoachmuavt_id)).ToList();
+
+            foreach (var khmvt in khmvts)
             {
-                foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).ToList())
+                if (khmvt == null)
                 {
-                    var khmvt_cdh_sel = db.c_kehoachmuavt_cdh.FirstOrDefault(
-                    s => s.c_kehoachmuavt_id == khmvt_sel.c_kehoachmuavt_id & s.md_sanpham_id == khmvt_cdh.md_sanpham_id);
-                    if (khmvt_cdh_sel != null)
-                    {
-                        khmvt_cdh_sel.sl_can += khmvt_cdh.sl_can;
-                        khmvt_cdh_sel.sl_denghi = khmvt_cdh_sel.sl_can;
-                    }
-                    else
-                    {
-                        var khmvt_cdh_new = khmvt_cdh.Clone();
-                        khmvt_cdh_new.c_kehoachmuavt_cdh_id = Helper.getNewId();
-                        khmvt_cdh_new.c_kehoachmuavt_id = khmvt_sel.c_kehoachmuavt_id;
-                        khmvt_cdh_new.sl_denghi = khmvt_cdh.sl_can;
-                        db.c_kehoachmuavt_cdh.Add(khmvt_cdh_new);
-                    }
+                    msg = $@"Kế hoạch không tìm thấy";
+                    goto EndEventHandler;
                 }
 
-                string sct_new = khmvt_sel.sochungtu, sct_old = khmvt.sochungtu;
-                foreach (c_yeucaumuavt ycmvt in db.c_yeucaumuavt.Where(s => s.c_kehoachmuavt_id.Contains(sct_old)).ToList())
+                if (khmvt.md_trangthai_id != Helper.SOANTHAO)
                 {
-                    if (!ycmvt.c_kehoachmuavt_id.Contains(sct_new))
-                    {
-                        ycmvt.c_kehoachmuavt_id = ycmvt.c_kehoachmuavt_id.Replace(sct_old, sct_new);
-                    }
-                    else
-                    {
-                        ycmvt.c_kehoachmuavt_id = ycmvt.c_kehoachmuavt_id.Replace("," + sct_old, "").Replace(sct_old + ",", "").Replace(sct_old, "");
-                    }
-
-                    foreach (c_yeucaumuavt_cdh ycmvt_cdh in db.c_yeucaumuavt_cdh.Where(s => s.sapxep == khmvt.c_kehoachmuavt_id & s.c_yeucaumuavt_id == ycmvt.c_yeucaumuavt_id).ToList())
-                    {
-                        ycmvt_cdh.sapxep = khmvt_sel.c_kehoachmuavt_id;
-                    }
+                    msg = $@"Kế hoạch ở trạng thái khác ""Soạn Thảo""";
+                    goto EndEventHandler;
                 }
-                khmvt_sel.mota += khmvt.sochungtu + ",";
-                db.c_kehoachmuavt.Remove(khmvt);
-                db.SaveChanges();
+
+                khmvt.md_trangthai_id = Helper.DANHAN;
             }
-            msg += "<div style='color:blue'>Thành công: Đã tập hợp tất cả kế hoạch đã chọn thành \"" + khmvt_sel.sochungtu + "\"</div>";
+
+            db.SaveChanges();
         }
-        else
+        catch (Exception ex)
         {
-            msg += "<div style='color:red'>Lỗi: Tất cả kết hoạch được chọn đều phải có trạng thái \"Soạn Thảo\"</div>";
+            msg = ex.Message;
         }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+            msg = $@"<div style='color:blue'>Xác nhận thành công</div>";
+        else
+            msg = $@"<div style='color:red' error>{msg}</div>";
+
         context.Response.Write(msg);
     }
 
+    public void CA_01_CopyKehoach(HttpContext context)
+    {
+        var msg = "";
+        var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(false).Split(',').ToList();
+        try
+        {
+            var khmvts = db.c_kehoachmuavt.Where(s => ids.Contains(s.c_kehoachmuavt_id)).ToList();
+            foreach (var khmvt in khmvts)
+            {
+                if (khmvt == null)
+                {
+                    msg = $@"Kế hoạch không tìm thấy";
+                    goto EndEventHandler;
+                }
 
+                if (khmvt.md_trangthai_id != Helper.DANHAN)
+                {
+                    msg = $@"Kế hoạch ở trạng thái khác ""Đã nhận""";
+                    goto EndEventHandler;
+                }
+
+                khmvt.md_trangthai_id = Helper.HIEULUC;
+            }
+
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+            msg = $@"<div style='color:blue'>Hiệu lực thành công</div>";
+        else
+            msg = $@"<div style='color:red' error>{msg}</div>";
+
+        context.Response.Write(msg);
+    }
 
     public void load_khmvt(HttpContext context)
     {
@@ -137,47 +158,6 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
         item["khmvt"] = str;
         item["donvitinh"] = value;
         context.Response.Write(JsonConvert.SerializeObject(item));
-    }
-
-    public void CA_01_CopyKehoach(HttpContext context)
-    {
-        string msg = "";
-        string id = context.Request.Form["id"];
-        string[] nht = id.Split(',');
-        string sochungtu = VNN_VariablePublic.sochungtu(db, "DTMVT", 1);
-        c_kehoachmuavt dsdh = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == id).FirstOrDefault();
-        if (nht.Count() > 1)
-        {
-            msg = "<div style='color:red'>Lỗi: Chỉ được chọn một kế hoạch.</div>" + "###" + "";
-        }
-        else if (dsdh == null)
-        {
-            msg = "<div style='color:red'>Lỗi: Không tìm kế hoạch đã chọn.</div>" + "###" + "";
-        }
-        else
-        {
-            string id_new = Helper.getNewId();
-            c_kehoachmuavt dsdh_new = dsdh.Clone();
-            dsdh_new.c_kehoachmuavt_id = id_new;
-            dsdh_new.sochungtu = sochungtu;
-            dsdh_new.c_donmuavattu_id = " ";
-            db.c_kehoachmuavt.Add(dsdh_new);
-
-            foreach (c_kehoachmuavt_cdh dongdsdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == dsdh.c_kehoachmuavt_id))
-            {
-                if (dongdsdh.sl_duyet2 == 0)
-                {
-                    c_kehoachmuavt_cdh dongdsdh_new = dongdsdh.Clone();
-                    dongdsdh_new.c_kehoachmuavt_cdh_id = Helper.getNewId();
-                    dongdsdh_new.c_kehoachmuavt_id = id_new;
-                    db.c_kehoachmuavt_cdh.Add(dongdsdh_new);
-                }
-            }
-
-            db.SaveChanges();
-            msg = "<div style='color:blue'>Tạo mới kế hoạch \"" + sochungtu + "\" thành công.</div>" + "###" + id_new;
-        }
-        context.Response.Write(msg);
     }
 
     public void load_banggia(HttpContext context)

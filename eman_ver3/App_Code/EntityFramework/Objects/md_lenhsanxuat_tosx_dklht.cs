@@ -37,10 +37,22 @@
                         public string macuoi { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_dklht_mathaydoi_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_dklht_mathaydoi_wintaFN
+                        public string mathaydoi { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_dklht_md_donvitinhsanpham_id_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_dklht_md_donvitinhsanpham_id_wintaFN
                         public string md_donvitinhsanpham_id { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_id_wintaFN
+                        public string md_lenhsanxuat_id { get; set; }
                 
 						
                         #region md_lenhsanxuat_tosx_dklht_md_lenhsanxuat_tosx_id_wintaFN

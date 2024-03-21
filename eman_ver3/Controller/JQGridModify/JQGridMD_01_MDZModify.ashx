@@ -514,7 +514,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
         string module_lv1 = "";
         string module_lv2 = "";
         string module_spanselect = " module_spanselect";
-        string pointer = "cursor: pointer;";
+        string pointer = "cursor: pointer;user-select:none;";
 
         int dem = 0, dem_lv0 = 0;
         string loai_menu = "";
@@ -537,7 +537,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
             " onclick=\"loadModule('" + mod.ma_module + "','" + mod.url + "','" + mod.capmodule + "','" + mod.ten_module + "')\">" + ten_menu + "</span>";
             module_lv0 += "<input id='input_tenmodule0' value='" + mod.ten_module + "' type='hidden' /> ";
 
-            module_lv0 += "&nbsp; &nbsp;";
+            //module_lv0 += "&nbsp; &nbsp;";
 
             module_lv1 += "<span class=''></span><span style=' margin: 0 0 0 20;'></span>";
             if (loai_menu != "JQGS")

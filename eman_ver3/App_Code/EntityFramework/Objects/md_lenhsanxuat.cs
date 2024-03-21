@@ -31,6 +31,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_c_kehoachdathang_id_wintaFN
+                        
+                        #endregion md_lenhsanxuat_c_kehoachdathang_id_wintaFN
+                        public string c_kehoachdathang_id { get; set; }
+                
+						
                         #region md_lenhsanxuat_check_dtvt_wintaFN
                         
                         #endregion md_lenhsanxuat_check_dtvt_wintaFN
@@ -41,6 +47,12 @@
                         
                         #endregion md_lenhsanxuat_dhtron_wintaFN
                         public bool? dhtron { get; set; }
+                
+						
+                        #region md_lenhsanxuat_donhang_thamchieu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_donhang_thamchieu_wintaFN
+                        public string donhang_thamchieu { get; set; }
                 
 						
                         #region md_lenhsanxuat_hoatdong_wintaFN

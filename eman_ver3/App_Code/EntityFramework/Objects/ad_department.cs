@@ -49,6 +49,12 @@
                         public string md_doitackinhdoanh_id { get; set; }
                 
 						
+                        #region ad_department_md_kho_id_wintaFN
+                        
+                        #endregion ad_department_md_kho_id_wintaFN
+                        public string md_kho_id { get; set; }
+                
+						
                         #region ad_department_mota_wintaFN
                         
                         #endregion ad_department_mota_wintaFN

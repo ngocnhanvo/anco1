@@ -229,6 +229,18 @@
                         public string value_vaitrotao { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_xuongChinh_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_xuongChinh_wintaFN
+                        public string xuongChinh { get; set; }
+                
+						
+                        #region md_lenhsanxuat_tosx_xuongPhu_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_xuongPhu_wintaFN
+                        public string xuongPhu { get; set; }
+                
+						
                     }
                 }
             

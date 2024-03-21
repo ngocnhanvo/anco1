@@ -174,13 +174,15 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
 
                     VNN_Function.SortColumn("ad_case", sapxep, "ad_module_id", id, "ma_case", ma_case, null);
                     System.Threading.Thread.Sleep(500);
+                    var addCas = 0;
                     foreach (ad_module mod_thuake in db.ad_module.Where(s => s.thuake == mod.ad_module_id))
                     {
+                        addCas++;
                         ad_case cn_tk = new ad_case
                         {
                             ad_case_id = Helper.getNewId(),
                             ad_module_id = mod_thuake.ad_module_id,
-                            ma_case = "CA_01_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt"),
+                            ma_case = "CA_01_" + DateTime.Now.AddSeconds(addCas).ToString("ddMMyyyyhhmmssffftt"),
                             ma_menu = mod_thuake.ma_menu,
                             ma_module = mod_thuake.ma_module,
                             thuake = ad_case_id,
@@ -210,7 +212,6 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
                         };
                         db.ad_case.Add(cn_tk);
                         lstAdCase.Add(cn_tk);
-                        System.Threading.Thread.Sleep(100);
                     }
                     db.SaveChanges();
                     Create_Case(context, hamxuly, mod.ma_module, ma_case, ma_moduletk, ma_casetk);
@@ -446,8 +447,6 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
 
     public void Create_Case(HttpContext context, string hamxuly, string ma_module, string ma_case, string ma_moduletk, string ma_casetk)
     {
-        EntityContext db = new EntityContext();
-
         if (hamxuly != "click_add(tengrid)" &
             hamxuly != "click_edit(tengrid)" &
             hamxuly != "click_del(tengrid)" &
@@ -456,75 +455,27 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
             hamxuly != "TenHam(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt)"
             )
         {
-            string filepath = Security.UrlBase() + "js/Module_script/" + ma_module + ".js";
-            filepath = context.Server.MapPath(filepath);
+            string filepath = ExcuteSignalRStatic.mapPathSignalR($"~/js/Module_script/{ma_module}.js");
             string w = System.IO.File.ReadAllText(filepath, System.Text.Encoding.Unicode);
-            string str_new = "//Add function at here (don't remove this line, please)";
-            str_new += "\n\n//start " + ma_case;
+            string str_new = "";
+
             if (ma_casetk != "")
             {
-                str_new += "\n////" + ma_moduletk + ".js -> function " + ma_casetk;
+                str_new = "//Add function at here (don't remove this line, please)";
+                str_new += $"\n\n//start {ma_case}";
+                str_new += $"\n////{ma_moduletk}.js -> function {ma_casetk}";
+                str_new += $"\n//end {ma_case}\n";
             }
             else
             {
-                ad_case cn_checkhx1 = db.ad_case.Where(s => s.hamxuly == (hamxuly)).FirstOrDefault();
-                ad_module cn_checkhx2 = db.ad_module.Where(s=> s.ad_module_id == cn_checkhx1.ad_module_id).FirstOrDefault();
-                string sel = "selrow";
-                if(cn_checkhx2.mutil_select == true)
-                {
-                    sel = "selarrrow";
-                }
-                str_new += "\nfunction " + hamxuly + " {";
-                str_new += "\n    let masterId = id_parent;";
-                str_new += "\n    if (masterId == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', '"+ sel + "\'); }";
-                str_new += "\n    if (masterId == null | masterId == '') {";
-                str_new += "\n        alert('Chưa chọn đối tượng cần thao tác.');";
-                str_new += "\n    }";
-                str_new += "\n    else {";
-                str_new += "\n        let CLform_infor = new get_Forminfor(ma_case, Form_infor);";
-                str_new += "\n        let ma_module = tengrid.replace('grid','');";
-                str_new += "\n        $('body').append('<div id=\"dlg_gridSmall\" title=\"' + CLform_infor.tieude + '\">' +";
-                str_new += "\n            '<div class=\"dlg_content\">Thực hiện chức năng này?</div>' +";
-                str_new += "\n        '</div>');";
-                str_new += "\n        $('#dlg_gridSmall').dialog({";
-                str_new += "\n            modal: true,";
-                str_new += "\n            width: CLform_infor.dodai,";
-                str_new += "\n            height: CLform_infor.docao,";
-                str_new += "\n            open: function (event, ui) {";
-                str_new += "\n                Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);";
-                str_new += "\n            },";
-                str_new += "\n            close: function () {";
-                str_new += "\n                $(this).dialog('destroy').remove();";
-                str_new += "\n            },";
-                str_new += "\n            buttons: [";
-                str_new += "\n            {";
-                str_new += "\n                id: 'btn-ok',";
-                str_new += "\n                text: 'Đồng ý',";
-                str_new += "\n                click: function () {";
-                str_new += "\n                	  $('#btn-ok').button('option', 'disabled', true);";
-                str_new += "\n                	  $('.dlg_content').prepend('<div class=\"nhan_loading\"></div>');";
-                str_new += "\n                    $.post('Controller/JQGridModify/JQGrid" + ma_module + "Modify.ashx?oper=" + ma_case + "&ma_module=' + ma_module,";
-                str_new += "\n                    { id:masterId.toString() }, function (result) {";
-                str_new += "\n                        $('#btn-ok').button('option', 'disabled', false);";
-                str_new += "\n                        $('.dlg_content').html(result);";
-                str_new += "\n                        loadclick(tengrid, 'edit', load_stt);";
-                str_new += "\n                        Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);";
-                str_new += "\n                    });";
-                str_new += "\n                }";
-                str_new += "\n            },";
-                str_new += "\n            {";
-                str_new += "\n                id: 'btn-close',";
-                str_new += "\n                text: 'Thoát',";
-                str_new += "\n                click: function () {";
-                str_new += "\n                    $(this).dialog('destroy').remove();";
-                str_new += "\n                }";
-                str_new += "\n            }";
-                str_new += "\n            ]";
-                str_new += "\n        });";
-                str_new += "\n    }";
-                str_new += "\n}";
+                var temp = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/TempCode/CASE.js");
+                var contentTemp =  System.IO.File.ReadAllText(temp,  System.Text.Encoding.Unicode);
+                var content = contentTemp;
+                content = content.Replace("ZzmoduleCasezZ", ma_case);
+                content = content.Replace("ZzmodulezZ", ma_module);
+                str_new = content;
             }
-            str_new += "\n//end " + ma_case + "\n";
+
             string str_replace = "//Add function at here (don't remove this line, please)";
             w = w.Replace(str_replace, str_new);
             System.IO.File.WriteAllText(filepath, w, System.Text.Encoding.Unicode);
@@ -567,8 +518,13 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
         string str_start = "//start " + ma_case;
         string str_end = "//end " + ma_case;
         string w = System.IO.File.ReadAllText(filepath, System.Text.Encoding.Unicode);
-        string str_replace = str_start + VNN_Function.FindString(w, str_start, str_end) + str_end;
-        w = w.Replace(str_replace, "");
+        var strRPsav = str_start + VNN_Function.FindString(w, str_start, str_end) + str_end;
+        string str_replace = "\n\n" + strRPsav;
+        w = w.Replace(str_replace, null);
+        str_replace = "\n" + strRPsav;
+        w = w.Replace(str_replace, null);
+        str_replace = strRPsav;
+        w = w.Replace(str_replace, null);
         System.IO.File.WriteAllText(filepath, w, System.Text.Encoding.Unicode);
     }
 

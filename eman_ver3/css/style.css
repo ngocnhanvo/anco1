@@ -599,18 +599,21 @@ input.format_vnn.formatfile {
 
 td[role="gridcell"][title="err"],
 td[role="gridcell"][title="-999,999,999"],
+td[role="gridcell"][title="-999,999,999.000"],
 td[role="gridcell"][title="01-01-1000 00:00"] {
     font-size: 0px !important;
 }
 
     td[role="gridcell"][title="err"] > input,
     td[role="gridcell"][title="-999,999,999"] > input,
+    td[role="gridcell"][title="-999,999,999.000"] > input, 
     td[role="gridcell"][title="01-01-1000 00:00"] > input {
         display: none;
     }
 
     td[role="gridcell"][title="err"]::after,
     td[role="gridcell"][title="-999,999,999"]::after,
+    td[role="gridcell"][title="-999,999,999.000"]::after,
     td[role="gridcell"][title="01-01-1000 00:00"]::after {
         content: 'Not Data (404)';
         color: red;
@@ -655,4 +658,16 @@ a[excel] {
     right: 5px;
     float: right;
     text-decoration: underline;
+}
+
+img {
+    user-select: none;
+}
+
+#div_chuotphai {
+    user-select: none;
+}
+
+.ui-jqgrid-sortable, .ui-jqgrid-resize, .jqgrid-rownum, .ui-pager-control {
+    user-select: none;
 }
