@@ -73,9 +73,9 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                                 msg = @"KHMVT không được tìm thấy";
                                 break;
                             }
-                            else if (khmvt.md_trangthai_id != "SOANTHAO")
+                            else if (khmvt.md_trangthai_id != Helper.DANHAN)
                             {
-                                msg = @"KHMVT không ở trạng thái ""Soạn Thảo""";
+                                msg = @"KHMVT không ở trạng thái ""Đã Xác Nhận""";
                                 break;
                             }
                             count = 1;
