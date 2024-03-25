@@ -291,6 +291,9 @@ public static class VNN_Config
             if (cot.stype != null & cot.stype != "")
                 kq[0] += "stype:'" + cot.stype + "',";
             //search option
+            if (cot.sopt == "disable")
+                kq[0] += "search:false,";
+
             kq[0] += "searchoptions:{sopt:['" + cot.sopt + "']";
             if (cot.searchoptions != null & cot.searchoptions != "")
             {

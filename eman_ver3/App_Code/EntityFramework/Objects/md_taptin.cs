@@ -43,6 +43,12 @@
                         public string lienket { get; set; }
                 
 						
+                        #region md_taptin_lienket2_wintaFN
+                        
+                        #endregion md_taptin_lienket2_wintaFN
+                        public string lienket2 { get; set; }
+                
+						
                         #region md_taptin_mimetype_wintaFN
                         
                         #endregion md_taptin_mimetype_wintaFN

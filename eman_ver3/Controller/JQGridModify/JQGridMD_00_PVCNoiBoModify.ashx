@@ -4,6 +4,8 @@ using System.Web;
 using System.Linq;
 using System.Collections.Generic;
 using DataAcess;
+using Newtonsoft.Json;
+
 public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     EntityContext db;
@@ -51,11 +53,67 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
 
     public void CA_01_XuLyVanChuyen(HttpContext context)
     {
+        var pub = new Public();
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
-        var pub = new Public();
-        msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"]);
+        var rows = context.Request.Form["rows"];
+        var msgErrs = new List<Public.BaoLoiKhiHieuLuc>();
+
+        var vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
+        if (vcnb == null)
+        {
+            msg = $@"Không tìm thấy phiếu vận chuyển";
+            goto EndEventHandler;
+        }
+        if (vcnb.md_trangthai_id != Helper.DANHAN)
+        {
+            msg = $@"Dòng ""{vcnb.sochungtu}"" cần ở trạng thái ""Đã Xác Nhận""";
+            goto EndEventHandler;
+        }
+
+        string ngaychuyenStr = context.Request.Form["ngaychuyen"];
+        var ngaychuyen = VNN_Config.setDateTime(ngaychuyenStr);
+        if (!ngaychuyen.IsDate())
+        {
+            msg = $@"Lỗi: Giá trị ngày chuyển kho bị sai.";
+            goto EndEventHandler;
+        }
+        vcnb.ngaychuyen = ngaychuyen;
+
+        var vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).ToList();
+        var dongHangs = JsonConvert.DeserializeObject<List<md_vanchuyennoibo_cdvc>>(rows);
+        foreach (var dh in vcnb_cdvcs)
+        {
+            var dongHang = dongHangs.Where(s => s.md_vanchuyennoibo_cdvc_id == dh.md_vanchuyennoibo_cdvc_id).FirstOrDefault();
+            if (dongHang != null)
+            {
+                dh.soluong_dichchuyen = dongHang.soluong_dichchuyen;
+            }
+        }
+
+        msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs);
+        msgErrs = pub.msgErrsPL.Clone();
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0 & msgErrs.Count <= 0)
+        {
+            msg = $@"<div style='color:blue'>Hiệu lực phiếu chuyển kho thành công</div>";
+        }
+        else
+        {
+            if (msgErrs.Count > 0)
+                msg = "Thiếu thông tin";
+
+            var result = new
+            {
+                msg = $@"<div error style='color:red'>{msg}</div>",
+                json = msgErrs
+            };
+
+            msg = JsonConvert.SerializeObject(result);
+        }
         context.Response.Write(msg);
     }
 

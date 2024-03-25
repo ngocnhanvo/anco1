@@ -1858,6 +1858,10 @@ modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
                             .HasColumnName("lienket")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.lienket2)
+                            .HasColumnName("lienket2")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
                             .Property(p => p.mimetype)
                             .HasColumnName("mimetype")
                             .HasColumnType("nvarchar");

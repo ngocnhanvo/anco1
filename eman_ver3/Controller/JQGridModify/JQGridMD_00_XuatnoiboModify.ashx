@@ -98,9 +98,10 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
             xk.ngaychuyen = ngaychuyen;
             var dongHangs = JsonConvert.DeserializeObject<List<md_xuatkhonb_cdh>>(rows);
+            var xknbDHs = dongHangs.Where(s => s.sl_thucxuat != null).Select(s => s.md_xuatkhonb_cdh_id).ToList();
             dongHangs = dongHangs.Where(s => s.sl_thucxuat != null).ToList();
             var md_xuatkhonb_cdhs = db.md_xuatkhonb_cdh.
-                        Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id & s.sl_thucxuat != null).ToList();
+                        Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id & xknbDHs.Contains(s.md_xuatkhonb_cdh_id)).ToList();
 
             var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
             if (kho == null)
@@ -152,6 +153,36 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 decimal sl_xuat = dh.sl_thucxuat.GetValueOrDefault(0);
                 if (sl_xuat > 0 & msgErrs.Count <= 0)
                 {
+                    if(dh.ghino > 0)
+                    {
+                        var ghinoChoXuongServer = db.md_kho_ghino.Where(s =>
+                            s.md_phanxuong_id == xk.xuatden
+                            & s.md_sanpham_id == dh.md_sanpham_id
+                            & s.soluong_no > 0).FirstOrDefault();
+
+                        var ghinoChoXuong = db.md_kho_ghino.Local.Where(s =>
+                            s.md_phanxuong_id == xk.xuatden
+                            & s.md_sanpham_id == dh.md_sanpham_id
+                            & s.soluong_no > 0).FirstOrDefault();
+
+                        if (ghinoChoXuong == null)
+                        {
+                            ghinoChoXuong = new md_kho_ghino();
+                            ghinoChoXuong.md_kho_ghino_id = Helper.getNewId();
+                            ghinoChoXuong.md_phanxuong_id = xk.xuatden;
+                            ghinoChoXuong.md_sanpham_id = dh.md_sanpham_id;
+                            ghinoChoXuong.soluong_no = dh.ghino;
+                            ghinoChoXuong.sctlienquan = xk.chungtu_lenhsx;
+                            ghinoChoXuong.ngayno = DateTime.Now;
+                            db.md_kho_ghino.Add(ghinoChoXuong);
+                        }
+                        else
+                        {
+                            if(!ghinoChoXuong.sctlienquan.Contains(xk.chungtu_lenhsx))
+                                ghinoChoXuong.sctlienquan += "," + xk.chungtu_lenhsx;
+                            ghinoChoXuong.soluong_no = ghinoChoXuong.soluong_no.GetValueOrDefault(0) + dh.ghino;
+                        }
+                    }
                     decimal sl_xuatVT = dh.sl_thucxuat.GetValueOrDefault(0);
                     var tsxvtids = dh.lsx_to.Split(',').ToList();
                     var vtsServer = db.md_lenhsanxuat_tosx_vattu.Where(s => tsxvtids.Contains(s.md_lenhsanxuat_tosx_vattu_id)).ToList();
@@ -231,19 +262,15 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         else
         {
             if (msgErrs.Count > 0)
-            {
-                var result = new
-                {
-                    msg = $@"<div error style='color:red'>Thiếu thông tin</div>",
-                    json = msgErrs
-                };
+                msg = $@"Thiếu thông tin";
 
-                msg = JsonConvert.SerializeObject(result);
-            }
-            else
+            var result = new
             {
-                msg = $@"<div error style='color:red'>{msg}</div>";
-            }
+                msg = $@"<div error style='color:red'>{msg}</div>",
+                json = msgErrs
+            };
+
+            msg = JsonConvert.SerializeObject(result);
         }
 
         context.Response.Write(msg);

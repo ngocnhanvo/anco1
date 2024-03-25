@@ -127,7 +127,7 @@ function click_view(tengridView) {
 function click_refresh(tengridRefresh) {
     loadclick_(tengridRefresh, 'noSel');
 }
-function click_refresh_clearsearch(tengrid) {
+function click_refresh_clearsearch(tengrid, reload = true) {
 
     /*$('#gview_'+ tengrid+' .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input input').val('');
 	$('#gview_'+ tengrid+' .ui-jqgrid-hdiv > .ui-jqgrid-hbox table tr th div table tr > .ui-search-input select').val('');*/
@@ -153,7 +153,9 @@ function click_refresh_clearsearch(tengrid) {
         });
     }
     catch (r) { console.warn('cạivat', r); }
-    $('#' + tengrid)[0].triggerToolbar();
+
+    if (reload)
+        $('#' + tengrid)[0].triggerToolbar();
     //loadclick_(tengrid, 'noSel');
 }
 
@@ -721,20 +723,31 @@ function loadgiatri_demCV(t, n) {
 }
 
 function loadclick(t, n, i) {
-    if (null == id_action[i]) { try { $(".ui-state-error").css("display", "none") } catch (a) { } var e = $("#" + t).jqGrid("getGridParam", "postData").filters, o = $("#" + t).jqGrid("getGridParam", "postData").page, r = $("#" + t).jqGrid("getGridParam", "postData").sord, d = $("#" + t).jqGrid("getGridParam", "postData").sidx; id_oper[i] = n, id_action[i] = i, $("#" + t).jqGrid("setGridParam", { postData: { filters: e, sord: r, sidx: d }, search: !0 }), $("#" + t).trigger("reloadGrid", [{ page: o }]) }
-} function loadclick_(t, n) {
-    let postDT = $("#" + t).jqGrid("getGridParam", "postData");
-    let i = postDT ? postDT.filters : null,
-        a = postDT ? postDT.page : null,
-        e = postDT ? postDT.sord : null,
-        o = postDT ? postDT.sidx : null;
+    loadclick_(t);
+}
+function loadclick_(t, n) {
+    let $gridL = $("#" + t);
+    let loadonceL = $gridL.jqGrid('getGridParam', 'loadonce');
+    if (loadonceL) {
+        click_refresh_clearsearch(t, false);
+        $gridL.setGridParam({ datatype: 'json', page: 1 });
+        $gridL[0].triggerToolbar();
+    }
+    else {
+        $gridL[0].triggerToolbar();
+        //let postDT = $gridL.jqGrid("getGridParam", "postData");
+        //let i = postDT ? postDT.filters : null,
+        //    a = postDT ? postDT.page : null,
+        //    e = postDT ? postDT.sord : null,
+        //    o = postDT ? postDT.sidx : null;
 
-    $("#" + t).jqGrid("setGridParam", { postData: { filters: i, sord: e, sidx: o, oper_action: n }, search: !0 }),
-        $("#" + t).trigger("reloadGrid", [{ page: a }]);
+        //$gridL.jqGrid("setGridParam", { postData: { filters: i, sord: e, sidx: o, oper_action: n }, search: !0 }),
+        //    $gridL.trigger("reloadGrid", [{ page: a }]);
 
-    if (postDT) {
-        postDT.oper_action = null;
-        postDT.id_sel = null;
+        //if (postDT) {
+        //    postDT.oper_action = null;
+        //    postDT.id_sel = null;
+        //}
     }
 }
 
@@ -1184,24 +1197,53 @@ function load_detail(t, a, i, e, n, mutilLoad) {
                 });
         }
     } else {
-        try {
-            if (0 == i) {
-                var u = $("#" + tengrid0).jqGrid("getGridParam", "selrow");
-                if (id_parent1 != u | mutilLoad) {
-                    try { jqgridXHR[tengrid1].abort(); } catch (c) { console.log(''); }
-                    switch (id_parent1 = u, load_grid0) {
-                        case "3": $("#" + tengrid1).trigger("reloadGrid"); break;
-                        default: $("#" + tengrid1)[0].triggerToolbar();
-                    }
-                    load_grid0 = 2;
+        let $grid0, $grid1, $grid2;
+        if (typeof (tengrid0) != 'undefined')
+            $grid0 = $("#" + tengrid0);
+        if (typeof (tengrid1) != 'undefined')
+            $grid1 = $("#" + tengrid1);
+        if (typeof (tengrid2) != 'undefined')
+            $grid2 = $("#" + tengrid2);
+        
+        if (0 == i) {
+            let u = $grid0.jqGrid("getGridParam", "selrow");
+            if (id_parent1 != u | mutilLoad) {
+                try { jqgridXHR[tengrid1].abort(); } catch (c) { console.log('Huy XHR Grid1'); }
+                let loadonce1 = $grid1.jqGrid('getGridParam', 'loadonce');
+                if (loadonce1) {
+                    id_parent1 = u;
+                    click_refresh_clearsearch(tengrid1, false);
+                    $grid1.setGridParam({ datatype: 'json', page: 1 });
+                    $grid1[0].triggerToolbar();
                 }
-            } else if (1 == i) {
-                try { jqgridXHR[tengrid2].abort(); } catch (c) { console.log(''); }
-                var u = $("#" + tengrid1).jqGrid("getGridParam", "selrow");
-                id_parent2 != u | 1 == load_grid1 | mutilLoad && (id_parent2 = u, load_grid1 = 2, $("#" + tengrid2)[0].triggerToolbar());
+                else {
+                    switch (id_parent1 = u, load_grid0) {
+                        case "3": $grid1.trigger("reloadGrid"); break;
+                        default: $grid1[0].triggerToolbar();
+                    }
+                }
+                load_grid0 = 2;
             }
-        } catch (c) {
-            console.log('');
+        } else if (1 == i) {
+            if ($grid2) {
+                if ($grid2[0]) {
+                    let u = $grid1.jqGrid("getGridParam", "selrow");
+                    if (id_parent2 != u | 1 == load_grid1 | mutilLoad) {
+                        try { jqgridXHR[tengrid2].abort(); } catch (c) { console.log('Huy XHR Grid2'); }
+                        let loadonce2 = $grid2.jqGrid('getGridParam', 'loadonce');
+                        id_parent2 = u;
+                        load_grid1 = 2;
+                        if (loadonce2) {
+                            click_refresh_clearsearch(tengrid2, false);
+                            $grid2.setGridParam({ datatype: 'json', page: 1 });
+                            $grid2[0].triggerToolbar();
+                        }
+                        else {
+                            $grid2[0].triggerToolbar();
+                        }
+                    }
+                }
+            }
         }
     }
 }

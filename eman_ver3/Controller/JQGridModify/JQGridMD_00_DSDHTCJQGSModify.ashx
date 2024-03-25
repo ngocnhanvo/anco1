@@ -266,10 +266,14 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             var kh = new c_kehoachdathang();
             kh.c_kehoachdathang_id = Helper.getNewId();
             kh.trangthai = Helper.SOANTHAO;
+            if(sanxuatton | donhangtron)
+            {
+                kh.trangthai = Helper.DATNCC;
+            }
             kh.xulykehoach = false;
             kh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id;
-            kh.donhangtron = dsdh.donhangtron;
-            kh.sanxuatton = dsdh.sanxuatton;
+            kh.donhangtron = donhangtron;
+            kh.sanxuatton = sanxuatton;
             kh.c_doichieuhangton_id = dsdh.c_danhsachdathang_id;
             kh.mota = "";
             kh.ngaybatdausx = dsdh.ngaybatdau;
@@ -474,6 +478,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     object_.anco_check = false;
                     object_.md_doitackinhdoanh_id = dtk_id;
                     object_.sochungtu = sochungtu;
+                    object_.reportKCS = "-";
                     VNN_Function.SetFormValue(object_.nameof(s => s.ngayhoanthanh), ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
                     VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), sochungtu);
                     //VNN_Function.SetFormValue(object_.nameof(s=>s.thoigiansx), thoigiansx.ToString());

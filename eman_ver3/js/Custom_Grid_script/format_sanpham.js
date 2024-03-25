@@ -25,18 +25,19 @@ function timkiem_sanpham(id_elem, type) {
         </div>`
     );
 
+    let gridSel = $('.module_spanselect').attr('id');
     let where_ex = 'and sp.hoatdong = 1', vattu = false, btp = false, tp = false;
-    if ($('.module_spanselect').attr('id') == 'span_MD_00_DSDHTCJQGS') {
-        vattu = true;
-        tp = true;
+    let urlMain = 'Controller/JqGrid/JQGridMD_00_DSHangHoaVGLoad.ashx?ma_module=MD_00_DSHangHoaVG&ma_menu=MN_01_DSHangHoaVG&id=null&id_sel=&module_select=1';
+    if (gridSel == 'span_MD_00_DSDHTCJQGS') {
         let datagrid0 = $('#gridMD_00_DSDHTCJQGS').getRowData(id_parent1);
-        let sxton = datagrid0.sanxuatton == 'True';
-        let dhtron = datagrid0.donhangtron == 'True';
+        let sxton = datagrid0.sanxuatton.toLowerCase() == 'true';
+        let dhtron = datagrid0.donhangtron.toLowerCase() == 'true';
         if (dhtron) {
-            where_ex += ` and sp.ban_thanhpham = 1 and kmd.ma_kho = 'KHO100'`;
+            urlMain = `Controller/JqGrid/JQGridMD_00_DSHonHopTronLoad.ashx?ma_module=MD_00_DSHonHopTron&ma_menu=MN_01_DSHonHopTron&id=null&id_sel=&module_select=1`;
         }
         else if (sxton) {
-            where_ex += ` and sp.ban_thanhpham = 1 and kmd.ma_kho = 'KHO110'`;
+            btp = true;
+            where_ex += ` and sp.ban_thanhpham = 1 and isnull(sp.vattu, 0) = 0`;
         }
     }
 
@@ -48,7 +49,7 @@ function timkiem_sanpham(id_elem, type) {
         height: window.innerHeight - 10,
         open: function (event, ui) {
             jQuery('#gridMD_00_DSHangHoaVG_cp').jqGrid({
-                url: 'Controller/JqGrid/JQGridMD_00_DSHangHoaVGLoad.ashx?ma_module=MD_00_DSHangHoaVG&ma_menu=MN_01_DSHangHoaVG&id=null&id_sel=&module_select=1',
+                url: urlMain,
                 editurl: '',
                 height: window.innerHeight - 220,
                 datatype: 'json',

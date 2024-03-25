@@ -2,8 +2,10 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
+using Newtonsoft.Json;
+
 public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public EntityContext db = new EntityContext();
@@ -68,122 +70,154 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
 
     public void CA_01_XuatBan(HttpContext context)
     {
-        string msg = "", msg_success = "";
+        string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        string id = context.Request.Form["id"];
-        string[] vnn = id.Split(',');
+        var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(false).Split(',').ToList();
         int count_slxuat = 0;
-        using (var transaction = db.Database.BeginTransaction())
+        var rows = context.Request.Form["rows"];
+        var msgErrs = new List<Public.BaoLoiKhiHieuLuc>();
+        try
         {
-            try
+            var px = db.md_xuatban.Where(s => ids.Contains(s.md_xuatban_id)).FirstOrDefault();
+
+            if (px == null)
             {
-                //Xu Ly nhap kho
-                foreach (var px in db.md_xuatban.Where(s => vnn.Contains(s.md_xuatban_id)).ToList())
+                msg = $@"Không tìm thấy phiếu xuất bán";
+                goto EndEventHandler;
+            }
+            if (px.trangthai != Helper.DANHAN)
+            {
+                msg = $@"Lỗi: dòng ""{px.sochungtu}"" cần ở trạng thái ""Đã Xác Nhận"".";
+                goto EndEventHandler;
+            }
+            var khoXuat = db.md_kho.Where(s => s.md_kho_id == px.tukho).FirstOrDefault();
+            if(khoXuat == null)
+            {
+                msg = $@"Lỗi: không tìm thấy ""Kho xuất"" đã chọn.";
+                goto EndEventHandler;
+            }
+            var xuatDen = db.md_doitackinhdoanh.Where(s => s.md_doitackinhdoanh_id == px.md_doitackinhdoanh_id).FirstOrDefault();
+            if(xuatDen == null)
+            {
+                msg = $@"Lỗi: không tìm thấy ""Khách hàng"".";
+                goto EndEventHandler;
+            }
+            string ngayXuatStr = context.Request.Form["ngayXuat"];
+            var ngayXuat = VNN_Config.setDateTime(ngayXuatStr);
+            if (!ngayXuat.IsDate())
+            {
+                msg = $@"Lỗi: Giá trị ngày chuyển kho bị sai.";
+                goto EndEventHandler;
+            }
+            px.ngaychuyen = ngayXuat;
+            var cdvcs = db.md_xuatban_cdh.Where(s => s.md_xuatban_id == px.md_xuatban_id).ToList();
+            var dongHangs = JsonConvert.DeserializeObject<List<md_xuatban_cdh>>(rows);
+            foreach (var dh in cdvcs)
+            {
+                var dongHang = dongHangs.Where(s => s.md_xuatban_cdh_id == dh.md_xuatban_cdh_id).FirstOrDefault();
+                if (dongHang != null)
                 {
-                    if (px.trangthai == Helper.HIEULUC)
-                    {
-                        msg = "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" đã hiệu lực.</div>";
-                        break;
-                    }
-
-                    string soluong_xuat = "0";
-                    var count = db.md_xuatban_cdh.Where(s => s.md_xuatban_id == px.md_xuatban_id & s.sl_xuat > 0).ToList();
-                    foreach (var dh in count)
-                    {
-                        //--
-                        var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-
-                        if (string.IsNullOrEmpty(px.tukho) | string.IsNullOrEmpty(px.md_doitackinhdoanh_id))
-                        {
-                            msg += "<div style='color:red'>Lỗi: dòng \"" + px.sochungtu + "\" chưa có kho hoặc phân xưởng đến.</div>";
-                        }
-                        else if (khosp == null)
-                        {
-                            msg += "<div style='color:red'>Lỗi: \"" + sp.ma_sanpham + "\" không có trong kho.</div>";
-                        }
-                        else if (khosp.soluong < dh.sl_xuat)
-                        {
-                            msg += "<div style='color:red'>Lỗi: Số lượng \"" + sp.ma_sanpham + "\" trong kho chỉ còn: \"" + khosp.soluong.Value.DropTrailingZeros() + "\" .</div>";
-                        }
-                        else if (dh.sl_xuat < 0)
-                        {
-                            msg += "<div style='color:red'>Lỗi: Số lượng xuất của \"" + sp.ma_sanpham + "\" phải lớn hơn 0 .</div>";
-                        }
-
-                        if (msg.Length <= 0 & dh.sl_xuat.GetValueOrDefault(0) > 0)
-                        {
-                            count_slxuat++;
-                            soluong_xuat = "" + dh.sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
-                            //--cap nhat so luong xuat
-                            edit_xuat(db, dh, userTK);
-                            //--cap nhat vao kho
-                            string khospId = xuat_kho(db, dh, px, userTK);
-                            add_kho_hsd(db, dh, px, userTK, khospId);
-                            //--tao lich su nhap kho
-                            add_kho_ls(db, dh, px, userTK);
-                            msg_success += "<div style='color:blue'>Dòng \"" + px.sochungtu + " của \"" + sp.ma_sanpham + "\" đã xuất kho thành công, số lượng xuất là: \"" + soluong_xuat + "\"</div>";
-                        }
-                    }
-
-                    if (msg.Length <= 0 & count_slxuat <= 0)
-                    {
-                        msg = "<div style='color:red'>Lỗi: Dòng \"" + px.sochungtu + "\" phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.</div>";
-                    }
-
-                    if (msg.Length <= 0)
-                    {
-                        var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id).FirstOrDefault();
-                        if(dsdh != null)
-                        {
-                            var checkKTServer = db.c_dongdsdh.Where(s =>
-                                s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
-                                (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
-                                ).Take(1).Count();
-
-                            var checkKT = db.c_dongdsdh.Local.Where(s =>
-                                s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
-                                (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
-                                ).Take(1).Count();
-
-                            if(checkKT <= 0)
-                            {
-                                dsdh.trangthai = Helper.KETTHUC;
-                            }
-                        }
-
-                        px.trangthai = Helper.HIEULUC;
-                        db.SaveChanges();
-                    }
-
+                    dh.sl_xuat = dongHang.sl_xuat;
                 }
             }
-            catch (Exception ex)
+
+            foreach (var dh in cdvcs.Where(s=>s.sl_xuat > 0).ToList())
             {
-                msg = "false#" + ex.Message;
+                var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                
+                if (khosp == null)
+                {
+                    msg += $@"<br>Lỗi: ""{sp.ma_sanpham}"" không có trong kho.";
+                    msgErrs.Add(new Public.BaoLoiKhiHieuLuc()
+                    {
+                        msp = sp.ma_sanpham,
+                        loi = $@"không có trong kho"
+                    });
+                }
+                else if (khosp.soluong < dh.sl_xuat)
+                {
+                    msg += $@"<br>Lỗi: Số lượng ""{sp.ma_sanpham}"" trong kho chỉ còn: ""{khosp.soluong.Value.DropTrailingZeros()}""";
+                    msgErrs.Add(new Public.BaoLoiKhiHieuLuc()
+                    {
+                        msp = sp.ma_sanpham,
+                        loi = $@"Trong kho chỉ còn ""{khosp.soluong.Value.DropTrailingZeros()}"""
+                    });
+                }
+
+                if (msg.Length <= 0 & dh.sl_xuat.GetValueOrDefault(0) > 0)
+                {
+                    count_slxuat++;
+                    //--cap nhat so luong xuat
+                    edit_xuat(db, dh, px, userTK);
+                    //--cap nhat vao kho
+                    xuat_kho(db, dh, px, khosp, userTK);
+                    //--tao lich su nhap kho
+                    add_kho_ls(db, dh, px, userTK);
+                }
+            }
+
+            if (msg.Length <= 0 & count_slxuat <= 0)
+            {
+                msg += $@"<br>Lỗi: ""{px.sochungtu}"" phải có ít nhất 1 dòng hàng có số lượng lớn hơn 0.";
             }
 
             if (msg.Length <= 0)
             {
-                msg = msg_success + msg;
-                transaction.Commit();
+                var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id).FirstOrDefault();
+                if (dsdh != null)
+                {
+                    var checkKTServer = db.c_dongdsdh.Where(s =>
+                        s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
+                        (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
+                        ).Take(1).Count();
+
+                    var checkKT = db.c_dongdsdh.Local.Where(s =>
+                        s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
+                        (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
+                        ).Take(1).Count();
+
+                    if (checkKT <= 0)
+                    {
+                        dsdh.trangthai = Helper.KETTHUC;
+                    }
+                }
+
+                px.trangthai = Helper.HIEULUC;
+                db.SaveChanges();
             }
-            else
-                transaction.Rollback();
         }
-        context.Response.Write(msg);
-    }
-    //--cap nhat so luong xuat
-    public string edit_xuat(EntityContext db, md_xuatban_cdh dh, User_TK us)
-    {
-        string id_new = dh.md_xuatban_id;
-        var xk = db.md_xuatban.Where(s => s.md_xuatban_id == dh.md_xuatban_id).FirstOrDefault();
-        var ddsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        if (ddsdh != null)
+        catch (Exception ex)
         {
-            ddsdh.sl_hanngach = ddsdh.sl_hanngach.GetValueOrDefault(0) + dh.sl_xuat.GetValueOrDefault(0);
+            msg = ex.Message;
         }
 
+    EndEventHandler:;
+
+        if (msg.Length <= 0 & msgErrs.Count <= 0)
+        {
+            msg = $@"<div style='color:blue'>Hiệu lực phiếu xuất bán thành công</div>";
+        }
+        else
+        {
+            if (msgErrs.Count > 0)
+                msg = "Thiếu thông tin";
+
+            var result = new
+            {
+                msg = $@"<div error style='color:red'>{msg}</div>",
+                json = msgErrs
+            };
+
+            msg = JsonConvert.SerializeObject(result);
+        }
+
+        context.Response.Write(msg);
+    }
+
+    //--cap nhat so luong xuat
+    public string edit_xuat(EntityContext db, md_xuatban_cdh dh, md_xuatban xk, User_TK us)
+    {
         decimal sl_daxuat = dh.sl_daxuat.Value + dh.sl_xuat.Value;
         if (dh.tong_sl_xuat.Value <= sl_daxuat)
         {
@@ -193,31 +227,22 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
 
         dh.sl_daxuat = dh.sl_xuat + dh.sl_daxuat;
         xk.ngaycapnhat = DateTime.Now;
-        foreach (var xb in db.md_xuatban.Where(s => s.md_xuatban_id != xk.md_xuatban_id & s.c_danhsachdathang_id == xk.c_danhsachdathang_id & s.trangthai == "SOANTHAO").ToList())
-        {
-            foreach (var xb_dh in db.md_xuatban_cdh.Where(s => s.md_xuatban_id == xb.md_xuatban_id & s.md_sanpham_id == dh.md_sanpham_id).ToList())
-            {
-                xb_dh.tong_sl_xuat = xb_dh.tong_sl_xuat - sl_daxuat;
-                xb_dh.sl_xuat = 0;
-            }
-        }
-        return id_new;
+        return null;
     }
 
     //xuat kho
-    public string xuat_kho(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us)
+    public string xuat_kho(EntityContext db, md_xuatban_cdh dh, md_xuatban px, md_kho_sanpham sp, User_TK us)
     {
-        string id_new = dh.md_xuatban_id;
-        var check_khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        md_kho_sanpham sp = check_khosp;
-
-        id_new = sp.md_kho_sanpham_id;
-        sp.soluong = sp.soluong - dh.sl_xuat;
+        sp.soluong = sp.soluong.GetValueOrDefault(0) - dh.sl_xuat;
         sp.ngaycapnhat = DateTime.Now;
         var dsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        dsdh.sl_dagiao += dh.sl_xuat;
-        dsdh.sl_conlai -= dh.sl_xuat;
-        return id_new;
+        if (dsdh != null)
+        {
+            dsdh.sl_hanngach = dsdh.sl_hanngach.GetValueOrDefault(0) + dh.sl_xuat.GetValueOrDefault(0);
+            dsdh.sl_dagiao = dsdh.sl_dagiao.GetValueOrDefault(0) + dh.sl_xuat;
+            dsdh.sl_conlai = dsdh.sl_conlai.GetValueOrDefault(0) - dh.sl_xuat;
+        }
+        return null;
     }
     //--tao lich su nhap kho
     public string add_kho_ls(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us)
@@ -229,51 +254,16 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         giao.md_sanpham_id = dh.md_sanpham_id;
         giao.soluong_dichchuyen = dh.sl_xuat;
         giao.ngaychuyen = px.ngaychuyen;
-        giao.kieuchuyen = "Xuất kho";
+        giao.kieuchuyen = Helper.XuatKho;
         giao.dongnhapxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
         giao.mota = px.donhang_thamchieu;
-
-        giao.nguoitao = us.ad_user_id;
-        giao.vaitrotao = us.ad_role_id;
-        giao.bophantao = us.md_phongban_id;
-        giao.value_nguoitao = us.ma_user;
-        giao.value_vaitrotao = us.ten_role;
-        giao.value_bophantao = us.ten_phongban;
-        giao.nguoicapnhat = us.ad_user_id;
-        giao.vaitrocapnhat = us.ad_role_id;
-        giao.bophancapnhat = us.md_phongban_id;
-        giao.value_nguoicapnhat = us.ma_user;
-        giao.value_vaitrocapnhat = us.ten_role;
-        giao.value_bophancapnhat = us.ten_phongban;
+        giao = Helper.setDefaultValueWhenInsertOrUpdate(giao, userTK, false);
         giao.hoatdong = true;
         giao.ngaytao = DateTime.Now;
         giao.ngaycapnhat = DateTime.Now;
         db.md_kho_giaodich.Add(giao);
         return id_new;
-    }
-    public string add_kho_hsd(EntityContext db, md_xuatban_cdh dh, md_xuatban px, User_TK us, string khospId)
-    {
-        string msg = "";
-        var spid = db.md_kho_sanpham.
-                Where(s => s.md_sanpham_id == dh.md_sanpham_id &
-                s.md_kho_id == px.tukho).Select(s => s.md_kho_sanpham_id).FirstOrDefault();
-        decimal tsl = dh.sl_xuat.GetValueOrDefault(0);
-        foreach (var item in db.md_kho_sanpham_hansudung.
-            Where(s => s.md_kho_sanpham_id == spid & s.soluong > 0).OrderBy(s => s.ngay_hethan).ToList())
-        {
-            decimal soTru = item.soluong.GetValueOrDefault(0) - tsl;
-            if (soTru >= 0)
-            {
-                item.soluong = soTru;
-                break;
-            }
-            else
-                item.soluong = 0;
-            tsl = Math.Abs(soTru);
-        }
-
-        return msg;
     }
 
     public void add(HttpContext context)
