@@ -177,7 +177,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 var khdhs = (from a in db.c_kehoachdathang
                              where
                                  a.ngaybatdausx >= ncvt.tungay & a.ngaybatdausx <= ncvt.denngay
-                                 & (a.trangthai == Helper.DATNCC | a.trangthai == Helper.DATSX)
+                                 & (a.trangthai == Helper.DATNCC | a.trangthai == Helper.DATSX | a.trangthai == Helper.DATHET)
                                  & (a.tinhNCVT ?? false) == false
                              select a).ToList();
                 var khdhIds = khdhs.Select(s => s.c_kehoachdathang_id).ToList();
