@@ -1310,7 +1310,7 @@ public class Public
 
             if (vcnb_cdvcs == null)
                 vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).ToList();
-
+            vcnb_cdvcs = vcnb_cdvcs.Where(s => s.soluong_dichchuyen.GetValueOrDefault(0) > 0).ToList();
             var slChuyen = vcnb_cdvcs.Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
             if (slChuyen <= 0)
             {
