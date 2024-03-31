@@ -8,6 +8,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
 {
     public EntityContext db = new EntityContext();
     public EntityFunction entityFunc = new EntityFunction();
+    public Public pub = new Public();
     User_TK userTK = null;
 
     public string oper = "vnn";
@@ -31,7 +32,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 this.del(context);
                 break;
             case "CA_01_TinhNhuCauVatTu":
-                this.CA_01_TinhNhuCauVatTu(context, db, true, true, null);
+                pub.CA_01_TinhNhuCauVatTu(context, db, true, true, null, userTK);
                 break;
             case "CA_01_TaoYCMuaVT":
                 this.CA_01_TaoYCMuaVT(context);
@@ -156,193 +157,6 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
         context.Response.Write(msg);
     }
 
-    public string CA_01_TinhNhuCauVatTu(HttpContext context, EntityContext db, bool SingleFunc, bool? reset = false, c_nhucauvattu ncvt = null)
-    {
-        string msg = "", msg_success = "";
-        string ncvtId = context.Request.Form["id"];
-
-        try
-        {
-            if (ncvt == null)
-                ncvt = db.c_nhucauvattu.Where(s => s.c_nhucauvattu_id == ncvtId).FirstOrDefault();
-
-            if (ncvt == null)
-            {
-                msg = "Không tìm thấy nhu cầu vật tư";
-                goto EndEventHandler;
-            }
-
-            if (reset.GetValueOrDefault(false))
-            {
-                var khdhs = (from a in db.c_kehoachdathang
-                             where
-                                 a.ngaybatdausx >= ncvt.tungay & a.ngaybatdausx <= ncvt.denngay
-                                 & (a.trangthai == Helper.DATNCC | a.trangthai == Helper.DATSX | a.trangthai == Helper.DATHET)
-                                 & (a.tinhNCVT ?? false) == false
-                             select a).ToList();
-                var khdhIds = khdhs.Select(s => s.c_kehoachdathang_id).ToList();
-                var ncvtDHPXs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
-                foreach(var ncvtDHPX in ncvtDHPXs)
-                {
-                    var khdh = db.c_kehoachdathang.Where(s =>
-                        s.c_kehoachdathang_id == ncvtDHPX.c_kehoachdathang_id
-                        & s.ngaybatdausx >= ncvt.tungay & s.ngaybatdausx <= ncvt.denngay
-                        & (s.trangthai == Helper.DATNCC | s.trangthai == Helper.DATSX)
-                        & !khdhIds.Contains(s.c_kehoachdathang_id)).FirstOrDefault();
-                    if(khdh != null)
-                    {
-                        khdhs.Add(khdh);
-                    }
-                    db.c_nhucauvattu_dhpx.Remove(ncvtDHPX);
-                }
-
-                if (khdhs.Count <= 0)
-                {
-                    msg = "Không có đơn hàng nào trong khoảng thời gian đã chọn";
-                    goto EndEventHandler;
-                }
-
-                foreach (var khdh in khdhs)
-                {
-                    var ncvt_dhpx = new c_nhucauvattu_dhpx()
-                    {
-                        c_nhucauvattu_dhpx_id = Helper.getNewId(),
-                        c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
-                        c_kehoachdathang_id = khdh.c_kehoachdathang_id,
-                        nguoitao = userTK.ad_user_id,
-                        vaitrotao = userTK.ad_role_id,
-                        bophantao = userTK.md_phongban_id,
-                        value_nguoitao = userTK.ma_user,
-                        value_vaitrotao = userTK.ten_role,
-                        value_bophantao = userTK.ten_phongban,
-
-                        nguoicapnhat = userTK.ad_user_id,
-                        vaitrocapnhat = userTK.ad_role_id,
-                        bophancapnhat = userTK.md_phongban_id,
-                        value_nguoicapnhat = userTK.ma_user,
-                        value_vaitrocapnhat = userTK.ten_role,
-                        value_bophancapnhat = userTK.ten_phongban,
-
-                        ngaytao = DateTime.Now,
-                        ngaycapnhat = DateTime.Now,
-                        mota = "",
-                        hoatdong = true
-                    };
-                    db.c_nhucauvattu_dhpx.Add(ncvt_dhpx);
-                    khdh.tinhNCVT = true;
-                }
-            }
-
-            var ncvtDDHPXs = db.c_nhucauvattu_ddhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id);
-            db.c_nhucauvattu_ddhpx.RemoveRange(ncvtDDHPXs);
-            var ncvtYCMVTs = db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id);
-            db.c_nhucauvattu_ycmvt.RemoveRange(ncvtYCMVTs);
-            var khdh2sServer = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
-            var khdh2s = db.c_nhucauvattu_dhpx.Local.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
-            var coVT = false;
-            foreach (var khdh in khdh2s)
-            {
-                var dhcpxs = db.c_kehoachdathang_dhcpx.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id).ToList();
-                foreach (var dhcpx in dhcpxs)
-                {
-                    var dhcpxCDHs = db.c_kehoachdathang_dhcpx_cdh.Where(s => s.c_kehoachdathang_dhcpx_id == dhcpx.c_kehoachdathang_dhcpx_id).ToList();
-                    foreach (var cdh in dhcpxCDHs)
-                    {
-                        var cdhNCVTServer = db.c_nhucauvattu_ddhpx.
-                            Where(s => s.md_sanpham_id == cdh.md_sanpham_id &
-                            s.c_nhucauvattu_id == khdh.c_nhucauvattu_id).Take(1).FirstOrDefault();
-                        var cdhNCVT = db.c_nhucauvattu_ddhpx.Local.
-                            Where(s => s.md_sanpham_id == cdh.md_sanpham_id &
-                            s.c_nhucauvattu_id == khdh.c_nhucauvattu_id).Take(1).FirstOrDefault();
-                        var addNCVT = cdhNCVT == null;
-                        if (addNCVT)
-                        {
-                            cdhNCVT = new c_nhucauvattu_ddhpx();
-                            cdhNCVT.c_nhucauvattu_ddhpx_id = Helper.getNewId();
-                            cdhNCVT.soluong = cdh.soluong;
-                            cdhNCVT.c_nhucauvattu_id = khdh.c_nhucauvattu_id;
-                            cdhNCVT.md_sanpham_id = cdh.md_sanpham_id;
-                            cdhNCVT.md_donvitinhsanpham_id = cdh.md_donvitinhsanpham_id;
-                            cdhNCVT = Helper.setDefaultValueWhenInsertOrUpdate(cdhNCVT, userTK, false);
-                            db.c_nhucauvattu_ddhpx.Add(cdhNCVT);
-                        }
-                        else
-                        {
-                            cdhNCVT.soluong = cdhNCVT.soluong.GetValueOrDefault(0) + cdh.soluong.Value;
-                        }
-                    }
-                }
-
-                var vts = (from a in db.md_lenhsanxuat_tosx_vattu
-                           join b in db.md_lenhsanxuat_tosx on a.md_lenhsanxuat_tosx_id equals b.md_lenhsanxuat_tosx_id
-                           join c in db.md_lenhsanxuat on b.md_lenhsanxuat_id equals c.md_lenhsanxuat_id
-                           join d in db.md_dondathangphanxuong on c.md_dondathangphanxuong_id equals d.md_dondathangphanxuong_id
-                           join e in db.c_kehoachdathang on d.donhang_thamchieu equals e.donhang_thamchieu
-                           join sp in db.md_sanpham on a.md_sanpham_id equals sp.md_sanpham_id
-                           where
-                             e.c_kehoachdathang_id == khdh.c_kehoachdathang_id
-                             & (sp.vattu ?? false) == true
-                             & (a.soluong ?? 0) - (a.sl_giamhanngach ?? 0) > 0
-                             & db.md_sanpham_bom.Where(s=>s.md_sanpham_id == a.md_sanpham_id).Take(1).Count() <= 0
-                           select a).ToList();
-
-                foreach (var vt in vts)
-                {
-                    var sltd = vt.soluong.GetValueOrDefault(0) - vt.sl_giamhanngach.GetValueOrDefault(0);
-
-                    var ncvt_ycmvtServer = db.c_nhucauvattu_ycmvt.Where(s => s.md_sanpham_id == vt.md_sanpham_id & s.c_nhucauvattu_id == khdh.c_nhucauvattu_id).Take(1).FirstOrDefault();
-                    var ncvt_ycmvt = db.c_nhucauvattu_ycmvt.Local.Where(s => s.md_sanpham_id == vt.md_sanpham_id & s.c_nhucauvattu_id == khdh.c_nhucauvattu_id).Take(1).FirstOrDefault();
-                    var addVT = ncvt_ycmvt == null;
-                    if (addVT)
-                    {
-                        ncvt_ycmvt = new c_nhucauvattu_ycmvt();
-                        ncvt_ycmvt.c_nhucauvattu_ycmvt_id = Helper.getNewId();
-                        ncvt_ycmvt.c_nhucauvattu_id = khdh.c_nhucauvattu_id;
-                        ncvt_ycmvt.md_sanpham_id = vt.md_sanpham_id;
-                        ncvt_ycmvt.md_donvitinhsanpham_id = vt.md_donvitinhsanpham_id;
-                        ncvt_ycmvt.soluong = sltd;
-                        ncvt_ycmvt = Helper.setDefaultValueWhenInsertOrUpdate(ncvt_ycmvt, userTK, false);
-                        db.c_nhucauvattu_ycmvt.Add(ncvt_ycmvt);
-                    }
-                    else
-                    {
-                        ncvt_ycmvt.soluong = ncvt_ycmvt.soluong.GetValueOrDefault(0) + sltd;
-                    }
-
-                    coVT = true;
-                }
-            }
-
-            if (coVT)
-                ncvt.datinh_nhucau = true;
-            else
-                msg = "Không có vật tư nào phát sinh trong khoảng thời gian đã chọn";
-
-            EndEventHandler:;
-
-            if (SingleFunc == true)
-            {
-                if (msg.Length <= 0)
-                {
-                    msg = msg_success;
-                    db.SaveChanges();
-                }
-                else
-                    msg = $@"Lỗi: {msg}";
-            }
-        }
-        catch (Exception ex)
-        {
-            msg = $@"Lỗi: {ex.Message}";
-        }
-
-        if (SingleFunc == true)
-        {
-            context.Response.Write(msg);
-        }
-        return msg;
-    }
-
     public void add(HttpContext context)
     {
         string msg = "", id_new = Helper.getNewId();
@@ -382,7 +196,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
                 ncvt = Helper.setDefaultValueWhenInsertOrUpdate(ncvt, userTK, false);
                 db.c_nhucauvattu.Add(ncvt);
 
-                msg = CA_01_TinhNhuCauVatTu(context, db, false, true, ncvt);
+                msg = pub.CA_01_TinhNhuCauVatTu(context, db, false, true, ncvt, userTK);
 
                 if (msg.Length <= 0)
                     db.SaveChanges();
@@ -460,7 +274,7 @@ public class JQGridMD_00_NCVTTKModify : IHttpHandler, System.Web.SessionState.IR
             object_.mota = context.Request.Form["mota"];
             object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
 
-            msg = CA_01_TinhNhuCauVatTu(context, db, false, true, object_);
+            msg = pub.CA_01_TinhNhuCauVatTu(context, db, false, true, object_, userTK);
 
             if (msg.Length <= 0)
                 db.SaveChanges();

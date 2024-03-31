@@ -82,17 +82,21 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
             if (xk.trangthai != Helper.DANHAN)
             {
-                //if (xk.bosung == 0 | xk.bosung == 1)
-                {
-                    msg = $@"Lỗi: dòng ""{xk.sochungtu}"" không ở trạng thái ""Đã xác nhận"".";
-                    goto EndEventHandler;
-                }
+                msg = $@"Lỗi: dòng ""{xk.sochungtu}"" không ở trạng thái ""Đã xác nhận"".";
+                goto EndEventHandler;
             }
 
             var ngaychuyen = VNN_Config.setDateTime(ngayxuat);
             if (!ngaychuyen.IsDate())
             {
                 msg = $@"Lỗi: dòng ""{xk.sochungtu}"" có giá trị ngày xuất kho bị sai.";
+                goto EndEventHandler;
+            }
+
+            var lsx2 = db.md_lenhsanxuat2.Where(s => s.sochungtu == xk.chungtu_lenhsx).FirstOrDefault();
+            if(lsx2 == null)
+            {
+                msg = $@"Lỗi: dòng ""{xk.sochungtu}"" không xác định được ""Lệnh sản xuất"".";
                 goto EndEventHandler;
             }
 
@@ -122,7 +126,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                 if (sp == null)
                 {
-                    msg = $@"Lỗi: ""{dh.md_sanpham_id}"" không tìm thấy mã sản phẩm từ ID này.";
+                    msg = $@"Lỗi: ""{dh.md_sanpham_id}"" không tìm thấy mã HHVT từ ID này.";
                     goto EndEventHandler;
                 }
 
@@ -162,14 +166,16 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         & s.md_sanpham_id == dh.md_sanpham_id
                         & s.soluong_no > 0).FirstOrDefault();
 
+                    var ghino = (dh.ghino.GetValueOrDefault(0)).Set0WhenlessThan0();
                     if (ghinoChoXuong == null)
                     {
                         ghinoChoXuong = new md_kho_ghino();
                         ghinoChoXuong.md_kho_ghino_id = Helper.getNewId();
                         ghinoChoXuong.md_phanxuong_id = xk.xuatden;
                         ghinoChoXuong.md_sanpham_id = dh.md_sanpham_id;
-                        ghinoChoXuong.soluong_no = dh.ghino;
+                        ghinoChoXuong.soluong_no = ghino;
                         ghinoChoXuong.sctlienquan = xk.chungtu_lenhsx;
+                        ghinoChoXuong.lsx_to = sp.ma_sanpham;
                         ghinoChoXuong.ngayno = DateTime.Now;
                         db.md_kho_ghino.Add(ghinoChoXuong);
                     }
@@ -177,7 +183,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                     {
                         if (!ghinoChoXuong.sctlienquan.Contains(xk.chungtu_lenhsx))
                             ghinoChoXuong.sctlienquan += "," + xk.chungtu_lenhsx;
-                        ghinoChoXuong.soluong_no = ghinoChoXuong.soluong_no.GetValueOrDefault(0) + dh.ghino;
+                        ghinoChoXuong.soluong_no = ghinoChoXuong.soluong_no.GetValueOrDefault(0) + ghino;
                     }
                 }
 
@@ -197,8 +203,31 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                             var slx = sl_xuatVT > sltd ? sltd : sl_xuatVT;
                             sl_xuatVT = sl_xuatVT - slx;
                             vt.sl_hanngach = vt.sl_hanngach.GetValueOrDefault(0) + slx;
+
+                            vtcc = vt;
+
+                            var cdhTUServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                s.md_sanpham_id == vt.md_sanpham_id
+                                & s.macuoi == vt.sp1
+                                & s.mathaydoi == vt.sp2
+                                & s.lsxTen == lsx2.donhang
+                                & s.xuongChinh == lsx2.xuongPhu
+                                & s.md_lenhsanxuat_id == vt.md_lenhsanxuat_id
+                                ).FirstOrDefault();
+
+                            var cdhTU = db.md_lenhsanxuat_tosx_cdh.Local.Where(s =>
+                                s.md_sanpham_id == vt.md_sanpham_id
+                                & s.macuoi == vt.sp1
+                                & s.mathaydoi == vt.sp2
+                                & s.lsxTen == lsx2.donhang
+                                & s.xuongChinh == lsx2.xuongPhu
+                                & s.md_lenhsanxuat_id == vt.md_lenhsanxuat_id
+                                ).FirstOrDefault();
+                            if (cdhTU != null)
+                            {
+                                cdhTU.sl_dagiao = cdhTU.sl_dagiao.GetValueOrDefault(0) + slx;
+                            }
                         }
-                        vtcc = vt;
                     }
 
                     if (sl_xuatVT > 0 & vtcc != null)

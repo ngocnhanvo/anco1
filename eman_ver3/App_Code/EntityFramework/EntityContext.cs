@@ -108,6 +108,7 @@ public virtual DbSet<md_hinhthucthanhtoan> md_hinhthucthanhtoan { get; set; }
 public virtual DbSet<md_hoadon> md_hoadon { get; set; }
 public virtual DbSet<md_hoadon_chitiet> md_hoadon_chitiet { get; set; }
 public virtual DbSet<md_kho> md_kho { get; set; }
+public virtual DbSet<md_kho_dasudung> md_kho_dasudung { get; set; }
 public virtual DbSet<md_kho_ghino> md_kho_ghino { get; set; }
 public virtual DbSet<md_kho_ghinoBK> md_kho_ghinoBK { get; set; }
 public virtual DbSet<md_kho_ghinoBK2> md_kho_ghinoBK2 { get; set; }

@@ -342,7 +342,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                     dmh.huongdan_lamhang = "";
                                     dmh.ngaydonhang = DateTime.Now;
                                     dmh.ngaygiaohang = DateTime.Now.AddDays(4);
-                                    dmh.diadiem_giaohang = db.md_kho.Where(s=>s.ma_kho == Helper.KHOVT).FirstOrDefault().md_kho_id;
+                                    //dmh.diadiem_giaohang = db.md_kho.Where(s=>s.ma_kho == Helper.KHOVT).FirstOrDefault().md_kho_id;
                                     dmh.hinhthucthanhtoan = db.md_hinhthucthanhtoan.OrderBy(s => s.sapxep).FirstOrDefault().ten;
                                     dmh.md_doitackinhdoanh_id = khmvt_cdh.md_doitackinhdoanh_id;
                                     dmh.nguoilienhe = khmvt_cdh.daidien;

@@ -1206,23 +1206,27 @@ function load_detail(t, a, i, e, n, mutilLoad) {
             $grid2 = $("#" + tengrid2);
         
         if (0 == i) {
-            let u = $grid0.jqGrid("getGridParam", "selrow");
-            if (id_parent1 != u | mutilLoad) {
-                try { jqgridXHR[tengrid1].abort(); } catch (c) { console.log('Huy XHR Grid1'); }
-                let loadonce1 = $grid1.jqGrid('getGridParam', 'loadonce');
-                if (loadonce1) {
-                    id_parent1 = u;
-                    click_refresh_clearsearch(tengrid1, false);
-                    $grid1.setGridParam({ datatype: 'json', page: 1 });
-                    $grid1[0].triggerToolbar();
-                }
-                else {
-                    switch (id_parent1 = u, load_grid0) {
-                        case "3": $grid1.trigger("reloadGrid"); break;
-                        default: $grid1[0].triggerToolbar();
+            if ($grid1) {
+                if ($grid1[0]) {
+                    let u = $grid0.jqGrid("getGridParam", "selrow");
+                    if (id_parent1 != u | mutilLoad) {
+                        try { jqgridXHR[tengrid1].abort(); } catch (c) { console.log('Huy XHR Grid1'); }
+                        let loadonce1 = $grid1.jqGrid('getGridParam', 'loadonce');
+                        if (loadonce1) {
+                            id_parent1 = u;
+                            click_refresh_clearsearch(tengrid1, false);
+                            $grid1.setGridParam({ datatype: 'json', page: 1 });
+                            $grid1[0].triggerToolbar();
+                        }
+                        else {
+                            switch (id_parent1 = u, load_grid0) {
+                                case "3": $grid1.trigger("reloadGrid"); break;
+                                default: $grid1[0].triggerToolbar();
+                            }
+                        }
+                        load_grid0 = 2;
                     }
-                }
-                load_grid0 = 2;
+                }''
             }
         } else if (1 == i) {
             if ($grid2) {

@@ -31,6 +31,11 @@ public static class Helper
     public static string DATNCC = "DATNCC";
     public static string DATSX = "DATSX";
     public static string DATHET = "DATHET";
+    public static string DaNhapHang = "DaNhapHang";
+    public static string ChoDG = "ChoDG";
+    public static string DaDongGoi = "DaDongGoi";
+    public static string ChoXH = "ChoXH";
+    public static string DaXuatHang = "DaXuatHang";
 
     public static string CHODUYET = "CHODUYET";
     public static string DADUYET = "DADUYET";

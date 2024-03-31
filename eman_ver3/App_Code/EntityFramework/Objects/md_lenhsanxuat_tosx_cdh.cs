@@ -49,6 +49,12 @@
                         public string lsxCT { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_lsxTen_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_lsxTen_wintaFN
+                        public string lsxTen { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_mabo_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_mabo_wintaFN

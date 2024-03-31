@@ -381,7 +381,7 @@ var format_lenhsx = {
                         
                     },
                     ondblClickRow: function () {
-                        $dlgGridS2.dialog('destroy').remove();
+                        $dlgGridS2.dialog("close");
                     },
                     gridComplete: function () {
                         $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width() - 5);
@@ -395,6 +395,13 @@ var format_lenhsx = {
                 Logo_Center("glyphicon glyphicon-search", true, $dlgGridS2.attr('id'));
             },
             close: function () {
+                let firstL = false;
+                $('#tukho option[value!=""]').each(function (a) {
+                    if (this.style.display != 'none' & !firstL) {
+                        $(this).prop('selected', true);
+                        firstL = true;
+                    }
+                });
                 $(this).dialog('destroy').remove();
             },
             buttons: [
@@ -436,14 +443,14 @@ var format_lenhsx = {
                                 }
                             }
                         }
-                        $(this).dialog('destroy').remove();
+                        $(this).dialog("close");
                     }
                 },
                 {
                     id: 'btn-close_',
                     text: 'Cancel',
                     click: function () {
-                        $(this).dialog("destroy").remove();
+                        $(this).dialog("close");
                     }
                 }
             ]

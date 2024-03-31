@@ -134,14 +134,15 @@ function timkiem_nktncc(id_elem, type) {
                 },
                 colModel: [
                     { key: true, fixed: true, label: 'c_donmuahang_cdmh_id', name: 'c_donmuahang_cdmh_id', index: ' cdmh.c_donmuahang_cdmh_id ', width: 110, editable: false, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'c_donmuahang_cdmh_id' } },
-                    { key: false, fixed: true, label: 'Mã hàng', name: 'md_sanpham_id', index: 'sp.ma_sanpham', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } }, frozen: false, formoptions: { label: 'Mã hàng' } },
-                    { key: false, fixed: true, label: 'ĐVT', name: 'md_donvitinhsanpham_id', index: 'cdmh.md_donvitinhsanpham_id', width: 60, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center' },
-                    { key: false, fixed: true, label: 'SL mua', name: 'sl_dadat', index: ' cdmh.sl_dadat ', width: 70, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Số lượng đặt mua' } },
-                    { key: false, fixed: true, label: 'SL nhập kho', name: 'sl_hanngach', index: ' cdmh.sl_hanngach ', width: 70, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' } },
-                    { key: false, fixed: true, label: 'Đơn giá', name: 'dongiamua', index: ' cdmh.dongiamua ', width: 80, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Đơn giá mua' } },
-                    { key: false, fixed: true, label: 'Thuế', name: 'thue', index: 'thue_sp.ten_thue_sanpham', width: 50, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center' },
-                    { key: false, fixed: true, label: 'Thành tiền', name: 'thanhtien', index: ' cdmh.thanhtien ', width: 90, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Thành tiền' } },
-                    { key: false, fixed: true, label: 'Số DMH', name: 'so_donmuahang', index: 'dmh.so_donmuahang', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } } },
+                    { key: false, fixed: true, label: 'Mã hàng', search: false, name: 'md_sanpham_id', index: 'sp.ma_sanpham', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } }, frozen: false, formoptions: { label: 'Mã hàng' } },
+                    { key: false, fixed: true, label: 'ĐVT', search: false, name: 'md_donvitinhsanpham_id', index: 'cdmh.md_donvitinhsanpham_id', width: 60, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center' },
+                    { key: false, fixed: true, label: 'SL mua', search: false, name: 'sl_dadat', index: ' cdmh.sl_dadat ', width: 70, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Số lượng đặt mua' } },
+                    { key: false, fixed: true, label: 'SL nhập kho', search: false, name: 'sl_hanngach', index: ' cdmh.sl_hanngach ', width: 70, editable: true, editrules: { edithidden: true }, hidden: false, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0, 4); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' } },
+                    { key: false, fixed: true, label: 'Đơn giá', search: false, name: 'dongiamua', index: ' cdmh.dongiamua ', width: 80, editable: true, editrules: { edithidden: true }, hidden: true, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Đơn giá mua' } },
+                    { key: false, fixed: true, label: 'Thuế', search: false, name: 'thue', index: 'thue_sp.ten_thue_sanpham', width: 50, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center' },
+                    { key: false, fixed: true, label: 'Thành tiền', search: false, name: 'thanhtien', index: ' cdmh.thanhtien ', width: 90, editable: true, editrules: { edithidden: true }, hidden: true, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Thành tiền' } },
+                    { key: false, fixed: true, label: 'Số DMH', search: false, name: 'so_donmuahang', index: 'dmh.so_donmuahang', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } } },
+                    { key: false, fixed: true, label: 'Kho', search: false, name: 'khomacdinh', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' }
                 ],
                 beforeRequest: function () {
                     let ids = jQuery('#' + namegrid).jqGrid('getGridParam', 'selarrrow');
@@ -218,9 +219,24 @@ function timkiem_nktncc(id_elem, type) {
                         alert(msg);
                     }
                     else {
+                        let rowsDT = $(`#${namegrid}_child`).jqGrid('getRowData');
+                        let ddghs = [];
+                        for (let i in rowsDT) {
+                            let rowDT = rowsDT[i];
+                            console.log('rowDT', rowDT);
+                            let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh })[0];
+                            if (!chk)
+                                ddghs.push(rowDT.khomacdinh);
+                        }
+
+                        $('#value_khodonhang option').hide();
+                        for (let i in ddghs) {
+                            $(`#value_khodonhang option[value="${ddghs[i]}"]`).show();
+                            $(`#value_khodonhang option[value="${ddghs[i]}"]`).prop('selected', true);
+                        }
+
                         $('#' + id_elem).val(sct_pnk);
                         $('#' + id_elem).next().val(id_pnk.length > 0 ? id_pnk.substr(0, id_pnk.length - 1) : id_pnk);
-                        $(`#value_khodonhang option:containsExact(${noigh})`).prop('selected', true);
                         $(`#value_madtkd`).val(ncc);
                         $(`#value_tendtkd`).val(ten_ncc);
                         $(this).dialog('destroy').remove();

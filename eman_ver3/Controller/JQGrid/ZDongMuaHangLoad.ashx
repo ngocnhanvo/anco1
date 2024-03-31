@@ -57,8 +57,8 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
             }
 
 
-            string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY " + orderby + ")";
-            string sql = string.Format(@"
+            string ROW_NUMBER = $"ROW_NUMBER() OVER (  ORDER BY {orderby})";
+            string sql = $@"
             sELeCt 
                 replace(newid(),'-','') as c_donmuahang_cdmh_id, 
                 P.* 
@@ -72,16 +72,19 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
 	                , thue_sp.ten_thue_sanpham as thue
 	                , cdmh.thanhtien
                     , dmh.so_donmuahang
-                    , " + ROW_NUMBER + " as RowNum " +
-               @"fRoM c_donmuahang_cdmh cdmh 
+                    , sp.khomacdinh
+                    , {ROW_NUMBER} as RowNum
+               fRoM c_donmuahang_cdmh cdmh 
 	                left join md_sanpham sp on cdmh.md_sanpham_id = sp.md_sanpham_id 
 	                left join md_thue_sanpham thue_sp on thue_sp.md_thue_sanpham_id = cdmh.thue
                     left join c_donmuahang dmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
-                WHeRe 1=1 and cdmh.c_donmuahang_id in ('{1}') {0}
+                WHeRe 1=1 and cdmh.c_donmuahang_id in ('{id}') {filter}
             ) P 
             WHeRe 
-                RowNum > " + start + " AND RowNum < " + end + " order by RowNum asc",
-            filter, id, where_ex);
+                RowNum > {start} AND RowNum < {end} 
+            order by 
+                RowNum asc
+            ";
 
             sql = ADmin_ConvertStringToCode.Avariable(context, sql, id_count, id, mod_, db).Replace("'", "''");
 

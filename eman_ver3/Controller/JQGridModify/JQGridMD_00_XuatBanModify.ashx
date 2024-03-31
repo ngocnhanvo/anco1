@@ -125,7 +125,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             {
                 var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-                
+
                 if (khosp == null)
                 {
                     msg += $@"<br>Lỗi: ""{sp.ma_sanpham}"" không có trong kho.";
@@ -180,6 +180,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                     if (checkKT <= 0)
                     {
                         dsdh.trangthai = Helper.KETTHUC;
+                        dsdh.md_trangthai_id = Helper.DaXuatHang;
                     }
                 }
 
