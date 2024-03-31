@@ -15,22 +15,28 @@ function link_report() {
 
 function checkNewReport() {
     let aCanhBao = $('#a_canhbao');
-    $.post('Controller/JQGridModify/JQGridMD_00_TBModify.ashx?oper=getJSON', { count: true }, function (rs) {
-        let val = aCanhBao.html();
-        let index = val.indexOf(' ');
-        val = (rs > 9 ? '9+' : rs) + val.substring(index);
-        aCanhBao.html(val);
-        if (Number(rs) > 0) {
-            aCanhBao.attr('numrpt', rs);
-            document.title = `${rs} Tin nhắn mới`;
+    $.post('Controller/JQGridModify/JQGridMD_00_TBModify.ashx?oper=getJSONMess', { count: true }, function (rs) {
+        rs = Number(rs);
+        if (!isNaN(rs)) {
+            let val = aCanhBao.html();
+            let index = val.indexOf(' ');
+            val = (rs > 9 ? '9+' : rs) + val.substring(index);
+            aCanhBao.html(val);
+            if (Number(rs) > 0) {
+                aCanhBao.attr('numrpt', rs);
+                document.title = `${rs} Tin nhắn mới`;
+            }
+            else {
+                if (document.title.lastIndexOf('Tin nhắn mới') > -1)
+                    document.title = 'eMan';
+                aCanhBao.removeAttr('numrpt');
+            }
         }
         else {
-            if (document.title.lastIndexOf('Tin nhắn mới') > -1)
-                document.title = 'eMan';
-            aCanhBao.removeAttr('numrpt');
+            alert('Phiên đăng nhập đã hết hạn, hãy đăng nhập lại');
+            window.location.href = '';
+            reload_page = true;
         }
-
-
     });
 }
 // Nhi-kk ADD END
