@@ -104,6 +104,18 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.so_po = item["so_po"] + "";
                         c_dsdh.total = Convert.ToDecimal(item["total"]);
                         c_dsdh.trangthai = item["trangthai"] + "";
+                        if(item.ContainsKey("cont20"))
+                        {
+                            c_dsdh.cont20 = Convert.ToDecimal(item["cont20"] == null ? "0" : item["cont20"]);
+                        }
+                        if(item.ContainsKey("cont40"))
+                        {
+                            c_dsdh.cont40 = Convert.ToDecimal(item["cont40"] == null ? "0" : item["cont40"]);
+                        }
+                        if (item.ContainsKey("cont40hc"))
+                        {
+                            c_dsdh.cont40hc = Convert.ToDecimal(item["cont40hc"] == null ? "0" : item["cont40hc"]);
+                        }
 
                         decimal cbmAll = 0;
                         foreach (var b in lstItem)
