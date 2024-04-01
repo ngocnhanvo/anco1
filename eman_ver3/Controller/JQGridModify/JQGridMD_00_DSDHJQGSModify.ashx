@@ -513,64 +513,64 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
     {
         EntityContext db = new EntityContext();
         string msg = "", msgSucess = "";
-        string id = context.Request.Form["id"];
-        string[] vnn = id.Split(',');
-        using (var transaction = db.Database.BeginTransaction())
+        var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(false).Split(',').ToList();
+        var dsdh = db.c_danhsachdathang.Where(s => ids.Contains(s.c_danhsachdathang_id)).FirstOrDefault();
+        if(dsdh == null)
         {
-            foreach (var dsdh1 in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).ToList())
+            msg = "Đơn hàng không tồn tại";
+            goto EndEventHandler;
+        }
+
+        string msgDetail = "";
+        try
+        {
+            if (dsdh.trangthai == "HUYBO")
             {
-                string msgDetail = "";
-                try
-                {
-                    if (dsdh1.trangthai == "HUYBO")
-                    {
-                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hủy.</div>";
-                    }
-                    else if (dsdh1.trangthai == "DANHAN")
-                    {
-                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã nhận hàng.</div>";
-                    }
-                    else if (dsdh1.trangthai == "KETTHUC")
-                    {
-                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã kết thúc.</div>";
-                    }
-                    else if (dsdh1.trangthai == "HIEULUC")
-                    {
-                        msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh1.sochungtu + " đã hiệu lực.</div>";
-                    }
-                    else if (dsdh1.md_trangthai_id == "DOICHIEUHANGTON")
-                    {
-                        msgDetail += "<div style='color:red'>Lỗi: Dòng " + dsdh1.sochungtu + " đã đối chiếu hàng tồn.</div>";
-                    }
-                    else
-                    {
-                        dsdh1.ngaycapnhat = DateTime.Now;
-                        dsdh1.trangthai = "DANHAN";
-                        dsdh1.md_trangthai_id = "HIEULUC";
-                        db.SaveChanges();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    msgDetail += string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
-                }
-
-                if (msgDetail.Length <= 0)
-                {
-                    msgSucess += string.Format(@"<div style='color:blue'>Nhận đơn đặt hàng ""{0}"" thành công.</div>", dsdh1.sochungtu);
-                }
-
-                msg += msgDetail;
+                msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh.sochungtu + " đã hủy.</div>";
             }
-
-            if (msg.Length <= 0)
+            else if (dsdh.trangthai == "DANHAN")
             {
-                msg = msgSucess;
-                transaction.Commit();
+                msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh.sochungtu + " đã nhận hàng.</div>";
+            }
+            else if (dsdh.trangthai == "KETTHUC")
+            {
+                msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh.sochungtu + " đã kết thúc.</div>";
+            }
+            else if (dsdh.trangthai == "HIEULUC")
+            {
+                msgDetail += "<div style='color:red'>Lỗi: Đơn hàng " + dsdh.sochungtu + " đã hiệu lực.</div>";
+            }
+            else if (dsdh.md_trangthai_id == "DOICHIEUHANGTON")
+            {
+                msgDetail += "<div style='color:red'>Lỗi: Dòng " + dsdh.sochungtu + " đã đối chiếu hàng tồn.</div>";
             }
             else
-                transaction.Rollback();
+            {
+                dsdh.ngaycapnhat = DateTime.Now;
+                dsdh.trangthai = "DANHAN";
+                dsdh.md_trangthai_id = "HIEULUC";
+                db.SaveChanges();
+            }
         }
+        catch (Exception ex)
+        {
+            msgDetail += string.Format(@"<div style='color:red'>{0}</div>", ex.Message);
+        }
+
+        if (msgDetail.Length <= 0)
+        {
+            msgSucess += string.Format(@"<div style='color:blue'>Nhận đơn đặt hàng ""{0}"" thành công.</div>", dsdh.sochungtu);
+        }
+
+        msg += msgDetail;
+
+        if (msg.Length <= 0)
+        {
+            msg = msgSucess;
+        }
+
+    EndEventHandler:;
+
         context.Response.Write(msg);
     }
 
