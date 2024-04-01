@@ -98,7 +98,7 @@ public static class Extension
 
     public static string DropTrailingZeros(this decimal value)
     {
-        return value.ToString("#,#0.####");
+        return value.ToString("#,#0.#####");
     }
 
     public static bool isNullOrEmptyOrWhiteSpace(this string value)

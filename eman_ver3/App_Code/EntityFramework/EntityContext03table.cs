@@ -67,11 +67,11 @@ modelBuilder.Entity<c_nhucauvattu_ycmvt>().HasKey<string>(p => p.c_nhucauvattu_y
                             modelBuilder.Entity<c_nhucauvattu_ycmvt>()
                             .Property(p => p.sl_duyetmua)
                             .HasColumnName("sl_duyetmua")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_nhucauvattu_ycmvt>()
                             .Property(p => p.soluong)
                             .HasColumnName("soluong")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_nhucauvattu_ycmvt>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
@@ -157,7 +157,7 @@ modelBuilder.Entity<c_phidathang>().HasKey<string>(p => p.c_phidathang_id);
                             modelBuilder.Entity<c_phidathang>()
                             .Property(p => p.sotien)
                             .HasColumnName("sotien")
-                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            .HasColumnType("numeric").HasPrecision(18, 8);
                             modelBuilder.Entity<c_phidathang>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
@@ -369,7 +369,7 @@ modelBuilder.Entity<c_yeucaumuavt_cdh>().HasKey<string>(p => p.c_yeucaumuavt_cdh
                             modelBuilder.Entity<c_yeucaumuavt_cdh>()
                             .Property(p => p.soluong_yeucau)
                             .HasColumnName("soluong_yeucau")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_yeucaumuavt_cdh>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
@@ -655,19 +655,19 @@ modelBuilder.Entity<md_baotrivthh_cdh>().HasKey<string>(p => p.md_baotrivthh_cdh
                             modelBuilder.Entity<md_baotrivthh_cdh>()
                             .Property(p => p.soluong_baotri)
                             .HasColumnName("soluong_baotri")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_baotrivthh_cdh>()
                             .Property(p => p.soluong_daht)
                             .HasColumnName("soluong_daht")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_baotrivthh_cdh>()
                             .Property(p => p.soluong_dank)
                             .HasColumnName("soluong_dank")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_baotrivthh_cdh>()
                             .Property(p => p.soluong_daxk)
                             .HasColumnName("soluong_daxk")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_baotrivthh_cdh>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
@@ -1415,19 +1415,19 @@ modelBuilder.Entity<md_doimaudodang_dh>().HasKey<string>(p => p.md_doimaudodang_
                             modelBuilder.Entity<md_doimaudodang_dh>()
                             .Property(p => p.soluong_dachuyen)
                             .HasColumnName("soluong_dachuyen")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_doimaudodang_dh>()
                             .Property(p => p.soluong_dichchuyen)
                             .HasColumnName("soluong_dichchuyen")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_doimaudodang_dh>()
                             .Property(p => p.soluong_muonchuyen)
                             .HasColumnName("soluong_muonchuyen")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_doimaudodang_dh>()
                             .Property(p => p.soluong_toida)
                             .HasColumnName("soluong_toida")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_doimaudodang_dh>()
                             .Property(p => p.spcandoi)
                             .HasColumnName("spcandoi")
@@ -1589,7 +1589,7 @@ modelBuilder.Entity<md_doitackinhdoanh>().HasKey<string>(p => p.md_doitackinhdoa
                             modelBuilder.Entity<md_doitackinhdoanh>()
                             .Property(p => p.tong_congno)
                             .HasColumnName("tong_congno")
-                            .HasColumnType("numeric").HasPrecision(18, 4);
+                            .HasColumnType("numeric").HasPrecision(18, 8);
                             modelBuilder.Entity<md_doitackinhdoanh>()
                             .Property(p => p.url)
                             .HasColumnName("url")
@@ -1789,7 +1789,7 @@ modelBuilder.Entity<md_dondathangphanxuong_cdh>().HasKey<string>(p => p.md_donda
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.hanngach)
                             .HasColumnName("hanngach")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
@@ -1841,27 +1841,27 @@ modelBuilder.Entity<md_dondathangphanxuong_cdh>().HasKey<string>(p => p.md_donda
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.sl_chiato)
                             .HasColumnName("sl_chiato")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.sl_giamhanngach)
                             .HasColumnName("sl_giamhanngach")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.sl_hanngach)
                             .HasColumnName("sl_hanngach")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.sl_hoanthanh)
                             .HasColumnName("sl_hoanthanh")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.sl_tamhoanthanh)
                             .HasColumnName("sl_tamhoanthanh")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.tong_sl_dat)
                             .HasColumnName("tong_sl_dat")
-                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_dondathangphanxuong_cdh>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")

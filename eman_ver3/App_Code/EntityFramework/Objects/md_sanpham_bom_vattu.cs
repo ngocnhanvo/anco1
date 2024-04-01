@@ -88,7 +88,7 @@
                         #region md_sanpham_bom_vattu_soluong_wintaFN
                         
                         #endregion md_sanpham_bom_vattu_soluong_wintaFN
-                        public Double? soluong { get; set; }
+                        public Decimal? soluong { get; set; }
                 
 						
                         #region md_sanpham_bom_vattu_tam_wintaFN
