@@ -143,11 +143,11 @@ public class Public
 
         var bomSPs = (from a in db.md_sanpham_bom_vattu
                       join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
-                      join c in db.md_kho on b.khomacdinh equals c.md_kho_id
+                      //join c in db.md_kho on b.khomacdinh equals c.md_kho_id
                       where
                          a.md_sanpham_bom_id == bomSpId
                          & a.sanphamId == sp.md_sanpham_id
-                      select new { a, b, b.ban_thanhpham, b.vattu, b.phongbanId, sp.md_donvitinhsanpham_id, c.ma_kho }).ToList();
+                      select new { a, b, b.ban_thanhpham, b.vattu, b.phongbanId, sp.md_donvitinhsanpham_id }).ToList();
 
         cdh.noigiaohang = bomSpId;
         cdh.bomId = bomSpId;
