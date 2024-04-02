@@ -13,34 +13,33 @@ public partial class MainPage : System.Web.UI.Page
     public int version = 19;
     protected void Page_Load(object sender, EventArgs e)
     {
-        //
-        //var userAll = Security.all_taikhoan(Context);
-        //if (userAll.Count > 0)
-        //{
-        //    if(!userAll.ContainsKey("ma_user"))
-        //        Response.Redirect(Security.UrlBase() + "Login.aspx");
-        //}
-
-        tk = VNN_Function.get_user(
-            Security.id_taikhoan(Context),
-            Security.id_vaitro(Context),
-            Security.id_phongban(Context),
-            db
-        );
-
-
-
-        kq_script = VNN_VariablePublic.Module_script(json);
-        ttc = json.ad_systemconfigJSON().FirstOrDefault();
-        if (ttc.date_import != null)
+        if (!Helper.checkBrower(Context))
         {
-            date_ip = ttc.date_import.Value.ToString(VNN_Config.get_FormatDate());
+            Response.Redirect(Security.UrlBase() + "Login.aspx");
         }
-
-        var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + tk.ma_user + "/layoutSize.json");
-        if (System.IO.File.Exists(filepath))
+        else
         {
-            layoutSize = System.IO.File.ReadAllText(filepath);
+            tk = VNN_Function.get_user(
+                Security.id_taikhoan(Context),
+                Security.id_vaitro(Context),
+                Security.id_phongban(Context),
+                db
+            );
+
+
+
+            kq_script = VNN_VariablePublic.Module_script(json);
+            ttc = json.ad_systemconfigJSON().FirstOrDefault();
+            if (ttc.date_import != null)
+            {
+                date_ip = ttc.date_import.Value.ToString(VNN_Config.get_FormatDate());
+            }
+
+            var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + tk.ma_user + "/layoutSize.json");
+            if (System.IO.File.Exists(filepath))
+            {
+                layoutSize = System.IO.File.ReadAllText(filepath);
+            }
         }
     }
 }

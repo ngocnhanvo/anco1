@@ -151,6 +151,19 @@ public static class Helper
         return a;
     }
 
+    public static bool checkBrower(HttpContext context)
+    {
+        var userAgent = context.Request.UserAgent.removeAllSpaceOrTrimText(true).ToLower();
+        var oks = new string[] { "chrome" };
+        var result = false;
+        foreach (var ok in oks)
+        {
+            if (userAgent.Contains(ok))
+                result = true;
+        }
+        return result;
+    }
+
     public static System.Collections.Generic.Dictionary<string, string> pathReport(string name)
     {
         name = name.Replace("/", "-");

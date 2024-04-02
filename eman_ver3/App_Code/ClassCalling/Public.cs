@@ -158,16 +158,18 @@ public class Public
                 db.md_lenhsanxuat_tosx_cdh.Add(cdh);
 
             bomSPs = bomSPs.Where(s => s.a.soluong > 0).ToList();
+            //var SPkhongLaVT = !sp.vattu.GetValueOrDefault(false) | (sp.vattu.GetValueOrDefault(false) & sp.ban_thanhpham.GetValueOrDefault(false));
             foreach (var vattuspT in bomSPs)
             {
                 var vattusp = vattuspT.a;
-                var bomVT = db.md_sanpham_bom.
-                    Where(s =>
-                    s.md_sanpham_id == vattusp.md_sanpham_id
-                    & s.ngay_hieuluc <= DateTime.Now
-                    ).OrderByDescending(s => s.ngay_hieuluc).Take(1).FirstOrDefault();
-
-                if (bomVT == null | !sp.vattu.GetValueOrDefault(false))
+                var vattusp2 = vattuspT.b;
+                //var bomVT = db.md_sanpham_bom.
+                //    Where(s =>
+                //    s.md_sanpham_id == vattusp.md_sanpham_id
+                //    & s.ngay_hieuluc <= DateTime.Now
+                //    ).OrderByDescending(s => s.ngay_hieuluc).Take(1).FirstOrDefault();
+                var BomlaVT = vattusp2.vattu.GetValueOrDefault(false) & !vattusp2.ban_thanhpham.GetValueOrDefault(false);
+                if (BomlaVT | !sp.vattu.GetValueOrDefault(false))
                 {
                     var sp1 = spchaBS == null ? sp.ma_sanpham : spchaBS.ma_sanpham;
                     var toSXVTsServer = db.md_lenhsanxuat_tosx_vattu.Where(s =>
@@ -190,8 +192,15 @@ public class Public
 
                     var vtlsxto = toSXVTs.FirstOrDefault();
                     var addVT = vtlsxto == null;
+                    if(vattusp2.ma_sanpham == "010-000" & sp1 == "190-191" & spcha1.ma_sanpham == "88-00900-02-A" & spcha2.ma_sanpham == "88-00900-02-03")
+                    {
+                        //đasadsad
+                        var debbugger = true;
+                    }
+
                     if (addVT)
                     {
+                        var slvtct = vattusp.soluong.GetValueOrDefault(0) * cdh.sl_chiato.GetValueOrDefault(0);
                         vtlsxto = new md_lenhsanxuat_tosx_vattu();
                         vtlsxto.md_lenhsanxuat_tosx_vattu_id = Helper.getNewId();
                         vtlsxto.md_lenhsanxuat_tosx_id = cdh.xuongChinh + cdh.xuongPhu;
@@ -206,14 +215,16 @@ public class Public
                         vtlsxto.vattu = vattuspT.vattu.GetValueOrDefault(false);
                         vtlsxto.bantp = vattuspT.ban_thanhpham.GetValueOrDefault(false);
                         vtlsxto.hoatdong = !vattuspT.ban_thanhpham.GetValueOrDefault(false);
-                        vtlsxto.soluong = (decimal)vattusp.soluong.GetValueOrDefault(0) * cdh.sl_chiato.GetValueOrDefault(0);
+                        vtlsxto.soluong = slvtct;
                     }
                     else
                     {
+                        var slvtct = vattusp.soluong.GetValueOrDefault(0) * cdh.sl_chiato.GetValueOrDefault(0);
+
                         if (add)
-                            vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) + (decimal)vattusp.soluong.GetValueOrDefault(0) * cdh.sl_chiato.GetValueOrDefault(0);
+                            vtlsxto.soluong = vtlsxto.soluong.GetValueOrDefault(0) + slvtct;
                         else
-                            vtlsxto.soluong = (decimal)vattusp.soluong.GetValueOrDefault(0) * cdh.sl_chiato.GetValueOrDefault(0);
+                            vtlsxto.soluong = slvtct;
                     }
 
                     if (addVT)
@@ -287,8 +298,8 @@ public class Public
                         {
                             spchaBS = sp;
                         }
-                        else
-                            slct = (decimal)btp.a.soluong.GetValueOrDefault(0) * soluongBOM;
+                        //else
+                        slct = (decimal)btp.a.soluong.GetValueOrDefault(0) * soluongBOM;
 
                         msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, spcha1, btp.b, pbgnc, userTK, maSPDH, slct, kiemtragia, stt, msgBLHLs, spchaBS);
                     }
