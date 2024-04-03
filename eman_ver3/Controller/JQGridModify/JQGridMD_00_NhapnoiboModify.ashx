@@ -129,11 +129,11 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
             var bgncs = pub.layBGGiaNhanCongs(db);
             var pbgnc = pub.layPBGGiaNhanCong(db, bgncs);
 
-            if (pbgnc == null)
-            {
-                msg = string.Format(fmtErr, string.Format(@"Lỗi: Không tìm thấy phiên bản giá nhân công."));
-                goto EndEventHandler;
-            }
+            //if (pbgnc == null)
+            //{
+            //    msg = string.Format(fmtErr, string.Format(@"Lỗi: Không tìm thấy phiên bản giá nhân công."));
+            //    goto EndEventHandler;
+            //}
 
             var ngayKCS = VNN_Config.setDateTime(context.Request.Form["ngayKCS"]);
             if (!ngayKCS.IsDate())
