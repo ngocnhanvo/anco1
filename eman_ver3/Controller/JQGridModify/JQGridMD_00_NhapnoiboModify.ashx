@@ -355,15 +355,17 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                         //--cap nhat so luong xuat
                         dh.sl_danhap = sl_nhap;
 
-                        var giasp = db.md_giasanpham.Where(s =>
-                            s.md_sanpham_id == dh.md_sanpham_id
-                            & s.md_donvitinhsanpham_id == dh.md_donvitinhsanpham_id
-                            & s.md_phienbangia_id == pbgnc.md_phienbangia_id
-                            ).FirstOrDefault();
+                        if (pbgnc != null)
+                        {
+                            var giasp = db.md_giasanpham.Where(s =>
+                                s.md_sanpham_id == dh.md_sanpham_id
+                                & s.md_donvitinhsanpham_id == dh.md_donvitinhsanpham_id
+                                & s.md_phienbangia_id == pbgnc.md_phienbangia_id
+                                ).FirstOrDefault();
 
-                        if (giasp != null)
-                            dh.gianhancong = giasp.gia.GetValueOrDefault(0);
-
+                            if (giasp != null)
+                                dh.gianhancong = giasp.gia.GetValueOrDefault(0);
+                        }
                         //--cap nhat vao kho
                         string khospId = nhap_kho(db, dh, nk, 1, userTK);
                         //--tao lich su nhap kho
@@ -412,8 +414,12 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                 nk.trangthai = Helper.HIEULUC;
                 nk.ngaychuyen = ngayKCS;
                 nk.ngayhieuluc = DateTime.Now;
-                nk.banggiaNC = pbgnc.md_banggia_id;
-                nk.phienbangiaNC = pbgnc.md_phienbangia_id;
+
+                if (pbgnc != null)
+                {
+                    nk.banggiaNC = pbgnc.md_banggia_id;
+                    nk.phienbangiaNC = pbgnc.md_phienbangia_id;
+                }
                 db.SaveChanges();
 
                 var updated = false;
