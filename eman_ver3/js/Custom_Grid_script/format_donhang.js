@@ -80,10 +80,12 @@ var format_donhang = {
                                 $('#denkho')[0].loadDonHang(sxt);
                             }
 
-                            if ($('#tukho')[0].loadDonHangXB) {
-                                let dht = cell.donhangtron ? cell.donhangtron : false;
-                                $('#tukho')[0].loadDonHangXB(dht);
-                            }
+							if($('#tukho')[0]) {
+								if ($('#tukho')[0].loadDonHangXB) {
+									let dht = cell.donhangtron ? cell.donhangtron : false;
+									$('#tukho')[0].loadDonHangXB(dht);
+								}
+							}
                         }
                     },
                     colModel: [
