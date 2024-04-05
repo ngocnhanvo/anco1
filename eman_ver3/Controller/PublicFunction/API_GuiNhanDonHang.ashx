@@ -29,7 +29,7 @@ public class API_GuiNhanDonHang : IHttpHandler
 
     public void guiHDLH(HttpContext context)
     {
-        string msg = "";
+        string msg = "", msgEx = "";
         string strdata = context.Request.Form["data"];
         try
         {
@@ -37,8 +37,23 @@ public class API_GuiNhanDonHang : IHttpHandler
             var taptins = new List<md_taptin>();
             var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
             var result = JsonConvert.DeserializeObject<List<md_taptin>>(data["result"] + "");
+            if(result.Count <= 0)
+            {
+                msg = "Không tìm thấy tập tin.";
+                goto EndEventHandler;
+            }
+
+            var dhid = result.Select(s => s.lienket).Distinct().FirstOrDefault();
+            var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == dhid).FirstOrDefault();
+            if(dsdh == null)
+            {
+                msg = "Không tìm thấy đơn hàng.";
+                goto EndEventHandler;
+            }
+
             foreach (var a in result)
             {
+
                 var ttServer = db.md_taptin.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
                 var tt = db.md_taptin.Local.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
                 var add = tt == null;
@@ -62,11 +77,18 @@ public class API_GuiNhanDonHang : IHttpHandler
         }
         catch (Exception ex)
         {
-            msg += string.Format(@"
-                    <div style='color:red'>Có lỗi xảy ra: {0}</div>
-                    <div style='display:none'>{1}</div>
-					<div style='display:none'>{2}</div>
-                    ", ex.Message, strdata, ex + "");
+            msg = ex.Message;
+            msgEx = ex.ToString();
+        }
+
+    EndEventHandler:;
+
+        if(msg.Length > 0)
+        {
+            msg = $@"
+                <div style='color:red'>Có lỗi xảy ra: {msg}</div>
+                <div style='display:none'>{msgEx}</div>
+            ";
         }
 
         context.Response.Write(msg);
