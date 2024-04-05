@@ -85,7 +85,9 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                     & s.md_sanpham_id == sp.md_sanpham_id
                     ).FirstOrDefault();
 
-                if (kho_hh != null)
+                var chophepNhap0 = kho_hh == null;
+
+                if (!chophepNhap0)
                 {
                     if (kho_hh.soluong.GetValueOrDefault(0) != cdh.sl_demduoc.GetValueOrDefault(0))
                     {
@@ -122,7 +124,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                 if (msg.Length <= 0)
                 {
                     //Nhập SL thực tế
-                    if (cdh.sl_sosach.GetValueOrDefault(0) > 0)
+                    if (cdh.sl_sosach.GetValueOrDefault(0) > 0 | chophepNhap0)
                     {
                         helperEntity.obj = new HelperEntity.objLSNX()
                         {
@@ -141,25 +143,25 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                         };
                         helperEntity.themHoacSuaLichSuNhapXuatKho(db, userTK);
 
-                        var addKho = kho_hh == null;
-                        if (addKho)
+                        if (chophepNhap0)
                         {
                             kho_hh = new md_kho_sanpham();
                             kho_hh.md_kho_sanpham_id = Helper.getNewId();
                             kho_hh.md_kho_id = kk.md_kho_id;
                             kho_hh.md_sanpham_id = sp.md_sanpham_id;
+                            kho_hh.soluong = cdh.sl_sosach.GetValueOrDefault(0);
                             kho_hh = Helper.setDefaultValueWhenInsertOrUpdate(kho_hh, userTK, false);
-                        }
-                        kho_hh.soluong = cdh.sl_sosach.GetValueOrDefault(0);
-                        if (addKho)
-                        {
                             db.md_kho_sanpham.Add(kho_hh);
+                        }
+                        else
+                        {
+                            kho_hh.soluong = cdh.sl_sosach.GetValueOrDefault(0);
                         }
                     }
                 }
             }
 
-            if(msg.Length <=0 & msgErrs.Count <= 0)
+            if (msg.Length <= 0 & msgErrs.Count <= 0)
             {
                 kk.ma_kiemke = Helper.HIEULUC;
                 kk.ngayhieuluc = DateTime.Now;

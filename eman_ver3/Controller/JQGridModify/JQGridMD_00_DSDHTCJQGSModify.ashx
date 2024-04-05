@@ -598,59 +598,59 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
-        {
-            try
-            {
-                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
-                foreach (var id_del_ in ids)
+        try
+        {
+            var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+            foreach (var id_del_ in ids)
+            {
+                var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
+                if (object_ == null)
                 {
-                    var object_ = db.c_danhsachdathang.Where(p => p.c_danhsachdathang_id == id_del_).Take(1).FirstOrDefault();
-                    if (object_ == null)
+                    msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                }
+                else if (new string[] { "HIEULUC", "HUYBO", "KETTHUC" }.Contains(object_.trangthai))
+                {
+                    msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang trong trạng thái ""Hiệu Lực"", ""Hủy"" hoặc ""Kết Thúc"".", object_.sochungtu, object_.so_po);
+                }
+                else if (!new string[] { "HIEULUC", "SOANTHAO" }.Contains(object_.md_trangthai_id))
+                {
+                    msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang triển khai.", object_.sochungtu, object_.so_po);
+                }
+                else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
+                {
+                    msg += string.Format(@"<br><b>{0} ({1})</b>: Đã tạo phiếu giảm hạn ngạch.", object_.sochungtu, object_.so_po);
+                }
+                else
+                {
+                    var taptins = db.md_taptin.Where(s => s.lienket == object_.c_danhsachdathang_id).ToList();
+                    foreach(var taptin in taptins)
                     {
-                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
+                        var path = ExcuteSignalRStatic.mapPathSignalR($@"~/{taptin.path}");
+                        Helper.removeFileWithPath(path);
+                        db.md_taptin.Remove(taptin);
                     }
-                    else if (new string[] { "HIEULUC", "HUYBO", "KETTHUC" }.Contains(object_.trangthai))
-                    {
-                        msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang trong trạng thái ""Hiệu Lực"", ""Hủy"" hoặc ""Kết Thúc"".", object_.sochungtu, object_.so_po);
-                    }
-                    else if (!new string[] { "HIEULUC", "SOANTHAO" }.Contains(object_.md_trangthai_id))
-                    {
-                        msg += string.Format(@"<br><b>{0} ({1})</b>: Không thể xóa khi đang triển khai.", object_.sochungtu, object_.so_po);
-                    }
-                    else if (db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).Count() > 0)
-                    {
-                        msg += string.Format(@"<br><b>{0} ({1})</b>: Đã tạo phiếu giảm hạn ngạch.", object_.sochungtu, object_.so_po);
-                    }
-                    //else if (object_.dg_nangluc.GetValueOrDefault(false))
-                    //{
-                    //    msg += string.Format(@"<br><b>{0} ({1})</b>: Đã từng hiệu lực không thể xóa.", object_.sochungtu, object_.so_po);
-                    //}
-                    else
-                    {
-                        VNN_Function.Write_log(context, ma_module, null, oper, "MĐH:" + object_.sochungtu + ", TĐH:" + object_.so_po, db);
-                        db.c_danhsachdathang.Remove(object_);
-                        db.SaveChanges();
-                    }
+
+                    VNN_Function.Write_log(context, ma_module, null, oper, "MĐH:" + object_.sochungtu + ", TĐH:" + object_.so_po, db);
+                    db.c_danhsachdathang.Remove(object_);
+                    db.SaveChanges();
                 }
             }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
 
-            if (msg.Length <= 0)
-            {
-                msg = string.Format(@"true#Xóa các đơn hàng đã chọn thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg.Substring(4));
-                transaction.Rollback();
-            }
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Xóa các đơn hàng đã chọn thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg.Substring(4));
         }
         context.Response.Write(msg);
     }

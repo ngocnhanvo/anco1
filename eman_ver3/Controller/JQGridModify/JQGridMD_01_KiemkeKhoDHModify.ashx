@@ -32,42 +32,53 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
 
     public void CA_01_CapnhatSLDD(HttpContext context)
     {
-        EntityContext db = new EntityContext();
+        var db = new EntityContext();
         string sel_val = context.Request.Form["sel_val"];
-        decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
-        string[] vnn = context.Request.Form["id"].Split(',');
+        var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(true).Split(',').ToList();
         string msg = "";
+
+        try
+        {
+            decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
+            var cdhs = db.md_kiemke_cdh.Where(s => ids.Contains(s.md_kiemke_cdh_id)).ToList();
+            var kkid = cdhs.Select(s => s.md_kiemke_id).First();
+            var kk = db.md_kiemke.Where(s => s.md_kiemke_id == kkid).FirstOrDefault();
+            if (kk.ma_kiemke == Helper.HIEULUC)
+            {
+                msg = $@"Phiếu kiểm kê phải ở trạng thái ""Đã xác nhận""";
+                goto EndEventHandler;
+            }
+
+            foreach (var cdh in cdhs)
+            {
+                if (sel_val == "0")
+                {
+                    cdh.sl_sosach = cdh.sl_demduoc;
+                }
+                else
+                {
+                    cdh.sl_sosach = slvc_case;
+                }
+            }
+
+            db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
 
         if (msg.Length <= 0)
         {
-            foreach (md_kiemke_cdh nknb_cdh in db.md_kiemke_cdh.Where(s => vnn.Contains(s.md_kiemke_cdh_id)))
-            {
-                md_kiemke kk = db.md_kiemke.Where(s => s.md_kiemke_id == nknb_cdh.md_kiemke_id).FirstOrDefault();
-                if (kk.ma_kiemke == "O")
-                {
-                    msg = "<div style='color:red'>Biên bản \"" + kk.ten_kiemke + "\" đã kiểm kê kho.</div>" + "\n";
-                    break;
-                }
-
-                if (msg.Length <= 0)
-                {
-                    decimal sltd = (decimal)nknb_cdh.sl_sosach;
-                    if (sel_val == "0")
-                    {
-                        nknb_cdh.sl_demduoc = sltd;
-                    }
-                    else
-                    {
-                        nknb_cdh.sl_demduoc = slvc_case;
-                    } 
-                }
-            }
+            msg = $@"<div style='color:blue'>Cập nhật số lượng thực tế thành công</div>";
         }
-        if (msg == "")
+        else
         {
-            msg = "<div style='color:blue'>Cập nhật số lượng đếm được thành công</div>" + "\n";
-            db.SaveChanges();
+            msg = $@"<div error style='color:red'>{msg}</div>";
         }
+
         context.Response.Write(msg);
     }
 
@@ -77,16 +88,16 @@ public class JQGridMD_01_KiemkeKhoDHModify : IHttpHandler, System.Web.SessionSta
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["ma_sanpham"];
-		string id = context.Request.Form["id_parent"];
+        string id = context.Request.Form["id_parent"];
         md_sanpham sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
-		if(sp == null) {
-		    msg = "false#Lỗi: Mã sản phẩm \"" + ma_sanpham + "\" không tồn tại!";
-		}
-		else {
-			md_kiemke_cdh dh = db.md_kiemke_cdh.Where(s => s.md_kiemke_id == id & s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
-			if (dh != null)
-				msg = "false#Lỗi: Mã sản phẩm \"" + sp.ma_sanpham + "\" đã tồn tại!";
-		}
+        if(sp == null) {
+            msg = "false#Lỗi: Mã sản phẩm \"" + ma_sanpham + "\" không tồn tại!";
+        }
+        else {
+            md_kiemke_cdh dh = db.md_kiemke_cdh.Where(s => s.md_kiemke_id == id & s.md_sanpham_id == sp.md_sanpham_id).FirstOrDefault();
+            if (dh != null)
+                msg = "false#Lỗi: Mã sản phẩm \"" + sp.ma_sanpham + "\" đã tồn tại!";
+        }
 
         try
         {

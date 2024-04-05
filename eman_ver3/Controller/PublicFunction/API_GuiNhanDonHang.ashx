@@ -15,6 +15,9 @@ public class API_GuiNhanDonHang : IHttpHandler
         string oper = context.Request.QueryString["oper"];
         switch (oper)
         {
+            case "guiHDLH":
+                this.guiHDLH(context);
+                break;
             case "NhanDonHang":
                 this.NhanDonHang(context);
                 break;
@@ -22,6 +25,51 @@ public class API_GuiNhanDonHang : IHttpHandler
                 this.getListDSDH(context);
                 break;
         }
+    }
+
+    public void guiHDLH(HttpContext context)
+    {
+        string msg = "";
+        string strdata = context.Request.Form["data"];
+        try
+        {
+            var update = false;
+            var taptins = new List<md_taptin>();
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            var result = JsonConvert.DeserializeObject<List<md_taptin>>(data["result"] + "");
+            foreach (var a in result)
+            {
+                var ttServer = db.md_taptin.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
+                var tt = db.md_taptin.Local.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
+                var add = tt == null;
+                if(add)
+                {
+                    tt = new md_taptin();
+                    a.CopyPropertiesTo(tt);
+                    tt.mota = "";
+                    db.md_taptin.Add(tt);
+                    update = true;
+                    var bytes = Convert.FromBase64String(a.mota);
+                    var path = ExcuteSignalRStatic.mapPathSignalR($@"~/{a.path}");
+                    System.IO.File.WriteAllBytes(path, bytes);
+                }
+            }
+
+            if (update)
+            {
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg += string.Format(@"
+                    <div style='color:red'>Có lỗi xảy ra: {0}</div>
+                    <div style='display:none'>{1}</div>
+					<div style='display:none'>{2}</div>
+                    ", ex.Message, strdata, ex + "");
+        }
+
+        context.Response.Write(msg);
     }
 
     public void getListDSDH(HttpContext context)
@@ -104,11 +152,11 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.so_po = item["so_po"] + "";
                         c_dsdh.total = Convert.ToDecimal(item["total"]);
                         c_dsdh.trangthai = item["trangthai"] + "";
-                        if(item.ContainsKey("cont20"))
+                        if (item.ContainsKey("cont20"))
                         {
                             c_dsdh.cont20 = Convert.ToDecimal(item["cont20"] == null ? "0" : item["cont20"]);
                         }
-                        if(item.ContainsKey("cont40"))
+                        if (item.ContainsKey("cont40"))
                         {
                             c_dsdh.cont40 = Convert.ToDecimal(item["cont40"] == null ? "0" : item["cont40"]);
                         }

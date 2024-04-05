@@ -515,7 +515,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         string msg = "", msgSucess = "";
         var ids = context.Request.Form["id"].removeAllSpaceOrTrimText(false).Split(',').ToList();
         var dsdh = db.c_danhsachdathang.Where(s => ids.Contains(s.c_danhsachdathang_id)).FirstOrDefault();
-        if(dsdh == null)
+        if (dsdh == null)
         {
             msg = "Đơn hàng không tồn tại";
             goto EndEventHandler;
@@ -680,7 +680,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
         {
             try
             {
-                var ids = context.Request.Form["id"].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).ToList();
+                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 
                 foreach (var id_del_ in ids)
                 {
@@ -707,6 +707,14 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     }
                     else
                     {
+                        var taptins = db.md_taptin.Where(s => s.lienket == object_.c_danhsachdathang_id).ToList();
+                        foreach (var taptin in taptins)
+                        {
+                            var path = ExcuteSignalRStatic.mapPathSignalR($@"~/{taptin.path}");
+                            Helper.removeFileWithPath(path);
+                            db.md_taptin.Remove(taptin);
+                        }
+
                         VNN_Function.Write_log(context, ma_module, null, oper, "MĐH:" + object_.sochungtu + ", TĐH:" + object_.so_po, db);
                         db.c_danhsachdathang.Remove(object_);
                         db.SaveChanges();

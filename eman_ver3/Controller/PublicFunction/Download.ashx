@@ -20,11 +20,11 @@ public class Download : IHttpHandler
             context.Response.Clear();
             context.Response.Buffer = true;
             context.Response.ContentType = tt.mimetype;
-            context.Response.AddHeader("Content-Disposition", "attachment;filename=" + tt.tentaptin + "." + tt.mimetype);
+            context.Response.AddHeader("Content-Disposition", "attachment;filename=" + tt.tentaptin);
             context.Response.Charset = "";
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            string filepath = Security.UrlBase() + tt.path + "";
-            context.Response.WriteFile(context.Server.MapPath(tt.path));
+            string path = ExcuteSignalRStatic.mapPathSignalR($@"~/{tt.path}");
+            context.Response.WriteFile(path);
             context.Response.End();
         }
         else if (md_taptin_id != null & md_taptin_id != "")
