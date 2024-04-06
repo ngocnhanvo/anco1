@@ -296,7 +296,7 @@ var format_lenhsx = {
                     }],
                     postData: {
                         where_ex: function () {
-                            let whereAll = `and lsx2.trangthai = 'HIEULUC'`;
+                            let whereAll = `and lsx2.trangthai in ('HIEULUC','KETTHUC')`;
                             if (xuatVTtheoBOM) {
                                 return `
                                     ${whereAll}

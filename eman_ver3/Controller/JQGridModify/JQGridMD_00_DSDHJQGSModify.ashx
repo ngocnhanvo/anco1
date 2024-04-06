@@ -546,10 +546,18 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
             }
             else
             {
-                dsdh.ngaycapnhat = DateTime.Now;
-                dsdh.trangthai = "DANHAN";
-                dsdh.md_trangthai_id = "HIEULUC";
-                db.SaveChanges();
+                var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+                if (dtkd == null)
+                {
+                    msgDetail += $@"<div style='color:red'>Lỗi: Dòng ""{dsdh.sochungtu}"" không tìm thấy khách hàng có mã ""{dsdh.md_doitackinhdoanh_id}"".</div>";
+                }
+                else
+                {
+                    dsdh.ngaycapnhat = DateTime.Now;
+                    dsdh.trangthai = "DANHAN";
+                    dsdh.md_trangthai_id = "HIEULUC";
+                    db.SaveChanges();
+                }
             }
         }
         catch (Exception ex)

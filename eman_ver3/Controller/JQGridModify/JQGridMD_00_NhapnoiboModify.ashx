@@ -401,10 +401,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
                                 }
                             }
 
-                            msg_success += string.Format(@"
-                                <div style='color:blue'>
-                                    Dòng ""{0}"" của ""{1}"" đã nhập kho thành công, số lượng nhập là: ""{2}""
-                                </div>", nk.sochungtu, dh1.ma_sanpham, sl_nhap.DropTrailingZeros());
+                            msg_success += $@"<div style='color:blue'>""{dh1.ma_sanpham}"" đã nhập kho: ""{sl_nhap.DropTrailingZeros()}""</div>";
                         }
                     }
                 }

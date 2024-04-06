@@ -71,11 +71,15 @@ public class Public
             msgBLHLs = new List<BaoLoiKhiHieuLuc>();
         string pbgId = pbgnc == null ? "" : pbgnc.md_phienbangia_id;
         string msgEX = "";
-        var giasp = db.md_giasanpham.Where(s =>
+        md_giasanpham giasp = null;
+        if (kiemtragia)
+        {
+            giasp = db.md_giasanpham.Where(s =>
             s.md_sanpham_id == sp.md_sanpham_id
             & s.md_donvitinhsanpham_id == sp.md_donvitinhsanpham_id
             & s.md_phienbangia_id == pbgId
             ).FirstOrDefault();
+        }
 
         var hhtronCuoi = sp.vattu.GetValueOrDefault(false);
         //var cdhServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>
@@ -126,7 +130,7 @@ public class Public
 
         if (giasp == null)
         {
-            if (kiemtragia == true)
+            if (kiemtragia)
             {
                 msgEX += $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có giá nhân công";
                 foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
@@ -181,14 +185,14 @@ public class Public
                 if (BomlaVT | !sp.vattu.GetValueOrDefault(false))
                 {
                     var sp1 = spchaBS == null ? sp.ma_sanpham : spchaBS.ma_sanpham;
-                    var toSXVTsServer = db.md_lenhsanxuat_tosx_vattu.Where(s =>
-                            s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                            & s.md_sanpham_id == vattusp.md_sanpham_id
-                            & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
-                            & s.sp1 == sp1
-                            & s.sp2 == spcha1.ma_sanpham
-                            & s.sp3 == spcha2.ma_sanpham
-                            ).ToList();
+                    //var toSXVTsServer = db.md_lenhsanxuat_tosx_vattu.Where(s =>
+                    //        s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                    //        & s.md_sanpham_id == vattusp.md_sanpham_id
+                    //        & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
+                    //        & s.sp1 == sp1
+                    //        & s.sp2 == spcha1.ma_sanpham
+                    //        & s.sp3 == spcha2.ma_sanpham
+                    //        ).ToList();
 
                     var toSXVTs = db.md_lenhsanxuat_tosx_vattu.Local.Where(s =>
                             s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
@@ -242,14 +246,14 @@ public class Public
                         db.md_lenhsanxuat_tosx_vattu.Add(vtlsxto);
 
 
-                    var vtbkServer = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
-                            s.sp == cdh.md_sanpham_id
-                            & s.vt == vattusp.md_sanpham_id
-                            & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                            & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
-                            & s.sp1 == sp1
-                            & s.sp2 == spcha1.ma_sanpham
-                            & s.sp3 == spcha2.ma_sanpham).FirstOrDefault();
+                    //var vtbkServer = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
+                    //        s.sp == cdh.md_sanpham_id
+                    //        & s.vt == vattusp.md_sanpham_id
+                    //        & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
+                    //        & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
+                    //        & s.sp1 == sp1
+                    //        & s.sp2 == spcha1.ma_sanpham
+                    //        & s.sp3 == spcha2.ma_sanpham).FirstOrDefault();
 
                     var vtbk = db.md_lenhsanxuat_tosx_vattuBackup.Local.Where(s =>
                             s.sp == cdh.md_sanpham_id
@@ -1528,7 +1532,7 @@ public class Public
                             msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc()
                             {
                                 msp = spMain.ma_sanpham,
-                                loi = $"Số lượng trong kho thiếu: ${itemSP.Value.DropTrailingZeros()}"
+                                loi = $"Số lượng trong kho thiếu: {itemSP.Value.DropTrailingZeros()}"
                             });
                         }
 

@@ -38,6 +38,7 @@ var format_donhang = {
             </div>
         `);
 
+        let gridSel = $('.module_spanselect').attr('id').substring(5);
         let $dlgGridSmal2 = $('#dlg_gridSmal_2');
         let gridMasterId = 'gridMD_00_TatCaDonHang_cp';
         let $gridMaster = $(`#${gridMasterId}`);
@@ -118,6 +119,19 @@ var format_donhang = {
                                     ) > 0
                                 `;
                             }
+                            else if (tengrid0 == 'gridMD_00_PVCDG') {
+                                whereSQL = ` 
+                                    ${whereAll}
+                                    and (
+                                        select top 1 1
+                                        from c_dongdsdh
+                                        where 
+                                            c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+                                            and isnull(sl_nhaphang, 0) > 0
+                                            and (isnull(sl_donggoiTP, 0) <= isnull(sl_nhaphang, 0))
+                                    ) > 0
+                                `;
+                            }
                             else if (tengrid0 == 'gridMD_00_XuatBan_PDN') {
                                 whereSQL = ` 
                                     ${whereAll}
@@ -144,6 +158,7 @@ var format_donhang = {
                                     ) > 0
                                 `;
                             }
+                            
                             return whereSQL;
                         }
                     },
