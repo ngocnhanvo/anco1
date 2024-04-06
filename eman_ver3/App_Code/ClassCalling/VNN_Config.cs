@@ -630,11 +630,12 @@ public static class VNN_Config
         else if (capmodule == 2)
             kq += "\nfunction taonut_header2(tengrid_hd) {";
 
-        kq += "\n//lam moi nut header";
-        kq += "\nvar nutnhan =  '<div style=\"margin: -5px 0 0 0; height:25px\">';";
-        kq += "\nvar chuotphai = '<div id=\"div_chuotphai\" class=\"div_fixed\">';";
-        kq += "\nchuotphai += '" + kq_btnheader + "';";
-        kq += "\nchuotphai += '<table class=\"table_div_chuotphai\">';";
+        kq += $@"{Environment.NewLine}//lam moi nut header";
+        kq += $@"{Environment.NewLine}var nutnhan = `<div class='div-left-mouse'>`;";
+        kq += $@"{Environment.NewLine}var chuotphai = `<div id='div_chuotphai' class='div_fixed'>`;";
+        kq += $@"{Environment.NewLine}chuotphai += `{kq_btnheader}`;";
+        kq += $@"{Environment.NewLine}chuotphai += `<table class='table_div_chuotphai'>`;";
+
         string detailfncChuotPhai = "";
         foreach (ad_case cn in cases.OrderBy(p => p.sapxep))
         {
@@ -659,9 +660,11 @@ public static class VNN_Config
                     detailfncChuotPhai += "if(" + mota + ") {";
                     detailfncChuotPhai += "$('#" + cn.ma_case + "').show();";
                     detailfncChuotPhai += "$('#img_btn" + cn.ma_case + "').show();";
+                    detailfncChuotPhai += "$('#img_btn2" + cn.ma_case + "').show();";
                     detailfncChuotPhai += "} else {";
                     detailfncChuotPhai += "$('#" + cn.ma_case + "').hide();";
                     detailfncChuotPhai += "$('#img_btn" + cn.ma_case + "').hide();";
+                    detailfncChuotPhai += "$('#img_btn2" + cn.ma_case + "').hide();";
                     detailfncChuotPhai += "}";
                 }
             }

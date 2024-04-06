@@ -106,6 +106,10 @@
             .menuMobile {
                 display: none;
             }
+
+            .cl_div_chuathanhcongcu {
+                display: none;
+            }
         }
 
          @media (max-width: 720px) {

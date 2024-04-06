@@ -95,7 +95,7 @@ namespace InfoDB
                             modelBuilder.Entity<{tableFix}>()
                             .Property(p => p.{columnFix})
                             .HasColumnName(""{ten_column}"")
-                            .HasColumnType(""{loai_column}"").HasPrecision(18, 4);";
+                            .HasColumnType(""{loai_column}"").HasPrecision(18, 8);";
                     }
                     else
                     {

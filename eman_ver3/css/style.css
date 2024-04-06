@@ -671,3 +671,14 @@ img {
 .ui-jqgrid-sortable, .ui-jqgrid-resize, .jqgrid-rownum, .ui-pager-control {
     user-select: none;
 }
+
+.ui-pg-table .div-left-mouse {
+    margin: -2px 0 0 6px;
+    transform: scale(0.75);
+    transform-origin: left;
+}
+
+    .ui-pg-table .div-left-mouse .img_btnmacdinh {
+        padding: 5px;
+        margin: 0px 0px 0px 5px;
+    }

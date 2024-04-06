@@ -985,43 +985,6 @@ function load_doimau_client(t) {
     }
 }
 
-function load_menurightclick(tg, n, f, nutnhan) {
-    let i = $("#gview_" + tg + " .ui-jqgrid-bdiv");
-    let tgVal = "#gview_" + tg + " .ui-jqgrid-bdiv";
-    i = null == i.attr("class") ? (!tengrid2 ? tgVal : tengrid2) : tgVal;
-    for (let a = i.split(","), e = 0; e < a.length; e++) {
-        $(a[e]).off("contextmenu");
-        $(a[e]).bind("contextmenu", function (t) {
-            if (2 == t.button) {
-                $(this).click();
-                $("#div_chuotphai").remove();
-                $(".cl_table_noidung").prepend(n);
-                div_load("div_chuotphai", n, t);
-
-                let grid = $(this).parent().attr('id').replace('gview_', '');
-                if (f) {
-                    f(grid);
-                }
-                return false;
-            }
-            else {
-                return false;
-            }
-        });
-
-        $(a[e]).off("click");
-        $(a[e]).click(function () {
-            $(".cl_div_chuathanhcongcu").html(nutnhan);
-            let grid = $(this).parent().attr('id').replace('gview_', '');
-
-            $('.module_spanselect').first().attr('regiongrid', grid);
-            if (f) {
-                f(grid);
-            }
-        });
-    }
-}
-
 function load_menuleftclick(t, n) {
 
 }
