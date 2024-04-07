@@ -7,9 +7,10 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if(!Helper.checkBrower(Context))
+        var chk = Helper.checkBrower(Context);
+        if (!chk.ok)
         {
-            lblCaption.Text = "Hãy sử dụng trình duyệt Chrome.";
+            lblCaption.Text = $@"Trình duyệt ""{chk.userAgent}"" không được hỗ trợ.{Environment.NewLine}Chỉ hỗ trợ các trình duyệt ""{Helper.trinhDuyets}""";
         }
     }
 

@@ -1142,6 +1142,15 @@
         window.addEventListener("orientationchange", detectMobileOrientation);
 
         detectMobileOrientation();
+
+        $(document).click(function(event) { 
+            let $target = $(event.target);
+            if ($('.menuMobile').is(":visible")) {
+                if (!$target.closest('.menu').length && !$target.closest('.menuMobile').length && $('.menu').is(":visible")) {
+                    $('.menu').hide();
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -13,7 +13,8 @@ public partial class MainPage : System.Web.UI.Page
     public int version = 19;
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!Helper.checkBrower(Context))
+        var chk = Helper.checkBrower(Context);
+        if (!chk.ok)
         {
             Response.Redirect(Security.UrlBase() + "Login.aspx");
         }

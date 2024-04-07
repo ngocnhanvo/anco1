@@ -44,6 +44,7 @@ public static class Helper
     public static string NhapKho = "Nhập kho";
     public static string XuatKho = "Xuất kho";
 
+    public static string trinhDuyets = System.Web.Configuration.WebConfigurationManager.AppSettings["trinhDuyets"];
     public static string KHOTRON = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTRON"];
     public static string KHOTONTHO = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTHO"];
     public static string KHOTONTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTONTP"];
@@ -51,6 +52,7 @@ public static class Helper
     public static string KhoHangSauHoanThien = System.Web.Configuration.WebConfigurationManager.AppSettings["KhoHangSauHoanThien"];
     public static string KHOTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTP"];
     public static string KHOVT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOVT"];
+    
 
     public static dynamic getInfoDB()
     {
@@ -150,18 +152,28 @@ public static class Helper
         a = a.Replace("+", "%2B");
         return a;
     }
-
-    public static bool checkBrower(HttpContext context)
+    
+    public class checkBrowerRS
+    {
+        public bool ok { get; set; }
+        public string userAgent { get; set; }
+        public string[] lstAgents { get; set; }
+    }
+    public static checkBrowerRS checkBrower(HttpContext context)
     {
         var userAgent = context.Request.UserAgent.removeAllSpaceOrTrimText(true).ToLower();
-        var oks = new string[] { "chrome" };
+        var oks = trinhDuyets.removeAllSpaceOrTrimText(true).Split(',');
         var result = false;
         foreach (var ok in oks)
         {
             if (userAgent.Contains(ok))
                 result = true;
         }
-        return result;
+        return new checkBrowerRS() {
+            ok = result,
+            lstAgents = oks,
+            userAgent = userAgent
+        };
     }
 
     public static System.Collections.Generic.Dictionary<string, string> pathReport(string name)

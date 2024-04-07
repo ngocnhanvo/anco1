@@ -44,7 +44,7 @@ span {
     padding: 8px 10px;
     color: #333;
     min-width: 294px;
-    margin-right: 15px;
+    margin-right: 18px;
     outline: 0;
     font-family: Arial,Helvetica,sans-serif;
     font-size: 18px;
@@ -96,7 +96,8 @@ div.ui-layout-north.toolbar {
     border-radius: 7px;
     box-shadow: 0 3px 4px #A0A0A0;
     margin: 46px 0 50px 36px;
-    padding: 15px
+    padding: 15px;
+    max-width: 358px;
 }
 
 #tb_footer tr td {
@@ -116,4 +117,57 @@ div.ui-layout-north.toolbar {
     height: 30px;
     width: 500px;
     padding: 6px
+}
+
+#lblCaption {
+    width: 100%;
+    display: block;
+    white-space: pre-line;
+    color: red;
+    margin-left: 20px;
+    position: relative;
+    top: -20px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+@media (max-width: 400px) {
+    #form1 {
+        zoom: 95%;
+    }
+}
+
+@media (max-width: 811px) {
+    div.ui-layout-north.toolbar > div {
+        margin: 0px auto;
+        left: 0px !important;
+    }
+
+    #main1 > div > table {
+        float: none !important;
+        margin: 0px auto;
+        display: none;
+    }
+
+    #lblCaption {
+        margin-left: 0px;
+        top: 0px;
+        padding: 10px 0px 15px 0px;
+        text-align: center;
+    }
+
+    #form1 {
+        margin: unset !important;
+        padding: unset !important;
+        box-shadow: unset !important;
+        margin-bottom: 20px !important;
+        margin-top: 20px !important;
+        text-align: center;
+    }
+
+    #btnLogin {
+        margin-top: unset;
+        margin-bottom: unset;
+        margin-left: unset;
+    }
 }

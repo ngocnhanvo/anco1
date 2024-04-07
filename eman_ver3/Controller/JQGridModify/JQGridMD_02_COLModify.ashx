@@ -141,7 +141,7 @@ public class JQGridMD_02_COLModify : IHttpHandler, System.Web.SessionState.IRequ
             ).OrderBy(p => p.sapxep))
         {
             var itemCas = new ColumnRole();
-            itemCas.text = "<a style='display:none'>" + cn.ad_column_id + "</a><a>" + cn.ten_column + "</a>";
+            itemCas.text = $@"<a style='display:none'>{cn.ad_column_id}</a><a>{cn.ten_column}</a>";
             itemCas.selEdit = false;
             itemCas.selView = false;
             itemCas.index = i;

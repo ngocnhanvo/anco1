@@ -23,40 +23,6 @@
     <link href="css/VNN_css/Login.css" rel="stylesheet" type="text/css" />
 	<script src="js/Public_script/jquery-1.10.2.js" type="text/javascript"></script>
 	<script src="js/VNN_script/GridFunction_Admin.js" type="text/javascript"></script>
-    <style type="text/css">
-        @media (max-width: 400px) {
-            #form1 {
-                zoom: 95%;
-            }
-        }
-        @media (max-width: 811px) {
-            div.ui-layout-north.toolbar > div {
-                margin: 0px auto;
-                left: 0px !important;
-            }
-
-            #main1 > div > table {
-                float: none !important;
-                margin: 0px auto;
-                display: none;
-            }
-
-            #form1 {
-                margin: unset !important;
-                padding: unset !important;
-                box-shadow: unset !important;
-                margin-bottom: 20px !important;
-                margin-top: 20px !important;
-                text-align: center;
-            }
-
-            #btnLogin {
-                margin-top: unset;
-                margin-bottom: unset;
-                margin-left: unset;
-            }
-        }
-    </style>
 </head>
     <body>
 	    <div id="wapper-layout" class="ui-layout-center">
@@ -143,7 +109,7 @@
 								    </tr>
 								    <tr>
 									    <td colspan="3">
-										    <asp:Label ID="lblCaption" style="color:red;margin-left:20px;position:relative;top:-20px;" runat="server" Text=""></asp:Label>
+										    <asp:Label ID="lblCaption" runat="server" Text=""></asp:Label>
 									    </td>
 								    </tr>
 							    </table>
