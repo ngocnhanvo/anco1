@@ -7,7 +7,13 @@
 
 .noidung{border:0 solid #5BD36E;border-right:none;border-bottom:none;border-top-left-radius:10px;background:#F7F7F7}
 
-a,div,table,td,tr{font-size:11px!important}.nhan_header{background:url(../images/toolbar0.png) top repeat-x;}.cl_img_btnmenu{cursor:pointer;height:19px}.cl_img_btnmenu:hover{opacity:.65}.cl_img_btnmenu:active{opacity:.95;background-color:#fff}
+a,div,table,td,tr{font-size:11px!important}.nhan_header{background:url(../images/toolbar0.png) top repeat-x;}
+                                           
+.cl_img_btnmenu{cursor:pointer;height:16px}
+
+.cl_img_btnmenu:hover{opacity:.65}
+
+.cl_img_btnmenu:active{opacity:.95;background-color:#fff}
                                                                                                                                                                                           
 .cl_td_urlmenu {
     font-size:11px!important;

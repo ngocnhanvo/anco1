@@ -61,6 +61,8 @@ public class Public
         User_TK userTK,
         string maSPDH,
         decimal soluongBOM,
+        decimal soluongBOM1,
+        decimal soluongBOM2,
         bool kiemtragia,
         int stt,
         List<BaoLoiKhiHieuLuc> msgBLHLs = null,
@@ -205,13 +207,6 @@ public class Public
 
                     var vtlsxto = toSXVTs.FirstOrDefault();
                     var addVT = vtlsxto == null;
-                    if(vattusp2.ma_sanpham == "010-000" & sp1 == "190-191" & spcha1.ma_sanpham == "88-20500-01-A" & spcha2.ma_sanpham == "88-20500-01-01")
-                    {
-                        //đasadsad
-                        var spCur = sp.ma_sanpham;
-                        var slctCur = cdh.sl_chiato; 
-                        var debbugger = true;
-                    }
 
                     if (addVT)
                     {
@@ -254,10 +249,10 @@ public class Public
                     //        & s.sp1 == sp1
                     //        & s.sp2 == spcha1.ma_sanpham
                     //        & s.sp3 == spcha2.ma_sanpham).FirstOrDefault();
-
+                    
                     var vtbk = db.md_lenhsanxuat_tosx_vattuBackup.Local.Where(s =>
-                            s.sp == cdh.md_sanpham_id
-                            & s.vt == vattusp.md_sanpham_id
+                            //s.sp == sp.md_sanpham_id
+                            s.vt == vattusp.md_sanpham_id
                             & s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
                             & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
                             & s.sp1 == sp1
@@ -270,25 +265,36 @@ public class Public
                         vtbk.md_lenhsanxuat_tosx_vattuBackup_id = Helper.getNewId();
                         vtbk.md_lenhsanxuat_tosx_id = cdh.xuongChinh + cdh.xuongPhu;
                         vtbk.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id;
-                        vtbk.sp = spchaBS == null ? cdh.md_sanpham_id : spchaBS.md_sanpham_id;
+                        vtbk.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
                         vtbk.vt = vattusp.md_sanpham_id;
+                        //vtbk.sp = sp.md_sanpham_id;
                         vtbk.sp1 = sp1;
                         vtbk.sp2 = spcha1.ma_sanpham;
                         vtbk.sp3 = spcha2.ma_sanpham;
                         vtbk.ngaytao = DateTime.Now;
-                        if (spchaBS == null)
-                        {
-                            vtbk.sp = cdh.md_sanpham_id;
-                            vtbk.soluong = vattusp.soluong.GetValueOrDefault(0);
-                        }
-                        else
-                        {
-                            vtbk.sp = spchaBS.md_sanpham_id;
-                            vtbk.soluong = vattusp.soluong.GetValueOrDefault(0) * soluongBOM;
-                        }
 
-                        vtbk.md_donvitinhsanpham_id = vattusp.md_donvitinhsanpham_id;
+
+                        var cdhSp1 = db.md_lenhsanxuat_tosx_cdh.Local.Where(s =>
+                            s.sp1 == sp1
+                            & s.macuoi == spcha1.ma_sanpham
+                            & s.mathaydoi == spcha2.ma_sanpham
+                            & s.md_lenhsanxuat_tosx_id == vtbk.md_lenhsanxuat_tosx_id
+                            ).FirstOrDefault();
+                        if (cdhSp1 != null)
+                            vtbk.soluong = vtlsxto.soluong / cdhSp1.sl_chiato.GetValueOrDefault(0);
+
                         db.md_lenhsanxuat_tosx_vattuBackup.Add(vtbk);
+                    }
+                    else
+                    {
+                        var cdhSp1 = db.md_lenhsanxuat_tosx_cdh.Local.Where(s =>
+                            s.sp1 == sp1
+                            & s.macuoi == spcha1.ma_sanpham
+                            & s.mathaydoi == spcha2.ma_sanpham
+                            & s.md_lenhsanxuat_tosx_id == vtbk.md_lenhsanxuat_tosx_id
+                            ).FirstOrDefault();
+                        if (cdhSp1 != null)
+                            vtbk.soluong = vtlsxto.soluong / cdhSp1.sl_chiato.GetValueOrDefault(0);
                     }
                 }
             }
@@ -316,16 +322,16 @@ public class Public
                         //else
                         slct = (decimal)btp.a.soluong.GetValueOrDefault(0) * soluongBOM;
 
-                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, spcha1, btp.b, pbgnc, userTK, maSPDH, slct, kiemtragia, stt, msgBLHLs, spchaBS);
+                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, spcha1, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs, spchaBS);
                     }
                     else
                     {
-                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, sp, btp.b, pbgnc, userTK, maSPDH, slct, kiemtragia, stt, msgBLHLs);
+                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, sp, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs);
                     }
                 }
             }
         }
-        else if (!sp.vattu.GetValueOrDefault(false))
+        else if (sp.ban_thanhpham.GetValueOrDefault(false) | sp.sanpham.GetValueOrDefault(false))
         {
             string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có BOM";
 
@@ -442,7 +448,7 @@ public class Public
                     var laBTP = !spCai.vattu.GetValueOrDefault(false) & spCai.ban_thanhpham.GetValueOrDefault(false);
                     var laTP = !spCai.vattu.GetValueOrDefault(false) & !spCai.ban_thanhpham.GetValueOrDefault(false) & sp.sanpham.GetValueOrDefault(false);
                     int stt = laVT ? 9997 : (laBTP ? 9998 : 9999);
-                    msgBLHLs = kiemtraBomVaGia(db, lsx, dhpx_cdh, spCai, spCai, spCai, pbgnc, userTK, sp.ma_sanpham, 1, kiemtragia, stt, msgBLHLs);
+                    msgBLHLs = kiemtraBomVaGia(db, lsx, dhpx_cdh, spCai, spCai, spCai, pbgnc, userTK, sp.ma_sanpham, 1, 1, 1, kiemtragia, stt, msgBLHLs);
                 }
             }
         }
@@ -1134,17 +1140,13 @@ public class Public
 
         var vtbks = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
             s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-            & s.sp == spid
+            //& s.sp == spid
             & s.sp1 == sp1
             & s.sp2 == sp2
             & s.sp3 == sp3
             ).ToList();
         foreach (var vtbk in vtbks)
         {
-            if (vtbk.vt == "2b8aa116502f4e3492725a34e35bc39e")
-            {
-                var ok = true;
-            }
             var sltru = vtbk.soluong.GetValueOrDefault(0) * sldc;
             var vtlsxServer = db.md_lenhsanxuat_tosx_vattu.Where(s =>
                 s.md_sanpham_id == vtbk.vt
@@ -1178,7 +1180,7 @@ public class Public
                         var sp1_1 = db.md_sanpham.Where(s => s.md_sanpham_id == cdhPrev.md_sanpham_id).Select(s => s.ma_sanpham).FirstOrDefault();
                         var sp2_1 = db.md_sanpham.Where(s => s.md_sanpham_id == spid).Select(s => s.ma_sanpham).FirstOrDefault();
                         cdhPrev.sl_chiato2 = cdhPrev.sl_chiato2.GetValueOrDefault(0) + sltru;
-                        truVatTuSauKhiLayTon(db, tsxPrev, vtlsx.md_sanpham_id, sltru, sp1_1, sp2_1, sp3);
+                        truVatTuSauKhiLayTon(db, tsxPrev, cdhPrev.md_sanpham_id, sltru, sp1_1, sp2_1, sp3);
                     }
                 }
             }
@@ -1196,7 +1198,7 @@ public class Public
 
         var vtbks = db.md_lenhsanxuat_tosx_vattuBackup.Where(s =>
             s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-            & s.sp == spid
+            //& s.sp == spid
             & s.sp1 == sp1
             & s.sp2 == sp2
             & s.sp3 == sp3).Distinct().ToList();
