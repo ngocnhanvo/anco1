@@ -856,12 +856,8 @@
 
             let html = `
                 <select id="kieuInBaoCao" class="FormElement">
-                    <option value="0">In thông qua Browser</option>
-                    <option value="1">In thông qua PDF (Mẫu Browser)</option>
                     <option value="2">In thông qua Excel</option>
                     <option value="3">In thông qua PDF (Mẫu Excel)</option>
-                    <option value="4">In thông qua Word</option>
-                    <option value="5">In thông qua PDF (Mẫu Word)</option>
                 </select>
             `;
 

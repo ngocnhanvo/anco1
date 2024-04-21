@@ -52,7 +52,21 @@ public static class Helper
     public static string KhoHangSauHoanThien = System.Web.Configuration.WebConfigurationManager.AppSettings["KhoHangSauHoanThien"];
     public static string KHOTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTP"];
     public static string KHOVT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOVT"];
-    
+
+    public static string[] arrLoaiCT_LNK = {
+        "Nhập kho kết quả sản xuất",
+        "Nhập kho điều chuyển nội bộ",
+        "Nhập kho mua hàng",
+        "Nhập kho SX hỗn hợp",
+        "Nhập kho điều chỉnh kiểm kê thừa"
+    };
+
+    public static string[] arrLoaiCT_LXK = {
+        "Xuất kho sản xuất",
+        "Xuất kho sản xuất bổ sung",
+        "Xuất kho gộp bộ",
+        "Xuất kho điều chuyển",
+    };
 
     public static dynamic getInfoDB()
     {
