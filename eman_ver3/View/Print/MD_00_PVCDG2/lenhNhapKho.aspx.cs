@@ -58,6 +58,7 @@ public partial class PrintControllers_MD_00_PVCDG2_lenhNhapKho : System.Web.UI.P
             where
                 vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
                 and vcnb.md_vanchuyennoibo_id = @khid
+                and cdvc.soluong_muonchuyen > 0
             order by
 	            sp.ma_sanpham
 		";

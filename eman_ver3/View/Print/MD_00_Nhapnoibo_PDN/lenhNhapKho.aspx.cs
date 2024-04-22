@@ -59,6 +59,7 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
             where
                 vcnb.trangthai != '{Helper.SOANTHAO}'
                 and vcnb.md_nhapkhonb_id = @id
+                and cdvc.sl_muonnhap > 0
             order by
 	            sp.ma_sanpham
 		";

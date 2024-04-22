@@ -45,7 +45,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhNhapKho : System.Web.UI
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
-	            cdvc.soluong_toida as slct,
+	            cdvc.soluong_muonchuyen as slct,
                 cdvc.soluong_dichchuyen as sltn,
 	            null as sldat,
 	            null as slkdat,
@@ -58,6 +58,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhNhapKho : System.Web.UI
             where
                 vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
                 and vcnb.md_vanchuyennoibo_id = @khid
+                and cdvc.soluong_muonchuyen > 0
             order by
 	            sp.ma_sanpham
 		";
