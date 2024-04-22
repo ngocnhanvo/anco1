@@ -13,7 +13,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH XUẤT KHO 103.repx";
+        string nameTemp = "[KT] LỆNH XUẤT KHO.repx";
         string nameRpt = "LỆNH XUÁT KHO {ngaylap}";
         string sql = CreateSql(context);
 
@@ -33,11 +33,13 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
     public String CreateSql(HttpContext context)
     {
         string id = context.Request.QueryString["id"];
-        string loaiCT = Helper.arrLoaiCT_LXK[1];
+        string loaiCT = Helper.arrLoaiCT_LXK[3];
+        string mau0 = Helper.arrMau_LXK[0];
         string sql = $@"
 		    declare @khid nvarchar(32)= '{id}'
             select
                 upper(N'{loaiCT}') as loaiCT,
+                N'{mau0}' as mauCT,
 	            vcnb.sochungtu as sophieu,
 	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
@@ -45,7 +47,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
-	            cdvc.soluong_toida as slct,
+	            cdvc.soluong_muonchuyen as slct,
                 cdvc.soluong_dichchuyen as sltn,
 	            null as sldat,
 	            null as slkdat,

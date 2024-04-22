@@ -66,6 +66,12 @@ public static class Helper
         "Xuất kho sản xuất bổ sung",
         "Xuất kho gộp bộ",
         "Xuất kho điều chuyển",
+        "Xuất kho điều chỉnh kiểm kê thừa"
+    };
+
+    public static string[] arrMau_LXK = {
+        "103",
+        "104"
     };
 
     public static dynamic getInfoDB()

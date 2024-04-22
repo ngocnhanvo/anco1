@@ -1641,7 +1641,7 @@ public class Public
 
                 var donghangsServer = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdhId).ToList();
                 var donghangs = db.c_dongdsdh.Local.Where(s => s.c_danhsachdathang_id == dsdhId).ToList();
-                if (dsdh.sanxuatton.GetValueOrDefault(false))
+                if (dsdh.donhangtron.GetValueOrDefault(false))
                 {
                     var daHT = donghangs.Where(s => s.sl_conlai.GetValueOrDefault(0) - s.sl_thuhoi.GetValueOrDefault(0) > 0).Count() <= 0;
                     if (daHT & donghangs.Count > 0)
@@ -1661,7 +1661,7 @@ public class Public
                 }
                 else
                 {
-                    var daHT = donghangs.Where(s => s.sl_nhaphang.GetValueOrDefault(0) - s.sl_dathang.GetValueOrDefault(0) - s.sl_giamhanngach.GetValueOrDefault(0) > 0).Count() <= 0;
+                    var daHT = donghangs.Where(s => s.sl_dathang.GetValueOrDefault(0) - s.sl_giamhanngach.GetValueOrDefault(0) - s.sl_nhaphang.GetValueOrDefault(0) > 0).Count() <= 0;
                     if (daHT & donghangs.Count > 0)
                         dsdh.md_trangthai_id = Helper.ChoDG;
                 }
