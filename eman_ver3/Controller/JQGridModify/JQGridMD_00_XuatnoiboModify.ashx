@@ -103,8 +103,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             var dongHangs = JsonConvert.DeserializeObject<List<md_xuatkhonb_cdh>>(rows);
             var xknbDHs = dongHangs.Where(s => s.sl_thucxuat != null).Select(s => s.md_xuatkhonb_cdh_id).ToList();
             dongHangs = dongHangs.Where(s => s.sl_thucxuat != null).ToList();
-            var md_xuatkhonb_cdhs = db.md_xuatkhonb_cdh.
-                        Where(s => s.md_xuatkhonb_id == xk.md_xuatkhonb_id & xknbDHs.Contains(s.md_xuatkhonb_cdh_id)).ToList();
+            //var md_xuatkhonb_cdhs = .ToList();
 
             var kho = db.md_kho.Where(s => s.md_kho_id == xk.tukho).FirstOrDefault();
             if (kho == null)
@@ -113,16 +112,24 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 goto EndEventHandler;
             }
 
-            foreach (var dh in md_xuatkhonb_cdhs)
+            var md_xuatkhonb_cdhs = (from a in db.md_xuatkhonb_cdh
+                                     join b in db.md_sanpham on a.md_sanpham_id equals b.md_sanpham_id
+                                     where a.md_xuatkhonb_id == xk.md_xuatkhonb_id & xknbDHs.Contains(a.md_xuatkhonb_cdh_id)
+                                     orderby b.ma_sanpham ascending
+                                     select new { a, b }
+                                     ).ToList();
+
+            foreach (var dhsp in md_xuatkhonb_cdhs)
             {
+                var dh = dhsp.a;
+                var sp = dhsp.b;
                 var dongHang = dongHangs.Where(s => s.md_xuatkhonb_cdh_id == dh.md_xuatkhonb_cdh_id).FirstOrDefault();
                 if (dongHang != null)
                 {
                     dh.sl_thucxuat = dongHang.sl_thucxuat;
                     dh.ghino = dongHang.ghino;
                 }
-
-                var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                
                 if (sp == null)
                 {
                     msg = $@"Lỗi: ""{dh.md_sanpham_id}"" không tìm thấy mã HHVT từ ID này.";
