@@ -40,7 +40,7 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
             select
                 (case when sp.vattu = 1 then upper(N'{loaiCT1}') else upper(N'{loaiCT0}') end) as loaiCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,

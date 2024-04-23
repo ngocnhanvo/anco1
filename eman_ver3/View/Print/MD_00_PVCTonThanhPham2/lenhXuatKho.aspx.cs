@@ -41,7 +41,7 @@ public partial class PrintControllers_MD_00_PVCTonThanhPham2_lenhXuatKho : Syste
                 upper(N'{loaiCT}') as loaiCT,
                 N'{mau0}' as mauCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,

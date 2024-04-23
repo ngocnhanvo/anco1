@@ -43,7 +43,7 @@ public partial class PrintControllers_MD_00_XuatBanThanhLy_lenhXuatKho : System.
                 N'{loaiCT0}' as loaiCT,
                 N'{mau0}' as mauCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,

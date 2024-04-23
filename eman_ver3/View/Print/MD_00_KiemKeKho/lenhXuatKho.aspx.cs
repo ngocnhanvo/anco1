@@ -41,7 +41,7 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhXuatKho : System.Web.U
                 upper(N'{loaiCT}') as loaiCT,
                 N'{mau0}' as mauCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngay_kiemke, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            null as donhang,
 	            sp.ma_sanpham as maVTHH,

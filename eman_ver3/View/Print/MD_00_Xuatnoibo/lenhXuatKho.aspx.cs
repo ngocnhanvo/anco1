@@ -43,7 +43,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_lenhXuatKho : System.Web.U
                 (case when vcnb.bosung = 1 then upper(N'{loaiCT1}') else upper(N'{loaiCT0}') end) as loaiCT,
                 (case when vcnb.bosung = 1 then N'{mau1}' else N'{mau0}' end) as mauCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,

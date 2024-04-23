@@ -38,7 +38,7 @@ public partial class PrintControllers_MD_01_KHLayTon_phieuYCKiemTraTonKho : Syst
 
             select
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            kh.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,

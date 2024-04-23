@@ -126,7 +126,7 @@ public class Public
             cdh.sl_dat = cdh.sl_dat.GetValueOrDefault(0) + slDatSav;
             cdh.sl_giamhanngach = cdh.sl_giamhanngach.GetValueOrDefault(0) + cdhPX.sl_giamhanngach.GetValueOrDefault(0);
             cdh.sl_chiato = cdh.sl_dat - cdh.sl_giamhanngach;
-            if (!cdh.mabo.Contains(spcha1.ma_sanpham))
+            if (!cdh.mabo.Contains(maSPDH))
                 cdh.mabo += $",{maSPDH}";
         }
 
