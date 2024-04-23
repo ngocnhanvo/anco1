@@ -24,9 +24,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
         switch (oper)
         {
-            case "add":
-                this.add(context);
-                break;
             case "edit":
                 this.edit(context);
                 break;
@@ -71,6 +68,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
         int count_slxuat = 0;
         var rows = context.Request.Form["rows"];
         var msgErrs = new List<Public.BaoLoiKhiHieuLuc>();
+        var pub = new Public();
+        var spsghino = new List<string>();
         try
         {
             var xk = db.md_xuatkhonb.Where(s => s.md_xuatkhonb_id == id).FirstOrDefault();
@@ -185,6 +184,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                             ghinoChoXuong.sctlienquan += "," + xk.chungtu_lenhsx;
                         ghinoChoXuong.soluong_no = ghinoChoXuong.soluong_no.GetValueOrDefault(0) + ghino;
                     }
+
+                    spsghino.Add(dh.md_sanpham_id);
                 }
 
                 decimal sl_xuat = dh.sl_thucxuat.GetValueOrDefault(0);
@@ -280,6 +281,37 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 xk.trangthai = Helper.HIEULUC;
                 xk.ngayhieuluc = DateTime.Now;
                 db.SaveChanges();
+
+                if (spsghino.Count > 0)
+                {
+                    var pxknbs = db.md_xuatkhonb.Where(s => s.bosung == 0 & s.xuatden == xk.xuatden & s.trangthai != Helper.HIEULUC).ToList();
+                    foreach (var pxknb in pxknbs)
+                    {
+                        pub.ghiNoChoSX(db, null, pxknb.chungtu_lenhsx, spsghino);
+                        var pxknbDHs = db.md_xuatkhonb_cdh.Where(s =>
+                            s.md_xuatkhonb_id == pxknb.md_xuatkhonb_id
+                            & spsghino.Contains(s.md_sanpham_id)).ToList();
+                        foreach (var dh in pxknbDHs)
+                        {
+                            var trunoServer = db.md_kho_ghino.Where(s =>
+                                    s.md_phanxuong_id == pxknb.xuatden
+                                    & s.md_sanpham_id == dh.md_sanpham_id
+                                    & s.sctlienquan == pxknb.chungtu_lenhsx
+                                    & s.soluong_no < 0).ToList().Sum(s => s.soluong_no.GetValueOrDefault(0));
+                            var truno = db.md_kho_ghino.Local.Where(s =>
+                                s.md_phanxuong_id == pxknb.xuatden
+                                & s.md_sanpham_id == dh.md_sanpham_id
+                                & s.sctlienquan == pxknb.chungtu_lenhsx
+                                & s.soluong_no < 0).ToList().Sum(s => s.soluong_no.GetValueOrDefault(0));
+
+                            dh.truno = 0 - truno;
+                            var sltd = dh.tong_sl_xuat.GetValueOrDefault(0) - dh.truno.GetValueOrDefault(0);
+                            if (dh.sl_muonxuat > sltd)
+                                dh.sl_muonxuat = sltd;
+                        }
+                        db.SaveChanges();
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -307,12 +339,6 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
             msg = JsonConvert.SerializeObject(result);
         }
 
-        context.Response.Write(msg);
-    }
-
-    public void add(HttpContext context)
-    {
-        string msg = "Không có chức năng này";
         context.Response.Write(msg);
     }
 

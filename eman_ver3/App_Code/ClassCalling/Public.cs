@@ -1682,7 +1682,7 @@ public class Public
         return msg;
     }
 
-    public string ghiNoChoSX(EntityContext db, md_lenhsanxuat2 lsx2 = null, string sochungtuLSX = "")
+    public string ghiNoChoSX(EntityContext db, md_lenhsanxuat2 lsx2 = null, string sochungtuLSX = "", List<string> sps = null)
     {
         if (lsx2 == null)
         {
@@ -1691,7 +1691,8 @@ public class Public
 
         if (lsx2 != null)
         {
-            var vtqrs = (
+            List<md_lenhsanxuat_tosx_vattu> vtqrs = null;
+            var vtqrsQR = (
                 from a in db.md_lenhsanxuat_tosx_vattu
                 where
                     (a.soluong ?? 0) > (a.sl_hanngach ?? 0)
@@ -1702,7 +1703,16 @@ public class Public
                         & s.mathaydoi == a.sp3
                         & s.md_lenhsanxuat_tosx_id == a.md_lenhsanxuat_tosx_id).Take(1).Count() > 0
                 select a
-            ).ToList();
+            );
+
+            if(sps == null)
+            {
+                vtqrs = vtqrsQR.ToList();
+            }
+            else
+            {
+                vtqrs = vtqrsQR.Where(s => sps.Contains(s.md_sanpham_id)).ToList();
+            }
 
             var vtids = vtqrs.Select(s => s.md_sanpham_id).Distinct().ToList();
             var kgnsServer = db.md_kho_ghino.Where(s => vtids.Contains(s.md_sanpham_id) & s.md_phanxuong_id == lsx2.xuongPhu).ToList();
