@@ -58,7 +58,7 @@ public partial class PrintControllers_MD_00_PVCTonThanhPham2_lenhNhapKho : Syste
             where
                 vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
                 and vcnb.md_vanchuyennoibo_id = @khid
-                and cdvc.soluong_muonchuyen > 0
+                and cdvc.soluong_dichchuyen > 0
             order by
 	            sp.ma_sanpham
 		";

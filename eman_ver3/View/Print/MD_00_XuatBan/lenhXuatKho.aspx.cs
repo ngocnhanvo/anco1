@@ -63,7 +63,7 @@ public partial class PrintControllers_MD_00_XuatBan_lenhXuatKho : System.Web.UI.
             where
                 vcnb.trangthai != '{Helper.SOANTHAO}'
                 and vcnb.md_xuatban_id = @id
-                and cdvc.sl_muonxuat > 0
+                and cdvc.sl_xuat > 0
             order by
 	            sp.ma_sanpham
 		";
