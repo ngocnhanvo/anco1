@@ -33,7 +33,7 @@ public partial class PrintControllers_MD_00_XuatBan_lenhXuatKho : System.Web.UI.
     public String CreateSql(HttpContext context)
     {
         string id = context.Request.QueryString["id"];
-        string loaiCT0 = Helper.arrLoaiCT_LXK[0];
+        string loaiCT0 = Helper.arrLoaiCT_LXK[5];
         string loaiCT1 = Helper.arrLoaiCT_LXK[1];
         string mau0 = Helper.arrMau_LXK[0];
         string mau1 = Helper.arrMau_LXK[1];

@@ -45,8 +45,8 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhNhapKho : System.Web.U
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
-	            cdvc.sl_sosach as slct,
-                cdvc.sl_sosach as sltn,
+	            cdvc.sl_sosach - cdvc.sl_demduoc as slct,
+                cdvc.sl_sosach - cdvc.sl_demduoc as sltn,
 	            null as sldat,
 	            null as slkdat,
                 null as makh
@@ -58,7 +58,7 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhNhapKho : System.Web.U
             where
                 vcnb.ma_kiemke != '{Helper.SOANTHAO}'
                 and vcnb.md_kiemke_id = @khid
-                and cdvc.sl_sosach > 0
+                and cdvc.sl_sosach - cdvc.sl_demduoc > 0
             order by
 	            sp.ma_sanpham
 		";

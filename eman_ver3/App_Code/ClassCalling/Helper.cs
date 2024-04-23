@@ -65,8 +65,10 @@ public static class Helper
         "Xuất kho sản xuất",
         "Xuất kho sản xuất bổ sung",
         "Xuất kho gộp bộ",
-        "Xuất kho điều chuyển",
-        "Xuất kho điều chỉnh kiểm kê thừa"
+        "Xuất kho điều chuyển nội bộ",
+        "Xuất kho điều chỉnh kiểm kê thiếu",
+        "Xuất kho bán hàng",
+        "Xuất kho thanh lý"
     };
 
     public static string[] arrMau_LXK = {

@@ -86,7 +86,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                     ).FirstOrDefault();
 
                 var chophepNhap0 = kho_hh == null;
-
+                var slNX = cdh.sl_sosach.GetValueOrDefault(0) - cdh.sl_demduoc.GetValueOrDefault(0);
                 if (!chophepNhap0)
                 {
                     if (kho_hh.soluong.GetValueOrDefault(0) != cdh.sl_demduoc.GetValueOrDefault(0))
@@ -95,18 +95,18 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                         msgErrs.Add(new Public.BaoLoiKhiHieuLuc()
                         {
                             msp = sp.ma_sanpham,
-                            loi = $@"""SL trên máy"" khác ""SL trên máy thực tế"""
+                            loi = $@"""SL trên máy đang có"" khác ""SL trên máy hiện tại"""
                         });
                     }
                     else
                     {
                         //Xuất SL hiện có
-                        if (cdh.sl_demduoc.GetValueOrDefault(0) > 0)
+                        if (slNX < 0)
                         {
                             helperEntity.obj = new HelperEntity.objLSNX();
                             helperEntity.obj.spId = cdh.md_sanpham_id;
                             helperEntity.obj.dvtSpId = sp.md_donvitinhsanpham_id;
-                            helperEntity.obj.slDichChuyen = cdh.sl_demduoc.GetValueOrDefault(0);
+                            helperEntity.obj.slDichChuyen = 0 - slNX;
                             helperEntity.obj.dongNhapXuat = kk.sochungtu;
                             helperEntity.obj.sctDonHang = "";
                             helperEntity.obj.giaTriVND = 0;
@@ -116,7 +116,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                             helperEntity.obj.theoKg = false;
                             helperEntity.obj.laphieuKK = true;
                             helperEntity.themHoacSuaLichSuNhapXuatKho(db, userTK);
-                            kho_hh.soluong = 0;
+                            kho_hh.soluong = kho_hh.soluong.GetValueOrDefault(0) + slNX;
                         }
                     }
                 }
@@ -124,13 +124,13 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                 if (msg.Length <= 0)
                 {
                     //Nhập SL thực tế
-                    if (cdh.sl_sosach.GetValueOrDefault(0) > 0 | chophepNhap0)
+                    if (slNX > 0 | chophepNhap0)
                     {
                         helperEntity.obj = new HelperEntity.objLSNX()
                         {
                             spId = cdh.md_sanpham_id,
                             dvtSpId = sp.md_donvitinhsanpham_id,
-                            slDichChuyen = cdh.sl_sosach.GetValueOrDefault(0),
+                            slDichChuyen = slNX,
                             dongNhapXuat = kk.sochungtu,
                             sctDonHang = "",
                             giaTriVND = 0,
@@ -149,13 +149,13 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                             kho_hh.md_kho_sanpham_id = Helper.getNewId();
                             kho_hh.md_kho_id = kk.md_kho_id;
                             kho_hh.md_sanpham_id = sp.md_sanpham_id;
-                            kho_hh.soluong = cdh.sl_sosach.GetValueOrDefault(0);
+                            kho_hh.soluong = slNX;
                             kho_hh = Helper.setDefaultValueWhenInsertOrUpdate(kho_hh, userTK, false);
                             db.md_kho_sanpham.Add(kho_hh);
                         }
                         else
                         {
-                            kho_hh.soluong = cdh.sl_sosach.GetValueOrDefault(0);
+                            kho_hh.soluong = slNX;
                         }
                     }
                 }
