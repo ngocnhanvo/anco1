@@ -325,16 +325,127 @@ public static class Helper
         context.Response.End();
     }
 
-    public static void viewFile(DevExpress.XtraReports.UI.XtraReport report)
+    public static void viewFile(DevExpress.XtraReports.Web.ReportViewer viewer)
     {
-        if (report != null)
-        {
-            var pathRp = pathReport(report.DisplayName + ".pdf");
-            report.ExportToPdf(pathRp["link"]);
+        string linkExcel = viewer.Attributes["linkExcel"];
+        string linkViewExcel = viewer.Attributes["linkViewExcel"];
+        string nameExcel = viewer.Attributes["nameExcel"];
+        string data = viewer.Attributes["files"];
+        string url = "";
 
-            string url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + pathRp["linkView"] + "&remove=true&zoom=page-width&id=" + Guid.NewGuid();
-            HttpContext.Current.Response.Redirect(url);
+        string link = "", linkView = "", name = "";
+        if (string.IsNullOrWhiteSpace(linkExcel))
+        {
+            var pathRp = pathReport(viewer.Report.DisplayName + ".pdf");
+            viewer.Report.ExportToPdf(pathRp["link"]);
+            linkView = pathRp["linkView"];
+            link = pathRp["link"];
+            name = pathRp["name"];
         }
+        else
+        {
+            linkView = linkViewExcel;
+            link = linkExcel;
+            name = nameExcel;
+        }
+
+        if (!string.IsNullOrWhiteSpace(data))
+        {
+            var items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(data);
+            var files = new List<string>();
+            files.Add(link);
+            foreach (var item in items)
+            {
+                files.Add(ExcuteSignalRStatic.mapPathSignalR("~/" + item["link"]));
+            }
+
+            string newName = name + ".merge.pdf";
+            linkView = linkView.Replace(name, newName);
+            MergeMultiplePDF(files.ToArray(), link.Replace(name, newName));
+            url = linkView;
+        }
+        else
+        {
+            url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + linkView + "&remove=true&zoom=page-width&zoomprint=0.999&id=" + Guid.NewGuid();
+        }
+
+        HttpContext.Current.Response.Redirect(url);
+    }
+
+    public static void MergeMultiplePDF(string[] PDFfileNames, string OutputFile)
+    {
+        // Create document object  
+        iTextSharp.text.Document PDFdoc = new iTextSharp.text.Document();
+        // Create a object of FileStream which will be disposed at the end  
+        using (System.IO.FileStream MyFileStream = new System.IO.FileStream(OutputFile, System.IO.FileMode.Create))
+        {
+            // Create a PDFwriter that is listens to the Pdf document  
+            iTextSharp.text.pdf.PdfCopy PDFwriter = new iTextSharp.text.pdf.PdfCopy(PDFdoc, MyFileStream);
+            if (PDFwriter == null)
+            {
+                return;
+            }
+            // Open the PDFdocument  
+            PDFdoc.Open();
+            int pageNum = 0;
+            foreach (string fileName in PDFfileNames)
+            {
+                string type = fileName.Substring(fileName.LastIndexOf(".") + 1).ToLower();
+                if (type == "pdf")
+                {
+                    // Create a PDFreader for a certain PDFdocument  
+                    iTextSharp.text.pdf.PdfReader PDFreader = new iTextSharp.text.pdf.PdfReader(fileName);
+                    PDFreader.ConsolidateNamedDestinations();
+                    // Add content  
+                    for (int i = 1; i <= PDFreader.NumberOfPages; i++)
+                    {
+                        iTextSharp.text.pdf.PdfImportedPage page = PDFwriter.GetImportedPage(PDFreader, i);
+                        PDFwriter.AddPage(page);
+                        pageNum++;
+                    }
+                    iTextSharp.text.pdf.PRAcroForm form = PDFreader.AcroForm;
+                    if (form != null)
+                    {
+                        PDFwriter.CopyAcroForm(PDFreader);
+                    }
+                    // Close PDFreader  
+                    PDFreader.Close();
+                }
+                else if (type == "jpg" | type == "png")
+                {
+                    var document = new iTextSharp.text.Document();
+                    var memStream = new System.IO.MemoryStream();
+                    iTextSharp.text.pdf.PdfWriter.GetInstance(document, memStream).SetFullCompression();
+                    document.Open();
+                    var image = iTextSharp.text.Image.GetInstance(fileName);
+                    image.ScaleToFit(document.PageSize.Width - 10, document.PageSize.Height - 10);
+                    image.SetAbsolutePosition((document.PageSize.Width - image.ScaledWidth) / 2, (document.PageSize.Height - image.ScaledHeight) / 2);
+                    document.Add(image);
+                    document.Close();
+
+                    iTextSharp.text.pdf.PdfReader PDFreader = new iTextSharp.text.pdf.PdfReader(memStream.GetBuffer());
+                    PDFreader.ConsolidateNamedDestinations();
+                    // Add content  
+                    for (int i = 1; i <= PDFreader.NumberOfPages; i++)
+                    {
+                        iTextSharp.text.pdf.PdfImportedPage page = PDFwriter.GetImportedPage(PDFreader, i);
+                        PDFwriter.AddPage(page);
+                        pageNum++;
+                    }
+                    iTextSharp.text.pdf.PRAcroForm form = PDFreader.AcroForm;
+                    if (form != null)
+                    {
+                        PDFwriter.CopyAcroForm(PDFreader);
+                    }
+                    // Close PDFreader  
+                    PDFreader.Close();
+                    memStream.Close();
+                }
+            }
+            // Close the PDFdocument and PDFwriter  
+            PDFwriter.Close();
+            PDFdoc.Close();
+        }// Disposes the Object of FileStream
     }
 
     public static dynamic setDefaultValueWhenInsertOrUpdate(dynamic a, User_TK us, bool edit)

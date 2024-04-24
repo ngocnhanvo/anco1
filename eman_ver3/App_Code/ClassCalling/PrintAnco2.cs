@@ -22,7 +22,7 @@ public class PrintAnco2
         string urlBase = Security.UrlBase();
         return new InfoPrint
         {
-            logo = urlBase + "/" + ttc.logo + "?ver=1",
+            logo = ExcuteSignalRStatic.mapPathSignalR("~/images/logo/logo_kn.png"),
             dd = DateTime.Now.ToString("dd"),
             MM = DateTime.Now.ToString("MM"),
             yyyy = DateTime.Now.ToString("yyyy"),
@@ -32,18 +32,41 @@ public class PrintAnco2
     public HSSFWorkbook hssfworkbook { get; set; }
     public int? columnLast { get; set; }
     public bool? isPDF { get; set; }
+    public static List<string> sqlsWord { get; set; }
+    public static List<DataTable> tblsWord { get; set; }
     public static double hesoColumn = 0.02967849293563;
     //public static double hesoColumn = 0.029;
     public PrintAnco2() { }
     public static string kiemTraDuLieuCoTonTaiKhiIn(HttpContext context, string sql, DevExpress.XtraReports.Web.ReportViewer viewer, bool showMsg)
     {
+        if (sqlsWord == null)
+            sqlsWord = new List<string>();
+        sqlsWord.Add(sql);
+
+        if (tblsWord == null)
+            tblsWord = new List<DataTable>();
+
         var infoPrint = PrintAnco2.GetInfoPrint();
         string msg = "";
-        var da = new SqlDataAdapter(sql, Mbg.Data.SqlClient.SqlHelper.GetConnection);
-        da.SelectCommand.CommandTimeout = 60;
-        var ds = new DataSet();
-        da.Fill(ds);
-        var tbl = ds.Tables[0];
+
+        var das = new List<SqlDataAdapter>();
+        var dss = new List<DataSet>();
+        foreach (var str in sqlsWord)
+        {
+            var daDT = new SqlDataAdapter(str, Mbg.Data.SqlClient.SqlHelper.GetConnection);
+            var dsDT = new DataSet();
+            daDT.Fill(dsDT);
+            tblsWord.Add(dsDT.Tables[0]);
+            das.Add(daDT);
+            dss.Add(dsDT);
+        }
+
+        var da = das.FirstOrDefault();
+
+        var ds = dss.FirstOrDefault();
+
+        var tbl = tblsWord.FirstOrDefault();
+
         if (tbl.Rows.Count > 0)
         {
             tbl.Columns.Add("logo", Type.GetType("System.String"));
@@ -85,13 +108,24 @@ public class PrintAnco2
 
     public static string exportDataWithType(Task task, string sql, string type, string nameTemp, string rptDisplayName, DevExpress.XtraReports.Web.ReportViewer viewer, bool showMsg)
     {
+        sqlsWord = null;
+        tblsWord = null;
+        if (viewer.Report == null)
+        {
+            viewer.Report = new DevExpress.XtraReports.UI.XtraReport();
+            viewer.Report.DisplayName = rptDisplayName;
+            viewer.Report.DisplayName = System.Text.RegularExpressions.Regex.Replace(viewer.Report.DisplayName, @"{[^']*}", "");
+            viewer.Visible = false;
+        }
+
         var nameTempRoot = nameTemp;
         var context = HttpContext.Current;
         string msg = "";
-        var export = new OfficeToPDF.ExportData();
+        var export = new OfficeToPDF.ExcelExportData();
         type = string.IsNullOrEmpty(type) ? "0" : type;
         if (type == "0")
         {
+            viewer.Visible = true;
             string file = context.Server.MapPath(GetStore(false, nameTemp));
             if (File.Exists(file))
             {
@@ -119,7 +153,7 @@ public class PrintAnco2
                 {
                     task.Start();
                     task.Wait();
-                    Helper.viewFile(viewer.Report);
+                    Helper.viewFile(viewer);
                 }
             }
             else
@@ -131,11 +165,18 @@ public class PrintAnco2
             string file = HttpContext.Current.Server.MapPath(GetStore(true, nameTemp));
             if (File.Exists(file))
             {
-                export.DisplayName = rptDisplayName;
-                export.fileNameTemp = nameTemp;
-                export.sqlRun = sql;
-                export.exec("excel");
-                rptDisplayName = export.DisplayName;
+                string m = kiemTraDuLieuCoTonTaiKhiIn(context, sql, viewer, true);
+                if (m.Length <= 0)
+                {
+                    task.Start();
+                    task.Wait();
+                    export.DisplayName = rptDisplayName;
+                    export.fileNameTemp = nameTemp;
+                    export.sqlRun = sql;
+                    export.dt = ((DataSet)viewer.Report.DataSource).Tables[0];
+                    export.exec("excel");
+                    rptDisplayName = export.DisplayName;
+                }
             }
             else
                 msg = "false";
@@ -146,38 +187,73 @@ public class PrintAnco2
             string file = HttpContext.Current.Server.MapPath(GetStore(true, nameTemp));
             if (File.Exists(file))
             {
-                export.DisplayName = rptDisplayName;
-                export.fileNameTemp = nameTemp;
-                export.sqlRun = sql;
-                export.exec("pdf");
-                rptDisplayName = export.DisplayName;
+                string m = kiemTraDuLieuCoTonTaiKhiIn(context, sql, viewer, true);
+                if (m.Length <= 0)
+                {
+                    task.Start();
+                    task.Wait();
+                    export.DisplayName = rptDisplayName;
+                    export.fileNameTemp = nameTemp;
+                    export.sqlRun = sql;
+                    export.dt = ((DataSet)viewer.Report.DataSource).Tables[0];
+                    export.viewer = viewer;
+                    export.exec("pdf");
+                    rptDisplayName = export.DisplayName;
+                }
+            }
+            else
+                msg = "false";
+        }
+        else if (new string[] { "4", "5" }.Contains(type))
+        {
+            nameTemp = nameTemp.Replace(".repx", ".doc");
+            string file = ExcuteSignalRStatic.mapPathSignalR("~/" + (GetStoreNotApp(2, nameTemp)));
+            if (File.Exists(file))
+            {
+                var sqls = viewer.Attributes["sql"].Split(new string[] { "(@@)" }, StringSplitOptions.None).ToList();
+                var tablePos = viewer.Attributes["tablePos"].Split(',').Select(s => int.Parse(s)).ToList();
+                var tableDetailPos = viewer.Attributes["tableDetailPos"].Split(',').Select(s => int.Parse(s)).ToList();
+                sqlsWord = sqls;
+                string m = kiemTraDuLieuCoTonTaiKhiIn(context, sql, viewer, true);
+                if (m.Length <= 0)
+                {
+                    var exportWord = new OfficeToPDF.WordExportData();
+                    task.Start();
+                    task.Wait();
+                    exportWord.viewer = viewer;
+                    exportWord.DisplayName = rptDisplayName;
+                    exportWord.fileNameTemp = nameTemp;
+                    exportWord.sqls = sqls;
+                    exportWord.tbls = tblsWord;
+                    exportWord.tablePos = tablePos;
+                    exportWord.tableDetailPos = tableDetailPos;
+                    exportWord.exec(type == "5" ? "pdf" : "doc");
+                    rptDisplayName = export.DisplayName;
+                }
             }
             else
                 msg = "false";
         }
 
-        if (viewer.Report == null)
-        {
-            viewer.Report = new DevExpress.XtraReports.UI.XtraReport();
-
-            viewer.Report.DisplayName = rptDisplayName;
-            viewer.Report.DisplayName = System.Text.RegularExpressions.Regex.Replace(viewer.Report.DisplayName, @"{[^']*}", "");
-            viewer.Visible = false;
-        }
         viewer.Report.DisplayName = viewer.Report.DisplayName.Trim();
 
         if (msg.Length > 0)
         {
             msg = string.Format(@"Cách in này không được sử dụng cho báo cáo hoặc mẫu in ""{0}"", hãy chọn một cách in khác", viewer.Report.DisplayName);
             var allTK = Security.all_taikhoan(context);
-            if (allTK.ContainsKey("tuDongNhanDienCachIn"))
+            if(allTK.ContainsKey("tuDongNhanDienCachIn"))
             {
-                if (((bool?)allTK["tuDongNhanDienCachIn"]).GetValueOrDefault(false) == true)
+                if(((bool?)allTK["tuDongNhanDienCachIn"]).GetValueOrDefault(false) == true)
                 {
                     if (viewer.Attributes["ChuyenCachIn"] == null)
                     {
                         var chuyenCachInBTSangPDF = ((bool?)allTK["chuyenCachInBTSangPDF"]).GetValueOrDefault(false);
-                        var type1 = new string[] { "0", "1" }.Contains(type) ? "3" : (chuyenCachInBTSangPDF ? "1" : "0");
+                        var type1 = type;
+                        if (new string[] { "0", "1" }.Contains(type))
+                            type1 = "3";
+                        else
+                            type1 = chuyenCachInBTSangPDF ? "1" : "0";
+
                         viewer.Attributes.Add("ChuyenCachIn", type + "->" + type1);
                         msg = "";
                         exportDataWithType(task, sql, type1, nameTempRoot, rptDisplayName, viewer, showMsg);
@@ -188,8 +264,8 @@ public class PrintAnco2
             }
         }
 
-        if (showMsg & msg.Length > 0)
-            HttpContext.Current.Response.Write("<center><h1>" + msg + "</h1></center>");
+        if (showMsg & msg.Length> 0)
+            HttpContext.Current.Response.Write("<center><h1>"+ msg + "</h1></center>");
 
         return msg;
     }
@@ -206,7 +282,7 @@ public class PrintAnco2
         else if (font.Underline != FontUnderlineType.None)
             fontSylte = FontStyle.Underline;
 
-        var moreVal = isPDF.GetValueOrDefault(false) ? 0 : 0.5;
+        var moreVal = isPDF.GetValueOrDefault(false) ? 0 : 0.5; 
         var fontS = new Font(font.FontName, (float)(font.FontHeightInPoints + moreVal), fontSylte);
         var fakeImage = new Bitmap(1, 1); //As we cannot use CreateGraphics() in a class library, so the fake image is used to load the Graphics.
         var graphics = Graphics.FromImage(fakeImage);
@@ -235,7 +311,7 @@ public class PrintAnco2
 
     public float GetHeight(float height, double widthCol, string str, NPOI.SS.UserModel.IFont font)
     {
-        height = (float)16.8;
+        //height = (float)16.8;
         var strArr = str.Split(new string[] { "\n", "\r" }, StringSplitOptions.None);
         float heightFinally = 0;
         foreach (var item in strArr)
@@ -250,6 +326,25 @@ public class PrintAnco2
             heightFinally += (float)(height * aInt);
         }
         return heightFinally;
+    }
+
+    public bool checkTextFitCell(string text, int width, NPOI.SS.UserModel.IFont font)
+    {
+        double width2 = (double)width * 0.003756;
+        var bitmap = new Bitmap(1, 1);
+        var graphics = Graphics.FromImage(bitmap);
+        var fontStyle = 
+            font.Boldweight == (short)FontBoldWeight.Bold ? FontStyle.Bold :
+            font.IsItalic ? FontStyle.Italic :
+            font.IsStrikeout ? FontStyle.Strikeout :
+            font.Underline != FontUnderlineType.None ? FontStyle.Underline : FontStyle.Regular;
+
+        var drawingFont = new System.Drawing.Font(font.FontName, (float)font.FontHeight, fontStyle);
+        var size = graphics.MeasureString(text, drawingFont);
+        var widthText = size.Width;
+        var widthTextPer256 = decimal.Floor((decimal)widthText / 256);
+        var widthPer256 = decimal.Floor((decimal)width / 256);
+        return widthTextPer256 <= widthPer256;
     }
 
     public float MeasureTextHeight(string text, int width, NPOI.SS.UserModel.IFont font)
@@ -323,7 +418,7 @@ public class PrintAnco2
         return sothapphan;
     }
 
-    public static string Replace0ToHyphen(string sothapphan)
+    public static string Replace0ToHyphen(string sothapphan) 
     {
         sothapphan = sothapphan.Substring(1, sothapphan.Length - 2);
         //return "{0:#,#.####;-0;-}";
@@ -353,13 +448,57 @@ public class PrintAnco2
         return msg;
     }
 
+    public static string GetStore(int type, string fileName)
+    {
+        fileName = type > 0 ? fileName.Replace("[", "(").Replace("]", ")") : fileName;
+        string msg = Security.UrlBase();
+        if (type == 0)
+            msg = "ReportsStorage/";
+        else if (type == 1)
+            msg = "ReportsStorageExcel/";
+        else if (type == 2)
+            msg = "ReportsStorageWord/";
+
+        msg = string.IsNullOrEmpty(fileName) ? msg : (msg + fileName);
+
+        return msg;
+    }
+
+    public static string GetStoreNotApp(int type, string fileName)
+    {
+        fileName = type > 0 ? fileName.Replace("[", "(").Replace("]", ")") : fileName;
+        string msg = "";
+        if (type == 0)
+            msg = "ReportsStorage/";
+        else if (type == 1)
+            msg = "ReportsStorageExcel/";
+        else if (type == 2)
+            msg = "ReportsStorageWord/";
+        msg = string.IsNullOrEmpty(fileName) ? msg : (msg + fileName);
+
+        return msg;
+    }
+
     public static string GetStoreBackUp(bool? excel, string fileName)
     {
         string msg = "";
-        if (excel.GetValueOrDefault(false))
+        if(excel.GetValueOrDefault(false))
             msg = GetStore(excel, fileName).Replace("/ReportsStorageExcel/", "/ReportsStorageExcelBackup/");
         else
             msg = GetStore(excel, fileName).Replace("/ReportsStorage/", "/ReportsStorageBackup/");
+
+        return msg;
+    }
+
+    public static string GetStoreBackUp(int type, string fileName)
+    {
+        string msg = "";
+        if (type == 0)
+            msg = GetStore(false, fileName).Replace("/ReportsStorage/", "/ReportsStorageBackup/");
+        else if(type == 1)
+            msg = GetStore(true, fileName).Replace("/ReportsStorageExcel/", "/ReportsStorageExcelBackup/");
+        else if (type == 2)
+            msg = GetStore(true, fileName).Replace("/ReportsStorageWord/", "/ReportsStorageWordBackup/");
 
         return msg;
     }
@@ -386,7 +525,7 @@ public class PrintAnco2
     {
         public int? start { get; set; }
         public int? end { get; set; }
-        public List<string> arrAva { get; set; }
+        public List<string> arrAva { get; set; } 
         public string key { get; set; }
         public int moreVal { get; set; }
         public List<IRowICellCopy> rows { get; set; }

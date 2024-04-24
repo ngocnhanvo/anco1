@@ -3,6 +3,7 @@ public class AvariablePrj
 {
     public partial class lstImage
     {
+        public string id { get; set; }
         public int row { get; set; }
         public int rowLast { get; set; }
         public int column { get; set; }
@@ -10,6 +11,11 @@ public class AvariablePrj
         public string link { get; set; }
         public float heightCell { get; set; }
         public float widthCell { get; set; }
+        public float? topIMG { get; set; }
+        public float? leftIMG { get; set; }
+        public float? widthIMG { get; set; }
+        public float? heightIMG { get; set; }
+        public bool? keepSize { get; set; }
     }
 
     public partial class lstText
@@ -32,6 +38,8 @@ public class AvariablePrj
         public string newT { get; set; }
         public int row { get; set; }
         public int column { get; set; }
+        public bool? wrap_Mer { get; set; }
+        public int? column_Mer { get; set; }
     }
 
     public partial class lstFormula

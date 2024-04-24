@@ -44,6 +44,8 @@ namespace OfficeToPDF
         public int? endRow { get; set; }
         public int? endColumn { get; set; }
         public float? sizeAddPDF { get; set; }
+
+        public bool? landScape { get; set; }
         public ExcelConverter()
         {
 
@@ -192,13 +194,14 @@ namespace OfficeToPDF
                 process.WaitForExit();
             }
 
+            Microsoft.Office.Interop.Excel.Application app = null;
+            Microsoft.Office.Interop.Excel.Workbooks workbooks = null;
+            Microsoft.Office.Interop.Excel.Workbook workbook = null;
+
             var task = new System.Threading.Tasks.Task(() =>
             {
                 options = PDFBookmark.createOptions();
-                Boolean running = false;
-                Microsoft.Office.Interop.Excel.Application app = null;
-                Microsoft.Office.Interop.Excel.Workbooks workbooks = null;
-                Microsoft.Office.Interop.Excel.Workbook workbook = null;
+                Boolean running = false;    
                 System.Object activeSheet = null;
                 Microsoft.Office.Interop.Excel.Window activeWindow = null;
                 Microsoft.Office.Interop.Excel.Windows wbWin = null;
@@ -341,16 +344,17 @@ namespace OfficeToPDF
                     allSheets = workbook.Sheets;
                     var worksheet = (Microsoft.Office.Interop.Excel._Worksheet)workbook.ActiveSheet;
                     worksheet.PageSetup.CenterHorizontally = true;
-                    //worksheet.PageSetup.FitToPagesTall = 1;
-                    //worksheet.PageSetup.FitToPagesWide = 1;
+
+                    if (landScape.GetValueOrDefault(false))
+                        worksheet.PageSetup.Orientation = XlPageOrientation.xlLandscape;
+
+                    //worksheet.PageSetup.FitToPagesWide = 0;
 
                     if (mimeTypeOutput == "pdf")
                     {
                         //var excelCellrange = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[endRow, endColumn]];
                         //excelCellrange.Font.Size = 13.5;
                     }
-
-                    
 
                     foreach (var formula in lstFormula)
                     {
@@ -400,6 +404,18 @@ namespace OfficeToPDF
 
                         var Left = (float)((double)oRange.Left + rateColumnAndPicture);
                         var Top = (float)((double)oRange.Top + rateRowAndPicture);
+
+                        if (image.leftIMG != null)
+                            Left = (float)((double)oRange.Left) + image.leftIMG.GetValueOrDefault(0);
+
+                        if (image.topIMG != null)
+                            Top = (float)((double)oRange.Top) + image.topIMG.GetValueOrDefault(0);
+
+                        if (image.widthIMG != null)
+                            widthImg = (int)image.widthIMG.GetValueOrDefault(0);
+
+                        if (image.heightIMG != null)
+                            heightImg = (int)image.heightIMG.GetValueOrDefault(0);
 
                         var pic = worksheet.Shapes.AddPicture(image.link, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
                         
@@ -508,6 +524,8 @@ namespace OfficeToPDF
                             int phStart = oRange.Value.ToString().LastIndexOf(textReplace.oldT);
                             int phEnd = textReplace.oldT.Length;
 
+                            if (textReplace.newT == "{totalPage}")
+                                textReplace.newT = worksheet.PageSetup.Pages.Count.ToString();
                             if (phStart > -1 & phEnd > -1)
                             {
                                 //var fontBK = oRange.Characters[phStart + 1, phEnd].Font;
@@ -515,11 +533,50 @@ namespace OfficeToPDF
                                 //var bold = fontBK.Bold;
                                 //var size = fontBK.Size;
                                 //oRange.Characters[phStart + 1, phEnd].Delete();
-                                oRange.Characters[phStart + 1, phEnd].Insert(textReplace.newT);
+
+                                if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                {
+                                    oRange.Value = textReplace.newT;
+                                    var oRangeWrap = (Range)worksheet.Cells[oRange.Row, oRange.Column + 50];
+                                    double columnWidth = 0;
+                                    for (var i = oRange.Column; i < textReplace.column_Mer + oRange.Column; i++)
+                                    {
+                                        var oRangeWrap2 = (Range)worksheet.Cells[oRange.Row, i];
+                                        columnWidth += double.Parse(oRangeWrap2.ColumnWidth.ToString());
+                                    }
+
+                                    oRangeWrap.ColumnWidth = columnWidth;
+                                    oRange.Copy(oRangeWrap);
+                                    oRange.Rows.AutoFit();
+                                    var heightATF = double.Parse(oRange.Rows.Height.ToString());
+                                    oRange.RowHeight = heightATF + (heightATF * 5 / 100);
+                                    oRangeWrap.Delete(XlDeleteShiftDirection.xlShiftUp);
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        oRange.Characters[phStart + 1, phEnd].Insert(textReplace.newT);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        oRange.Characters[phStart + 1, phEnd].Insert(ex.Message);
+                                    }
+                                }
                                 //var characterNews = oRange.Characters[phStart + phEnd, textReplace.newT.Length];
                                 //characterNews.Font.Background = background;
                                 //characterNews.Font.Bold = bold;
                                 //characterNews.Font.Size = size;
+                            }
+
+                            if (textReplace.oldT.StartsWith("{#"))
+                            {
+                                var number = decimal.Parse(textReplace.newT);
+                                var fmtNumberIndex = textReplace.newT.LastIndexOf(".");
+                                var numberAfterDot = fmtNumberIndex > -1 ? textReplace.newT.Length - fmtNumberIndex : 0;
+                                var fmtNumber = "0" + (fmtNumberIndex > -1 ? "." : "") + (numberAfterDot > 0 ? VNN_Config.load_number("0", numberAfterDot) : "");
+                                oRange.NumberFormat = fmtNumber;
+                                oRange.Value = textReplace.newT;
                             }
                         }
                         catch { }
@@ -794,9 +851,7 @@ namespace OfficeToPDF
                         app.CalculateBeforeSave = false;
                     }
                     else
-                    {
                         app.Calculation = XlCalculation.xlCalculationAutomatic;
-                    }
 
                     if (mimeTypeOutput == "pdf")
                     {
@@ -965,16 +1020,51 @@ namespace OfficeToPDF
                         // Remove the temporary path to the temp file
                         Directory.Delete(Path.GetDirectoryName(tmpFile));
                     }
+
+                    while (!File.Exists(outputFile))
+                    {
+                        Thread.Sleep(5000);
+                    }
                 }
             }, token);
 
             var timeFist = DateTime.Now;
+            var timeWait = 120000;
+            int seconds = timeWait / 1000;
             task.Start();
-            task.Wait(30000);
-            
-            try { task.Dispose();} catch { }
-            if ((DateTime.Now - timeFist).Seconds >= 30)
-                msg = @"Time out, please change default printer of server to ""Microsoft XPS Document Writer"" or ""Print as PDF""";
+            task.Wait(timeWait);
+
+            try
+            {
+                task.Dispose();
+            }
+            catch { }
+
+            if ((DateTime.Now - timeFist).TotalSeconds >= seconds)
+            {
+                msg = string.Format(@"Timeout, limit to print is {0} seconds.", seconds);
+                try
+                {
+                    if (workbooks != null)
+                    {
+                        workbooks.Close();
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (app != null)
+                    {
+                        ((Microsoft.Office.Interop.Excel._Application)app).Quit();
+                    }
+                }
+                catch { }
+
+                ReleaseCOMObject(workbook);
+                ReleaseCOMObject(workbooks);
+                ReleaseCOMObject(app);
+            }
 
             return msg;
         }
