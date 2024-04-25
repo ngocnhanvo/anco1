@@ -159,4 +159,10 @@ public class MainHub : Hub
         var context = GlobalHost.ConnectionManager.GetHubContext<MainHub>();
         context.Clients.All.sendReportToClient(new { end = true, mess = data });
     }
+
+    public void daXemHuongDanLamHang(string data)
+    {
+        var context = GlobalHost.ConnectionManager.GetHubContext<MainHub>();
+        context.Clients.All.taiLaiHDLH(new { end = true, mess = data });
+    }
 }

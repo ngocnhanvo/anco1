@@ -2035,6 +2035,10 @@ modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.viewed)
+                            .HasColumnName("viewed")
+                            .HasColumnType("bit");
                     
                     
             #endregion End Code

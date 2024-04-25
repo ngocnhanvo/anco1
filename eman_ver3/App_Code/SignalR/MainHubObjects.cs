@@ -3,7 +3,7 @@ namespace MainHubObjects
 {
     public class Avariables
     {
-        public const string hubname = "mainhub";
+        public const string hubname = "MainHub";
     }
     
     public partial class FileExcel

@@ -62,6 +62,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                     tt = new md_taptin();
                     a.CopyPropertiesTo(tt);
                     tt.mota = "";
+                    tt.viewed = false;
                     db.md_taptin.Add(tt);
                     update = true;
                     var bytes = Convert.FromBase64String(a.mota);

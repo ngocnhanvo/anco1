@@ -6,6 +6,7 @@ using System.Linq;
 using System.Data.Linq;
 using System.IO;
 using DataAcess;
+using Newtonsoft.Json;
 
 public class Download : IHttpHandler
 {
@@ -24,6 +25,16 @@ public class Download : IHttpHandler
             context.Response.Charset = "";
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             string path = ExcuteSignalRStatic.mapPathSignalR($@"~/{tt.path}");
+            if(tt.doituong_dinhkem == "HDLH")
+            {
+                if (!tt.viewed.GetValueOrDefault(false))
+                {
+                    tt.viewed = true;
+                    db.SaveChanges();
+                    var hubExec = new MainHubExcute();
+                    hubExec.Exec("daXemHuongDanLamHang", JsonConvert.SerializeObject(tt));
+                }
+            }
             context.Response.WriteFile(path);
             context.Response.End();
         }

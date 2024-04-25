@@ -116,6 +116,14 @@ mainhub.client["sendReportToClient"] = function (data) {
     }
 };
 
+mainhub.client["taiLaiHDLH"] = function (data) {
+    if (data.end == true) {
+        let tt = JSON.parse(data.mess);
+        $(`.esc_vnn_${tt.lienket}`).css('color', '');
+        $(`.esc_vnn_${tt.md_taptin_id}`).css('color', '');
+    }
+};
+
 mainhub.channelB.onmessage = function (e) {
     if (e.data.checkNewReport) {
         checkNewReport();

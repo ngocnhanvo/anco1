@@ -151,6 +151,12 @@
                         public string value_vaitrotao { get; set; }
                 
 						
+                        #region md_taptin_viewed_wintaFN
+                        
+                        #endregion md_taptin_viewed_wintaFN
+                        public bool? viewed { get; set; }
+                
+						
                     }
                 }
             
