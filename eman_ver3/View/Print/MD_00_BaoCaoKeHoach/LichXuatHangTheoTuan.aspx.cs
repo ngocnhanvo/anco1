@@ -67,7 +67,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
 	            , dsdh.huongdanlamhang
 	            , dsdh.huongdanlamhangchung
 	            , (
-		            select sum(cdh.sl_danhapkho) 
+		            select sum(cdh.sl_dagiao) 
                     from md_lenhsanxuat_tosx_cdh cdh 
                     where md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and stt = 9999
 	            ) as tiendoNKTP
@@ -81,7 +81,12 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
                 , null as pallet
                 , null as vtkhac
                 , null as ngaybookCont
-                , null as ngaythucteCont
+                , (
+                    select top 1 format(xb.ngaychuyen, 'dd/MM/yyyy')
+                    from md_xuatban xb
+                    where xb.donhang_thamchieu = dsdh.so_po and xb.trangthai = '{Helper.HIEULUC}'
+                    order by xb.ngaychuyen desc
+                ) as ngaythucteCont
                 , null as ngayETD
             from 
 	            c_danhsachdathang dsdh
