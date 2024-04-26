@@ -187,6 +187,12 @@
                         public DateTime? ngaycapnhat { get; set; }
                 
 						
+                        #region c_danhsachdathang_ngayhieuluc_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region c_danhsachdathang_ngayhoanthanh_wintaFN
                         
                         #endregion c_danhsachdathang_ngayhoanthanh_wintaFN
@@ -197,6 +203,12 @@
                         
                         #endregion c_danhsachdathang_ngaylap_wintaFN
                         public DateTime? ngaylap { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaynhan_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaynhan_wintaFN
+                        public DateTime? ngaynhan { get; set; }
                 
 						
                         #region c_danhsachdathang_ngaytao_wintaFN

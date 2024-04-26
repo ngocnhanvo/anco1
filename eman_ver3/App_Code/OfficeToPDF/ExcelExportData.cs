@@ -672,12 +672,26 @@ namespace OfficeToPDF
             else if (isNumber)
             {
                 if (nameColumnData == "countRow")
+                {
                     columnT.SetCellValue(iRow + 1);
+                    columnT.SetCellType(CellType.Numeric);
+                }
                 else
                 {
                     var numberData = dt.Rows[iRow][nameColumnData].ToString();
-                    if(!string.IsNullOrWhiteSpace(numberData))
+                    if (string.IsNullOrWhiteSpace(numberData))
+                    {
+                        columnT.SetCellType(CellType.Blank);
+                    }
+                    else
+                    {
                         columnT.SetCellValue(double.Parse(numberData));
+                        columnT.SetCellType(CellType.Numeric);
+                        if (columnT.CellStyle.GetDataFormatString() == "#####")
+                        {
+                            columnT.CellStyle.DataFormat = HSSFUtils.CellDataFormat.GetDataFormat(hssfwb, sothapphan);
+                        }
+                    }
                 }
             }
             else if (isFomula)
@@ -704,6 +718,12 @@ namespace OfficeToPDF
                     col = columnT.ColumnIndex + 1,
                     formula = cellFormula
                 });
+
+                if (columnT.CellStyle.GetDataFormatString() == "#####")
+                {
+                    columnT.CellStyle.DataFormat = HSSFUtils.CellDataFormat.GetDataFormat(hssfwb, sothapphan);
+                }
+                columnT.SetCellType(CellType.Formula);
             }
             else if (isImage)
             {
@@ -754,15 +774,12 @@ namespace OfficeToPDF
                     if (widthOfVal > widthColumn)
                         maxHeight = -1;
                 }
+                columnT.SetCellType(CellType.String);
             }
             else
-                columnT.SetCellValue(StringCellValue);
-
-            columnT.SetCellType(isNumber ? CellType.Numeric : CellType.String);
-
-            if (columnT.CellStyle.GetDataFormatString() == "#####")
             {
-                columnT.CellStyle.DataFormat = HSSFUtils.CellDataFormat.GetDataFormat(hssfwb, sothapphan);
+                columnT.SetCellValue(StringCellValue);
+                columnT.SetCellType(CellType.String);
             }
 
             if (columnT.ColumnIndex >= columnMax)

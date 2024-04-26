@@ -334,8 +334,9 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             }
 
             dsdh.trangthai = Helper.HIEULUC;
-            //dsdh.md_trangthai_id = "CHUAXULY";
             dsdh.dg_nangluc = true;
+            dsdh.ngayhieuluc = DateTime.Now;
+
             msgBLHLs = pub.xuLyKeHoachDatHang(db, userTK, kh, cdhcds, dsdh, "MD_00_KHDHJQGS", "7", msgBLHLs);
             if (msgBLHLs.Where(s => !string.IsNullOrWhiteSpace(s.loi)).Count() > 0)
             {

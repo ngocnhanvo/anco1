@@ -554,6 +554,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                 else
                 {
                     dsdh.ngaycapnhat = DateTime.Now;
+                    dsdh.ngaynhan = DateTime.Now;
                     dsdh.trangthai = "DANHAN";
                     dsdh.md_trangthai_id = "HIEULUC";
                     db.SaveChanges();
