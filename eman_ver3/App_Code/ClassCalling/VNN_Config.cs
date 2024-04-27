@@ -422,7 +422,7 @@ public static class VNN_Config
             }
             else if (cot.edittype == "textarea")
             {
-                colspan_kq += "\n$('#" + cot.ma_column + "').css({'height':'inherit','width':''});";
+                colspan_kq += "\n$('#" + cot.ma_column + "').css({'height':'inherit','width':'','resize':'vertical'});";
             }
 
             if (cot.formatter == "vnn_number" | cot.formatter == "esc_date")
