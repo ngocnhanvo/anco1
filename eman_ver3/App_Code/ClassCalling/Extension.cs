@@ -415,6 +415,22 @@ public static class Extension
             return null;
     }
 
+    public static DateTime? ToNullableDateTime(this string s)
+    {
+        if (string.IsNullOrWhiteSpace(s))
+        {
+            return null;
+        }
+        else
+        {
+            var date = VNN_Config.setDateTime(s);
+            if (date.IsDate())
+                return date;
+            else
+                return null;
+        }
+    }
+
     public static string ToUnSign(this string input)
     {
         if (input == null)

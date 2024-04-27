@@ -34,14 +34,15 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
     {
         string id = context.Request.QueryString["id"];
         string date = context.Request.QueryString["ngayin"];
+        string fmt = "dd/MM/yyyy";
         string sql = $@"
             declare @date datetime = convert(datetime, N'{date}', 103)
 		    declare @monday datetime = (SELECT DATEADD(wk, DATEDIFF(wk,0,@date), 0) MondayOfCurrentWeek)
             declare @sunday datetime = dateadd(SECOND, 23*60 *60 + 59*60 + 59, @monday + 6)
 
             select 
-                format(@date, 'dd/MM/yyyy') as ngayin
-	            , dsdh.nguoi_dathang as nvlh
+                format(@date, '{fmt}') as ngayin
+	            , isnull(dsdh.nhanVienLH, dsdh.nguoi_dathang) as nvlh
 	            , dsdh.so_po
 	            , (
 		            select STRING_AGG(A.sp1, ', ')
@@ -61,9 +62,9 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
 	            , dsdh.cont20
 	            , dsdh.cont40
 	            , dsdh.cont40hc
-	            , format(dsdh.ngayhieuluc, 'dd/MM/yyyy') as ngaydathang
-	            , format(dsdh.hangiaohang_po, 'dd/MM/yyyy') as ngaygiaohang
-	            , null as giahan
+	            , format(dsdh.ngayhieuluc, '{fmt}') as ngaydathang
+	            , format(dsdh.hangiaohang_po, '{fmt}') as ngaygiaohang
+	            , dsdh.giahangngaygiao as giahan
 	            , dsdh.huongdanlamhang
 	            , dsdh.huongdanlamhangchung
 	            , (
@@ -72,22 +73,23 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
                     where md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and stt = 9999
 	            ) as tiendoNKTP
                 , dsdh.reportKCS as kcsFN
-                , null as ngaykhachkiem1
-                , null as ngaykhachkiem2
-                , null as ngaycoHDDG
-                , null as ngaycoTSDG
-                , null as tem
-                , null as baobi
-                , null as pallet
-                , null as vtkhac
-                , null as ngaybookCont
-                , (
-                    select top 1 format(xb.ngaychuyen, 'dd/MM/yyyy')
-                    from md_xuatban xb
-                    where xb.donhang_thamchieu = dsdh.so_po and xb.trangthai = '{Helper.HIEULUC}'
-                    order by xb.ngaychuyen desc
-                ) as ngaythucteCont
-                , null as ngayETD
+                , format(dsdh.ngaykhachkiemDK, '{fmt}') as ngaykhachkiem1
+                , format(dsdh.ngaykhachkiemTT, '{fmt}') as ngaykhachkiem2
+                , format(dsdh.ngaycoHDDG, '{fmt}') as ngaycoHDDG
+                , format(dsdh.ngaycoTSDG, '{fmt}') as ngaycoTSDG
+                , format(dsdh.ngaycoTem, '{fmt}') as tem
+                , format(dsdh.ngaycoBaoBi, '{fmt}') as baobi
+                , format(dsdh.ngaycoPallet, '{fmt}') as pallet
+                , format(dsdh.ngaycoVTK, '{fmt}') as vtkhac
+                , format(dsdh.ngaybookCont, '{fmt}') as ngaybookCont
+                , format(dsdh.ngaythucteCont, '{fmt}') as ngaythucteCont
+                --, (
+                --    select top 1 format(xb.ngaychuyen, 'dd/MM/yyyy')
+                --    from md_xuatban xb
+                --    where xb.donhang_thamchieu = dsdh.so_po and xb.trangthai = '{Helper.HIEULUC}'
+                --    order by xb.ngaychuyen desc
+                --) as ngaythucteCont
+                , format(dsdh.ngaytauchayETD, '{fmt}') as ngayETD
             from 
 	            c_danhsachdathang dsdh
 	            left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = dsdh.so_po

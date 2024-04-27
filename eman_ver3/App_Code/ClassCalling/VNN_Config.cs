@@ -210,11 +210,11 @@ public static class VNN_Config
             string Label = "";
             if (cot.important == "true")
             {
-                Label += "label:'" + cot.label + "' + dulieu_quantrong()";
+                Label += "label:`" + cot.label + "` + dulieu_quantrong()";
             }
             else
             {
-                Label += "label:'" + cot.label + "'";
+                Label += "label:`" + cot.label + "`";
             }
 
             kq[0] += "{";
@@ -229,7 +229,7 @@ public static class VNN_Config
                 kq[0] += "fixed:true,";
             //--
             if (cot.ten_column != null & cot.ten_column != "")
-                kq[0] += "label:'" + cot.ten_column + "',";
+                kq[0] += "label:`" + cot.ten_column + "`,";
             //--
             if (cot.ma_column != null & cot.ma_column != "")
                 kq[0] += "name:'" + cot.ma_column + "',";

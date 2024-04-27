@@ -103,6 +103,12 @@
                         public bool? donhangtron { get; set; }
                 
 						
+                        #region c_danhsachdathang_giahangngaygiao_wintaFN
+                        
+                        #endregion c_danhsachdathang_giahangngaygiao_wintaFN
+                        public string giahangngaygiao { get; set; }
+                
+						
                         #region c_danhsachdathang_grandtotal_wintaFN
                         
                         #endregion c_danhsachdathang_grandtotal_wintaFN
@@ -181,10 +187,58 @@
                         public DateTime? ngaybatdau { get; set; }
                 
 						
+                        #region c_danhsachdathang_ngaybdDG_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaybdDG_wintaFN
+                        public DateTime? ngaybdDG { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaybookCont_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaybookCont_wintaFN
+                        public DateTime? ngaybookCont { get; set; }
+                
+						
                         #region c_danhsachdathang_ngaycapnhat_wintaFN
                         
                         #endregion c_danhsachdathang_ngaycapnhat_wintaFN
                         public DateTime? ngaycapnhat { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoBaoBi_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoBaoBi_wintaFN
+                        public DateTime? ngaycoBaoBi { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoHDDG_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoHDDG_wintaFN
+                        public DateTime? ngaycoHDDG { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoPallet_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoPallet_wintaFN
+                        public DateTime? ngaycoPallet { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoTem_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoTem_wintaFN
+                        public DateTime? ngaycoTem { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoTSDG_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoTSDG_wintaFN
+                        public DateTime? ngaycoTSDG { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaycoVTK_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaycoVTK_wintaFN
+                        public DateTime? ngaycoVTK { get; set; }
                 
 						
                         #region c_danhsachdathang_ngayhieuluc_wintaFN
@@ -197,6 +251,24 @@
                         
                         #endregion c_danhsachdathang_ngayhoanthanh_wintaFN
                         public DateTime? ngayhoanthanh { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaykhachkiemDK_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaykhachkiemDK_wintaFN
+                        public DateTime? ngaykhachkiemDK { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaykhachkiemTT_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaykhachkiemTT_wintaFN
+                        public DateTime? ngaykhachkiemTT { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngayktDG_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngayktDG_wintaFN
+                        public DateTime? ngayktDG { get; set; }
                 
 						
                         #region c_danhsachdathang_ngaylap_wintaFN
@@ -215,6 +287,18 @@
                         
                         #endregion c_danhsachdathang_ngaytao_wintaFN
                         public DateTime? ngaytao { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaytauchayETD_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaytauchayETD_wintaFN
+                        public DateTime? ngaytauchayETD { get; set; }
+                
+						
+                        #region c_danhsachdathang_ngaythucteCont_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaythucteCont_wintaFN
+                        public DateTime? ngaythucteCont { get; set; }
                 
 						
                         #region c_danhsachdathang_nguoi_dathang_wintaFN
@@ -239,6 +323,12 @@
                         
                         #endregion c_danhsachdathang_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region c_danhsachdathang_nhanVienLH_wintaFN
+                        
+                        #endregion c_danhsachdathang_nhanVienLH_wintaFN
+                        public string nhanVienLH { get; set; }
                 
 						
                         #region c_danhsachdathang_reportKCS_wintaFN

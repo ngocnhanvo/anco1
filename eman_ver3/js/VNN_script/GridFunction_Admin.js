@@ -354,7 +354,7 @@ function get_MLname(ma_column, Model_infor) {
     return Model_infor.split('(##)')[1];
 }
 
-function Logo_Center(logo, center, id_dialog) {
+function Logo_Center(logo, center, id_dialog, btnOK, btnClose) {
     if (id_dialog == null | id_dialog == '') {
         if (logo.indexOf("/") > -1) {
             $('.ui-dialog > .ui-dialog-titlebar').find('.img_title_jqgrid').remove();
@@ -386,13 +386,21 @@ function Logo_Center(logo, center, id_dialog) {
         }
     }
     $('#btn-ok').find('.span_button.ui-icon.ui-icon-disk').remove();
-    $('#btn-ok').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
+    $('#btn-ok').prepend('<span class="span_button ui-icon ui-icon-disk"></span>');
     $('#btn-close').find('.span_button.ui-icon.ui-icon-close').remove();
-    $('#btn-close').prepend('<span class=\"span_button ui-icon ui-icon-close\"></span>');
+    $('#btn-close').prepend('<span class="span_button ui-icon ui-icon-close"></span>');
     $('#btn-ok_').find('.span_button.ui-icon.ui-icon-disk').remove();
-    $('#btn-ok_').prepend('<span class=\"span_button ui-icon ui-icon-disk\"></span>');
+    $('#btn-ok_').prepend('<span class="span_button ui-icon ui-icon-disk"></span>');
     $('#btn-close_').find('.span_button.ui-icon.ui-icon-close').remove();
-    $('#btn-close_').prepend('<span class=\"span_button ui-icon ui-icon-close\"></span>');
+    $('#btn-close_').prepend('<span class="span_button ui-icon ui-icon-close"></span>');
+    if (btnOK) {
+        $(`#${btnOK}`).find('.span_button.ui-icon.ui-icon-disk').remove();
+        $(`#${btnOK}`).prepend('<span class="span_button ui-icon ui-icon-disk"></span>');
+    }
+    if (btnClose) {
+        $(`#${btnClose}`).find('.span_button.ui-icon.ui-icon-close').remove();
+        $(`#${btnClose}`).prepend('<span class="span_button ui-icon ui-icon-close"></span>');
+    }
 }
 
 
@@ -616,6 +624,9 @@ function esc_date_nottime(cellvalue, options, rowObject) {
         cellvalue = vnn_formatdatetime(date_cel);
         cellvalue = cellvalue.split(' ')[0];
     }
+    else {
+        cellvalue = '';
+    }
     return cellvalue;
 }
 
@@ -624,10 +635,26 @@ function format_srcdatetime() {
     t = e[0].indexOf("yyyy") > -1 ? e[0].replace(/dd/g, "d").replace(/MM/g, "m").replace(/yyyy/g, "Y") : e[0].replace(/dd/g, "d").replace(/MM/g, "m").replace(/yy/g, "y");
     try { n = e[1].replace(/hh/g, "H").replace(/mm/g, "i").replace(/ss/g, "s") } catch (i) { }
     try { a = e[2].replace(/tt/g, "a").replace(/TT/g, "A"), a.indexOf("a") > -1 | a.indexOf("A") > -1 && (n = n.replace(/H/g, "h"), n += " " + a) } catch (i) { } return t + " " + n
-} function addZero(e) { return 10 > e && (e = "0" + e), e }
+}
+
+function addZero(e) { return 10 > e && (e = "0" + e), e }
 function addAMPM(e, t) { var n = "AM", a = "PM"; return "tt" == t && (n = "am", a = "pm"), 0 == e ? n : 12 == e ? a : e > 12 ? a : n }
 
-function vnn_formatdatetime(e) { var t = addZero(e.getDate()), n = addZero(e.getMonth() + 1), a = e.getFullYear(), i = addZero(e.getHours()), r = addZero(e.getMinutes()), o = addZero(e.getSeconds()), l = ngayhethong, c = ngayhethong.split(" "), s = "", d = ""; c[0].indexOf("yyyy") > -1 ? l = l.replace(/yyyy/g, a) : (a = a.toString().substring(2, 4), l = l.replace(/yy/g, a)); try { d = c[2], d.indexOf("tt") > -1 | d.indexOf("TT") > -1 && (s = addAMPM(i, d), 0 == i ? i = 12 : i > 12 && (i = addZero(i - 12))) } catch (h) { } return l = l.replace(/dd/g, t).replace(/MM/g, n).replace(/hh/g, i).replace(/mm/g, r).replace(/ss/g, o).replace(/tt/, s).replace(/TT/, s) } function format_ValueNull(e) { return null == e | "" == e && (e = "Thông báo"), e }
+function vnn_formatdatetime(e, type) {
+    var t = addZero(e.getDate()), n = addZero(e.getMonth() + 1), a = e.getFullYear(), i = addZero(e.getHours()),
+        r = addZero(e.getMinutes()), o = addZero(e.getSeconds()), l = ngayhethong,
+        c = ngayhethong.split(" "), s = "", d = "";
+    c[0].indexOf("yyyy") > -1 ? l = l.replace(/yyyy/g, a) : (a = a.toString().substring(2, 4), l = l.replace(/yy/g, a));
+    try { d = c[2], d.indexOf("tt") > -1 | d.indexOf("TT") > -1 && (s = addAMPM(i, d), 0 == i ? i = 12 : i > 12 && (i = addZero(i - 12))) } catch (h) { }
+
+    l = l.replace(/dd/g, t).replace(/MM/g, n).replace(/hh/g, i).replace(/mm/g, r).replace(/ss/g, o).replace(/tt/, s).replace(/TT/, s);
+    if (type == 0) {
+        l = l.split(' ')[0];
+    }
+    return l;
+}
+
+function format_ValueNull(e) { return null == e | "" == e && (e = "Thông báo"), e }
 
 function div_load(e, t, n) {
     var a = window.innerWidth, i = window.innerHeight, r = n.clientX, o = n.clientY, l = r - 20, c = o - 20;
