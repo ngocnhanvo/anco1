@@ -9,6 +9,8 @@ var format_donhang = {
             />
         `);
 
+        $(elem).attr('autocomplete', 'off');
+
         $(elem).keypress(function (e) {
             if (e.which == '13') {
                 format_donhang.search(id_elem, 1);
@@ -146,6 +148,49 @@ var format_donhang = {
                                 `;
                             }
                             else if (tengrid0 == 'gridMD_00_PVCTonThanhPham') {
+                                let loaichuyenId = $('#loaichuyen_id').val();
+                                if (loaichuyenId == 'T00' | loaichuyenId == 'T01') {
+                                    whereSQL = ` 
+                                        ${whereAll}
+                                        and (
+                                            select top 1 1
+                                            from md_lenhsanxuat lsx
+                                            inner join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                                            where 
+                                                lsx.donhang_thamchieu = dsdh.so_po
+                                                and isnull(cdh.sl_giamhanngach, 0) > 0
+                                                and isnull(cdh.sl_danhapkho, 0) + isnull(cdh.sl_datncc, 0) + isnull(cdh.sl_nhapkho, 0) - isnull(cdh.sl_nkton, 0) > cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)
+                                        ) > 0
+                                    `;
+                                }
+                                else if (loaichuyenId == 'T02') {
+                                    whereSQL = ` 
+                                        ${whereAll}
+                                        and (
+                                            select top 1 1
+                                            from c_dongdsdh
+                                            where 
+                                                c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+                                                and isnull(sl_nhaphang, 0) > 0
+                                                and (isnull(sl_nhaphang, 0) - isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                                        ) > 0
+                                    `;
+                                }
+                                else if (loaichuyenId == 'T03') {
+                                    whereSQL = ` 
+                                        ${whereAll}
+                                        and (
+                                            select top 1 1
+                                            from c_dongdsdh
+                                            where 
+                                                c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+                                                and isnull(sl_donggoiTP, 0) > 0
+                                                and (isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                                        ) > 0
+                                    `;
+                                }
+                            }
+                            else if (tengrid0 == 'gridMD_00_GiamHanNgach') {
                                 whereSQL = ` 
                                     ${whereAll}
                                     and (
@@ -153,8 +198,7 @@ var format_donhang = {
                                         from c_dongdsdh
                                         where 
                                             c_danhsachdathang_id = dsdh.c_danhsachdathang_id
-                                            and isnull(sl_donggoiTP, 0) > 0
-                                            and (isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                                            and isnull(sl_dathang, 0) - isnull(sl_giamhanngach, 0) - isnull(sl_dagiao, 0) > 0
                                     ) > 0
                                 `;
                             }

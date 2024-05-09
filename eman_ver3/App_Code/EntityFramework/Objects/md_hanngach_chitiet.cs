@@ -13,6 +13,18 @@
                         public string md_hanngach_chitiet_id { get; set; }
                 
 						
+                        #region md_hanngach_chitiet_bophancapnhat_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_bophancapnhat_wintaFN
+                        public string bophancapnhat { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_bophantao_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_bophantao_wintaFN
+                        public string bophantao { get; set; }
+                
+						
                         #region md_hanngach_chitiet_hoatdong_wintaFN
                         
                         #endregion md_hanngach_chitiet_hoatdong_wintaFN
@@ -70,13 +82,61 @@
                         #region md_hanngach_chitiet_sldonhang_wintaFN
                         
                         #endregion md_hanngach_chitiet_sldonhang_wintaFN
-                        public int? sldonhang { get; set; }
+                        public Decimal? sldonhang { get; set; }
                 
 						
                         #region md_hanngach_chitiet_slgiam_wintaFN
                         
                         #endregion md_hanngach_chitiet_slgiam_wintaFN
-                        public int? slgiam { get; set; }
+                        public Decimal? slgiam { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_vaitrocapnhat_wintaFN
+                        public string vaitrocapnhat { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_vaitrotao_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_vaitrotao_wintaFN
+                        public string vaitrotao { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_bophancapnhat_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_bophancapnhat_wintaFN
+                        public string value_bophancapnhat { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_bophantao_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_bophantao_wintaFN
+                        public string value_bophantao { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_nguoicapnhat_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_nguoicapnhat_wintaFN
+                        public string value_nguoicapnhat { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_nguoitao_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_nguoitao_wintaFN
+                        public string value_nguoitao { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_vaitrocapnhat_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_vaitrocapnhat_wintaFN
+                        public string value_vaitrocapnhat { get; set; }
+                
+						
+                        #region md_hanngach_chitiet_value_vaitrotao_wintaFN
+                        
+                        #endregion md_hanngach_chitiet_value_vaitrotao_wintaFN
+                        public string value_vaitrotao { get; set; }
                 
 						
                     }

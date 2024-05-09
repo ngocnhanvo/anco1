@@ -151,6 +151,12 @@
                         public string trangthai { get; set; }
                 
 						
+                        #region c_kehoachdathang_trangthaiSav_wintaFN
+                        
+                        #endregion c_kehoachdathang_trangthaiSav_wintaFN
+                        public string trangthaiSav { get; set; }
+                
+						
                         #region c_kehoachdathang_vaitrocapnhat_wintaFN
                         
                         #endregion c_kehoachdathang_vaitrocapnhat_wintaFN

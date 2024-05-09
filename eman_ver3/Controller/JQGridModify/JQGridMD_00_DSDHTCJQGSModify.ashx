@@ -79,33 +79,36 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 {
                     if (check_1 == "1")
                     {
-                        dsdh.trangthai = "HUYBO";
+                        dsdh.trangthai = Helper.HUYBO;
+                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                        if(khdh != null)
+                        {
+                            khdh.trangthaiSav = khdh.trangthai;
+                            khdh.trangthai = Helper.KETTHUC;
+                        }
                         msg_success = "<div style='color:blue'> Hủy bỏ đơn hàng thành công.</div>";
                     }
                     else if (check_1 == "2")
                     {
-                        dsdh.trangthai = "KETTHUC";
+                        dsdh.trangthai = Helper.KETTHUC;
+                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                        if(khdh != null)
+                        {
+                            khdh.trangthaiSav = khdh.trangthai;
+                            khdh.trangthai = Helper.KETTHUC;
+                        }
                         msg_success = "<div style='color:blue'> Kết thúc đơn hàng thành công.</div>";
                     }
-                    else if (check_1 == "3" & dsdh.anco_check == false)
+                    else if (check_1 == "3")
                     {
-                        dsdh.trangthai = "HIEULUC";
-                        msg_success = "<div style='color:blue'>Khởi động lại đơn hàng thành công.</div>";
-                    }
-                    else if (check_1 == "3" & dsdh.anco_check == true)
-                    {
-                        dsdh.trangthai = "HIEULUC";
-                        msg_success = "<div style='color:blue'>Khởi động lại đơn hàng thành công.</div>";
-                    }
-                    else if (check_1 == "4" & dsdh.anco_check == false)
-                    {
-                        dsdh.trangthai = "HIEULUC";
-                        msg_success = "<div style='color:blue'>Kích hoạt đơn hàng thành công.</div>";
-                    }
-                    else if (check_1 == "4" & dsdh.anco_check == true)
-                    {
-                        dsdh.trangthai = "HIEULUC";
-                        msg_success = "<div style='color:blue'>Kích hoạt đơn hàng thành công.</div>";
+                        dsdh.trangthai = Helper.HIEULUC;
+                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                        if(khdh != null)
+                        {
+                            if(!string.IsNullOrWhiteSpace(khdh.trangthaiSav))
+                                khdh.trangthai = khdh.trangthaiSav;
+                        }
+                        msg_success = "<div style='color:blue'>Tái Hiệu Lực đơn hàng thành công.</div>";
                     }
                 }
                 else

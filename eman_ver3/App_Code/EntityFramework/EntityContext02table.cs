@@ -847,6 +847,10 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             .HasColumnName("trangthai")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.trangthaiSav)
+                            .HasColumnName("trangthaiSav")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

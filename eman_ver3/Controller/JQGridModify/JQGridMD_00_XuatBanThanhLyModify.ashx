@@ -318,8 +318,11 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
         giao.md_sanpham_id = dh.md_sanpham_id;
         giao.soluong_dichchuyen = dh.sl_xuat;
         giao.ngaychuyen = px.ngaychuyen;
-        giao.kieuchuyen = "Xuất kho";
+        giao.kieuchuyen = Helper.XuatKho;
         giao.dongnhapxuat = px.sochungtu;
+        giao.dongkiemkho = px.sochungtu;
+        giao.dongvanchuyen = px.sochungtu;
+        giao.dongsanxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
 
         giao.nguoitao = us.ad_user_id;

@@ -124,17 +124,20 @@ namespace OfficeToPDF
 
 
                 var commentFirst = s1.GetRow(0).GetCell(0);
-                if (commentFirst.CellComment != null)
+                if (commentFirst != null)
                 {
-                    var arrStr = commentFirst.CellComment.String.String.Split(new string[] { "\n" }, StringSplitOptions.None);
-                    foreach (var str in arrStr)
+                    if (commentFirst.CellComment != null)
                     {
-                        if (str.LastIndexOf("print:") > -1)
+                        var arrStr = commentFirst.CellComment.String.String.Split(new string[] { "\n" }, StringSplitOptions.None);
+                        foreach (var str in arrStr)
                         {
-                            area = str.Replace("print:", "");
-                            columnText = area.Split(':')[1];
-                            maxColumn = Array.IndexOf(infoExcel.Alphabet, columnText);
-                            break;
+                            if (str.LastIndexOf("print:") > -1)
+                            {
+                                area = str.Replace("print:", "");
+                                columnText = area.Split(':')[1];
+                                maxColumn = Array.IndexOf(infoExcel.Alphabet, columnText);
+                                break;
+                            }
                         }
                     }
                 }
@@ -718,12 +721,20 @@ namespace OfficeToPDF
                     col = columnT.ColumnIndex + 1,
                     formula = cellFormula
                 });
-
-                if (columnT.CellStyle.GetDataFormatString() == "#####")
+                
+                try
                 {
-                    columnT.CellStyle.DataFormat = HSSFUtils.CellDataFormat.GetDataFormat(hssfwb, sothapphan);
+                    columnT.SetCellType(CellType.Formula);
+
+                    if (columnT.CellStyle.GetDataFormatString() == "#####")
+                    {
+                        columnT.CellStyle.DataFormat = HSSFUtils.CellDataFormat.GetDataFormat(hssfwb, sothapphan);
+                    }
                 }
-                columnT.SetCellType(CellType.Formula);
+                catch
+                {
+                    columnT.SetCellType(CellType.Blank);
+                }
             }
             else if (isImage)
             {

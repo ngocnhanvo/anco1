@@ -334,8 +334,11 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             giao.md_sanpham_id = dh.md_sanpham_id;
             giao.soluong_dichchuyen = dh.sl_nhap;
             giao.ngaychuyen = px.ngaychuyen;
-            giao.kieuchuyen = "Nhập kho";
+            giao.kieuchuyen = Helper.NhapKho;
             giao.dongnhapxuat = px.sochungtu;
+            giao.dongkiemkho = px.sochungtu;
+            giao.dongvanchuyen = px.sochungtu;
+            giao.dongsanxuat = px.sochungtu;
             giao.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id;
             giao.mota = dh.so_dmh;
 

@@ -929,13 +929,13 @@ public class Public
                             var lhtsServer = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
                                 s.md_sanpham_id == cdh.md_sanpham_id
                                 & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                            //& s.sl_layton > 0
+                                & s.sl_layton >= 0
                             ).ToList();
 
                             var lhts = db.md_lenhsanxuat_tosx_dklhttp.Local.Where(s =>
                                 s.md_sanpham_id == cdh.md_sanpham_id
                                 & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                            //& s.sl_layton > 0
+                                & s.sl_layton >= 0
                             ).ToList();
 
                             if (lhts.Count > 0)
@@ -949,13 +949,13 @@ public class Public
                             var lhtsServer = db.md_lenhsanxuat_tosx_dklht.Where(s =>
                                 s.md_sanpham_id == cdh.md_sanpham_id
                                 & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                            //& s.sl_layton > 0
+                                & s.sl_layton >= 0
                             ).ToList();
 
                             var lhts = db.md_lenhsanxuat_tosx_dklht.Local.Where(s =>
                                 s.md_sanpham_id == cdh.md_sanpham_id
                                 & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                            //& s.sl_layton > 0
+                                & s.sl_layton >= 0
                             ).ToList();
 
                             if (lhts.Count > 0)
@@ -1163,6 +1163,9 @@ public class Public
             if (vtlsx != null)
             {
                 vtlsx.soluong = vtlsx.soluong.GetValueOrDefault(0) - sltru;
+                if (vtlsx.soluong < 0)
+                    vtlsx.soluong = 0;
+
                 foreach (var tsxPrev in tsxPrevs)
                 {
                     var cdhPrevServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>
@@ -1182,7 +1185,7 @@ public class Public
                         cdhPrev.sl_chiato2 = cdhPrev.sl_chiato2.GetValueOrDefault(0) + sltru;
                         truVatTuSauKhiLayTon(db, tsxPrev, cdhPrev.md_sanpham_id, sltru, sp1_1, sp2_1, sp3);
                     }
-                }
+                }                
             }
         }
         return "";
@@ -1547,10 +1550,10 @@ public class Public
                             kho_gd.soluong_dichchuyen = sl_xuatkho;
                             kho_gd.ngaychuyen = vcnb.ngaychuyen.Value;
                             kho_gd.kieuchuyen = Helper.XuatKho;
-                            kho_gd.dongnhapxuat = " ";
-                            kho_gd.dongkiemkho = " ";
+                            kho_gd.dongnhapxuat = vcnb.sochungtu;
+                            kho_gd.dongkiemkho = vcnb.sochungtu;
                             kho_gd.dongvanchuyen = vcnb.sochungtu;
-                            kho_gd.dongsanxuat = " ";
+                            kho_gd.dongsanxuat = vcnb.sochungtu;
                             kho_gd.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id;
                             kho_gd.sapxep = "";
                             kho_gd.md_to_id = khoXuat.md_to_id;
