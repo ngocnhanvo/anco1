@@ -910,7 +910,7 @@ modelBuilder.Entity<md_sanpham>().HasKey<string>(p => p.md_sanpham_id);
                             modelBuilder.Entity<md_sanpham>()
                             .Property(p => p.ma_sanpham)
                             .HasColumnName("ma_sanpham")
-                            .HasColumnType("varchar");
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_sanpham>()
                             .Property(p => p.ma_sanphamcu)
                             .HasColumnName("ma_sanphamcu")
