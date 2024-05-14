@@ -702,6 +702,10 @@ modelBuilder.Entity<ad_department>().HasKey<string>(p => p.md_phongban_id);
                             .HasColumnName("ma_phongban")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_department>()
+                            .Property(p => p.ma_phongban2)
+                            .HasColumnName("ma_phongban2")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_department>()
                             .Property(p => p.md_doitackinhdoanh_id)
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("varchar");
@@ -728,6 +732,10 @@ modelBuilder.Entity<ad_department>().HasKey<string>(p => p.md_phongban_id);
                             modelBuilder.Entity<ad_department>()
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<ad_department>()
+                            .Property(p => p.phongbanChaId)
+                            .HasColumnName("phongbanChaId")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<ad_department>()
                             .Property(p => p.ten_phongban)

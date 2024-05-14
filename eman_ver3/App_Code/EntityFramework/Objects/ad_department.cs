@@ -43,6 +43,12 @@
                         public string ma_phongban { get; set; }
                 
 						
+                        #region ad_department_ma_phongban2_wintaFN
+                        
+                        #endregion ad_department_ma_phongban2_wintaFN
+                        public string ma_phongban2 { get; set; }
+                
+						
                         #region ad_department_md_doitackinhdoanh_id_wintaFN
                         
                         #endregion ad_department_md_doitackinhdoanh_id_wintaFN
@@ -83,6 +89,12 @@
                         
                         #endregion ad_department_nguoitao_wintaFN
                         public string nguoitao { get; set; }
+                
+						
+                        #region ad_department_phongbanChaId_wintaFN
+                        
+                        #endregion ad_department_phongbanChaId_wintaFN
+                        public string phongbanChaId { get; set; }
                 
 						
                         #region ad_department_ten_phongban_wintaFN
