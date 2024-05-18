@@ -295,33 +295,51 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             foreach (var ddsdh in c_dongdsdhs.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
             {
                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == ddsdh.md_sanpham_id).FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(sp.phongbanId))
+                if (string.IsNullOrWhiteSpace(sp.phongbanId) & string.IsNullOrWhiteSpace(sp.nhacungung))
                 {
                     foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
                     {
-                        item.loi = $@"không thể bỏ trống ""Xưởng sản xuất""";
+                        item.loi = $@"không thể bỏ trống ""Xưởng sản xuất"" và ""NCC mặc định""";
                     }
                 }
                 else
                 {
-                    var cdhcd = new c_kehoachdathang_cdhcd
+                    var pbid = sp.phongbanId;
+                    var ok = true;
+                    if(string.IsNullOrWhiteSpace(pbid))
                     {
-                        c_kehoachdathang_cdhcd_id = Helper.getNewId(),
-                        c_kehoachdathang_id = kh.c_kehoachdathang_id,
-                        md_sanpham_id = ddsdh.md_sanpham_id,
-                        md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
-                        macuoi = sp.ma_sanpham,
-                        sl_giamhanngach = 0,
-                        sl_candat = ddsdh.sl_conlai.GetValueOrDefault(0),
-                        sl_phanphoi = ddsdh.sl_conlai.GetValueOrDefault(0),
-                        md_doitackinhdoanh_id = sp.nhacungung,
-                        md_phanxuong_id = sp.phongbanId,
-                        noigiaohang = sp.noigiaohang,
-                        hoatdong = true
-                    };
-                    cdhcd = Helper.setDefaultValueWhenInsertOrUpdate(cdhcd, userTK, false);
-                    cdhcds.Add(cdhcd);
-                    db.c_kehoachdathang_cdhcd.Add(cdhcd);
+                        var pb = db.ad_department.Where(s => s.ma_phongban2 == Helper.XuongHoanThienKhiMuaNgoai).FirstOrDefault();
+                        if(pb == null)
+                        {
+                            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
+                            {
+                                item.loi = $@"Có lỗi trong quá trình thiết lập, liên hệ admin để hỗ trợ (Mã lỗi: XuongHoanThienKhiMuaNgoai)";
+                            }
+                            ok = false;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        var cdhcd = new c_kehoachdathang_cdhcd
+                        {
+                            c_kehoachdathang_cdhcd_id = Helper.getNewId(),
+                            c_kehoachdathang_id = kh.c_kehoachdathang_id,
+                            md_sanpham_id = ddsdh.md_sanpham_id,
+                            md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id,
+                            macuoi = sp.ma_sanpham,
+                            sl_giamhanngach = 0,
+                            sl_candat = ddsdh.sl_conlai.GetValueOrDefault(0),
+                            sl_phanphoi = ddsdh.sl_conlai.GetValueOrDefault(0),
+                            md_doitackinhdoanh_id = sp.nhacungung,
+                            md_phanxuong_id = pbid,
+                            noigiaohang = sp.noigiaohang,
+                            hoatdong = true
+                        };
+                        cdhcd = Helper.setDefaultValueWhenInsertOrUpdate(cdhcd, userTK, false);
+                        cdhcds.Add(cdhcd);
+                        db.c_kehoachdathang_cdhcd.Add(cdhcd);
+                    }
                 }
             }
 

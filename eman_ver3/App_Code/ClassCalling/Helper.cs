@@ -53,7 +53,8 @@ public static class Helper
     public static string KHOTP = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOTP"];
     public static string KHOVT = System.Web.Configuration.WebConfigurationManager.AppSettings["KHOVT"];
     public static string KHODG = System.Web.Configuration.WebConfigurationManager.AppSettings["KHODG"];
-
+    public static string XuongHoanThienKhiMuaNgoai = System.Web.Configuration.WebConfigurationManager.AppSettings["XuongHoanThienKhiMuaNgoai"];
+    
     public static string[] arrLoaiCT_LNK = {
         "Nhập kho kết quả sản xuất",
         "Nhập kho điều chuyển nội bộ",
