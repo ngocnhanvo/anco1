@@ -302,11 +302,11 @@ public class Public
             var btps = bomSPs.Where(s => (s.ban_thanhpham ?? false) == true).ToList();
             foreach (var btp in btps)
             {
-                if (string.IsNullOrWhiteSpace(btp.b.phongbanId))
+                if (string.IsNullOrWhiteSpace(btp.b.phongbanId) & string.IsNullOrWhiteSpace(btp.b.nhacungung))
                 {
                     foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
                     {
-                        item.loi = $@"""{btp.b.ma_sanpham}"" không thể bỏ trống ""Phân xưởng sản xuất""";
+                        item.loi = $@"""{btp.b.ma_sanpham}"" không thể bỏ trống ""Xưởng sản xuất"" và ""NCC mặc định""";
                     }
                 }
                 else
@@ -333,16 +333,24 @@ public class Public
         }
         else if (sp.ban_thanhpham.GetValueOrDefault(false) | sp.sanpham.GetValueOrDefault(false))
         {
-            string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có BOM";
-
-            if (!msgEX.Contains(err))
+            if (!string.IsNullOrWhiteSpace(sp.phongbanId) & string.IsNullOrWhiteSpace(sp.nhacungung))
             {
-                msgEX += err;
+                string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có BOM";
+
+                if (!msgEX.Contains(err))
+                {
+                    msgEX += err;
+                }
+
+                foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
+                {
+                    item.loi += $"{sp.ma_sanpham} chưa có BOM";
+                }
             }
-
-            foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
+            else
             {
-                item.loi += $"{sp.ma_sanpham} chưa có BOM";
+                if (add & spchaBS == null)
+                    db.md_lenhsanxuat_tosx_cdh.Add(cdh);
             }
         }
 
@@ -431,11 +439,11 @@ public class Public
                             item.loi += $"{ma_cai} phải có kho mặc định";
                         }
                     }
-                    else if (string.IsNullOrWhiteSpace(spCai.phongbanId))
+                    else if (string.IsNullOrWhiteSpace(spCai.phongbanId) & string.IsNullOrWhiteSpace(spCai.nhacungung))
                     {
                         foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
                         {
-                            item.loi = $@"""{spCai.ma_sanpham}"" không thể bỏ trống ""Phân xưởng sản xuất""";
+                            item.loi = $@"""{spCai.ma_sanpham}"" không thể bỏ trống ""Xưởng sản xuất"" và ""NCC mặc định""";
                         }
                     }
                     else

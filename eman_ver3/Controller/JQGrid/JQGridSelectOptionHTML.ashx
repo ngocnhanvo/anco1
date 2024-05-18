@@ -65,7 +65,7 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
                             cn.ma_kho == Helper.KHOTRON ? "KHH" :
                                 cn.ma_kho == Helper.KHOTONTHO ? "KTSX" :
                                     cn.ma_kho == Helper.KHOTONTP ? "KTTP" :
-                                        cn.ma_kho.StartsWith("KHO4") ? "KDG" : "KTP"
+                                        cn.ma_kho == Helper.KHODG ? "KDG" : "KTP"
             );
         }
         str += "</select>";

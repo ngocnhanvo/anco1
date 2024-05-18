@@ -299,7 +299,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 {
                     foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
                     {
-                        item.loi = $@"không thể bỏ trống ""Phân xưởng sản xuất""";
+                        item.loi = $@"không thể bỏ trống ""Xưởng sản xuất""";
                     }
                 }
                 else
