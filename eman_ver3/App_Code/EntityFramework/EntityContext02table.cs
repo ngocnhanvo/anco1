@@ -1939,6 +1939,10 @@ modelBuilder.Entity<c_kehoachmuavt_cdh>().HasKey<string>(p => p.c_kehoachmuavt_c
                             .HasColumnName("sl_tonkho_toithieu")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_kehoachmuavt_cdh>()
+                            .Property(p => p.sl_xuatkho)
+                            .HasColumnName("sl_xuatkho")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<c_kehoachmuavt_cdh>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

@@ -115,89 +115,93 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
     {
         string idparent = context.Request.Form["id"];
         string msg = "";
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            var khmvt = db.c_kehoachmuavt.FirstOrDefault(s => s.c_kehoachmuavt_id == idparent);
+            if (khmvt.md_trangthai_id != Helper.SOANTHAO)
             {
-                var khmvt = db.c_kehoachmuavt.FirstOrDefault(s => s.c_kehoachmuavt_id == idparent);
-                if (khmvt.md_trangthai_id != "SOANTHAO")
-                {
-                    msg = string.Format(@"Kế hoach này đã ""Hiệu Lực"".");
-                }
-                else
-                {
-                    db.c_kehoachmuavt_dklht.RemoveRange(db.c_kehoachmuavt_dklht.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id));
-                    foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == idparent).ToList())
-                    {
-                        var spvt = db.md_sanpham.Where(s => s.md_sanpham_id == khmvt_cdh.md_sanpham_id).FirstOrDefault();
-
-                        var tonkho = (from a in db.md_kho_sanpham
-                                      join b in db.md_kho on a.md_kho_id equals b.md_kho_id
-                                      where b.vattu == true & a.md_sanpham_id == khmvt_cdh.md_sanpham_id
-                                      select new { a.md_sanpham_id, a.md_kho_id, a.soluong }).ToList();
-                        decimal sl_tonkho = 0,
-                                   sl_tonkhotoithieu = khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0),
-                                   sl_khmvtCan = khmvt_cdh.sl_can.GetValueOrDefault(0);
-
-                        if (tonkho.Count > 0)
-                        {
-                            foreach (var tonkho_ in tonkho)
-                            {
-                                decimal sl_tonkho_ = tonkho_.soluong.GetValueOrDefault(0) -
-                                                db.md_kho_giucho.Where(s =>
-                                                    s.md_sanpham_id == tonkho_.md_sanpham_id &
-                                                    s.md_kho_id == tonkho_.md_kho_id
-                                                ).Select(s => s.soluong_giucho).Sum()
-                                                .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
-                                sl_tonkho += sl_tonkho_;
-                                var dklht = new c_kehoachmuavt_dklht();
-                                dklht.c_kehoachmuavt_dklht_id = Helper.getNewId();
-                                dklht.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id;
-                                dklht.md_kho_id = tonkho_.md_kho_id;
-                                dklht.md_sanpham_id = tonkho_.md_sanpham_id;
-                                dklht.md_donvitinhsanpham_id = khmvt_cdh.md_donvitinhsanpham_id;
-                                dklht.sl_tonkho = sl_tonkho_;
-                                sl_tonkho_ = (sl_tonkho_ - sl_tonkhotoithieu).Set0WhenlessThan0().GetValueOrDefault(0);
-                                //dklht.sl_layton = sl_tonkho_ > sl_khmvtCan ? sl_khmvtCan : sl_tonkho_;
-                                dklht.sl_layton = 0;
-                                var lt_tt = dklht.sl_layton;
-                                //dklht.sl_layton = lt_tt > sl_tonkhotoithieu ? lt_tt - sl_tonkhotoithieu : 0;
-                                sl_tonkhotoithieu = (sl_tonkhotoithieu - lt_tt.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
-                                sl_khmvtCan = (sl_khmvtCan - dklht.sl_layton.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
-                                db.c_kehoachmuavt_dklht.Add(dklht);
-                            }
-                        }
-
-                        khmvt_cdh.sl_tonkho_toithieu = spvt.sl_tonkho_toithieu.GetValueOrDefault(0);
-                        khmvt_cdh.sl_tonkho = sl_tonkho;
-                        sl_tonkho = (sl_tonkho - khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
-                        khmvt_cdh.sl_layton = 0;
-                        //khmvt_cdh.sl_layton = sl_tonkho > khmvt_cdh.sl_can ? khmvt_cdh.sl_can : sl_tonkho;
-                        //khmvt_cdh.sl_layton = (khmvt_cdh.sl_layton - khmvt_cdh.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0();
-
-                        var sldn = (khmvt_cdh.sl_can.GetValueOrDefault(0) - khmvt_cdh.sl_layton.GetValueOrDefault(0)
-                                    + khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0) - khmvt_cdh.sl_tonkho.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
-                        khmvt_cdh.sl_denghi = sldn;
-                        khmvt_cdh.sl_duyet = null;
-                    }
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
-            }
-
-            if (msg.Length <= 0)
-            {
-                transaction.Commit();
+                msg = string.Format(@"Kế hoach này đã ""Hiệu Lực"".");
             }
             else
             {
-                msg = string.Format(@"<div style=""color:red"">Lỗi:{0}</div>", msg);
-                transaction.Rollback();
+                db.c_kehoachmuavt_dklht.RemoveRange(db.c_kehoachmuavt_dklht.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id));
+                foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == idparent).ToList())
+                {
+                    var spvt = db.md_sanpham.Where(s => s.md_sanpham_id == khmvt_cdh.md_sanpham_id).FirstOrDefault();
+
+                    var tonkho = (from a in db.md_kho_sanpham
+                                  join b in db.md_kho on a.md_kho_id equals b.md_kho_id
+                                  where b.vattu == true & a.md_sanpham_id == khmvt_cdh.md_sanpham_id
+                                  select new { a.md_sanpham_id, a.md_kho_id, a.soluong }).ToList();
+                    decimal sl_tonkho = 0,
+                               sl_tonkhotoithieu = khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0),
+                               sl_khmvtCan = khmvt_cdh.sl_can.GetValueOrDefault(0);
+
+                    if (tonkho.Count > 0)
+                    {
+                        foreach (var tonkho_ in tonkho)
+                        {
+                            decimal sl_tonkho_ = tonkho_.soluong.GetValueOrDefault(0) -
+                                            db.md_kho_giucho.Where(s =>
+                                                s.md_sanpham_id == tonkho_.md_sanpham_id &
+                                                s.md_kho_id == tonkho_.md_kho_id
+                                            ).Select(s => s.soluong_giucho).Sum()
+                                            .GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
+                            sl_tonkho += sl_tonkho_;
+                            var dklht = new c_kehoachmuavt_dklht();
+                            dklht.c_kehoachmuavt_dklht_id = Helper.getNewId();
+                            dklht.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id;
+                            dklht.md_kho_id = tonkho_.md_kho_id;
+                            dklht.md_sanpham_id = tonkho_.md_sanpham_id;
+                            dklht.md_donvitinhsanpham_id = khmvt_cdh.md_donvitinhsanpham_id;
+                            dklht.sl_tonkho = sl_tonkho_;
+                            sl_tonkho_ = (sl_tonkho_ - sl_tonkhotoithieu).Set0WhenlessThan0().GetValueOrDefault(0);
+                            //dklht.sl_layton = sl_tonkho_ > sl_khmvtCan ? sl_khmvtCan : sl_tonkho_;
+                            dklht.sl_layton = 0;
+                            var lt_tt = dklht.sl_layton;
+                            //dklht.sl_layton = lt_tt > sl_tonkhotoithieu ? lt_tt - sl_tonkhotoithieu : 0;
+                            sl_tonkhotoithieu = (sl_tonkhotoithieu - lt_tt.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
+                            sl_khmvtCan = (sl_khmvtCan - dklht.sl_layton.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
+                            db.c_kehoachmuavt_dklht.Add(dklht);
+                        }
+                    }
+
+                    khmvt_cdh.sl_tonkho_toithieu = spvt.sl_tonkho_toithieu.GetValueOrDefault(0);
+                    khmvt_cdh.sl_tonkho = sl_tonkho;
+                    sl_tonkho = (sl_tonkho - khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
+                    khmvt_cdh.sl_layton = 0;
+
+                    var slxk = db.md_kho_giaodich.Where(s =>
+                        s.ngaychuyen >= khmvt.tungay
+                        & s.ngaychuyen <= khmvt.denngay
+                        & s.kieuchuyen == Helper.XuatKho
+                        & s.md_sanpham_id == khmvt_cdh.md_sanpham_id)
+                        .ToList().Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
+                    khmvt_cdh.sl_xuatkho = slxk;
+
+                    var sldn = (khmvt_cdh.sl_can.GetValueOrDefault(0) - khmvt_cdh.sl_layton.GetValueOrDefault(0)
+                                + khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0) - khmvt_cdh.sl_tonkho.GetValueOrDefault(0)).Set0WhenlessThan0().GetValueOrDefault(0);
+                    khmvt_cdh.sl_denghi = sldn;
+                    khmvt_cdh.sl_duyet = null;
+                }
+                db.SaveChanges();
             }
         }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if (msg.Length <= 0)
+        {
+
+        }
+        else
+        {
+            msg = string.Format(@"<div style=""color:red"">Lỗi:{0}</div>", msg);
+        }
+
         context.Response.Write(msg);
     }
 

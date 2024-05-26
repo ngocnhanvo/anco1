@@ -151,6 +151,12 @@
                         public Decimal? sl_tonkho_toithieu { get; set; }
                 
 						
+                        #region c_kehoachmuavt_cdh_sl_xuatkho_wintaFN
+                        
+                        #endregion c_kehoachmuavt_cdh_sl_xuatkho_wintaFN
+                        public Decimal? sl_xuatkho { get; set; }
+                
+						
                         #region c_kehoachmuavt_cdh_vaitrocapnhat_wintaFN
                         
                         #endregion c_kehoachmuavt_cdh_vaitrocapnhat_wintaFN

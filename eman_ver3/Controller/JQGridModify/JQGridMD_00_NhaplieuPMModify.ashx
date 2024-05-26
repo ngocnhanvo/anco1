@@ -162,7 +162,9 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                 for (var cell = ipDetails.Count; cell <= activeWS.Cells.LastColIndex; cell++)
                                 {
                                     var val = activeWS.Cells.Rows[0].GetCell(cell);
-                                    tblTd += string.Format(@"<th>{0}</th>", val.StringValue);
+                                    var str = val.StringValue;
+                                    str = str.changeScientificNotation_Decimal();
+                                    tblTd += string.Format(@"<th>{0}</th>", str);
                                 }
                             }
 
@@ -175,7 +177,9 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                 for (var cell = 0; cell <= activeWS.Cells.LastColIndex; cell++)
                                 {
                                     var val = activeWS.Cells.Rows[row].GetCell(cell);
-                                    tblTd += string.Format(@"<{0}>{1}</{0}>", tdOrTh, val.StringValue);
+                                    var str = val.StringValue;
+                                    str = str.changeScientificNotation_Decimal();
+                                    tblTd += string.Format(@"<{0}>{1}</{0}>", tdOrTh, str);
                                 }
                                 tblRow += string.Format(@"<tr>{0}</tr>", tblTd);
 
@@ -419,6 +423,8 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
                                 for (int j = 0; j < count_column; j++)
                                 {
                                     string row_sel = row.GetCell(j).ToString();
+                                    row_sel = row_sel.changeScientificNotation_Decimal();
+
                                     if (row_sel == null | row_sel == "")
                                     {
                                         sql_insert_row = sql_insert_row.Replace("'{" + j + "}'", "NULL");
@@ -622,6 +628,7 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             else
             {
                 msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) cập nhật thất bại<br>Lỗi:{2}.</div>", (i - count_row_null), ava_1, ex);
+                msg += string.Format("\n<div style=\"display:none\"> " + char_spec + " Dòng {0}: {1}</div>", i - count_row_null, sql_update_row);
             }
         }
         else
@@ -636,7 +643,8 @@ public class JQGridMD_00_NhaplieuPMModify : IHttpHandler, System.Web.SessionStat
             }
             else
             {
-                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) thêm mới thất bại.<br>Lỗi:{2}</div>", (i - count_row_null), ava_1, ex);
+                msg += string.Format("\n<div class='err_import' style=\"color:red; padding: 0px 0 5px 0px;\"> " + char_spec + " Dòng {0} ({1}) thêm mới thất bại.<br>Lỗi:{2}</div>", i - count_row_null, ava_1, ex);
+                msg += string.Format("\n<div style=\"display:none\"> " + char_spec + " Dòng {0}: {1}</div>", i - count_row_null, sql_insert_row);
             }
         }
         return msg;

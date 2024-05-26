@@ -51,6 +51,27 @@ public static class Extension
         return null;
     }
 
+    public static bool isScientificNotation(this string str)
+    {
+        if (str == null)
+            return false;
+        else
+        {
+            double dummy;
+            return (str.Contains("E") || str.Contains("e")) && double.TryParse(str, out dummy);
+        }
+    }
+
+    public static string changeScientificNotation_Decimal(this string str)
+    {
+        if(str.isScientificNotation())
+        {
+            str = double.Parse(str).ToString("0.########");
+        }
+
+        return str;
+    }
+
     public static void CopyPropertiesTo<T, TU>(this T source, TU dest)
     {
         var sourceProps = typeof(T).GetProperties().Where(x => x.CanRead).ToList();

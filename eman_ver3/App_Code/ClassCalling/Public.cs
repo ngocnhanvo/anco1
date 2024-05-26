@@ -333,7 +333,11 @@ public class Public
         }
         else if (sp.ban_thanhpham.GetValueOrDefault(false) | sp.sanpham.GetValueOrDefault(false))
         {
-            if (!string.IsNullOrWhiteSpace(sp.phongbanId) & string.IsNullOrWhiteSpace(sp.nhacungung))
+            if(sp.vattu.GetValueOrDefault(false))
+            {
+                
+            }
+            else if (!string.IsNullOrWhiteSpace(sp.phongbanId) & string.IsNullOrWhiteSpace(sp.nhacungung))
             {
                 string err = $@"<br class='error'>HHVT ""{sp.ma_sanpham}"" chưa có BOM";
 
@@ -1909,7 +1913,7 @@ public class Public
                              e.c_kehoachdathang_id == khdh.c_kehoachdathang_id
                              & (sp.vattu ?? false) == true
                              & (a.soluong ?? 0) - (a.sl_giamhanngach ?? 0) > 0
-                             & db.md_sanpham_bom.Where(s => s.md_sanpham_id == a.md_sanpham_id).Take(1).Count() <= 0
+                             & db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_sanpham_id == a.md_sanpham_id & s.md_lenhsanxuat_id == c.md_lenhsanxuat_id).Take(1).Count() <= 0
                            select a).ToList();
 
                 foreach (var vt in vts)

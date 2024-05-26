@@ -317,6 +317,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                             }
                             ok = false;
                         }
+                        else
+                        {
+                            pbid = pb.md_phongban_id;
+                        }
                     }
 
                     if (ok)
