@@ -257,6 +257,10 @@ modelBuilder.Entity<c_yeucaumuavt>().HasKey<string>(p => p.c_yeucaumuavt_id);
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.ngaylap)
+                            .HasColumnName("ngaylap")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");

@@ -73,6 +73,12 @@
                         public string mota { get; set; }
                 
 						
+                        #region c_kehoachmuavt_ngaycan_wintaFN
+                        
+                        #endregion c_kehoachmuavt_ngaycan_wintaFN
+                        public DateTime? ngaycan { get; set; }
+                
+						
                         #region c_kehoachmuavt_ngaycapnhat_wintaFN
                         
                         #endregion c_kehoachmuavt_ngaycapnhat_wintaFN

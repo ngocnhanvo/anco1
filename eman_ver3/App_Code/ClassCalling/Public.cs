@@ -120,6 +120,7 @@ public class Public
             cdh.sl_chiato = cdh.sl_dat - cdh.sl_giamhanngach;
             cdh.stt = stt;
             cdh = Helper.setDefaultValueWhenInsertOrUpdate(cdh, userTK, false);
+            cdh.hoatdong = true;
         }
         else
         {
@@ -335,7 +336,11 @@ public class Public
         {
             if(sp.vattu.GetValueOrDefault(false))
             {
-                
+                if (add & spchaBS == null)
+                {
+                    cdh.hoatdong = false;
+                    db.md_lenhsanxuat_tosx_cdh.Add(cdh);
+                }
             }
             else if (!string.IsNullOrWhiteSpace(sp.phongbanId) & string.IsNullOrWhiteSpace(sp.nhacungung))
             {
@@ -1913,7 +1918,7 @@ public class Public
                              e.c_kehoachdathang_id == khdh.c_kehoachdathang_id
                              & (sp.vattu ?? false) == true
                              & (a.soluong ?? 0) - (a.sl_giamhanngach ?? 0) > 0
-                             & db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_sanpham_id == a.md_sanpham_id & s.md_lenhsanxuat_id == c.md_lenhsanxuat_id).Take(1).Count() <= 0
+                             & db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_sanpham_id == a.md_sanpham_id & s.md_lenhsanxuat_id == c.md_lenhsanxuat_id & s.hoatdong == true).Take(1).Count() <= 0
                            select a).ToList();
 
                 foreach (var vt in vts)

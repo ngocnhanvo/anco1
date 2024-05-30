@@ -13,7 +13,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH XUẤT KHO.repx";
+        string nameTemp = "[KT] LỆNH XUẤT KHO - Điều chuyển.repx";
         string nameRpt = "LỆNH XUÁT KHO {ngaylap}";
         string sql = CreateSql(context);
 
@@ -39,6 +39,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
 		    declare @khid nvarchar(32)= '{id}'
             declare @loai nvarchar(32) = (select top 1 loaichuyen from md_vanchuyennoibo where md_vanchuyennoibo_id = @khid)
             declare @trangthai nvarchar(32) = (select top 1 md_trangthai_id from md_vanchuyennoibo where md_vanchuyennoibo_id = @khid)
+            declare @laytonTPhoacBTP bit = (select top 1 laytonTPhoacBTP from md_vanchuyennoibo where md_vanchuyennoibo_id = @khid)
 
             if(@loai = 'VANCNBCTKGH')
             begin
@@ -46,8 +47,9 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
                     upper(N'{loaiCT}') as loaiCT,
                     N'{mau0}' as mauCT,
 	                vcnb.sochungtu as sophieu,
-	                format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
-	                kho.ten_kho as kho,
+	                format(isnull(vcnb.ngaychuyen, vcnb.ngaydenghi), 'dd/MM/yyyy') as ngaylap,
+	                tkho.ma_kho as tukho,
+                    dkho.ma_kho as denkho,
 	                vcnb.donhang_thamchieu as donhang,
 	                sp.ma_sanpham as maVTHH,
                     sp.mota_tiengviet as tenVTHH,
@@ -58,7 +60,8 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
 	                null as slkdat,
                     null as makh
                 from md_vanchuyennoibo vcnb
-                    left join md_kho kho on kho.md_kho_id = vcnb.tukho
+                    left join md_kho tkho on tkho.md_kho_id = vcnb.tukho
+                    left join md_kho dkho on dkho.md_kho_id = vcnb.denkho
                     left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
 	                left join md_sanpham spCDVC on spCDVC.md_sanpham_id = cdvc.md_sanpham_id
 	                left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = vcnb.donhang_thamchieu
@@ -73,7 +76,52 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
                 group by
 	                vcnb.sochungtu,
 	                vcnb.ngaychuyen,
-	                kho.ten_kho,
+                    vcnb.ngaydenghi,
+	                tkho.ma_kho,
+                    dkho.ma_kho,
+	                vcnb.donhang_thamchieu,
+	                sp.ma_sanpham,
+                    sp.mota_tiengviet,
+                    dvt.ten_dvt
+                order by
+	                sp.ma_sanpham
+            end
+            else if(@laytonTPhoacBTP = 1)
+            begin
+                select
+                    upper(N'{loaiCT}') as loaiCT,
+                    N'{mau0}' as mauCT,
+	                vcnb.sochungtu as sophieu,
+	                format(isnull(vcnb.ngaychuyen, vcnb.ngaydenghi), 'dd/MM/yyyy') as ngaylap,
+	                tkho.ma_kho as tukho,
+                    dkho.ma_kho as denkho,
+	                vcnb.donhang_thamchieu as donhang,
+	                sp.ma_sanpham as maVTHH,
+                    sp.mota_tiengviet as tenVTHH,
+                    dvt.ten_dvt as dvt,
+	                sum(cdvc.soluong_muonchuyen) as slct,
+                    sum(cdvc.soluong_dichchuyen) as sltn,
+	                null as sldat,
+	                null as slkdat,
+                    null as makh
+                from md_vanchuyennoibo vcnb
+                    left join md_kho tkho on tkho.md_kho_id = vcnb.tukho
+                    left join md_kho dkho on dkho.md_kho_id = vcnb.denkho
+                    left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
+	                left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = vcnb.donhang_thamchieu
+	                left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and cdh.md_sanpham_id = cdvc.md_sanpham_id
+	                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+                    left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                where
+                    vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
+                    and vcnb.md_vanchuyennoibo_id = @khid
+                    and cdvc.soluong_dichchuyen > 0
+                group by
+	                vcnb.sochungtu,
+	                vcnb.ngaychuyen,
+                    vcnb.ngaydenghi,
+	                tkho.ma_kho,
+                    dkho.ma_kho,
 	                vcnb.donhang_thamchieu,
 	                sp.ma_sanpham,
                     sp.mota_tiengviet,
@@ -87,36 +135,28 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
                     upper(N'{loaiCT}') as loaiCT,
                     N'{mau0}' as mauCT,
 	                vcnb.sochungtu as sophieu,
-	                format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
-	                kho.ten_kho as kho,
+	                format(isnull(vcnb.ngaychuyen, vcnb.ngaydenghi), 'dd/MM/yyyy') as ngaylap,
+	                tkho.ma_kho as tukho,
+                    dkho.ma_kho as denkho,
 	                vcnb.donhang_thamchieu as donhang,
 	                sp.ma_sanpham as maVTHH,
                     sp.mota_tiengviet as tenVTHH,
                     dvt.ten_dvt as dvt,
-	                sum(cdvc.soluong_muonchuyen) as slct,
-                    sum(cdvc.soluong_dichchuyen) as sltn,
+	                cdvc.soluong_muonchuyen as slct,
+                    cdvc.soluong_dichchuyen as sltn,
 	                null as sldat,
 	                null as slkdat,
                     null as makh
                 from md_vanchuyennoibo vcnb
-                    left join md_kho kho on kho.md_kho_id = vcnb.tukho
+                    left join md_kho tkho on tkho.md_kho_id = vcnb.tukho
+                    left join md_kho dkho on dkho.md_kho_id = vcnb.denkho
                     left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
-	                left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = vcnb.donhang_thamchieu
-	                left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and cdh.md_sanpham_id = cdvc.md_sanpham_id
-	                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+                    left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                     left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 where
                     vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
                     and vcnb.md_vanchuyennoibo_id = @khid
                     and cdvc.soluong_dichchuyen > 0
-                group by
-	                vcnb.sochungtu,
-	                vcnb.ngaychuyen,
-	                kho.ten_kho,
-	                vcnb.donhang_thamchieu,
-	                sp.ma_sanpham,
-                    sp.mota_tiengviet,
-                    dvt.ten_dvt
                 order by
 	                sp.ma_sanpham
             end

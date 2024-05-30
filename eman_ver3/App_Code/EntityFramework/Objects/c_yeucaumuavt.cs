@@ -103,6 +103,12 @@
                         public DateTime? ngaycapnhat { get; set; }
                 
 						
+                        #region c_yeucaumuavt_ngaylap_wintaFN
+                        
+                        #endregion c_yeucaumuavt_ngaylap_wintaFN
+                        public DateTime? ngaylap { get; set; }
+                
+						
                         #region c_yeucaumuavt_ngaytao_wintaFN
                         
                         #endregion c_yeucaumuavt_ngaytao_wintaFN

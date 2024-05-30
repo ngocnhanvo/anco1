@@ -73,6 +73,16 @@ public static class Helper
         "Xuất kho thanh lý"
     };
 
+    public static string[] arrLoaiCT_LSX = {
+        "SẢN XUẤT HÀNG THÔ",
+        "SẢN XUẤT THÀNH PHẨM"
+    };
+
+    public static string[] arrLoaiCT_KHMVT = {
+        "THEO BOM",
+        "NGOÀI BOM"
+    };
+
     public static string[] arrMau_LXK = {
         "103",
         "104"
@@ -368,7 +378,7 @@ public static class Helper
         }
         else
         {
-            url = Security.UrlBase() + "ViewPDFPublic/index.aspx?url_pdf=" + linkView + "&remove=true&zoom=page-width&zoomprint=0.999&id=" + Guid.NewGuid();
+            url = $"{Security.UrlBase()}ViewPDFPublic/index.aspx?url_pdf={linkView}&remove=true&zoom=page-width&zoomprint=0.999&id={Guid.NewGuid()}&namedown={name}";
         }
 
         HttpContext.Current.Response.Redirect(url);

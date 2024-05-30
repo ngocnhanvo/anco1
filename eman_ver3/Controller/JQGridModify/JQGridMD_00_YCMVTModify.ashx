@@ -46,7 +46,9 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "", msg_success = "";
         string sochungtu = "goc", id_new = Helper.getNewId();
-        string ten_kehoach = context.Request.Form["ten_kh"];
+        string ten_kehoach = context.Request.Form["ten_kh"].removeAllSpaceOrTrimText(true);
+        string ngaylapStr = context.Request.Form["ngaylap"];
+        string ngaycanStr = context.Request.Form["ngaycan"];
         DateTime? tungay = null;
         DateTime? denngay = null;
 
@@ -54,7 +56,37 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
         {
             try
             {
-                foreach (var ycmvt in db.c_yeucaumuavt.Where(s => vnn.Contains(s.c_yeucaumuavt_id)).ToList())
+                var ycmvts = db.c_yeucaumuavt.Where(s => vnn.Contains(s.c_yeucaumuavt_id)).ToList();
+                var ycmvtsTheoBom = ycmvts.Where(s => !string.IsNullOrEmpty(s.c_nhucauvattu_id)).ToList();
+                var ycmvtsNgoaiBom = ycmvts.Where(s => string.IsNullOrEmpty(s.c_nhucauvattu_id)).ToList();
+                if (ycmvtsTheoBom.Count > 0 & ycmvtsNgoaiBom.Count > 0)
+                {
+                    msg = $@"Các yêu cầu chỉ được chọn 1 trong 2 tiêu chí: ""theo BOM"" hoặc ""ngoài BOM""";
+                    goto EndEventHandler;
+                }
+
+                var ngaylap = VNN_Config.setDateTime(ngaylapStr);
+                if (!ngaylap.IsDate())
+                {
+                    msg = $@"Ngày lập có giá trị sai";
+                    goto EndEventHandler;
+                }
+
+                var ngaycan = VNN_Config.setDateTime(ngaycanStr);
+                if (!ngaycan.IsDate())
+                {
+                    msg = $@"Ngày cần có giá trị sai";
+                    goto EndEventHandler;
+                }
+
+                var exist = db.c_kehoachmuavt.Where(s => s.ten_kehoach == ten_kehoach).Count() > 0;
+                if (exist)
+                {
+                    msg = $@"Tên kế hoạch đã tồn tại";
+                    goto EndEventHandler;
+                }
+
+                foreach (var ycmvt in ycmvts)
                 {
                     if (ycmvt.ngaycan <= tungay | tungay == null)
                         tungay = ycmvt.ngaycan;
@@ -85,12 +117,13 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     {
                         c_kehoachmuavt_id = id_new,
                         c_donmuavattu_id = " ",
-                        md_trangthai_id = "SOANTHAO",
+                        md_trangthai_id = Helper.SOANTHAO,
                         sochungtu = sochungtu,
                         ten_kehoach = ten_kehoach,
+                        ngaykehoach = ngaylap,
+                        ngaycan = ngaycan,
                         tungay = tungay,
                         denngay = denngay,
-                        ngaykehoach = DateTime.Now,
                         nguoitao = userTK.ad_user_id,
                         vaitrotao = userTK.ad_role_id,
                         bophantao = userTK.md_phongban_id,
@@ -352,6 +385,8 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                 msg = ex.Message;
             }
 
+        EndEventHandler:;
+
             if (msg.Length <= 0)
             {
                 transaction.Commit();
@@ -490,10 +525,10 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         if (ncvt != null)
                         {
                             var khdhs = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
-                            foreach(var khdh in khdhs)
+                            foreach (var khdh in khdhs)
                             {
                                 var khdhLK = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id).FirstOrDefault();
-                                if(khdhLK != null)
+                                if (khdhLK != null)
                                 {
                                     khdhLK.xulyNCVT = false;
                                 }

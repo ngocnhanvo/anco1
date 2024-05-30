@@ -1773,6 +1773,10 @@ modelBuilder.Entity<c_kehoachmuavt>().HasKey<string>(p => p.c_kehoachmuavt_id);
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_kehoachmuavt>()
+                            .Property(p => p.ngaycan)
+                            .HasColumnName("ngaycan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_kehoachmuavt>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");

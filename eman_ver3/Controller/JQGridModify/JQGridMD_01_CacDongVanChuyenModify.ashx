@@ -4,6 +4,8 @@ using System.Web;
 using System.Linq;
 using System.Collections.Generic;
 using DataAcess;
+using Newtonsoft.Json;
+
 public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public EntityContext db = new EntityContext();
@@ -40,55 +42,47 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
 
     public void CA_01_CapnhatSLcanchuyen(HttpContext context)
     {
-        string sel_val = context.Request.Form["sel_val"];
-        decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
-        string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        var rows = context.Request.Form["rows"];
+        string id = context.Request.Form["id"];
 
-        md_vanchuyennoibo vcnb = null;
-        var objSelfsVCNBDHSav = new List<Dictionary<string, string>>();
-        foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => vnn.Contains(s.md_vanchuyennoibo_cdvc_id)).ToList())
+        var vcnb = db.md_vanchuyennoibo.Where(s=>s.md_vanchuyennoibo_id == id).FirstOrDefault();
+        if (vcnb.md_trangthai_id == Helper.HIEULUC)
         {
-            vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == cdvc.md_vanchuyennoibo_id).FirstOrDefault();
-            if (vcnb.md_trangthai_id == Helper.HIEULUC)
-            {
-                msg = $@"<div style='color:red'>Lỗi:Dòng ""{vcnb.sochungtu}"" đã Hiệu lực.</div>";
-                break;
-            }
-            else
-            {
-                objSelfsVCNBDHSav.Add(new Dictionary<string, string>() {
-                        { "id", cdvc.md_vanchuyennoibo_cdvc_id },
-                        { "sl", cdvc.soluong_dichchuyen.GetValueOrDefault(0).ToString() }
-                    });
-
-                decimal sltd = cdvc.soluong_muonchuyen.Value - cdvc.soluong_dachuyen.Value;
-                if (sel_val == "0")
-                {
-                    cdvc.soluong_dichchuyen = sltd;
-                }
-                else
-                {
-                    if (slvc_case <= sltd)
-                    {
-                        cdvc.soluong_dichchuyen = slvc_case;
-                    }
-                    else
-                    {
-                        md_sanpham sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).Take(1).FirstOrDefault();
-                        msg = "<div style='color:red'>lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + Math.Round(sltd, 0) + "</div>";
-                        break;
-                    }
-                }
-                cdvc.ngaycapnhat = DateTime.Now;
-                db.SaveChanges();
-            }
+            msg = $@"Phiếu đã Hiệu Lực";
+            goto EndEventHandler;
         }
+
+        try
+        {
+            var dongHangs = JsonConvert.DeserializeObject<List<md_vanchuyennoibo_cdvc>>(rows);
+            foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == id).ToList())
+            {
+                var dongHang = dongHangs.Where(s => s.md_vanchuyennoibo_cdvc_id == cdvc.md_vanchuyennoibo_cdvc_id).FirstOrDefault();
+                if (dongHang != null)
+                {
+                    cdvc.soluong_dichchuyen = dongHang.soluong_dichchuyen;
+                    cdvc.ngaycapnhat = DateTime.Now;
+                }
+            }
+
+            db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
 
         if (msg.Length <= 0)
         {
-            msg = "<div style='color:blue'>Cập nhật số lượng cần chuyển thành công</div>";
+            msg = $@"<div style='color:blue'>Cập nhật số lượng cần chuyển thành công</div>";
+        }
+        else
+        {
+            msg = $@"<div style='color:red' error>{msg}</div>";
         }
         context.Response.Write(msg);
     }

@@ -598,7 +598,7 @@ namespace OfficeToPDF
                     {
                         viewer.Attributes["linkExcel"] = urlPDF;
                         viewer.Attributes["linkViewExcel"] = string.Format(Helper.EncodeHTML_VNN(Security.UrlBase() + "FileUpload/{0}.pdf"), filename);
-                        viewer.Attributes["nameExcel"] = filename;
+                        viewer.Attributes["nameExcel"] = DisplayName;
                         Helper.viewFile(viewer);
                         //context.Response.Redirect(string.Format("../../../ViewPDFPublic/index.aspx?urlpdf=../FileUpload/{0}.pdf&zoomprint=0.999&zoom=page-width&remove=true&namedown={1}", filename, DisplayName));
                     }
