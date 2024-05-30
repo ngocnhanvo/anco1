@@ -285,6 +285,10 @@ modelBuilder.Entity<c_yeucaumuavt>().HasKey<string>(p => p.c_yeucaumuavt_id);
                             .HasColumnName("sct_donhang")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.ten_yc)
+                            .HasColumnName("ten_yc")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

@@ -2119,6 +2119,10 @@ modelBuilder.Entity<c_nhucauvattu>().HasKey<string>(p => p.c_nhucauvattu_id);
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_nhucauvattu>()
+                            .Property(p => p.ngaycan)
+                            .HasColumnName("ngaycan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_nhucauvattu>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");

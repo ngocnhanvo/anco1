@@ -1977,4 +1977,109 @@ public class Public
         }
         return msg;
     }
+
+    public string CA_01_TaoYCMuaVT(EntityContext db, User_TK userTK, c_nhucauvattu ncvt)
+    {
+        string msg = "";
+        int i = 1;
+
+        try
+        {
+            if(ncvt == null)
+            {
+                msg += "<div style='color:red'>Lỗi: NCVT không tồn tại.</div>";
+            }
+            else if (!string.IsNullOrEmpty(ncvt.c_yeucaumuavt_id))
+            {
+                msg += "<div style='color:red'>Lỗi: Dòng \"" + ncvt.ten_nhucau + "\" đã có yêu cầu mua.</div>";
+            }
+            else if (ncvt.datinh_nhucau == false)
+            {
+                msg += "<div style='color:red'>Lỗi: Dòng \"" + ncvt.ten_nhucau + "\" chưa tính nhu cầu mua vật tư.</div>";
+            }
+            else
+            {
+                var khdhsServer = db.c_nhucauvattu_dhpx.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+                var khdhs = db.c_nhucauvattu_dhpx.Local.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+                foreach (var khdh in khdhs)
+                {
+                    var khdhLK = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdh.c_kehoachdathang_id).FirstOrDefault();
+                    if (khdhLK != null)
+                    {
+                        khdhLK.xulyNCVT = true;
+                    }
+                }
+
+                string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", i);
+                i++;
+                ncvt.c_yeucaumuavt_id = sochungtu;
+                var ycmvt = new c_yeucaumuavt()
+                {
+                    c_yeucaumuavt_id = Helper.getNewId(),
+                    c_nhucauvattu_id = ncvt.c_nhucauvattu_id,
+                    c_kehoachmuavt_id = " ",
+                    md_trangthai_id = Helper.SOANTHAO,
+                    sochungtu = sochungtu,
+                    ncvt_name = ncvt.ten_nhucau,
+                    nguoiyeucau = "",
+                    ngaylap = ncvt.ngayyeucau,
+                    ngaycan = ncvt.ngaycan,
+                    nguoitao = userTK.ad_user_id,
+                    vaitrotao = userTK.ad_role_id,
+                    bophantao = userTK.md_phongban_id,
+                    value_nguoitao = userTK.ma_user,
+                    value_vaitrotao = userTK.ten_role,
+                    value_bophantao = userTK.ten_phongban,
+                    nguoicapnhat = userTK.ad_user_id,
+                    vaitrocapnhat = userTK.ad_role_id,
+                    bophancapnhat = userTK.md_phongban_id,
+                    value_nguoicapnhat = userTK.ma_user,
+                    value_vaitrocapnhat = userTK.ten_role,
+                    value_bophancapnhat = userTK.ten_phongban,
+                    ngaytao = DateTime.Now,
+                    ngaycapnhat = DateTime.Now,
+                    mota = "",
+                    hoatdong = true
+                };
+                db.c_yeucaumuavt.Add(ycmvt);
+
+                var ncvtYCMsServer = db.c_nhucauvattu_ycmvt.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+                var ncvtYCMs = db.c_nhucauvattu_ycmvt.Local.Where(s => s.c_nhucauvattu_id == ncvt.c_nhucauvattu_id).ToList();
+                foreach (var ncvt_ycmvt in ncvtYCMs)
+                {
+                    var ycmvt_cdh = new c_yeucaumuavt_cdh()
+                    {
+                        c_yeucaumuavt_cdh_id = Helper.getNewId(),
+                        c_yeucaumuavt_id = ycmvt.c_yeucaumuavt_id,
+                        md_sanpham_id = ncvt_ycmvt.md_sanpham_id,
+                        md_donvitinhsanpham_id = ncvt_ycmvt.md_donvitinhsanpham_id,
+                        soluong_yeucau = ncvt_ycmvt.soluong.Value,
+                        nguoitao = userTK.ad_user_id,
+                        vaitrotao = userTK.ad_role_id,
+                        bophantao = userTK.md_phongban_id,
+                        value_nguoitao = userTK.ma_user,
+                        value_vaitrotao = userTK.ten_role,
+                        value_bophantao = userTK.ten_phongban,
+                        nguoicapnhat = userTK.ad_user_id,
+                        vaitrocapnhat = userTK.ad_role_id,
+                        bophancapnhat = userTK.md_phongban_id,
+                        value_nguoicapnhat = userTK.ma_user,
+                        value_vaitrocapnhat = userTK.ten_role,
+                        value_bophancapnhat = userTK.ten_phongban,
+                        ngaytao = DateTime.Now,
+                        ngaycapnhat = DateTime.Now,
+                        mota = "",
+                        hoatdong = true
+                    };
+                    db.c_yeucaumuavt_cdh.Add(ycmvt_cdh);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            msg += "<div style='color:red'>Lỗi: " + ex.Message + ".</div>";
+        }
+
+        return msg;
+    }
 }

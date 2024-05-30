@@ -145,6 +145,12 @@
                         public string sct_donhang { get; set; }
                 
 						
+                        #region c_yeucaumuavt_ten_yc_wintaFN
+                        
+                        #endregion c_yeucaumuavt_ten_yc_wintaFN
+                        public string ten_yc { get; set; }
+                
+						
                         #region c_yeucaumuavt_vaitrocapnhat_wintaFN
                         
                         #endregion c_yeucaumuavt_vaitrocapnhat_wintaFN
