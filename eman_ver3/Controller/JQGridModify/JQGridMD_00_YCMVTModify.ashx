@@ -382,7 +382,7 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
             }
             catch (Exception ex)
             {
-                msg = ex.Message;
+                msg = ex.ToString();
             }
 
         EndEventHandler:;
@@ -531,9 +531,11 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                 if (khdhLK != null)
                                 {
                                     khdhLK.xulyNCVT = false;
+                                    khdhLK.tinhNCVT = false;
                                 }
                             }
-                            ncvt.c_yeucaumuavt_id = " ";
+                            ncvt.c_yeucaumuavt_id = null;
+                            db.c_nhucauvattu.Remove(ncvt);
                         }
 
                         foreach (var dhpx in db.md_dondathangphanxuong.Where(s => s.yeucaumuavattu == object_.sochungtu).ToList())

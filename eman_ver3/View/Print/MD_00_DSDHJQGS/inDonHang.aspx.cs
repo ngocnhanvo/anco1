@@ -128,7 +128,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_inDonHang : System.Web.UI.P
             from 
 	            c_danhsachdathang dh
 	            left join c_dongdsdh ddh on ddh.c_danhsachdathang_id = dh.c_danhsachdathang_id
-	            left join md_sanpham sp on sp.md_sanpham_id = ddh.md_sanpham_id
+	            left join md_sanpham sp on sp.md_sanpham_id = ddh.md_sanpham_id or sp.ma_sanpham = ddh.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dh.md_doitackinhdoanh_id
             where
