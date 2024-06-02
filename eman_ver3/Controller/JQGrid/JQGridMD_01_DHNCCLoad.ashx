@@ -54,8 +54,7 @@ string id_vaitro = Security.id_vaitro(context);            string where_vaitro =
 
             string ROW_NUMBER = "ROW_NUMBER() OVER (  ORDER BY "+ orderby +")";
             string sql = string.Format(@"sELeCt * fRoM (
-            sELeCt " + select_sql + 
-            @" (case when {4} = '{5}' and (" + ROW_NUMBER +" <= " + start + " or " + ROW_NUMBER + " >= " + end + ")  then -1 else " + ROW_NUMBER + " end) as RowNum" +
+            sELeCt " + select_sql + ROW_NUMBER + " as RowNum" +
             @" fRoM {1}
             WHeRe 1=1 {2} {3} {6} {7} {8} ) P WHeRe RowNum > " + start + " AND RowNum < " + end + " or (RowNum = -1) order by RowNum asc",
             orderby, mod_.from_sql, mod_.where_sql, filter, id_count, id_sel, where_ex, where_vaitro, where_module_select);
