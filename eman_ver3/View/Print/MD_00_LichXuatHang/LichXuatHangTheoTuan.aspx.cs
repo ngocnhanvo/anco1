@@ -90,6 +90,8 @@ public partial class PrintControllers_MD_00_LichXuatHang_LichXuatHangTheoTuan : 
 	            and isnull(dsdh.sanxuatton, 0) = 0
 	            and isnull(dsdh.donhangtron, 0) = 0
 	            and dsdh.trangthai != 'DAGUI'
+            order by
+                isnull(dsdh.giahangngaygiao, dsdh.hangiaohang_po)
 		";
         return sql;
     }
