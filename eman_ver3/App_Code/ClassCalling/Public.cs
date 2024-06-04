@@ -868,7 +868,7 @@ public class Public
                 tsxs.Add(tsxA);
             }
 
-            string phongbanId = "";
+            string phongbanId = "-1";
             var khoTonTho = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTHO).FirstOrDefault();
             var khoTonTP = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTP).FirstOrDefault();
             var KhoThoChoHoanThien = db.md_kho.Where(s => s.ma_kho == Helper.KhoThoChoHoanThien).FirstOrDefault();
