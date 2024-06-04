@@ -712,6 +712,10 @@ modelBuilder.Entity<md_phienbangia>().HasKey<string>(p => p.md_phienbangia_id);
                             .HasColumnName("ten_phienbangia")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_phienbangia>()
+                            .Property(p => p.trangthai)
+                            .HasColumnName("trangthai")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_phienbangia>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

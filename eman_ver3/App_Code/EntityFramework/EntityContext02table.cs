@@ -123,6 +123,10 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             .HasColumnName("chenhlechgia")
                             .HasColumnType("numeric").HasPrecision(18, 8);
                             modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.chungloai)
+                            .HasColumnName("chungloai")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.dvt_inner)
                             .HasColumnName("dvt_inner")
                             .HasColumnType("nvarchar");

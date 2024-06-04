@@ -103,6 +103,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
                 var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
                 var object_ = new md_banggia();
                 object_.md_banggia_id = id_new;
+                object_.trangthai = Helper.CHODUYET;
                 object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);

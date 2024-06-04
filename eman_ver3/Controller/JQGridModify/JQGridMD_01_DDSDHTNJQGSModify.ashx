@@ -149,7 +149,8 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 goto EndEventHandler;
             }
 
-            var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
+            var dsdhServer = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
+            var dsdh = db.c_danhsachdathang.Local.Where(s => s.c_danhsachdathang_id == id).FirstOrDefault();
             if(dsdh == null)
             {
                 msg = $"Mã <b>{ma_sanpham}</b> không tìm thấy đơn hàng.";
@@ -206,6 +207,15 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                 db.c_dongdsdh.Add(object_);
+
+                var chungloai = sp.ma_sanpham.Substring(0, 2);
+                var chungloais = dsdh.chungloai.Split(',').ToList();
+                if(!chungloais.Contains(chungloai))
+                {
+                    chungloais.Add(chungloai);
+                    dsdh.chungloai = string.Join(",", chungloais.OrderBy(s => s).Distinct());
+                }
+
                 if(updated)
                     db.SaveChanges();
             }

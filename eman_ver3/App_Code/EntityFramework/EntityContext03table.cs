@@ -481,6 +481,10 @@ modelBuilder.Entity<md_banggia>().HasKey<string>(p => p.md_banggia_id);
                             .HasColumnName("ten_banggia")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.trangthai)
+                            .HasColumnName("trangthai")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_banggia>()
                             .Property(p => p.tuychon)
                             .HasColumnName("tuychon")
                             .HasColumnType("nvarchar");

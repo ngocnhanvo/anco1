@@ -97,7 +97,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
 	            dsdh.hangiaohang_po between @monday and @sunday
 	            and isnull(dsdh.sanxuatton, 0) = 0
 	            and isnull(dsdh.donhangtron, 0) = 0
-	            and dsdh.trangthai = '{Helper.HIEULUC}'
+	            and dsdh.trangthai != 'DAGUI'
 		";
         return sql;
     }

@@ -109,6 +109,12 @@
                         public string ten_banggia { get; set; }
                 
 						
+                        #region md_banggia_trangthai_wintaFN
+                        
+                        #endregion md_banggia_trangthai_wintaFN
+                        public string trangthai { get; set; }
+                
+						
                         #region md_banggia_tuychon_wintaFN
                         
                         #endregion md_banggia_tuychon_wintaFN

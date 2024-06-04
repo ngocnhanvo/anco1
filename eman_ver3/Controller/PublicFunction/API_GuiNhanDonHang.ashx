@@ -189,9 +189,11 @@ public class API_GuiNhanDonHang : IHttpHandler
                         }
 
                         decimal cbmAll = 0;
+                        var chungloais = new List<string>();
                         foreach (var b in lstItem)
                         {
                             string ma_sanpham = b["md_sanpham_id"] + "";
+                            chungloais.Add(ma_sanpham.Substring(0, 2));
                             var c_dongdsdh = new c_dongdsdh();
                             c_dongdsdh.w2 = Convert.ToDecimal(b["w2"] == null ? "0" : b["w2"]);
                             c_dongdsdh.w1 = Convert.ToDecimal(b["w1"] == null ? "0" : b["w1"]);
@@ -232,7 +234,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                             c_dongdsdh.anco_check = true;
                             db.c_dongdsdh.Add(c_dongdsdh);
                         }
-
+                        c_dsdh.chungloai = string.Join(",", chungloais.OrderBy(s => s).Distinct());
                         db.c_danhsachdathang.Add(c_dsdh);
                         //c_dsdh.discount = cbmAll;
                         c_dsdh.cbm = cbmAll;

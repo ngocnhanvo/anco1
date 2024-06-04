@@ -49,6 +49,12 @@
                         public Decimal? chenhlechgia { get; set; }
                 
 						
+                        #region c_dongdsdh_chungloai_wintaFN
+                        
+                        #endregion c_dongdsdh_chungloai_wintaFN
+                        public string chungloai { get; set; }
+                
+						
                         #region c_dongdsdh_dvt_inner_wintaFN
                         
                         #endregion c_dongdsdh_dvt_inner_wintaFN

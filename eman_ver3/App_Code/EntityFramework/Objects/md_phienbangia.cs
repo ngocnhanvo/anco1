@@ -85,6 +85,12 @@
                         public string ten_phienbangia { get; set; }
                 
 						
+                        #region md_phienbangia_trangthai_wintaFN
+                        
+                        #endregion md_phienbangia_trangthai_wintaFN
+                        public string trangthai { get; set; }
+                
+						
                         #region md_phienbangia_vaitrocapnhat_wintaFN
                         
                         #endregion md_phienbangia_vaitrocapnhat_wintaFN

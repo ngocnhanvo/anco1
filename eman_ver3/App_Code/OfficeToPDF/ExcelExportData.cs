@@ -569,7 +569,7 @@ namespace OfficeToPDF
                 }
 
                 printCf.hssfworkbook = hssfwb;
-                s1 = printCf.PrintExcel((HSSFSheet)s1, type);
+                //s1 = printCf.PrintExcel((HSSFSheet)s1, type);
                 var filename = Guid.NewGuid().ToString();
                 filename = System.Text.RegularExpressions.Regex.Replace(filename, @"[^0-9a-zA-Z]+", "-");
                 var urlExcel = ExcuteSignalRStatic.mapPathSignalR(string.Format("~/FileUpload/{0}.xls", filename));
