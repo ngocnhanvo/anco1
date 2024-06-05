@@ -286,6 +286,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     var object_ = new md_phienbangia();
                     object_.md_phienbangia_id = id_new;
                     object_.md_banggia_id = id;
+                    object_.trangthai = Helper.SOANTHAO;
                     object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                     object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                     db.md_phienbangia.Add(object_);
