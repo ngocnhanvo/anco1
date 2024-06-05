@@ -103,7 +103,7 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
                 var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
                 var object_ = new md_banggia();
                 object_.md_banggia_id = id_new;
-                object_.trangthai = Helper.CHODUYET;
+                //object_.trangthai = Helper.CHODUYET;
                 object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
                 object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
                 object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
@@ -136,42 +136,47 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         string ma_module = context.Request.QueryString["ma_module"];
         string pxId = context.Request.Form["md_phanxuong_id"];
         string toId = context.Request.Form["md_to_id"];
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            string id = context.Request.Form["id"];
+            var object_ = db.md_banggia.Where(p => p.md_banggia_id == id).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                string id = context.Request.Form["id"];
-                var object_ = db.md_banggia.Where(p => p.md_banggia_id == id).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
-                }
-                else
-                {
-                    var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
-                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.ToString();
+                msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            var pbgs = db.md_phienbangia.Where(s => s.md_banggia_id == object_.md_banggia_id & s.trangthai == Helper.HIEULUC).Count();
+            if (pbgs > 0)
             {
-                msg = string.Format(@"true#Cập nhật thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "Lỗi:Bảng giá đã tồn tại phiên bản giá Hiệu Lực";
+                goto EndEventHandler;
             }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
-            }
+
+            var pxTrongQT = db.ad_department.Where(s => s.md_phongban_id == toId).FirstOrDefault();
+            object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.md_phongban_id;
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+            db.SaveChanges();
         }
+        catch (Exception ex)
+        {
+            msg = ex.ToString();
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Cập nhật thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
+        }
+
         context.Response.Write(msg);
     }
 
@@ -180,46 +185,42 @@ public class JQGridMD_00_BangGiaModify : IHttpHandler, System.Web.SessionState.I
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
-            {
-                string id_del = context.Request.Form["id"];
+            string id_del = context.Request.Form["id"];
 
-                var object_ = db.md_banggia.Where(p => p.md_banggia_id == id_del).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
-                }
-                else
-                {
-                    var pbgs = db.md_phienbangia.Where(s => s.md_banggia_id == object_.md_banggia_id).Count();
-                    if(pbgs > 0)
-                        msg = "Lỗi:Bảng giá đã tồn tại phiên bản giá";
-                }
-
-                if (msg.Length <= 0)
-                {
-                    VNN_Function.Write_log(context, ma_module, null, oper, object_.ten_banggia, db);
-                    db.md_banggia.Remove(object_);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
+            var object_ = db.md_banggia.Where(p => p.md_banggia_id == id_del).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                msg = ex.Message;
-            }
-
-            if(msg.Length <= 0)
-            {
-                transaction.Commit();
-                msg = string.Format("true#{0}", "Xóa bảng giá thành công");
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
             }
             else
             {
-                msg = string.Format("false#{0}", msg);
+                var pbgs = db.md_phienbangia.Where(s => s.md_banggia_id == object_.md_banggia_id).Count();
+                if(pbgs > 0)
+                    msg = "Lỗi:Bảng giá đã tồn tại phiên bản giá";
             }
+
+            if (msg.Length <= 0)
+            {
+                VNN_Function.Write_log(context, ma_module, null, oper, object_.ten_banggia, db);
+                db.md_banggia.Remove(object_);
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if(msg.Length <= 0)
+        {
+            msg = $@"true#Xóa bảng giá thành công";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg}";
         }
 
         context.Response.Write(msg);

@@ -61,6 +61,12 @@
                         public DateTime? ngaycapnhat { get; set; }
                 
 						
+                        #region md_phienbangia_ngayHL_wintaFN
+                        
+                        #endregion md_phienbangia_ngayHL_wintaFN
+                        public DateTime? ngayHL { get; set; }
+                
+						
                         #region md_phienbangia_ngaytao_wintaFN
                         
                         #endregion md_phienbangia_ngaytao_wintaFN

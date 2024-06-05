@@ -297,6 +297,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                              & c.md_donvitinhsanpham_id == khmvt_cdh.md_donvitinhsanpham_id
                                              & khmvt_cdh.md_banggia_id.Contains(a.md_banggia_id)
                                              & b.hoatdong == true
+                                             & b.trangthai == Helper.HIEULUC
                                              select new
                                              {
                                                  a.md_banggia_id,

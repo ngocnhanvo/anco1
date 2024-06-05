@@ -58,11 +58,11 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             var hasErr = false;
             foreach(var item in json)
             {
-                string msp = item.ElementAt(0).Value;
-                string sld = item.ElementAt(1).Value;
-                string tem = item.ElementAt(2).Value;
-                string mta = item.ElementAt(3).Value;
-                string cbm = item.ElementAt(4).Value;
+                string msp = item.ElementAt(0).Value.removeAllSpaceOrTrimText(true);
+                string sld = item.ElementAt(1).Value.removeAllSpaceOrTrimText(true);
+                string tem = item.ElementAt(2).Value.removeAllSpaceOrTrimText(true);
+                string mta = item.ElementAt(3).Value.removeAllSpaceOrTrimText(true);
+                string cbm = item.ElementAt(4).Value.removeAllSpaceOrTrimText(true);
                 string msgDT = add(context, ma_module, id, msp, sld, tem, mta, cbm, false);
                 if (!string.IsNullOrWhiteSpace(msgDT))
                 {

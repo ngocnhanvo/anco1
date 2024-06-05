@@ -45,6 +45,7 @@ public class Public
                    .Where(s =>
                         bgIds.Contains(s.md_banggia_id)
                         & s.hoatdong == true
+                        & s.trangthai == Helper.HIEULUC
                         & s.ngay_hieuluc <= DateTime.Now)
                    .OrderByDescending(s => s.ngay_hieuluc)
                    .FirstOrDefault();
@@ -618,6 +619,8 @@ public class Public
                        & c.lienket_bg == (tuychon == Helper.NHANCONG ? c.lienket_bg : khachhang)
                        & c.tuychon == tuychon
                        & c.hoatdong == true
+                       & b.hoatdong == true
+                       & b.trangthai == Helper.HIEULUC
                        & b.ngay_hieuluc <= DateTime.Now
                        orderby b.ngay_hieuluc descending
                        select a.gia;

@@ -696,6 +696,10 @@ modelBuilder.Entity<md_phienbangia>().HasKey<string>(p => p.md_phienbangia_id);
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_phienbangia>()
+                            .Property(p => p.ngayHL)
+                            .HasColumnName("ngayHL")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_phienbangia>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
