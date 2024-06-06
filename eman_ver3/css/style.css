@@ -690,3 +690,9 @@ img {
     padding: 3px;
     text-align: center;
 }
+
+.img_btnmacdinh.fa {
+    top: -2.5px;
+    font-size: 125%;
+    position: relative;
+}

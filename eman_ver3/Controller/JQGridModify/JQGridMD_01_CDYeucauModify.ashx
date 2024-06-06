@@ -2,7 +2,7 @@
 using System;
 using System.Web;
 using System.Linq;
-using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
 public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
@@ -11,7 +11,8 @@ public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.
     User_TK userTK = null;
 
     public string oper = "vnn";
-    public void ProcessRequest (HttpContext context) {
+    public void ProcessRequest(HttpContext context)
+    {
         if (Security.id_taikhoan(context) != "")
         {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
@@ -29,14 +30,120 @@ public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.
             case "del":
                 this.del(context);
                 break;
+            case "CA_01_NhapDHYCau":
+                this.CA_01_NhapDHYCau(context);
+                break;
             default:
                 break;
         }
     }
 
+    public void CA_01_NhapDHYCau(HttpContext context)
+    {
+        var msg = new List<string>();
+        var jsonStr = context.Request.Form["json"];
+        var id = context.Request.Form["id_parent"];
+        var ma_module = context.Request.QueryString["ma_module"];
+        try
+        {
+            var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonStr);
+            var hasErr = false;
+            foreach (var item in json)
+            {
+                string sct = item.ElementAt(0).Value.removeAllSpaceOrTrimText(true);
+                string maHHVT = item.ElementAt(1).Value.removeAllSpaceOrTrimText(true);
+                string slyc = item.ElementAt(2).Value.removeAllSpaceOrTrimText(true);
+                string mota = item.ElementAt(3).Value.removeAllSpaceOrTrimText(true);
+
+                string msgDT = "";
+
+                var ycmvt = db.c_yeucaumuavt.Where(s => s.sochungtu == sct).FirstOrDefault();
+                if (ycmvt == null)
+                {
+                    msgDT = $@"<div style='color:red' error>Không tìm thấy <b>SCT/b></div>";
+                }
+                else if(!string.IsNullOrWhiteSpace(ycmvt.c_nhucauvattu_id))
+                {
+                    msgDT = $@"<div style='color:red' error>không áp dụng với <b>YCMVT theo BOM</b></div>";
+                }
+                else if(ycmvt.md_trangthai_id == Helper.HIEULUC)
+                {
+                    msgDT = $@"<div style='color:red' error>YCMVT đã <b>Hiệu Lực</b></div>";
+                }
+                else
+                {
+                    var hhvt = db.md_sanpham.Where(s => s.ma_sanpham == maHHVT).FirstOrDefault();
+                    if (hhvt == null)
+                    {
+                        msgDT = $@"<div style='color:red' error>Không tìm thấy <b>HHVT/b></div>";
+                    }
+                    else
+                    {
+                        var isNumeric = decimal.TryParse(slyc, out _);
+                        if(!isNumeric)
+                        {
+                            msgDT = $@"<div style='color:red' error><b>SL yêu cầu</b> có giá trị sai</div>";
+                        }
+                        else if (slyc.ToNullableDecimal() <= 0)
+                        {
+                            msgDT = $@"<div style='color:red' error><b>SL yêu cầu</b> phải lớn hơn 0</div>";
+                        }
+                        else
+                        {
+
+                            var vtServer = db.c_yeucaumuavt_cdh.Where(s => s.c_yeucaumuavt_id == id & s.md_sanpham_id == hhvt.md_sanpham_id).FirstOrDefault();
+
+                            var vt = db.c_yeucaumuavt_cdh.Local.Where(s => s.c_yeucaumuavt_id == id & s.md_sanpham_id == hhvt.md_sanpham_id).FirstOrDefault();
+
+                            var addVT = vt == null;
+                            if (addVT)
+                            {
+                                vt = new c_yeucaumuavt_cdh();
+                                vt.c_yeucaumuavt_cdh_id = Helper.getNewId();
+                                vt.c_yeucaumuavt_id = ycmvt.c_yeucaumuavt_id;
+                                vt.md_sanpham_id = hhvt.md_sanpham_id;
+                                vt.md_donvitinhsanpham_id = hhvt.md_donvitinhsanpham_id;
+                                vt.soluong_yeucau = slyc.ToNullableDecimal().GetValueOrDefault(0);
+                                vt = Helper.setDefaultValueWhenInsertOrUpdate(vt, userTK, false);
+                                db.c_yeucaumuavt_cdh.Add(vt);
+                                msgDT = $@"<div style='color:blue'>Đạt (add)</div>";
+                            }
+                            else
+                            {
+                                vt.md_donvitinhsanpham_id = hhvt.md_donvitinhsanpham_id;
+                                vt.soluong_yeucau = slyc.ToNullableDecimal().GetValueOrDefault(0);
+                                vt = Helper.setDefaultValueWhenInsertOrUpdate(vt, userTK, true);
+                                msgDT = $@"<div style='color:blue'>Đạt (edit)</div>";
+                            }
+                        }
+                    }
+                }
+
+
+                if (!string.IsNullOrWhiteSpace(msgDT))
+                {
+                    if (msgDT.LastIndexOf("error") > -1)
+                        hasErr = true;
+                    msg.Add(msgDT);
+                }
+            }
+
+            if (!hasErr)
+            {
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg.Add($@"<div error style='color:red'>{ex.ToString()}</div>");
+        }
+
+        context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(msg));
+    }
+
     public void add(HttpContext context)
     {
-        string msg = "",id_new = Helper.getNewId();
+        string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
         string ma_sanpham = context.Request.Form["md_sanpham_id"];
 
@@ -46,7 +153,7 @@ public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.
             var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).Take(1).FirstOrDefault();
             string id = context.Request.Form["id_parent"];
             var ob = db.c_yeucaumuavt.Where(s => s.c_yeucaumuavt_id == id).FirstOrDefault();
-            if(ob == null)
+            if (ob == null)
             {
                 msg = "Lỗi: Không tìm thấy YCMVT.";
                 goto EndEventHandler;
@@ -146,8 +253,8 @@ public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.
                 msg = "Lỗi: Số lượng yêu cầu phải lớn hơn 0.";
                 goto EndEventHandler;
             }
-            var cdhYCMVT = db.c_yeucaumuavt_cdh.Where(s => 
-                s.md_sanpham_id == sp.md_sanpham_id 
+            var cdhYCMVT = db.c_yeucaumuavt_cdh.Where(s =>
+                s.md_sanpham_id == sp.md_sanpham_id
                 & s.c_yeucaumuavt_id == object_.c_yeucaumuavt_id
                 & s.c_yeucaumuavt_cdh_id != object_.c_yeucaumuavt_cdh_id).FirstOrDefault();
             if (cdhYCMVT != null)
@@ -207,7 +314,7 @@ public class JQGridMD_01_CDYeucauModify : IHttpHandler, System.Web.SessionState.
                 msg = $@"Lỗi: Yêu cầu mua vật tư không tồn tại.";
                 goto EndEventHandler;
             }
-            if(ycmvt.md_trangthai_id == Helper.HIEULUC)
+            if (ycmvt.md_trangthai_id == Helper.HIEULUC)
             {
                 msg = $@"Lỗi: Yêu cầu mua vật tư đã Hiệu Lực.";
                 goto EndEventHandler;
