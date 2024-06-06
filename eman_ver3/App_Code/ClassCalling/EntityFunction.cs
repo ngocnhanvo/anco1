@@ -18,7 +18,7 @@ public class EntityFunction
         var Keys = type.GetProperties().Select(s => s.Name).ToList();
         foreach (var key in Keys)
         {
-            var valFromWeb = context.Request.Form[key];
+            var valFromWeb = context.Request.Form[key].removeAllSpaceOrTrimText(true);
             var keyName = "";
             var column = columns.Where(s => s.ma_column.Trim() == key).FirstOrDefault();
             if (column == null)
