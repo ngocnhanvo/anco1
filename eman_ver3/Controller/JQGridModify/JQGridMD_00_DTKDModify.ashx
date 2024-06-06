@@ -13,7 +13,8 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
     User_TK userTK = null;
 
     public string oper = "vnn";
-    public void ProcessRequest (HttpContext context) {
+    public void ProcessRequest(HttpContext context)
+    {
         if (Security.id_taikhoan(context) != "")
         {
             oper = context.Request.QueryString["oper"] == null ? context.Request.Form["oper"] : context.Request.QueryString["oper"];
@@ -49,7 +50,7 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
         {
             var json = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(jsonStr);
             var hasErr = false;
-            foreach(var item in json)
+            foreach (var item in json)
             {
                 string maDTKD = item.ElementAt(0).Value.removeAllSpaceOrTrimText(true);
                 string tenDTKD = item.ElementAt(1).Value.removeAllSpaceOrTrimText(true);
@@ -150,12 +151,12 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
                 }
             }
 
-            if(!hasErr)
+            if (!hasErr)
             {
                 db.SaveChanges();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             msg.Add($@"<div error style='color:red'>{ex.ToString()}</div>");
         }
@@ -165,37 +166,41 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
 
     public void add(HttpContext context)
     {
-        string msg = "",id_new = Helper.getNewId();
+        string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-
-        using (var transaction = db.Database.BeginTransaction())
+        string maDTKD = context.Request.Form["ma_dtkd"].removeAllSpaceOrTrimText(true);
+        try
         {
-            try
+            var exist = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == maDTKD).FirstOrDefault();
+            if (exist != null)
             {
-                var object_ = new md_doitackinhdoanh();
-                object_.md_doitackinhdoanh_id = id_new;
-                object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
-                object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                object_.hoatdong = true;
-                db.md_doitackinhdoanh.Add(object_);
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = "Lỗi: Mã đối tác đã tồn tại";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
-            {
-                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
-            }
+            var object_ = new md_doitackinhdoanh();
+            object_.md_doitackinhdoanh_id = id_new;
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_.hoatdong = true;
+            db.md_doitackinhdoanh.Add(object_);
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"true#Thêm mới thành công#{id_new}";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg}";
         }
         context.Response.Write(msg);
     }
@@ -204,41 +209,54 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-
-        using (var transaction = db.Database.BeginTransaction())
+        string maDTKD = context.Request.Form["ma_dtkd"].removeAllSpaceOrTrimText(true);
+        try
         {
-            try
+            string id = context.Request.Form["id"];
+            var object_ = db.md_doitackinhdoanh.Where(p => p.md_doitackinhdoanh_id == id).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                string id = context.Request.Form["id"];
-                var object_ = db.md_doitackinhdoanh.Where(p => p.md_doitackinhdoanh_id == id).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
-                }
-                else
-                {
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = "Lỗi:Không tìm thấy đối tượng cần sửa";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            var exist = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == maDTKD & s.md_doitackinhdoanh_id != object_.md_doitackinhdoanh_id).FirstOrDefault();
+            if (exist != null)
             {
-                msg = string.Format(@"true#Cập nhật thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = "Lỗi: Mã đối tác đã tồn tại";
+                goto EndEventHandler;
             }
-            else
+
+            if(maDTKD != object_.ma_dtkd)
             {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
+                var bgs = db.md_banggia.Where(s => s.lienket_bg == object_.ma_dtkd).ToList();
+                foreach(var bg in bgs)
+                {
+                    bg.lienket_bg = maDTKD;
+                }
             }
+
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+            db.SaveChanges();
         }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Cập nhật thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
+        }
+
         context.Response.Write(msg);
     }
 
@@ -246,56 +264,59 @@ public class JQGridMD_00_DTKDModify : IHttpHandler, System.Web.SessionState.IReq
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            string id_del = context.Request.Form["id"];
+
+            var object_ = db.md_doitackinhdoanh.Where(p => p.md_doitackinhdoanh_id == id_del).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                string id_del = context.Request.Form["id"];
-
-                var object_ = db.md_doitackinhdoanh.Where(p => p.md_doitackinhdoanh_id == id_del).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
-                }
-                else
-                {
-                    var pbg001s = db.c_danhsachdathang.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
-                    var pbg002s = db.c_donmuahang.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
-                    var pbg003s = db.md_xuatban.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
-                    var pbg004s = db.md_nhapkho_ncc.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
-
-                    if(pbg001s > 0)
-                        msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong đơn hàng";
-                    else if(pbg002s > 0)
-                        msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong đơn mua hàng hóa vật tư";
-                    else if(pbg003s > 0)
-                        msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong xuất bán";
-                    else if(pbg004s > 0)
-                        msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong nhập kho từ NCC";
-                }
-
-                if (msg.Length <= 0)
-                {
-                    VNN_Function.Write_log(context, ma_module, null, oper, "MĐT:" + object_.ma_dtkd + ", TĐT:" + object_.ten_dtkd, db);
-                    db.md_doitackinhdoanh.Remove(object_);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = "Lỗi:Không tìm thấy đối tượng cần xóa";
+                goto EndEventHandler;
             }
 
-            if(msg.Length <= 0)
+            var pbg001s = db.c_danhsachdathang.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
+            var pbg002s = db.c_donmuahang.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
+            var pbg003s = db.md_xuatban.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
+            var pbg004s = db.md_nhapkho_ncc.Where(s => s.md_doitackinhdoanh_id == object_.md_doitackinhdoanh_id).Take(1).Count();
+            var pbg005s = db.md_banggia.Where(s => s.lienket_bg == object_.ma_dtkd).Take(1).Count();
+            var pbg006s = db.md_sanpham.Where(s => s.nhacungung == object_.md_doitackinhdoanh_id).Take(1).Count();
+            if (pbg001s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong đơn hàng";
+            else if (pbg002s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong đơn mua hàng hóa vật tư";
+            else if (pbg003s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong xuất bán";
+            else if (pbg004s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong nhập kho từ NCC";
+            else if (pbg005s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong bảng giá";
+            else if (pbg006s > 0)
+                msg = "Lỗi:Đối tác kinh doanh đã được sử dụng trong HHVT";
+
+            if (msg.Length <= 0)
             {
-                transaction.Commit();
-                msg = string.Format("true#{0}", "Xóa đối tác kinh doanh thành công");
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                VNN_Function.Write_log(context, ma_module, null, oper, "MĐT:" + object_.ma_dtkd + ", TĐT:" + object_.ten_dtkd, db);
+                db.md_doitackinhdoanh.Remove(object_);
+                db.SaveChanges();
             }
-            else
-            {
-                msg = string.Format("false#{0}", msg);
-            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format("true#{0}", "Xóa đối tác kinh doanh thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format("false#{0}", msg);
         }
         context.Response.Write(msg);
     }
