@@ -682,3 +682,11 @@ img {
         padding: 5px;
         margin: 0px 0px 0px 5px;
     }
+
+.divRS_rs {
+    margin-top: 5px;
+    background-color: #fffebf;
+    font-size: 140% !important;
+    padding: 3px;
+    text-align: center;
+}

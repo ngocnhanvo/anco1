@@ -120,7 +120,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                                     gsp.mota = mota;
                                     gsp.hoatdong = true;
                                     db.md_giasanpham.Add(gsp);
-                                    msgDT = $@"<div style='color:blue'>Thêm giá thành công</div>";
+                                    msgDT = $@"<div style='color:blue'>Đạt (add)</div>";
                                 }
                                 else
                                 {
@@ -128,7 +128,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                                     gsp.ngaycapnhat = DateTime.Now;
                                     gsp.nguoicapnhat = Security.id_taikhoan(context);
                                     gsp.mota = mota;
-                                    msgDT = $@"<div style='color:blue'>Sửa giá thành công</div>";
+                                    msgDT = $@"<div style='color:blue'>Đạt (edit)</div>";
                                 }
                             }
                         }
