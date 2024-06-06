@@ -298,6 +298,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                              & khmvt_cdh.md_banggia_id.Contains(a.md_banggia_id)
                                              & b.hoatdong == true
                                              & b.trangthai == Helper.HIEULUC
+                                             & b.ngay_hieuluc <= DateTime.Now
                                              select new
                                              {
                                                  a.md_banggia_id,
