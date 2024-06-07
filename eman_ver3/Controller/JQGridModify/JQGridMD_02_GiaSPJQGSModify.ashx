@@ -93,7 +93,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                             }
                             else
                             {
-                                var gia_isNumeric = int.TryParse(gia, out _);
+                                var gia_isNumeric = decimal.TryParse(gia, out _);
                                 if (!gia_isNumeric)
                                 {
                                     msgDT = $@"<div style='color:red' error>Giá có giá trị sai</div>";
