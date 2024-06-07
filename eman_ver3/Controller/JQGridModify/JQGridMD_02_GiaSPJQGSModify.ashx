@@ -136,6 +136,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                                     else
                                     {
                                         gsp.gia = gia.ToNullableDecimal();
+                                        gsp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id;
                                         gsp.ngaycapnhat = DateTime.Now;
                                         gsp.nguoicapnhat = Security.id_taikhoan(context);
                                         gsp.mota = mota;
