@@ -13,6 +13,33 @@ using System.Drawing;
 
 public class VNN_VariablePublic
 {
+    public class Company
+    {
+        public string icon { get; set; }
+        public string label { get; set; }
+        public bool? expanded { get; set; }
+        public bool? selected { get; set; }
+        public List<DeparmentInCompany> items { get; set; }
+    }
+
+    public class DeparmentInCompany
+    {
+        public string icon { get; set; }
+        public string label { get; set; }
+        public bool? expanded { get; set; }
+        public bool? selected { get; set; }
+        public List<UserInDeparment> items { get; set; }
+    }
+
+    public class UserInDeparment
+    {
+        public string icon { get; set; }
+        public string label { get; set; }
+        public string value { get; set; }
+        public bool? expanded { get; set; }
+        public bool? selected { get; set; }
+        public bool? @checked { get; set; }
+    }
     public static string[] session_bd = new string[300];
     public static string Model_infor = "";
     public static string Form_infor = "";
@@ -21,8 +48,8 @@ public class VNN_VariablePublic
     public static int error_detail = 0;
     public static string error_content = "";
     public static bool view_origination = false;
-	public static string format_so = "";
-	public static Worksheet ws = null;
+    public static string format_so = "";
+    public static Worksheet ws = null;
     public static string API_AncoTrading = System.Web.Configuration.WebConfigurationManager.AppSettings["API_AncoTrading"];
     public static string[] Module_script(ADmin_JSON json)
     {
@@ -58,7 +85,7 @@ public class VNN_VariablePublic
         //lst.Add("lvvuong00000");
         //lst.Add("ptttrang00000");
 
-        
+
         var d = new DirectoryInfo(ExcuteSignalRStatic.mapPathSignalR("~/js/Custom_Grid_script"));
         FileInfo[] Files = d.GetFiles("*.js");
         foreach (FileInfo file in Files)
@@ -78,99 +105,111 @@ public class VNN_VariablePublic
         JavaScriptSerializer js = new JavaScriptSerializer();
         return js.Serialize(o);
     }
-	
-	public static string connectString_Anco(EntityContext db)
+
+    public static string connectString_Anco(EntityContext db)
     {
         ad_systemconfig ttc = db.ad_systemconfig.FirstOrDefault();
         return ttc.connectstring_anco;
     }
-	
-	public static string connectString_Anco1(EntityContext db)
+
+    public static string connectString_Anco1(EntityContext db)
     {
         ad_systemconfig ttc = db.ad_systemconfig.FirstOrDefault();
-        string  ip_server = "118.69.76.143";
+        string ip_server = "118.69.76.143";
         string table_name = "ancotrading2018";
         string user_name = "sa";
         string password = "abc,123@123";
-        string connectstring_anco = "Data Source="+ ip_server +";Initial Catalog="+table_name+";Persist Security Info=True;User ID="+user_name+";Password="+password+"";
+        string connectstring_anco = "Data Source=" + ip_server + ";Initial Catalog=" + table_name + ";Persist Security Info=True;User ID=" + user_name + ";Password=" + password + "";
         return connectstring_anco;
     }
-	
-	public static string sochungtu(EntityContext db, string ma_sochungtu, int congthem){
-		var sctServer = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == Helper.HIEULUC).Take(1).FirstOrDefault();
+
+    public static string sochungtu(EntityContext db, string ma_sochungtu, int congthem)
+    {
+        var sctServer = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == Helper.HIEULUC).Take(1).FirstOrDefault();
         var sct = db.md_sochungtu.Local.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == Helper.HIEULUC).Take(1).FirstOrDefault();
         // get Year from md_modongky
         //md_modongky mdk = db.md_modongky.Where(s => s.hoatdong == true).Take(1).OrderByDescending(s => s.nam & s.ky).FirstOrDefault();
         string nam = DateTime.Now.Year.ToString().Substring(2, 2);
 
-        if(sct.namnay != DateTime.Now.Year)
+        if (sct.namnay != DateTime.Now.Year)
         {
             throw new ArgumentNullException("Kế toán cần cập nhật số chứng từ theo năm " + DateTime.Now.Year);
         }
 
         string gttd = sct.giatri_thaydoi;
-		int count_gttd = gttd.Length;
-		congthem = congthem * sct.buocnhay.Value;
-		string gtcd = VNN_Config.load_number((int.Parse(gttd) + congthem).ToString(), count_gttd);
-		string km = sct.khuonmau.Replace(gttd, gtcd);
-		sct.giatri_thaydoi = gtcd;
-		sct.khuonmau = km;
+        int count_gttd = gttd.Length;
+        congthem = congthem * sct.buocnhay.Value;
+        string gtcd = VNN_Config.load_number((int.Parse(gttd) + congthem).ToString(), count_gttd);
+        string km = sct.khuonmau.Replace(gttd, gtcd);
+        sct.giatri_thaydoi = gtcd;
+        sct.khuonmau = km;
         km = km + "/" + sct.namnay.Value.ToString().Substring(2, 2);
         return km;
-	}
-	
-	public static string sochungtu_(EntityContext db, string ma_sochungtu, int trura){
-		var sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
-		string gttd = sct.giatri_thaydoi;
-		int count_gttd = gttd.Length;
-		trura = trura * sct.buocnhay.Value;
-		string gtcd = VNN_Config.load_number((int.Parse(gttd) - trura).ToString(), count_gttd);
-		string km = sct.khuonmau.Replace(gttd, gtcd);
-		sct.giatri_thaydoi = gtcd;
-		sct.khuonmau = km;
-		return km;
-	}
-	
-	public static string get_mauhienthi_sochungtu(EntityContext db) {
-		string msg = "if(1 == 2) { }";
-		foreach(var sct in db.md_sochungtu.Where(s=>s.md_trangthai_id == "HIEULUC").ToList()) {
-			msg += "\nelse if(ma_sct == '"+ sct.ma_sochungtu +"'){";
-			msg += "	kq = '" + sct.mau_hienthi + "';";
-			msg += "\n}";
-		}
-		return msg;
-	}
-	
-	public static string autoRound(decimal number, int round){
-		string s = Math.Round(number, round).ToString();
-		decimal atr = 0;
-		if(s.Contains(".")){
-			for(int i=s.Length - 1; i >= 0; i--) {
-				if(s[i] == '0'){
-					s = s.Remove(i);
-				}
-				else if(s[i] == '.'){
-					s= s.Remove(i);
-					break;
-				}
-				else {
-					break;
-				}
-			}
-			atr = decimal.Parse(s);
-		}
-		else {
-			atr = number;
-		}
-		int daucham = s.LastIndexOf(".");
-		string s_ = s;
-		if(daucham > 0)
-			s.Substring(0,daucham);
-		for(int i = s_.Length - 3; i > 0; i-=3) {
-			s = s.Insert(i, ",");
-		}
-		return s;
-	}
+    }
+
+    public static string sochungtu_(EntityContext db, string ma_sochungtu, int trura)
+    {
+        var sct = db.md_sochungtu.Where(s => s.ma_sochungtu == ma_sochungtu & s.md_trangthai_id == "HIEULUC").Take(1).FirstOrDefault();
+        string gttd = sct.giatri_thaydoi;
+        int count_gttd = gttd.Length;
+        trura = trura * sct.buocnhay.Value;
+        string gtcd = VNN_Config.load_number((int.Parse(gttd) - trura).ToString(), count_gttd);
+        string km = sct.khuonmau.Replace(gttd, gtcd);
+        sct.giatri_thaydoi = gtcd;
+        sct.khuonmau = km;
+        return km;
+    }
+
+    public static string get_mauhienthi_sochungtu(EntityContext db)
+    {
+        string msg = "if(1 == 2) { }";
+        foreach (var sct in db.md_sochungtu.Where(s => s.md_trangthai_id == "HIEULUC").ToList())
+        {
+            msg += "\nelse if(ma_sct == '" + sct.ma_sochungtu + "'){";
+            msg += "	kq = '" + sct.mau_hienthi + "';";
+            msg += "\n}";
+        }
+        return msg;
+    }
+
+    public static string autoRound(decimal number, int round)
+    {
+        string s = Math.Round(number, round).ToString();
+        decimal atr = 0;
+        if (s.Contains("."))
+        {
+            for (int i = s.Length - 1; i >= 0; i--)
+            {
+                if (s[i] == '0')
+                {
+                    s = s.Remove(i);
+                }
+                else if (s[i] == '.')
+                {
+                    s = s.Remove(i);
+                    break;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            atr = decimal.Parse(s);
+        }
+        else
+        {
+            atr = number;
+        }
+        int daucham = s.LastIndexOf(".");
+        string s_ = s;
+        if (daucham > 0)
+            s.Substring(0, daucham);
+        for (int i = s_.Length - 3; i > 0; i -= 3)
+        {
+            s = s.Insert(i, ",");
+        }
+        return s;
+    }
 
     public static string DecodeHTML(string text)
     {

@@ -37,6 +37,12 @@
                         public string ma_role { get; set; }
                 
 						
+                        #region ad_role_md_phongban_id_wintaFN
+                        
+                        #endregion ad_role_md_phongban_id_wintaFN
+                        public string md_phongban_id { get; set; }
+                
+						
                         #region ad_role_mota_wintaFN
                         
                         #endregion ad_role_mota_wintaFN

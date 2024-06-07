@@ -2020,6 +2020,10 @@ modelBuilder.Entity<ad_role>().HasKey<string>(p => p.ad_role_id);
                             .HasColumnName("ma_role")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_role>()
+                            .Property(p => p.md_phongban_id)
+                            .HasColumnName("md_phongban_id")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<ad_role>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
