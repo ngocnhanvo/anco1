@@ -879,30 +879,32 @@ public class Public
             md_vanchuyennoibo vcnb = null;
             var vcnbs = new List<md_vanchuyennoibo>();
             var taoPVC = false;
+
+            string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
+            vcnb = new md_vanchuyennoibo();
+            vcnb.md_vanchuyennoibo_id = Helper.getNewId();
+            vcnb.md_trangthai_id = Helper.DANHAN;
+            vcnb.sochungtu = sochungtu;
+            vcnb.c_doichieuhangton_id = khdh.c_kehoachdathang_id;
+            vcnb.tukho = layTho.GetValueOrDefault(false) ? khoTonTho.md_kho_id : khoTonTP.md_kho_id;
+            vcnb.denkho = layTho.GetValueOrDefault(false) ? KhoThoChoHoanThien.md_kho_id : KhoHangSauHoanThien.md_kho_id;
+            vcnb.loaichuyen = "VANCNBTC";
+            vcnb.loaichuyen_id = Helper.CHUAHOANTHANH;
+            vcnb.chungtuthamchieu = "";
+            vcnb.laytonTPhoacBTP = true;
+            vcnb.ketoan = !layTho.GetValueOrDefault(false);
+            vcnb.sctdathang = khdh.sodonhang;
+            vcnb.donhang_thamchieu = khdh.donhang_thamchieu;
+            vcnb.ngaydenghi = DateTime.Now;
+            vcnb.ngaychuyen = DateTime.Now;
+            vcnb.hoatdong = true;
+            vcnb = Helper.setDefaultValueWhenInsertOrUpdate(vcnb, us, false);
+
             foreach (var tsx in tsxs.OrderBy(s => s.phongbanId))
             {
                 if (phongbanId != tsx.phongbanId)
                 {
                     phongbanId = tsx.phongbanId;
-                    string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
-                    vcnb = new md_vanchuyennoibo();
-                    vcnb.md_vanchuyennoibo_id = Helper.getNewId();
-                    vcnb.md_trangthai_id = Helper.DANHAN;
-                    vcnb.sochungtu = sochungtu;
-                    vcnb.c_doichieuhangton_id = khdh.c_kehoachdathang_id;
-                    vcnb.tukho = layTho.GetValueOrDefault(false) ? khoTonTho.md_kho_id : khoTonTP.md_kho_id;
-                    vcnb.denkho = layTho.GetValueOrDefault(false) ? KhoThoChoHoanThien.md_kho_id : KhoHangSauHoanThien.md_kho_id;
-                    vcnb.loaichuyen = "VANCNBTC";
-                    vcnb.loaichuyen_id = Helper.CHUAHOANTHANH;
-                    vcnb.chungtuthamchieu = "";
-                    vcnb.laytonTPhoacBTP = true;
-                    vcnb.ketoan = !layTho.GetValueOrDefault(false);
-                    vcnb.sctdathang = khdh.sodonhang;
-                    vcnb.donhang_thamchieu = khdh.donhang_thamchieu;
-                    vcnb.ngaydenghi = DateTime.Now;
-                    vcnb.ngaychuyen = DateTime.Now;
-                    vcnb.hoatdong = true;
-                    vcnb = Helper.setDefaultValueWhenInsertOrUpdate(vcnb, us, false);
                 }
 
                 if (tsx.stt == 9999)
@@ -1348,7 +1350,8 @@ public class Public
                 }
             }
             vcnb.ngayhieuluc = DateTime.Now;
-            string dsdhId = "", lsxId = "", tsxId = "";
+            string dsdhId = "", lsxId = "";
+            var tsxIds = new List<string>();
             md_lenhsanxuat_tosx tsxInLSX = null;
             if (giaoHang)
             {
@@ -1356,7 +1359,8 @@ public class Public
                 dsdhId = dsdh == null ? "" : dsdh.c_danhsachdathang_id;
                 lsxId = db.md_lenhsanxuat.Where(s => s.donhang_thamchieu == vcnb.donhang_thamchieu).Select(s => s.md_lenhsanxuat_id).FirstOrDefault();
                 tsxInLSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId & s.hoatdong == true).OrderByDescending(s => s.stt).FirstOrDefault();
-                tsxId = tsxInLSX == null ? "" : tsxInLSX.md_lenhsanxuat_tosx_id;
+                var sttM = dsdh.sanxuatton.GetValueOrDefault(false) ? 9998 : 9999;
+                tsxIds = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId & s.hoatdong == true & s.stt == sttM).Select(s => s.md_lenhsanxuat_tosx_id).ToList();
             }
 
             var khoSPDic = new Dictionary<string, decimal>();
@@ -1494,7 +1498,7 @@ public class Public
                     sanxuat = 3;
                     var cais = db.md_lenhsanxuat_tosx_cdh.Where(
                             s =>
-                                s.md_lenhsanxuat_tosx_id == tsxId
+                                tsxIds.Contains(s.md_lenhsanxuat_tosx_id)
                                 & s.mabo.Contains(spMain.ma_sanpham)
                             ).ToList();
 

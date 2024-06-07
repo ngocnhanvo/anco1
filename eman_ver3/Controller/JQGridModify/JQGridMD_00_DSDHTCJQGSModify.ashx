@@ -81,7 +81,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     {
                         dsdh.trangthai = Helper.HUYBO;
                         var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if(khdh != null)
+                        if (khdh != null)
                         {
                             khdh.trangthaiSav = khdh.trangthai;
                             khdh.trangthai = Helper.KETTHUC;
@@ -92,7 +92,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     {
                         dsdh.trangthai = Helper.KETTHUC;
                         var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if(khdh != null)
+                        if (khdh != null)
                         {
                             khdh.trangthaiSav = khdh.trangthai;
                             khdh.trangthai = Helper.KETTHUC;
@@ -103,9 +103,9 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     {
                         dsdh.trangthai = Helper.HIEULUC;
                         var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if(khdh != null)
+                        if (khdh != null)
                         {
-                            if(!string.IsNullOrWhiteSpace(khdh.trangthaiSav))
+                            if (!string.IsNullOrWhiteSpace(khdh.trangthaiSav))
                                 khdh.trangthai = khdh.trangthaiSav;
                         }
                         msg_success = "<div style='color:blue'>Tái Hiệu Lực đơn hàng thành công.</div>";
@@ -269,7 +269,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             var kh = new c_kehoachdathang();
             kh.c_kehoachdathang_id = Helper.getNewId();
             kh.trangthai = Helper.SOANTHAO;
-            if(sanxuatton | donhangtron)
+            if (sanxuatton | donhangtron)
             {
                 kh.trangthai = Helper.DATNCC;
             }
@@ -306,10 +306,10 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 {
                     var pbid = sp.phongbanId;
                     var ok = true;
-                    if(string.IsNullOrWhiteSpace(pbid))
+                    if (string.IsNullOrWhiteSpace(pbid))
                     {
                         var pb = db.ad_department.Where(s => s.ma_phongban2 == Helper.XuongHoanThienKhiMuaNgoai).FirstOrDefault();
-                        if(pb == null)
+                        if (pb == null)
                         {
                             foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == sp.ma_sanpham))
                             {
@@ -386,7 +386,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
 
     EndEventHandler:;
 
-        if(msg.Length > 0)
+        if (msg.Length > 0)
         {
             msg = $"<div error style='color:red'>{msg}</div>";
         }
@@ -463,73 +463,77 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
         string md_dtk_id = context.Request.Form["khachhang"];
         string so_po = context.Request.Form["so_po"].Trim();
 
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            string sochungtu = VNN_VariablePublic.sochungtu(db, "DSDH", 1);
+            //int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
+            //int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
+            var ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);
+            var hangiaohang_po = VNN_Config.setDateTime(context.Request.Form["hangiaohang_po"]);
+            string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
+            string id = context.Request.QueryString["id"];
+            //DateTime ngaybatdau = hangiaohang_po.AddDays(0 - thoigiansx);
+            DateTime ngayhoanthanh = hangiaohang_po.AddDays(-10);
+            if (ngaylap == null)
             {
-                string sochungtu = VNN_VariablePublic.sochungtu(db, "DSDH", 1);
-                //int thoigiansx = int.Parse(context.Request.Form["thoigiansx"]);
-                //int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
-                DateTime ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);
-                DateTime hangiaohang_po = VNN_Config.setDateTime(context.Request.Form["hangiaohang_po"]);
-                string dtk_id = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == md_dtk_id).Select(s => s.md_doitackinhdoanh_id).FirstOrDefault();
-                string id = context.Request.QueryString["id"];
-                //DateTime ngaybatdau = hangiaohang_po.AddDays(0 - thoigiansx);
-                DateTime ngayhoanthanh = hangiaohang_po.AddDays(-10);
-                if (ngaylap == null)
-                {
-                    msg = "Lỗi:Chưa có ngày lập đơn hàng.";
-                }
-                else if (hangiaohang_po == null)
-                {
-                    msg = "Lỗi:Chưa có hạng giao hàng.";
-                }
-                else if (string.IsNullOrEmpty(so_po.Trim()))
-                {
-                    msg = string.Format(@"Lỗi:Số đơn hàng không thể để trống.");
-                }
-                else
-                {
-                    var countPO = db.c_danhsachdathang.Where(s => s.so_po == so_po).Count();
-                    if (countPO > 0)
-                        msg = string.Format(@"Lỗi:Số đơn hàng đã tồn tại.");
-                }
-                if (msg.Length <= 0)
-                {
-                    var object_ = new c_danhsachdathang();
-                    object_.c_danhsachdathang_id = id_new;
-                    object_.md_trangthai_id = Helper.HIEULUC;
-                    //object_.ngaybatdau = ngaybatdau;
-                    object_.ngayhoanthanh = ngayhoanthanh;
-                    object_.anco_check = false;
-                    object_.md_doitackinhdoanh_id = dtk_id;
-                    object_.sochungtu = sochungtu;
-                    object_.reportKCS = "-";
-                    VNN_Function.SetFormValue(object_.nameof(s => s.ngayhoanthanh), ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
-                    VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), sochungtu);
-                    //VNN_Function.SetFormValue(object_.nameof(s=>s.thoigiansx), thoigiansx.ToString());
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    db.c_danhsachdathang.Add(object_);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = $@"Lỗi:Chưa có ngày lập đơn hàng.";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if (hangiaohang_po == null)
             {
-                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = $@"Lỗi:Chưa có hạng giao hàng.";
+                goto EndEventHandler;
             }
-            else
+
+            if (string.IsNullOrEmpty(so_po.Trim()))
             {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
+                msg = $@"Lỗi:Số đơn hàng không thể để trống.";
+                goto EndEventHandler;
             }
+
+            var countPO = db.c_danhsachdathang.Where(s => s.so_po == so_po).Count();
+            if (countPO > 0)
+            {
+                msg = $@"Lỗi:Số đơn hàng đã tồn tại.";
+                goto EndEventHandler;
+            }
+
+            
+            var object_ = new c_danhsachdathang();
+            object_.c_danhsachdathang_id = id_new;
+            object_.md_trangthai_id = Helper.HIEULUC;
+            //object_.ngaybatdau = ngaybatdau;
+            object_.ngayhoanthanh = ngayhoanthanh;
+            object_.anco_check = false;
+            object_.md_doitackinhdoanh_id = dtk_id;
+            object_.sochungtu = sochungtu;
+            object_.reportKCS = "-";
+            object_.chungloai = "";
+            VNN_Function.SetFormValue(object_.nameof(s => s.ngayhoanthanh), ngayhoanthanh.ToString(VNN_Config.get_FormatDate()));
+            VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), sochungtu);
+            //VNN_Function.SetFormValue(object_.nameof(s=>s.thoigiansx), thoigiansx.ToString());
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            db.c_danhsachdathang.Add(object_);
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"true#Thêm mới thành công#{id_new}";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg}";
         }
         context.Response.Write(msg);
     }
@@ -651,7 +655,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 else
                 {
                     var taptins = db.md_taptin.Where(s => s.lienket == object_.c_danhsachdathang_id).ToList();
-                    foreach(var taptin in taptins)
+                    foreach (var taptin in taptins)
                     {
                         var path = ExcuteSignalRStatic.mapPathSignalR($@"~/{taptin.path}");
                         Helper.removeFileWithPath(path);
