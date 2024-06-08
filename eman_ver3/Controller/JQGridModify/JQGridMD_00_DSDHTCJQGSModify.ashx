@@ -217,7 +217,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             int tgsx = -1;
             foreach (var dh in db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).ToList())
             {
-                var sp = db.md_sanpham.Where(s => s.ma_sanphamcu == dh.md_sanpham_id).FirstOrDefault();
+                var sp = db.md_sanpham.Where(s => s.ma_sanpham == dh.md_sanpham_id).FirstOrDefault();
                 if (sp == null)
                     sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
 
