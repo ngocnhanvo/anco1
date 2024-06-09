@@ -31,7 +31,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_keHoachMuaVatTu : System
         var theoBOM = string.IsNullOrWhiteSpace(tbl.Rows[0]["ncvt"].ToString()) ? false : true;
 
         if (tbl.Rows.Count > 0)
-            tbl.Rows[0]["loaiCT"] = theoBOM ? Helper.arrLoaiCT_LSX[0] : Helper.arrLoaiCT_LSX[1];
+            tbl.Rows[0]["loaiCT"] = theoBOM ? Helper.arrLoaiCT_KHMVT[0] : Helper.arrLoaiCT_KHMVT[1];
     }
 
     public String CreateSql(HttpContext context)
@@ -44,7 +44,9 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_keHoachMuaVatTu : System
 	            khmvt.sochungtu,
 	            FORMAT(khmvt.ngaykehoach, 'dd/MM/yyyy') as ngaylap,
 	            FORMAT(khmvt.ngaycan, 'dd/MM/yyyy') as ngaycan,
-	            N'Từ ' + FORMAT(khmvt.tungay, 'dd/MM/yyyy') + N' đến ' + FORMAT(khmvt.denngay, 'dd/MM/yyyy') as kySX,
+	            N'Từ ' + FORMAT(khmvt.tungayNCVT, 'dd/MM/yyyy') + N' đến ' + FORMAT(khmvt.denngayNCVT, 'dd/MM/yyyy') as kySX,
+                FORMAT(khmvt.tungay, 'dd/MM/yy') as tungay,
+                FORMAT(khmvt.denngay, 'dd/MM/yy') as denngay,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
 	            dvt.ten_dvt as dvt,
@@ -55,7 +57,7 @@ public partial class PrintControllers_MD_01_MD_00_KHMVT_keHoachMuaVatTu : System
 	            cdh.sl_duyet as sldn,
 	            cdh.sl_duyet2 as slduyet,
 	            khmvt.mota as ghichu,
-                (select top 1 ycmvt.c_nhucauvattu_id from c_yeucaumuavt ycmvt where ycmvt.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id) as ncvt
+                (select top 1 ycmvt.c_nhucauvattu_id from c_yeucaumuavt ycmvt where ycmvt.c_kehoachmuavt_id = khmvt.sochungtu) as ncvt
             from c_kehoachmuavt khmvt
 	            left join c_kehoachmuavt_cdh cdh on cdh.c_kehoachmuavt_id = khmvt.c_kehoachmuavt_id
 	            left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id

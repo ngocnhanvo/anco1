@@ -55,6 +55,12 @@
                         public DateTime? denngay { get; set; }
                 
 						
+                        #region c_kehoachmuavt_denngayNCVT_wintaFN
+                        
+                        #endregion c_kehoachmuavt_denngayNCVT_wintaFN
+                        public DateTime? denngayNCVT { get; set; }
+                
+						
                         #region c_kehoachmuavt_hoatdong_wintaFN
                         
                         #endregion c_kehoachmuavt_hoatdong_wintaFN
@@ -131,6 +137,12 @@
                         
                         #endregion c_kehoachmuavt_tungay_wintaFN
                         public DateTime? tungay { get; set; }
+                
+						
+                        #region c_kehoachmuavt_tungayNCVT_wintaFN
+                        
+                        #endregion c_kehoachmuavt_tungayNCVT_wintaFN
+                        public DateTime? tungayNCVT { get; set; }
                 
 						
                         #region c_kehoachmuavt_vaitrocapnhat_wintaFN

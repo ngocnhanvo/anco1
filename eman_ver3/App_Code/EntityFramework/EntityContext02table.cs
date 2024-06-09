@@ -1765,6 +1765,10 @@ modelBuilder.Entity<c_kehoachmuavt>().HasKey<string>(p => p.c_kehoachmuavt_id);
                             .HasColumnName("denngay")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_kehoachmuavt>()
+                            .Property(p => p.denngayNCVT)
+                            .HasColumnName("denngayNCVT")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_kehoachmuavt>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
@@ -1815,6 +1819,10 @@ modelBuilder.Entity<c_kehoachmuavt>().HasKey<string>(p => p.c_kehoachmuavt_id);
                             modelBuilder.Entity<c_kehoachmuavt>()
                             .Property(p => p.tungay)
                             .HasColumnName("tungay")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_kehoachmuavt>()
+                            .Property(p => p.tungayNCVT)
+                            .HasColumnName("tungayNCVT")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_kehoachmuavt>()
                             .Property(p => p.vaitrocapnhat)

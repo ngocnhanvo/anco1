@@ -221,6 +221,10 @@ modelBuilder.Entity<c_yeucaumuavt>().HasKey<string>(p => p.c_yeucaumuavt_id);
                             .HasColumnName("c_nhucauvattu_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.denngay)
+                            .HasColumnName("denngay")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.donhang_thamchieu)
                             .HasColumnName("donhang_thamchieu")
                             .HasColumnType("nvarchar");
@@ -288,6 +292,10 @@ modelBuilder.Entity<c_yeucaumuavt>().HasKey<string>(p => p.c_yeucaumuavt_id);
                             .Property(p => p.ten_yc)
                             .HasColumnName("ten_yc")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_yeucaumuavt>()
+                            .Property(p => p.tungay)
+                            .HasColumnName("tungay")
+                            .HasColumnType("datetime");
                             modelBuilder.Entity<c_yeucaumuavt>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")

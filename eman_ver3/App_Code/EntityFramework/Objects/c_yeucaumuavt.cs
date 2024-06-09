@@ -49,6 +49,12 @@
                         public string c_nhucauvattu_id { get; set; }
                 
 						
+                        #region c_yeucaumuavt_denngay_wintaFN
+                        
+                        #endregion c_yeucaumuavt_denngay_wintaFN
+                        public DateTime? denngay { get; set; }
+                
+						
                         #region c_yeucaumuavt_donhang_thamchieu_wintaFN
                         
                         #endregion c_yeucaumuavt_donhang_thamchieu_wintaFN
@@ -149,6 +155,12 @@
                         
                         #endregion c_yeucaumuavt_ten_yc_wintaFN
                         public string ten_yc { get; set; }
+                
+						
+                        #region c_yeucaumuavt_tungay_wintaFN
+                        
+                        #endregion c_yeucaumuavt_tungay_wintaFN
+                        public DateTime? tungay { get; set; }
                 
 						
                         #region c_yeucaumuavt_vaitrocapnhat_wintaFN

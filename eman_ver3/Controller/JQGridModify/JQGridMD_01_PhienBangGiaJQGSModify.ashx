@@ -70,6 +70,51 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                 goto EndEventHandler;
             }
 
+            if(pbg.ten_phienbangia.removeAllSpaceOrTrimText(false).Length <= 0)
+            {
+                msg = $@"Phiên bản giá đang chọn chưa có tên";
+                goto EndEventHandler;
+            }
+
+            if(pbg.ngay_hieuluc == null)
+            {
+                msg = $@"Phiên bản giá đang chọn chưa có ngày hiệu lực";
+                goto EndEventHandler;
+            }
+
+            var khongCoGiaSP = db.md_giasanpham.Where(s => s.md_phienbangia_id == pbg.md_phienbangia_id).Take(1).Count() <= 0;
+            if(khongCoGiaSP)
+            {
+                msg = $@"Chưa có giá HHVT nào được thêm vào PBG này";
+                goto EndEventHandler;
+            }
+
+            var bg = db.md_banggia.Where(s => s.md_banggia_id == pbg.md_banggia_id).FirstOrDefault();
+            if(bg == null)
+            {
+                msg = $@"Không tìm thấy bảng giá của phiên bản giá đang chọn";
+                goto EndEventHandler;
+            }
+
+            if(bg.ten_banggia.removeAllSpaceOrTrimText(false).Length <= 0)
+            {
+                msg = $@"Bảng giá chưa có <b>tên</b>";
+                goto EndEventHandler;
+            }
+
+            if(bg.tuychon.removeAllSpaceOrTrimText(false).Length <= 0)
+            {
+                msg = $@"Bảng giá chưa có <b>loại</b>";
+                goto EndEventHandler;
+            }
+
+            var canChonDTKD = new string[] { Helper.MUAVT, Helper.MUATP, Helper.BANTP }.Contains(bg.tuychon);
+            if(canChonDTKD & bg.lienket_bg.removeAllSpaceOrTrimText(false).Length <= 0)
+            {
+                msg = $@"Bảng giá chưa chọn <b>đối tác kinh doanh</b>";
+                goto EndEventHandler;
+            }
+
             pbg.trangthai = Helper.HIEULUC;
             pbg.ngayHL = DateTime.Now;
             db.SaveChanges();
@@ -87,7 +132,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
         }
         else
         {
-            msg = $@"<div style=""color:red"" error>Lỗi: {msg}</div>";
+            msg = $@"<div id=""rs_pbgHL"" style=""color:red"" error ttpbg=""{Helper.SOANTHAO}"" ttbg=""{Helper.CHODUYET}"">Lỗi: {msg}</div>";
         }
 
         context.Response.Write(msg);

@@ -1431,6 +1431,7 @@ public class Public
                                     }
                                 }
                                 khdh.trangthai = Helper.DaXLTBTP;
+                                khdh.ngaybatdausx = DateTime.Now;
                                 dsdh.md_trangthai_id = khdh.trangthai;
                             }
                         }
@@ -2028,6 +2029,8 @@ public class Public
                     md_trangthai_id = Helper.SOANTHAO,
                     sochungtu = sochungtu,
                     ncvt_name = ncvt.ten_nhucau,
+                    tungay = ncvt.tungay,
+                    denngay = ncvt.denngay,
                     nguoiyeucau = "",
                     ngaylap = ncvt.ngayyeucau,
                     ngaycan = ncvt.ngaycan,
