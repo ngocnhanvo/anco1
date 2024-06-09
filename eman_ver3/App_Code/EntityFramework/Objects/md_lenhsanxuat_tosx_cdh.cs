@@ -103,6 +103,12 @@
                         public string mota { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_cdh_ncc_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_cdh_ncc_wintaFN
+                        public string ncc { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_cdh_ngaycapnhat_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_cdh_ngaycapnhat_wintaFN

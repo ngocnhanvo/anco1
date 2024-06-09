@@ -1810,6 +1810,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>().HasKey<string>(p => p.md_lenhsanx
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
+                            .Property(p => p.ncc)
+                            .HasColumnName("ncc")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_cdh>()
                             .Property(p => p.ngaycapnhat)
                             .HasColumnName("ngaycapnhat")
                             .HasColumnType("datetime");
