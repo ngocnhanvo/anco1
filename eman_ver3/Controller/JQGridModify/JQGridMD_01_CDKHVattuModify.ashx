@@ -226,17 +226,30 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
         decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
         string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
+        c_kehoachmuavt khmvt = null;
         foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => vnn.Contains(s.c_kehoachmuavt_cdh_id)).ToList())
         {
-            var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id).Take(1).FirstOrDefault();
-            if (khmvt.c_donmuavattu_id != " ")
+            if (khmvt == null)
             {
-                msg = "<div style='color:red'>lỗi: Kế hoạch \"" + khmvt.sochungtu + "\" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>";
-                break;
+                khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == khmvt_cdh.c_kehoachmuavt_id).Take(1).FirstOrDefault();
+                if (khmvt.c_donmuavattu_id != " ")
+                {
+                    msg = "<div style='color:red'>lỗi: Kế hoạch \"" + khmvt.sochungtu + "\" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>";
+                    break;
+                }
             }
-            else if (sel_val == "0")
+
+            if (sel_val == "0")
             {
-                khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.Value + khmvt_cdh.sl_canthem.GetValueOrDefault(0);
+                khmvt_cdh.sl_duyet = khmvt_cdh.sl_can.GetValueOrDefault(0);
+            }
+            else if (sel_val == "1")
+            {
+                khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.GetValueOrDefault(0);
+            }
+            else if (sel_val == "2")
+            {
+                khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.GetValueOrDefault(0) + khmvt_cdh.sl_canthem.GetValueOrDefault(0);
             }
             else
             {
