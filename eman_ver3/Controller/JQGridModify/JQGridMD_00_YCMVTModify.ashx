@@ -72,11 +72,19 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     goto EndEventHandler;
                 }
 
+
                 var ngaycan = VNN_Config.setDateTime(ngaycanStr);
                 if (!ngaycan.IsDate())
                 {
-                    msg = $@"Ngày cần có giá trị sai";
-                    goto EndEventHandler;
+                    if (string.IsNullOrWhiteSpace(ngaycanStr))
+                    {
+                        ngaycan = ycmvts.Min(s => s.ngaycan.Value);
+                    }
+                    else
+                    {
+                        msg = $@"Ngày cần có giá trị sai";
+                        goto EndEventHandler;
+                    }
                 }
 
                 var exist = db.c_kehoachmuavt.Where(s => s.ten_kehoach == ten_kehoach).Count() > 0;
@@ -414,42 +422,55 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
     {
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-
-        using (var transaction = db.Database.BeginTransaction())
+        string masp = context.Request.Form["ma_sanpham"].removeAllSpaceOrTrimText(true);
+        string id = context.Request.Form["id"];
+        string ngaycanStr = context.Request.Form["ngaycan"].removeAllSpaceOrTrimText(true);
+        string ncvt_name = context.Request.Form["ncvt_name"].removeAllSpaceOrTrimText(true);
+        try
         {
-            try
+            if(!VNN_Config.setDateTime(ngaycanStr).IsDate())
             {
-                string id = context.Request.Form["id"];
-                string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", 1);
-                string masp = context.Request.Form["ma_sanpham"];
-
-                if (msg.Length <= 0)
-                {
-                    var object_ = new c_yeucaumuavt();
-                    object_.c_yeucaumuavt_id = id_new;
-                    VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), sochungtu);
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    db.c_yeucaumuavt.Add(object_);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = $@"""Ngày cần"" có giá trị sai";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if (string.IsNullOrWhiteSpace(ncvt_name))
             {
-                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = $@"""Tên yêu cầu"" không thể bỏ trống";
+                goto EndEventHandler;
             }
-            else
+
+            var exist = db.c_yeucaumuavt.Where(s => s.ncvt_name == ncvt_name).Take(1).Count() > 0;
+            if (exist)
             {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
+                msg = $@"""Tên yêu cầu"" đã được sử dụng trước đó";
+                goto EndEventHandler;
             }
+
+            string sochungtu = VNN_VariablePublic.sochungtu(db, "YCM", 1);
+            var object_ = new c_yeucaumuavt();
+            object_.c_yeucaumuavt_id = id_new;
+            VNN_Function.SetFormValue(object_.nameof(s => s.sochungtu), sochungtu);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            db.c_yeucaumuavt.Add(object_);
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
         }
         context.Response.Write(msg);
     }
@@ -458,40 +479,57 @@ public class JQGridMD_00_YCMVTModify : IHttpHandler, System.Web.SessionState.IRe
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
+        string ngaycanStr = context.Request.Form["ngaycan"].removeAllSpaceOrTrimText(true);
+        string ncvt_name = context.Request.Form["ncvt_name"].removeAllSpaceOrTrimText(true);
+        string id = context.Request.Form["id"];
 
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+            var object_ = db.c_yeucaumuavt.Where(p => p.c_yeucaumuavt_id == id).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                string id = context.Request.Form["id"];
-                var object_ = db.c_yeucaumuavt.Where(p => p.c_yeucaumuavt_id == id).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
-                }
-                else
-                {
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
+                msg = $@"Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if(!VNN_Config.setDateTime(ngaycanStr).IsDate())
             {
-                msg = string.Format(@"true#Cập nhật thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = $@"""Ngày cần"" có giá trị sai";
+                goto EndEventHandler;
             }
-            else
+
+            if (string.IsNullOrWhiteSpace(ncvt_name))
             {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
+                msg = $@"""Tên yêu cầu"" không thể bỏ trống";
+                goto EndEventHandler;
             }
+
+            var exist = db.c_yeucaumuavt.Where(s => s.ncvt_name == ncvt_name & s.c_yeucaumuavt_id != object_.c_yeucaumuavt_id).Take(1).Count() > 0;
+            if (exist)
+            {
+                msg = $@"""Tên yêu cầu"" đã được sử dụng trước đó";
+                goto EndEventHandler;
+            }
+
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+            db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Cập nhật thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg);
         }
         context.Response.Write(msg);
     }

@@ -475,6 +475,8 @@ public static class Helper
 
             a.vaitrotao = us.ad_role_id;
             a.value_vaitrotao = us.ten_role;
+
+            a.hoatdong = true;
         }
         
         a.ngaycapnhat = DateTime.Now;
