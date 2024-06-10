@@ -51,47 +51,48 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
     {
         string msg = "", id_new = Helper.getNewId();
         string ma_module = context.Request.QueryString["ma_module"];
-        string maKho = context.Request.Form["ma_kho"];
+        string ma_kho = context.Request.Form["ma_kho"].removeAllSpaceOrTrimText(true);
+        string ten_kho = context.Request.Form["ten_kho"].removeAllSpaceOrTrimText(true);
         string pxId = context.Request.Form["md_phanxuong_id"];
         string toId = context.Request.Form["md_to_id"];
-        using (var transaction = db.Database.BeginTransaction())
+        string id = context.Request.QueryString["id"];
+
+        try
         {
-            try
+            if (db.md_kho.Where(s => s.ma_kho == ma_kho).Count() > 0)
             {
-                var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
-
-                if (db.md_kho.Where(s => s.ma_kho == maKho).Count() > 0)
-                {
-                    msg = string.Format("Kho {0} đã tồn tại tồn tại", maKho);
-                }
-                else
-                {
-                    string id = context.Request.QueryString["id"];
-                    var object_ = new md_kho();
-                    object_.md_kho_id = id_new;
-                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.phongbanId;
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    db.md_kho.Add(object_);
-                    db.SaveChanges();
-                }
-            }
-            catch(Exception ex)
-            {
-                msg = ex.Message;
+                msg = $@"Kho có mã ""{ma_kho}"" đã tồn tại";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if (db.md_kho.Where(s => s.ten_kho == ten_kho).Count() > 0)
             {
-                msg = string.Format(@"true#Thêm mới thành công#{0}", id_new);
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = $@"Kho có tên ""{ten_kho}"" đã tồn tại";
+                goto EndEventHandler;
             }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
-            }
+
+            var object_ = new md_kho();
+            object_.md_kho_id = id_new;
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, false);
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            db.md_kho.Add(object_);
+            db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"true#Thêm mới thành công#{id_new}";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg}";
         }
         context.Response.Write(msg);
     }
@@ -100,45 +101,54 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
     {
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
-        string pxId = context.Request.Form["md_phanxuong_id"];
-        string toId = context.Request.Form["md_to_id"];
+        string ma_kho = context.Request.Form["ma_kho"].removeAllSpaceOrTrimText(true);
+        string ten_kho = context.Request.Form["ten_kho"].removeAllSpaceOrTrimText(true);
+        string id = context.Request.Form["id"];
 
-        using (var transaction = db.Database.BeginTransaction())
+        try
         {
-            try
+            var object_ = db.md_kho.Where(p => p.md_kho_id == id).Take(1).FirstOrDefault();
+            if (object_ == null)
             {
-                string id = context.Request.Form["id"];
-                var object_ = db.md_kho.Where(p => p.md_kho_id == id).Take(1).FirstOrDefault();
-                if (object_ == null)
-                {
-                    msg = "Lỗi:Không tìm thấy đối tượng cần sửa ";
-                }
-                else
-                {
-                    var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
-                    object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.phongbanId;
-                    object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                    object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                    db.SaveChanges();
-                }
-            }
-            catch(Exception ex)
-            {
-                msg = ex.Message;
+                msg = $@"Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if (db.md_kho.Where(s => s.ma_kho == ma_kho & s.md_kho_id != object_.md_kho_id).Count() > 0)
             {
-                msg = string.Format(@"true#Cập nhật thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
+                msg = $@"Kho có mã ""{ma_kho}"" đã tồn tại";
+                goto EndEventHandler;
             }
-            else
+
+            if (db.md_kho.Where(s => s.ten_kho == ten_kho & s.md_kho_id != object_.md_kho_id).Count() > 0)
             {
-                msg = string.Format(@"false#{0}", msg);
-                transaction.Rollback();
+                msg = $@"Kho có tên ""{ten_kho}"" đã tồn tại";
+                goto EndEventHandler;
             }
+            
+            //var pxTrongQT = db.md_phanxuong_to.Where(s => s.md_phanxuong_id == pxId & s.md_to_id == toId).FirstOrDefault();
+            //object_.phongbanId = pxTrongQT == null ? "" : pxTrongQT.phongbanId;
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+            db.SaveChanges();
         }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"true#Cập nhật thành công";
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = $@"false#{msg}";
+        }
+
         context.Response.Write(msg);
     }
 
@@ -158,9 +168,9 @@ public class JQGridMD_00_KhoModify : IHttpHandler, System.Web.SessionState.IRequ
                     {
                         msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần xóa.", id_del_);
                     }
-                    else if (db.md_kho_sanpham.Where(s => s.md_kho_id == object_.md_kho_id).Sum(s => s.soluong) > 0)
+                    else if (db.md_kho_giaodich.Where(s => s.md_kho_id == object_.md_kho_id).Take(1).Count() > 0)
                     {
-                        msg += string.Format(@"<br><b>{0}</b>: Còn hàng trong kho.", object_.ten_kho);
+                        msg += string.Format(@"<br><b>{0}</b>: Đã phát sinh giao dịch.", object_.ten_kho);
                     }
                     else
                     {
