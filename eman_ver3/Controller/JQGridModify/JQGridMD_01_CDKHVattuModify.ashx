@@ -277,69 +277,65 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
         string ma_module = context.Request.QueryString["ma_module"];
         string mota_tiengviet = context.Request.Form["mota_tiengviet"];
         string md_doitackinhdoanh_id = context.Request.Form["md_doitackinhdoanh_id"];
+        string id = context.Request.Form["id"];
 
         try
         {
-            var sl_duyet = decimal.Parse(context.Request.Form["sl_duyet"]);
-            var sl_layton = decimal.Parse(context.Request.Form["sl_layton"]);
-            var sl_canthem = decimal.Parse(context.Request.Form["sl_canthem"]);
-            var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"]);
-            string id = context.Request.Form["id"];
+            var sl_duyet = context.Request.Form["sl_duyet"].removeAllSpaceOrTrimText(true).ToNullableDecimal();
+            var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"].removeAllSpaceOrTrimText(true));
+            
             var object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id).Take(1).FirstOrDefault();
-            decimal? sldn = 0;
+
             if (object_ == null)
             {
-                msg = "false#Lỗi:Không tìm thấy đối tượng cần sửa ";
-            }
-            else if (ngayPhaiCo == DateTime.MinValue | ngayPhaiCo == DateTime.MinValue.AddDays(1))
-            {
-                msg = @"false#""Ngày phải có"" có giá trị sai";
-            }
-            else
-            {
-                sldn = (object_.sl_can - sl_layton).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0) + (object_.sl_tonkho_toithieu - object_.sl_tonkho).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0);
-                var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).Take(1).FirstOrDefault();
-                if (khmvt.c_donmuavattu_id != " ")
-                    msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã tạo đơn mua vật tư, không thể chỉnh sửa.</div>", khmvt.sochungtu);
-                else if (khmvt.md_trangthai_id == "HIEULUC")
-                    msg = string.Format(@"false#Lỗi: Kế hoạch ""{0}"" đã Hiệu Lực.</div>", khmvt.sochungtu);
-                else if (sl_layton > (object_.sl_tonkho - object_.sl_tonkho_toithieu).GetValueOrDefault(0).Set0WhenlessThan0().GetValueOrDefault(0))
-                    msg = string.Format(@"false#""SL lấy tồn"" phải nhỏ hơn hoặc bằng ""số lượng tồn kho - tồn kho tối thiểu""");
-                else if (sl_duyet != sldn + sl_canthem)
-                    msg = string.Format(@"false#""Số lượng duyệt"" phải bằng ""SL đề nghị + SL cần thêm""");
-                else if (sldn + sl_layton > object_.sl_can + object_.sl_tonkho_toithieu)
-                    msg = string.Format(@"false#""Số lượng đề nghị + SL lấy tồn"" phải nhỏ hơn hoặc bằng ""SL cần + SL tồn kho tối thiểu""");
+                msg = $@"Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
 
-            if (msg.Length <= 0)
+            if (ngayPhaiCo == DateTime.MinValue | ngayPhaiCo == DateTime.MinValue.AddDays(1))
             {
-                object_.sl_duyet = sl_duyet;
-                object_.sl_layton = sl_layton;
-                object_.sl_canthem = sl_canthem;
-
-                object_.sl_denghi = sldn;
-                object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
-                object_.ngayphaico = ngayPhaiCo;
-                object_.nguoicapnhat = userTK.ad_user_id;
-                object_.value_nguoicapnhat = userTK.ma_user;
-                object_.ngaycapnhat = DateTime.Now;
-
-                var dklhts = db.c_kehoachmuavt_dklht.Where(s =>
-                s.md_sanpham_id == object_.md_sanpham_id &
-                s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id);
-                var slltTong = object_.sl_layton.GetValueOrDefault(0);
-                foreach (var dklht in dklhts.ToList())
-                {
-                    dklht.sl_layton = slltTong > dklht.sl_tonkho ? dklht.sl_tonkho : slltTong;
-                    slltTong = slltTong - dklht.sl_layton.GetValueOrDefault(0);
-                }
-                db.SaveChanges();
+                msg = $@"""Ngày phải có"" có giá trị sai";
+                goto EndEventHandler;
             }
+
+            var khmvt = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id).Take(1).FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(khmvt.c_donmuavattu_id))
+            {
+                msg = $@"Kế hoạch đã tạo đơn mua vật tư, không thể chỉnh sửa";
+                goto EndEventHandler;
+            }
+
+            if (khmvt.md_trangthai_id == Helper.HIEULUC)
+            {
+                msg = $@"Lỗi: Kế hoạch đã Hiệu Lực.";
+                goto EndEventHandler;
+            }
+            
+            object_.sl_duyet = sl_duyet;
+            object_.sl_layton = 0;
+            object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
+            object_.ngayphaico = ngayPhaiCo;
+            object_.nguoicapnhat = userTK.ad_user_id;
+            object_.value_nguoicapnhat = userTK.ma_user;
+            object_.ngaycapnhat = DateTime.Now;
+            db.SaveChanges();
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = ex.Message;
         }
+
+    EndEventHandler:;
+
+        if(msg.Length <= 0)
+        {
+            msg = "true#Cập nhật thành công";
+        }
+        else
+        {
+            msg = $@"false#{msg}";
+        }
+
         context.Response.Write(msg);
     }
 
