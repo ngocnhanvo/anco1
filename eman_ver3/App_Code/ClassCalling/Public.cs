@@ -1719,17 +1719,16 @@ public class Public
 
         if (lsx2 != null)
         {
-            List<md_lenhsanxuat_tosx_vattu> vtqrs = null;
+            var cdhsLSXs = db.md_lenhsanxuat_tosx_cdh.Where(s => s.lsxCT == lsx2.sochungtu).Select(
+                s=>s.sp1 + s.macuoi + s.mathaydoi + s.md_lenhsanxuat_tosx_id
+                ).ToList();
+
+            List <md_lenhsanxuat_tosx_vattu> vtqrs = null;
             var vtqrsQR = (
                 from a in db.md_lenhsanxuat_tosx_vattu
                 where
                     (a.soluong ?? 0) > (a.sl_hanngach ?? 0)
-                    & db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                        s.lsxCT == lsx2.sochungtu
-                        & s.sp1 == a.sp1
-                        & s.macuoi == a.sp2
-                        & s.mathaydoi == a.sp3
-                        & s.md_lenhsanxuat_tosx_id == a.md_lenhsanxuat_tosx_id).Take(1).Count() > 0
+                    & cdhsLSXs.Contains(a.sp1 + a.sp2 + a.sp3 + a.md_lenhsanxuat_tosx_id)
                 select a
             );
 
