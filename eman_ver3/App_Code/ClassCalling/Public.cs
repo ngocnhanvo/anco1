@@ -1915,6 +1915,10 @@ public class Public
                     }
                 }
 
+                var cdhLSXs = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_id == khdh.md_lenhsanxuat_id & s.hoatdong == true)
+                    .Select(s=>s.md_sanpham_id + s.md_lenhsanxuat_id)
+                    .ToList();
+
                 var vts = (from a in db.md_lenhsanxuat_tosx_vattu
                            join b in db.md_lenhsanxuat_tosx on a.md_lenhsanxuat_tosx_id equals b.md_lenhsanxuat_tosx_id
                            join c in db.md_lenhsanxuat on b.md_lenhsanxuat_id equals c.md_lenhsanxuat_id
@@ -1925,7 +1929,7 @@ public class Public
                              e.c_kehoachdathang_id == khdh.c_kehoachdathang_id
                              & (sp.vattu ?? false) == true
                              & (a.soluong ?? 0) - (a.sl_giamhanngach ?? 0) > 0
-                             & db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_sanpham_id == a.md_sanpham_id & s.md_lenhsanxuat_id == c.md_lenhsanxuat_id & s.hoatdong == true).Take(1).Count() <= 0
+                             & !cdhLSXs.Contains(a.md_sanpham_id + c.md_lenhsanxuat_id)
                            select a).ToList();
 
                 foreach (var vt in vts)
