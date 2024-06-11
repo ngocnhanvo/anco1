@@ -239,13 +239,21 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                 }
             }
 
+            var slc = khmvt_cdh.sl_can.GetValueOrDefault(0);
+            var sltk = khmvt_cdh.sl_tonkho.GetValueOrDefault(0);
+            var sltktt = khmvt_cdh.sl_tonkho_toithieu.GetValueOrDefault(0);
+            var slyc = (slc - sltk + sltktt).Set0WhenlessThan0().GetValueOrDefault(0);
+            khmvt_cdh.sl_denghi = slyc;
+
             if (sel_val == "0")
             {
                 khmvt_cdh.sl_duyet = khmvt_cdh.sl_can.GetValueOrDefault(0);
+                khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet.GetValueOrDefault(0) - slyc).Set0WhenlessThan0();
             }
             else if (sel_val == "1")
             {
                 khmvt_cdh.sl_duyet = khmvt_cdh.sl_denghi.GetValueOrDefault(0);
+                khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet.GetValueOrDefault(0) - slyc).Set0WhenlessThan0();
             }
             else if (sel_val == "2")
             {
@@ -254,7 +262,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
             else
             {
                 khmvt_cdh.sl_duyet = slvc_case;
-                khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet - khmvt_cdh.sl_denghi).GetValueOrDefault(0).Set0WhenlessThan0();
+                khmvt_cdh.sl_canthem = (khmvt_cdh.sl_duyet.GetValueOrDefault(0) - slyc).Set0WhenlessThan0();
             }
         }
         if (msg == "")
@@ -281,9 +289,9 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
 
         try
         {
-            var sl_duyet = context.Request.Form["sl_duyet"].removeAllSpaceOrTrimText(true).ToNullableDecimal();
+            var sl_duyet = context.Request.Form["sl_duyet"].removeAllSpaceOrTrimText(true).ToNullableDecimal().GetValueOrDefault(0);
             var ngayPhaiCo = VNN_Config.setDateTime(context.Request.Form["ngayphaico"].removeAllSpaceOrTrimText(true));
-            
+
             var object_ = db.c_kehoachmuavt_cdh.Where(p => p.c_kehoachmuavt_cdh_id == id).Take(1).FirstOrDefault();
 
             if (object_ == null)
@@ -310,8 +318,13 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                 msg = $@"Lỗi: Kế hoạch đã Hiệu Lực.";
                 goto EndEventHandler;
             }
-            
+            var slc = object_.sl_can.GetValueOrDefault(0);
+            var sltk = object_.sl_tonkho.GetValueOrDefault(0);
+            var sltktt = object_.sl_tonkho_toithieu.GetValueOrDefault(0);
+            var slyc = (slc - sltk + sltktt).Set0WhenlessThan0().GetValueOrDefault(0);
             object_.sl_duyet = sl_duyet;
+            object_.sl_denghi = slyc;
+            object_.sl_canthem = (sl_duyet - slyc).Set0WhenlessThan0();
             object_.sl_layton = 0;
             object_.md_doitackinhdoanh_id = md_doitackinhdoanh_id;
             object_.ngayphaico = ngayPhaiCo;
