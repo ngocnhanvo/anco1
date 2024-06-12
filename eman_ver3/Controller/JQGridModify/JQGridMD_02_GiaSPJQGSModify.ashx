@@ -86,62 +86,52 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                         }
                         else
                         {
-                            var dvtsp = db.md_donvitinhsanpham.Where(s => s.ten_dvt == dvt).FirstOrDefault();
-                            if (dvtsp == null)
+                            var gia_isNumeric = decimal.TryParse(gia, out _);
+                            if (!gia_isNumeric)
                             {
-                                msgDT = $@"<div style='color:red' error>Không tìm thấy <b>ĐVT</b></div>";
+                                msgDT = $@"<div style='color:red' error>Giá có giá trị sai</div>";
+                            }
+                            else if (gia.ToNullableDecimal() <= 0)
+                            {
+                                msgDT = $@"<div style='color:red' error>Giá phải lơn hơn 0</div>";
                             }
                             else
                             {
-                                var gia_isNumeric = decimal.TryParse(gia, out _);
-                                if (!gia_isNumeric)
+                                var gspServer = db.md_giasanpham.Where(s =>
+                                    s.md_phienbangia_id == phienbanggia.md_phienbangia_id &
+                                    s.md_sanpham_id == hhvt.md_sanpham_id).FirstOrDefault();
+
+                                var gsp = db.md_giasanpham.Local.Where(s =>
+                                    s.md_phienbangia_id == phienbanggia.md_phienbangia_id &
+                                    s.md_sanpham_id == hhvt.md_sanpham_id).FirstOrDefault();
+
+                                var addGSP = gsp == null;
+                                if (addGSP)
                                 {
-                                    msgDT = $@"<div style='color:red' error>Giá có giá trị sai</div>";
-                                }
-                                else if (gia.ToNullableDecimal() <= 0)
-                                {
-                                    msgDT = $@"<div style='color:red' error>Giá phải lơn hơn 0</div>";
+                                    gsp = new md_giasanpham();
+                                    gsp.md_giasanpham_id = Helper.getNewId();
+                                    gsp.md_banggia_id = banggia.md_banggia_id;
+                                    gsp.md_phienbangia_id = phienbanggia.md_phienbangia_id;
+                                    gsp.md_sanpham_id = hhvt.md_sanpham_id;
+                                    gsp.gia = gia.ToNullableDecimal();
+                                    gsp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id;
+                                    gsp.ngaytao = DateTime.Now;
+                                    gsp.ngaycapnhat = DateTime.Now;
+                                    gsp.nguoitao = Security.id_taikhoan(context);
+                                    gsp.nguoicapnhat = gsp.nguoitao;
+                                    gsp.mota = mota;
+                                    gsp.hoatdong = true;
+                                    db.md_giasanpham.Add(gsp);
+                                    msgDT = $@"<div style='color:blue'>Đạt (add)</div>";
                                 }
                                 else
                                 {
-                                    var gspServer = db.md_giasanpham.Where(s =>
-                                        s.md_phienbangia_id == phienbanggia.md_phienbangia_id &
-                                        s.md_sanpham_id == hhvt.md_sanpham_id &
-                                        s.md_donvitinhsanpham_id == dvtsp.md_donvitinhsanpham_id).FirstOrDefault();
-
-                                    var gsp = db.md_giasanpham.Local.Where(s =>
-                                        s.md_phienbangia_id == phienbanggia.md_phienbangia_id &
-                                        s.md_sanpham_id == hhvt.md_sanpham_id &
-                                        s.md_donvitinhsanpham_id == dvtsp.md_donvitinhsanpham_id).FirstOrDefault();
-
-                                    var addGSP = gsp == null;
-                                    if (addGSP)
-                                    {
-                                        gsp = new md_giasanpham();
-                                        gsp.md_giasanpham_id = Helper.getNewId();
-                                        gsp.md_banggia_id = banggia.md_banggia_id;
-                                        gsp.md_phienbangia_id = phienbanggia.md_phienbangia_id;
-                                        gsp.md_sanpham_id = hhvt.md_sanpham_id;
-                                        gsp.gia = gia.ToNullableDecimal();
-                                        gsp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id;
-                                        gsp.ngaytao = DateTime.Now;
-                                        gsp.ngaycapnhat = DateTime.Now;
-                                        gsp.nguoitao = Security.id_taikhoan(context);
-                                        gsp.nguoicapnhat = gsp.nguoitao;
-                                        gsp.mota = mota;
-                                        gsp.hoatdong = true;
-                                        db.md_giasanpham.Add(gsp);
-                                        msgDT = $@"<div style='color:blue'>Đạt (add)</div>";
-                                    }
-                                    else
-                                    {
-                                        gsp.gia = gia.ToNullableDecimal();
-                                        gsp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id;
-                                        gsp.ngaycapnhat = DateTime.Now;
-                                        gsp.nguoicapnhat = Security.id_taikhoan(context);
-                                        gsp.mota = mota;
-                                        msgDT = $@"<div style='color:blue'>Đạt (edit)</div>";
-                                    }
+                                    gsp.gia = gia.ToNullableDecimal();
+                                    gsp.md_donvitinhsanpham_id = hhvt.md_donvitinhsanpham_id;
+                                    gsp.ngaycapnhat = DateTime.Now;
+                                    gsp.nguoicapnhat = Security.id_taikhoan(context);
+                                    gsp.mota = mota;
+                                    msgDT = $@"<div style='color:blue'>Đạt (edit)</div>";
                                 }
                             }
                         }
