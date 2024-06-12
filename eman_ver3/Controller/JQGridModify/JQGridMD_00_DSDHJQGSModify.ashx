@@ -553,6 +553,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                 }
                 else
                 {
+                    dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id;
                     dsdh.ngaycapnhat = DateTime.Now;
                     dsdh.ngaynhan = DateTime.Now;
                     dsdh.trangthai = "DANHAN";

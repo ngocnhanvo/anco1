@@ -161,6 +161,10 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.isgui_hdlh = Convert.ToBoolean(item["isgui_hdlh"]);
                         //c_dsdh.khachhang = item["khachhang"] + "";
                         c_dsdh.md_doitackinhdoanh_id = item["md_doitackinhdoanh_id"] + "";
+
+                        if (c_dsdh.md_doitackinhdoanh_id == "ANCOTRADING")
+                            c_dsdh.md_doitackinhdoanh_id = "ANCO TRADING";
+
                         c_dsdh.md_trangthai_id = item["md_trangthai_id"] + "";
                         c_dsdh.mota = item["mota"] + "";
                         //c_dsdh.ngaycapnhat = item["ngaycapnhat"].ToDateTime();
