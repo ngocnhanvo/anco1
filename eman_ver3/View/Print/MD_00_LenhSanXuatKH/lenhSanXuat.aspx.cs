@@ -65,6 +65,7 @@ public partial class PrintControllers_MD_00_LenhSanXuatKH_lenhSanXuat : System.W
                 and lsx.md_lenhsanxuat2_id = @id
             group by
 	            lsx.sochungtu,
+				pb.ten_phongban,
 	            kho.ten_kho,
 	            lsx.ngaytao,
 	            lsx.ngayhoanthanh,
