@@ -114,7 +114,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
                                     gsp.md_phienbangia_id = phienbanggia.md_phienbangia_id;
                                     gsp.md_sanpham_id = hhvt.md_sanpham_id;
                                     gsp.gia = gia.ToNullableDecimal();
-                                    gsp.md_donvitinhsanpham_id = dvtsp.md_donvitinhsanpham_id;
+                                    gsp.md_donvitinhsanpham_id = hhvt.md_donvitinhsanpham_id;
                                     gsp.ngaytao = DateTime.Now;
                                     gsp.ngaycapnhat = DateTime.Now;
                                     gsp.nguoitao = Security.id_taikhoan(context);
