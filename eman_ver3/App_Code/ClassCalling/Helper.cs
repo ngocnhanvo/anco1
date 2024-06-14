@@ -84,6 +84,18 @@ public static class Helper
         "NGOÀI BOM"
     };
 
+    public static string[] arrLoaiCT_DMH = {
+        "ĐƠN MUA VẬT TƯ",
+        "ĐƠN MUA HÀNG THÔ",
+        "ĐƠN MUA TP"
+    };
+
+    public static string[] arrLoaiCT_DBH = {
+        "ĐƠN BÁN VẬT TƯ",
+        "ĐƠN BÁN HÀNG THÔ",
+        "ĐƠN BÁN THÀNH PHẨM"
+    };
+
     public static string[] arrMau_LXK = {
         "103",
         "104"

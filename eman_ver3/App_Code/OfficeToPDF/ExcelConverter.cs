@@ -571,11 +571,11 @@ namespace OfficeToPDF
 
                             if (textReplace.oldT.StartsWith("{#"))
                             {
-                                var number = decimal.Parse(textReplace.newT);
-                                var fmtNumberIndex = textReplace.newT.LastIndexOf(".");
-                                var numberAfterDot = fmtNumberIndex > -1 ? textReplace.newT.Length - fmtNumberIndex : 0;
-                                var fmtNumber = "0" + (fmtNumberIndex > -1 ? "." : "") + (numberAfterDot > 0 ? VNN_Config.load_number("0", numberAfterDot) : "");
-                                oRange.NumberFormat = fmtNumber;
+                                //var number = decimal.Parse(textReplace.newT);
+                                //var fmtNumberIndex = textReplace.newT.LastIndexOf(".");
+                                //var numberAfterDot = fmtNumberIndex > -1 ? textReplace.newT.Length - fmtNumberIndex : 0;
+                                //var fmtNumber = "0" + (fmtNumberIndex > -1 ? "." : "") + (numberAfterDot > 0 ? VNN_Config.load_number("0", numberAfterDot) : "");
+                                //oRange.NumberFormat = fmtNumber;
                                 oRange.Value = textReplace.newT;
                             }
                         }

@@ -7,7 +7,215 @@ namespace DataAcess
         public void exec(DbModelBuilder modelBuilder)
         {
             #region Start Code
-            modelBuilder.Entity<md_thongbao>().ToTable("md_thongbao");
+            modelBuilder.Entity<md_taphopgia_cdh>().ToTable("md_taphopgia_cdh");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_taphopgia_cdh_id)
+                            .HasColumnName("md_taphopgia_cdh_id")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<md_taphopgia_cdh>().HasKey<string>(p => p.md_taphopgia_cdh_id);
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.bophancapnhat)
+                            .HasColumnName("bophancapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.bophantao)
+                            .HasColumnName("bophantao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.gia)
+                            .HasColumnName("gia")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.hoatdong)
+                            .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_banggia_id)
+                            .HasColumnName("md_banggia_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_dongtien_id)
+                            .HasColumnName("md_dongtien_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_phienbangia_id)
+                            .HasColumnName("md_phienbangia_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_sanpham_id)
+                            .HasColumnName("md_sanpham_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.md_taphopgia_id)
+                            .HasColumnName("md_taphopgia_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.mota)
+                            .HasColumnName("mota")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.ngay_pbghl)
+                            .HasColumnName("ngay_pbghl")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.ngaycapnhat)
+                            .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.ngaytao)
+                            .HasColumnName("ngaytao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.nguoicapnhat)
+                            .HasColumnName("nguoicapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.nguoitao)
+                            .HasColumnName("nguoitao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.quydoi)
+                            .HasColumnName("quydoi")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.tygia)
+                            .HasColumnName("tygia")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.vaitrocapnhat)
+                            .HasColumnName("vaitrocapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.vaitrotao)
+                            .HasColumnName("vaitrotao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_bophancapnhat)
+                            .HasColumnName("value_bophancapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_bophantao)
+                            .HasColumnName("value_bophantao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_nguoicapnhat)
+                            .HasColumnName("value_nguoicapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_nguoitao)
+                            .HasColumnName("value_nguoitao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_vaitrocapnhat)
+                            .HasColumnName("value_vaitrocapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taphopgia_cdh>()
+                            .Property(p => p.value_vaitrotao)
+                            .HasColumnName("value_vaitrotao")
+                            .HasColumnType("nvarchar");
+modelBuilder.Entity<md_taptin>().ToTable("md_taptin");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.md_taptin_id)
+                            .HasColumnName("md_taptin_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.bophancapnhat)
+                            .HasColumnName("bophancapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.bophantao)
+                            .HasColumnName("bophantao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.doituong_dinhkem)
+                            .HasColumnName("doituong_dinhkem")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.hoatdong)
+                            .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.lienket)
+                            .HasColumnName("lienket")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.lienket2)
+                            .HasColumnName("lienket2")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.mimetype)
+                            .HasColumnName("mimetype")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.mota)
+                            .HasColumnName("mota")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.ngaycapnhat)
+                            .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.ngaytao)
+                            .HasColumnName("ngaytao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.nguoicapnhat)
+                            .HasColumnName("nguoicapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.nguoitao)
+                            .HasColumnName("nguoitao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.path)
+                            .HasColumnName("path")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.size)
+                            .HasColumnName("size")
+                            .HasColumnType("bigint");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.tentaptin)
+                            .HasColumnName("tentaptin")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.vaitrocapnhat)
+                            .HasColumnName("vaitrocapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.vaitrotao)
+                            .HasColumnName("vaitrotao")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_bophancapnhat)
+                            .HasColumnName("value_bophancapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_bophantao)
+                            .HasColumnName("value_bophantao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_nguoicapnhat)
+                            .HasColumnName("value_nguoicapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_nguoitao)
+                            .HasColumnName("value_nguoitao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_vaitrocapnhat)
+                            .HasColumnName("value_vaitrocapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.value_vaitrotao)
+                            .HasColumnName("value_vaitrotao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.viewed)
+                            .HasColumnName("viewed")
+                            .HasColumnType("bit");
+modelBuilder.Entity<md_thongbao>().ToTable("md_thongbao");
                             modelBuilder.Entity<md_thongbao>()
                             .Property(p => p.md_thongbao_id)
                             .HasColumnName("md_thongbao_id")

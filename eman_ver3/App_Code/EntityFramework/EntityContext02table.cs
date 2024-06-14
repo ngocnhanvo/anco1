@@ -413,6 +413,10 @@ modelBuilder.Entity<c_donmuahang>().HasKey<string>(p => p.c_donmuahang_id);
                             .HasColumnName("md_banggia_id")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.md_dieukienthanhtoan_id)
+                            .HasColumnName("md_dieukienthanhtoan_id")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.md_doitackinhdoanh_id)
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("varchar");
@@ -893,6 +897,10 @@ modelBuilder.Entity<c_kehoachdathang>().HasKey<string>(p => p.c_kehoachdathang_i
                             modelBuilder.Entity<c_kehoachdathang>()
                             .Property(p => p.xulyNCVT)
                             .HasColumnName("xulyNCVT")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<c_kehoachdathang>()
+                            .Property(p => p.xuongTuChoiLSX)
+                            .HasColumnName("xuongTuChoiLSX")
                             .HasColumnType("bit");
 modelBuilder.Entity<c_kehoachdathang_cdhcd>().ToTable("c_kehoachdathang_cdhcd");
                             modelBuilder.Entity<c_kehoachdathang_cdhcd>()

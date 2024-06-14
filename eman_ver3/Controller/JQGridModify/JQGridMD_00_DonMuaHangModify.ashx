@@ -337,8 +337,10 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         msg = "false#Lỗi: Ngày thanh toán không đúng định dạng.";
 
                     object_.diadiem_giaohang = context.Request.Form["diadiem_giaohang"];
+                    object_.md_dieukienthanhtoan_id = context.Request.Form["md_dieukienthanhtoan_id"];
+                    object_.hinhthucthanhtoan = context.Request.Form["hinhthucthanhtoan"];
                     if (msg.Length <= 0)
-                        msg = @"true#Đã cập nhật ""Ngày thành toán"" và ""địa điểm giao hàng""";
+                        msg = @"true#Đã cập nhật thông tin";
                 }
                 else if (object_.md_trangthai_id == "SOANTHAO")
                 {

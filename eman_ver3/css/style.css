@@ -696,3 +696,11 @@ img {
     font-size: 125%;
     position: relative;
 }
+
+.poNhanTapTin {
+    color: #003dff !important;
+    scale: 1.01;
+    transform-origin: left center;
+    box-shadow: rgb(204, 204, 187) 0px 1px 3px 1px;
+    font-size: 172% !important;
+}

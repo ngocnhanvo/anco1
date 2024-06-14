@@ -74,6 +74,7 @@ public virtual DbSet<c_nhucauvattu_ycmvt> c_nhucauvattu_ycmvt { get; set; }
 public virtual DbSet<c_phidathang> c_phidathang { get; set; }
 public virtual DbSet<c_yeucaumuavt> c_yeucaumuavt { get; set; }
 public virtual DbSet<c_yeucaumuavt_cdh> c_yeucaumuavt_cdh { get; set; }
+//Unable to generate DBset for table 'dbo.cpip_10062024103506066AM'. table have no primary key
 public virtual DbSet<md_banggia> md_banggia { get; set; }
 public virtual DbSet<md_baotrivthh> md_baotrivthh { get; set; }
 public virtual DbSet<md_baotrivthh_cdh> md_baotrivthh_cdh { get; set; }
@@ -85,6 +86,7 @@ public virtual DbSet<md_chungloai_ql> md_chungloai_ql { get; set; }
 public virtual DbSet<md_congthuctrongtinhgia> md_congthuctrongtinhgia { get; set; }
 public virtual DbSet<md_congthuctrongtinhgia_mausac> md_congthuctrongtinhgia_mausac { get; set; }
 public virtual DbSet<md_dbbiendong> md_dbbiendong { get; set; }
+public virtual DbSet<md_dieukienthanhtoan> md_dieukienthanhtoan { get; set; }
 public virtual DbSet<md_doimaudodang> md_doimaudodang { get; set; }
 public virtual DbSet<md_doimaudodang_dh> md_doimaudodang_dh { get; set; }
 public virtual DbSet<md_doitackinhdoanh> md_doitackinhdoanh { get; set; }

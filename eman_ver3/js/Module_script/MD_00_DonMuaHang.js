@@ -366,38 +366,24 @@ function CA_01_TPNKMG2(tengrid, id_parent, ma_case, Form_infor, Model_infor, loa
 
 //start CA_01_donMuaHangHoaVatTu
 function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    id_parent = null;
-    var masterId = id_parent, cell = null;
-    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
-    cell = $('#' + tengrid).getRowData(masterId);
+    let masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow');
+    let cell = $('#' + tengrid).getRowData(masterId);
     if (masterId == null | masterId == '') {
         alert('Chưa chọn đối tượng cần thao tác.');
+        return;
     }
-    //else if (masterId.length > 1) {
-    //    alert('Chỉ có thể in 1 đơn mua.');
-    //}
-    else {
-        var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid', '');
-        $('body').append(`<div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+
+    let CLform_infor = new get_Forminfor(ma_case, Form_infor);
+    let ma_module = tengrid.replace('grid', '');
+    let lblStyle = `cursor:pointer;user-select:none;`;
+    $('body').append(`
+        <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
             <div class="dlg_content">
-				<table>
-					<tr>
-						<td><input type="radio" checked name="rdo_SLVC" class="rdo_SLVC" style="outline:none" value="KHO VẬT TƯ"/></td>
-						<td> In đơn mua hàng</td>
-					</tr>
-
-					<tr>
-						<td><input type="radio" name="rdo_SLVC" class="rdo_SLVC"  style="outline:none" value="KHO TỒN THÀNH PHẨM"/></td>
-						<td> In đơn mua vật tư</td>
-					</tr>
-
-                    <tr>
-                        <td colspan="2">
-                            <p class ="pTitlePublic">Hiển thị số thập phân</p>
-                            ${getHTMLSelectSoThapPhan()}
-                        </td>
-                    </tr>
+			    <table>
+				    <tr>
+					    <td><input id="rdoDMHHVT1" type="radio" name="rdoDMHHVT" style="outline:none" value="1" /></td>
+					    <td><label style="${lblStyle}" for="rdoDMHHVT1">In đơn mua hàng hóa vật tư</label></td>
+				    </tr>
 
                     <tr style="height: 30px;">
                         <td colspan=2>
@@ -405,62 +391,49 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                             ${getHTMLSelectKieuIn(0)}
                         </td>
                     </tr>
-				</table>
-			<div>
-        </div>`);
-        $('#dlg_gridSmall').dialog({
-            modal: true,
-            width: CLform_infor.dodai,
-            height: CLform_infor.docao,
-            open: function (event, ui) {
-                $('.rdo_SLVC').click();
-                Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
-            },
-            close: function () {
-                $(this).dialog('destroy').remove();
-            },
-            buttons: [
-                {
-                    id: 'btn-ok',
-                    text: 'Đồng ý',
-                    click: function () {
-                        let sothapphan = $('#sothapphan').val();
-                        let sel_val = $("input:radio[name=rdo_SLVC]:checked").val();
-                        let CLform_infor = new get_Forminfor(ma_case, Form_infor);
-                        let ma_module = tengrid.replace('grid', '');
-                        let inPDF = $("#kieuInBaoCao").val();
-                        if (sel_val == 1) {
-                            let url = url_org_sys + "View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu"+
-                                "&ma_module=" + ma_module +
-                                "&id=" + masterId +
-                                "&inPDF=" + inPDF +
-                                "&stp=" + sothapphan;
-                            let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                            let left = (window.innerWidth - 1024) / 2 - 10;
-                            window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
-                        }
-                        else {
-                            let url = url_org_sys + "View/Print/MD_00_DonMuaHang/?oper=CA_01_donMuaHangHoaVatTu"+
-                                "&ma_module=" + ma_module +
-                                "&id=" + masterId +
-                                "&inPDF=" + inPDF +
-                                "&stp=" + sothapphan;
-                            let strWindowFeatures = "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes";
-                            let left = (window.innerWidth - 1024) / 2 - 10;
-                            window.open(url, "eMan", "top=100, left=" + left + ", width=1024, height=500");
-                        }
+			    </table>
+		    <div>
+        </div>`
+    );
+
+    $('#dlg_gridSmall').dialog({
+        modal: true,
+        width: CLform_infor.dodai,
+        height: CLform_infor.docao,
+        open: function (event, ui) {
+            $('#rdoDMHHVT1').click();
+            $("#kieuInBaoCao").val(3);
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-ok',
+                text: 'Đồng ý',
+                click: function () {
+                    let sothapphan = $('#sothapphan').val();
+                    let sel_val = $(`input:radio[name="rdoDMHHVT"]:checked`).val();
+                    let inPDF = $("#kieuInBaoCao").val();
+                    if (sel_val == 1) {
+                        url = `${url_org_sys}View/Print/${ma_module}/Default.aspx?ma_module=${ma_module}` +
+                            "&id=" + masterId +
+                            "&inPDF=" + inPDF;
                     }
-                },
-                {
-                    id: 'btn-close',
-                    text: 'Thoát',
-                    click: function () {
-                        $(this).dialog('destroy').remove();
-                    }
+
+                    openPrintDialog(url, "eMan Anco1", []);
                 }
-            ]
-        });
-    }
+            },
+            {
+                id: 'btn-close',
+                text: 'Thoát',
+                click: function () {
+                    $(this).dialog('destroy').remove();
+                }
+            }
+        ]
+    });
 }
 //end CA_01_donMuaHangHoaVatTu
 

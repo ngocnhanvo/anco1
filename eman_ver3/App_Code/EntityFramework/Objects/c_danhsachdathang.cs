@@ -193,6 +193,12 @@
                         public DateTime? hanXNTSDG { get; set; }
                 
 						
+                        #region c_danhsachdathang_hinhthucthanhtoan_wintaFN
+                        
+                        #endregion c_danhsachdathang_hinhthucthanhtoan_wintaFN
+                        public string hinhthucthanhtoan { get; set; }
+                
+						
                         #region c_danhsachdathang_hoatdong_wintaFN
                         
                         #endregion c_danhsachdathang_hoatdong_wintaFN
@@ -239,6 +245,12 @@
                         
                         #endregion c_danhsachdathang_loaiVTDGK_wintaFN
                         public string loaiVTDGK { get; set; }
+                
+						
+                        #region c_danhsachdathang_md_dieukienthanhtoan_id_wintaFN
+                        
+                        #endregion c_danhsachdathang_md_dieukienthanhtoan_id_wintaFN
+                        public string md_dieukienthanhtoan_id { get; set; }
                 
 						
                         #region c_danhsachdathang_md_doitackinhdoanh_id_wintaFN

@@ -17,9 +17,8 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string file = Server.MapPath(Security.UrlBase() + "/ReportsStorage/[VT] Đơn đặt mua vật tư.repx");
-        string nameTemp = "[VT] Đơn đặt mua vật tư.repx";
-        string nameRpt = "Đơn đặt mua vật tư";
+        string nameTemp = "[VT] Đơn mua hàng hóa vật tư.repx";
+        string nameRpt = "Đơn mua hàng hóa vật tư {ngaylap}";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>
@@ -33,70 +32,76 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
     public void viewReport(String SqlQuery)
     {
         var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
-        tbl.Columns.Add("thueVatText", Type.GetType("System.String"));
         //Header
+        tbl.Columns.Add("vat1", Type.GetType("System.String"));
+        tbl.Columns.Add("vat2", Type.GetType("System.Double"));
+        tbl.Columns.Add("tongtien", Type.GetType("System.Double"));
 
         //Footer
         int lastRow = tbl.Rows.Count - 1;
-        double sum_soluong = double.Parse(tbl.Compute("Sum(soluong)", string.Empty).ToString());
-        double sum_thanhtien = double.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
-        double thueVAT = double.Parse(tbl.Rows[0]["thueVAT"].ToString());
-        double sum_thue10 = Math.Ceiling(sum_thanhtien * thueVAT / 100);
-        double sum_tongcong = sum_thanhtien + sum_thue10;
-        var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
-        tbl.Columns.Add("sum_soluong", Type.GetType("System.Double"));
-        tbl.Columns.Add("sum_thanhtien", Type.GetType("System.Double"));
-        tbl.Columns.Add("sum_thue10", Type.GetType("System.Double"));
-        tbl.Columns.Add("sum_tongcong", Type.GetType("System.Double"));
-        tbl.Columns.Add("bangchu", Type.GetType("System.String"));
-        tbl.Rows[lastRow]["sum_soluong"] = sum_soluong;
-        tbl.Rows[lastRow]["sum_thanhtien"] = sum_thanhtien;
-        tbl.Rows[lastRow]["sum_thue10"] = sum_thue10;
-        tbl.Rows[lastRow]["sum_tongcong"] = arr.Value;
-        tbl.Rows[lastRow]["bangchu"] = arr.Key;
-        tbl.Rows[lastRow]["thueVatText"] = "Thuế VAT " + thueVAT + "%";
-        //FormatString
-        var soluong_cell = ReportViewer1.Report.Report.FindControl("soluong", true);
-        soluong_cell.DataBindings[0].FormatString = sothapphan;
-        var sum_soluong_cell = ReportViewer1.Report.Report.FindControl("sum_soluong", true);
-        sum_soluong_cell.DataBindings[0].FormatString = sothapphan;
+        decimal sum_soluong = decimal.Parse(tbl.Compute("Sum(sl)", string.Empty).ToString());
+        decimal sum_thanhtien = decimal.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
+        var thues = tbl.AsEnumerable().Select(s => new { lt = s.Field<decimal>("loaiThue"), tt = s.Field<decimal>("thanhtien") }).ToList();
+        var thuesStr = string.Join(",", thues.Select(s=>s.lt).Distinct().OrderBy(s => s));
+        var thueGT = Math.Ceiling(thues.Select(s => s.tt * s.lt / 100).Sum());
+        var tongtien = Math.Ceiling(sum_thanhtien + thueGT);
+        foreach (DataRow row in tbl.Rows)
+        {
+            row["vat1"] = thuesStr;
+            row["vat2"] = thueGT;
+            row["tongtien"] = tongtien;
+            row["loaiCT"] = Helper.arrLoaiCT_DMH[(int)row["loai"]];
+        }
+        
+        //var arr = VNN_ConvertMoney.convert(sum_tongcong, "VND").FirstOrDefault();
     }
 
     public String CreateSql(HttpContext context)
     {
-        string c_donmuahang_id = context.Request.QueryString["id"];	
-		string sql = string.Format(@"
-        declare @httt nvarchar(MAX) = (select top 1 ten from md_hinhthucthanhtoan order by sapxep asc)
-		select 
-            dmh.so_donmuahang as sct_dmvt
-            , dmh.ngaygiaohang as thoihan_giaohang
-            , dmh.ngaythanhtoan as thoihanthanhtoan
-            , (select ten_kho from md_kho where md_kho_id = dmh.diadiem_giaohang) as diadiem_giaohang
-		    , dtkd.ten_dtkd as ncc
-            , dtkd.tel as sdt
-            , dtkd.fax as fax
-		    , sp.ma_sanpham as ma_vthh
-            , sp.mota_tiengviet as ten_vthh
-            , sp.quycachdonggoi as quycach
-            , dvt.ten_dvt as dvt
-		    , cdmh.sl_dadat as soluong
-            , cdmh.dongiamua as dongia
-            , CEILING(cdmh.thanhtien) as thanhtien
-            , thue.giatri as thueVAT
-            , isnull(dmh.hinhthucthanhtoan, @httt) as hinhthucthanhtoan
-            , (case when isnull(dmh.mota,'') = '' then N'Không có.' else dmh.mota end) as diengiai
-		from c_donmuahang dmh
-		    left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
-		    left join md_sanpham sp on sp.md_sanpham_id = cdmh.md_sanpham_id
-		    left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		    left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-		    left join md_dongtien dt on dt.md_dongtien_id = dmh.md_dongtien_id
-		    left join md_thue_sanpham thue on cdmh.thue = thue.md_thue_sanpham_id
-		where dmh.c_donmuahang_id = '{0}'
-		order by sp.ma_sanpham asc
-		", 
-        c_donmuahang_id
-        );
+        string c_donmuahang_id = context.Request.QueryString["id"];
+        string sql = $@"
+            declare @httt nvarchar(MAX) = (select top 1 ten from md_hinhthucthanhtoan order by sapxep asc)
+		    select 
+                dmh.so_donmuahang as sochungtu
+                , N'' as loaiCT
+                , FORMAT(dmh.ngaydonhang, 'dd/MM/yyyy') as ngaylap
+                , FORMAT(dmh.ngaygiaohang, 'dd/MM/yyyy') as ngaygiaohang
+                , dmh.ngaythanhtoan
+                , dmh.diadiem_giaohang as noigiaohang
+		        , dtkd.ten_dtkd as tenNCC
+                , dtkd.diachi
+		        , sp.ma_sanpham as maVTHH
+                , sp.mota_tiengviet as tenVTHH
+                , sp.quycachdonggoi as quycach
+                , dvt.ten_dvt as dvt
+		        , cdmh.sl_dadat as sl
+                , cdmh.dongiamua as dongia
+                , CEILING(cdmh.thanhtien) as thanhtien
+                , thue.giatri as loaiThue
+                , isnull(dmh.hinhthucthanhtoan, @httt) as hinhthucthanhtoan
+                , dktt.ten_dieukien as dktt
+                , isnull(dmh.mota,'') as ghichu
+                , (
+                    case 
+                        when isnull(sp.sanpham, 0) = 1 and isnull(sp.ban_thanhpham, 0) = 0
+                        then 2
+                        when isnull(sp.sanpham, 0) = 0 and isnull(sp.ban_thanhpham, 0) = 1
+                        then 1
+                        else 0
+                    end
+                ) loai
+		    from c_donmuahang dmh
+		        left join c_donmuahang_cdmh cdmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
+		        left join md_sanpham sp on sp.md_sanpham_id = cdmh.md_sanpham_id
+		        left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+		        left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
+		        left join md_dongtien dt on dt.md_dongtien_id = dmh.md_dongtien_id
+		        left join md_thue_sanpham thue on cdmh.thue = thue.md_thue_sanpham_id
+                left join md_dieukienthanhtoan dktt on dktt.md_dieukienthanhtoan_id = dmh.md_dieukienthanhtoan_id
+		    where dmh.c_donmuahang_id = '{c_donmuahang_id}'
+		    order by sp.ma_sanpham asc
+        ";
+
 		return sql;
     }
 }

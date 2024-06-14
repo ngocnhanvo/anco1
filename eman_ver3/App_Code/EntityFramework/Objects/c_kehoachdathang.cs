@@ -217,6 +217,12 @@
                         public bool? xulyNCVT { get; set; }
                 
 						
+                        #region c_kehoachdathang_xuongTuChoiLSX_wintaFN
+                        
+                        #endregion c_kehoachdathang_xuongTuChoiLSX_wintaFN
+                        public bool? xuongTuChoiLSX { get; set; }
+                
+						
                     }
                 }
             

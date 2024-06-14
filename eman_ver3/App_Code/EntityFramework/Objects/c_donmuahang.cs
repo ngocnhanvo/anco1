@@ -97,6 +97,12 @@
                         public string md_banggia_id { get; set; }
                 
 						
+                        #region c_donmuahang_md_dieukienthanhtoan_id_wintaFN
+                        
+                        #endregion c_donmuahang_md_dieukienthanhtoan_id_wintaFN
+                        public string md_dieukienthanhtoan_id { get; set; }
+                
+						
                         #region c_donmuahang_md_doitackinhdoanh_id_wintaFN
                         
                         #endregion c_donmuahang_md_doitackinhdoanh_id_wintaFN
