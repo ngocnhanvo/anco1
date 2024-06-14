@@ -106,7 +106,6 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
         string msg = "", id_new = Helper.getNewId();
         string ten_phienban = context.Request.Form["md_sanpham_bom_id"];
         int sl_dathang = 0;
-        decimal cbm = 0;
         if(string.IsNullOrWhiteSpace(ma_module))
             ma_module = context.Request.QueryString["ma_module"];
         if(string.IsNullOrWhiteSpace(ma_sanpham))
@@ -129,18 +128,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
             else
                 sl_dathang = int.Parse(sldathang);
 
-            var v2CBM = context.Request.Form["v2"];
-            if (string.IsNullOrWhiteSpace(cbmStr))
-            {
-                if(v2CBM.ToNullableDouble() == null)
-                {
-                    msg = "CBM không thể bỏ trống";
-                    goto EndEventHandler;
-                }
-                cbm = decimal.Parse(v2CBM);
-            }
-            else
-                cbm = decimal.Parse(cbmStr);
+            var cbm = context.Request.Form["v2"].ToNullableDecimal().GetValueOrDefault(0);
 
             var sp = db.md_sanpham.Where(s => s.ma_sanpham == ma_sanpham).FirstOrDefault();
             if(sp == null)
