@@ -41,10 +41,11 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         int lastRow = tbl.Rows.Count - 1;
         decimal sum_soluong = decimal.Parse(tbl.Compute("Sum(sl)", string.Empty).ToString());
         decimal sum_thanhtien = decimal.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
+        decimal thueGT = Math.Floor(decimal.Parse(tbl.Compute("Sum(thanhtienThue)", string.Empty).ToString()));
         var thues = tbl.AsEnumerable().Select(s => new { lt = s.Field<decimal>("loaiThue"), tt = s.Field<decimal>("thanhtien") }).ToList();
         var thuesStr = string.Join(",", thues.Select(s=>s.lt).Distinct().OrderBy(s => s));
-        var thueGT = Math.Ceiling(thues.Select(s => s.tt * s.lt / 100).Sum());
-        var tongtien = Math.Ceiling(sum_thanhtien + thueGT);
+        //var thueGT = Math.Floor(thues.Select(s => s.tt * s.lt / 100).Sum());
+        var tongtien = sum_thanhtien + thueGT;
         foreach (DataRow row in tbl.Rows)
         {
             row["vat1"] = thuesStr;
@@ -76,7 +77,8 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
                 , dvt.ten_dvt as dvt
 		        , cdmh.sl_dadat as sl
                 , cdmh.dongiamua as dongia
-                , CEILING(cdmh.thanhtien) as thanhtien
+                , cdmh.thanhtien
+                , cdmh.thanhtienThue
                 , thue.giatri as loaiThue
                 , isnull(dmh.hinhthucthanhtoan, @httt) as hinhthucthanhtoan
                 , dktt.ten_dieukien as dktt

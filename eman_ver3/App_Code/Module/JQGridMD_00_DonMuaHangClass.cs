@@ -41,7 +41,7 @@ public class JQGridMD_00_DonMuaHangClass
             if (thue_sp != null)
                 md_thue_sanpham_id = thue_sp.md_thue_sanpham_id;
             cdmh1.thue = md_thue_sanpham_id;
-            cdmh1.thanhtien = dongiamua * cdmh1.sl_dadat.Value;
+            cdmh1.thanhtien = Math.Floor(dongiamua * cdmh1.sl_dadat.Value);
             dongiamua = 0;
 
             cdmh1.nguoicapnhat = userTK.ad_user_id;
@@ -115,7 +115,7 @@ public class JQGridMD_00_DonMuaHangClass
         try { tong_tienhang = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Select(s => s.thanhtien.Value).Sum(); } catch { }
         decimal tong_tienthue = decimal.Parse("0.00");
         try { tong_tienthue = db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Select(s => s.tong_tien_thue.Value).Sum(); } catch { }
-        decimal tong_tatca = tong_tienhang + tong_tienthue;
+        decimal tong_tatca = tong_tienhang + Math.Floor(tong_tienthue);
         //--
         string donvitinh = "VND";
         var dt = db.md_dongtien.Where(s => s.md_dongtien_id == object_.md_dongtien_id).Take(1).FirstOrDefault();

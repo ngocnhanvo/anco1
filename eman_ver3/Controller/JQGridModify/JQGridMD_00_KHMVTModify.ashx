@@ -418,10 +418,8 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                                 dmvt_cdmh.giachuan = dongiamua;
 
                                 dmvt_cdmh.thue = md_thue_sanpham_id;
-                                if (ma_iso_tiente == "VND")
-                                    dmvt_cdmh.thanhtien = Math.Round(dongiamua.GetValueOrDefault(0) * khmvt_cdh.sl_semua, 0);
-                                else
-                                    dmvt_cdmh.thanhtien = dongiamua * khmvt_cdh.sl_semua;
+                                dmvt_cdmh.thanhtien = Math.Floor(dongiamua.GetValueOrDefault(0) * khmvt_cdh.sl_semua);
+                                dmvt_cdmh.thanhtienThue = dmvt_cdmh.thanhtien.GetValueOrDefault(0) * gt_thue / 100;
                                 dmvt_cdmh.nguoitao = userTK.ad_user_id;
                                 dmvt_cdmh.vaitrotao = userTK.ad_role_id;
                                 dmvt_cdmh.bophantao = userTK.md_phongban_id;
@@ -520,19 +518,16 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                     {
                         string ma_iso_tiente = db.md_dongtien.Where(s => s.md_dongtien_id == dmh.md_dongtien_id).Select(s => s.ma_iso).FirstOrDefault();
                         decimal tong_tienhang = decimal.Parse("0.00");
+                        decimal tong_tienthue = decimal.Parse("0.00");
+                        decimal tong_tatca = 0;
                         try
                         {
-                            tong_tienhang = db.c_donmuahang_cdmh.Local.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Select(s => s.thanhtien.Value).Sum();
+                            var cdmhs = db.c_donmuahang_cdmh.Local.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).ToList();
+                            tong_tienhang = cdmhs.Select(s => s.thanhtien.GetValueOrDefault(0)).Sum();
+                            tong_tienthue = cdmhs.Select(s => s.thanhtienThue.GetValueOrDefault(0)).Sum();
+                            tong_tatca = tong_tienhang + Math.Floor(tong_tienthue);
                         }
                         catch { }
-                        decimal tong_tienthue = decimal.Parse("0.00");
-                        try { tong_tienthue = db.c_donmuahang_thue.Local.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).Select(s => s.tong_tien_thue.Value).Sum(); } catch { }
-                        decimal tong_tatca = tong_tienhang + tong_tienthue;
-                        if (ma_iso_tiente == "VND")
-                        {
-                            tong_tienhang = Math.Round(tong_tienhang, 0);
-                            tong_tatca = Math.Round(tong_tatca, 0);
-                        }
 
                         var tth = VNN_ConvertMoney.convert((double)tong_tienhang, ma_iso_tiente).FirstOrDefault();
                         var ttc = VNN_ConvertMoney.convert((double)tong_tatca, ma_iso_tiente).FirstOrDefault();
