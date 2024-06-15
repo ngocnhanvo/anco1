@@ -39,16 +39,21 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
 
         //Footer
         int lastRow = tbl.Rows.Count - 1;
-        decimal sum_soluong = decimal.Parse(tbl.Compute("Sum(sl)", string.Empty).ToString());
-        decimal sum_thanhtien = decimal.Parse(tbl.Compute("Sum(thanhtien)", string.Empty).ToString());
-        var thues = tbl.AsEnumerable().Select(s => new { lt = s.Field<decimal>("loaiThue"), tt = s.Field<decimal>("thanhtienThue") }).ToList();
-        var thuesStr = string.Join(",", thues.Select(s=>s.lt).Distinct().OrderBy(s => s));
-        var thueGT = Math.Floor(thues.Select(s => s.tt).Sum());
-        var tongtien = sum_thanhtien + thueGT;
+        var rowsLQ = tbl.AsEnumerable().Select(s => new {
+            lt = s.Field<decimal>("loaiThue"),
+            ttt = s.Field<decimal>("thanhtienThue"),
+            sl = s.Field<decimal>("sl"),
+            tt = s.Field<decimal>("thanhtien")
+        }).ToList();
+        var thuesStr = string.Join(",", rowsLQ.Select(s=>s.lt).Distinct().OrderBy(s => s));
+        var thueSUM = Math.Floor(rowsLQ.Select(s => s.ttt).Sum());
+        var thanhtienSUM = rowsLQ.Select(s => s.tt).Sum();
+        var soluongSUM = rowsLQ.Select(s => s.sl).Sum();
+        var tongtien = thanhtienSUM + thueSUM;
         foreach (DataRow row in tbl.Rows)
         {
             row["vat1"] = thuesStr;
-            row["vat2"] = thueGT;
+            row["vat2"] = thueSUM;
             row["tongtien"] = tongtien;
             row["loaiCT"] = Helper.arrLoaiCT_DMH[(int)row["loai"]];
         }
