@@ -92,6 +92,13 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                     goto EndEventHandler;
                 }
 
+                var thuesp = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == thue).FirstOrDefault();
+                if(thuesp == null)
+                {
+                    msg = "false#Không tìm thấy thuế đã chọn.";
+                    goto EndEventHandler;
+                }
+
                 var kh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == dmh.c_kehoachdathang_dhncc_id).FirstOrDefault();
                 if(kh != null)
                 {
@@ -162,10 +169,7 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                         if (dt != null) { donvitinh = dt.ma_iso; }
                         if (msg.Length <= 0)
                         {
-                            thanhtien = dongiamua * sl_dadat;
-                            if (donvitinh == "VND")
-                                thanhtien = Math.Round(thanhtien, 0);
-
+                            thanhtien = Math.Floor(dongiamua * sl_dadat);
                             VNN_Function.SetFormValue(object_.nameof(s=>s.thanhtien), thanhtien.ToString());
                             VNN_Function.SetFormValue(object_.nameof(s=>s.sl_dadat2), sl_thaythe.ToString());
                             VNN_Function.SetFormValue(object_.nameof(s=>s.saiso), saiso.ToString());
@@ -176,6 +180,7 @@ public class JQGridMD_01_DongmuahangModify : IHttpHandler, System.Web.SessionSta
                             VNN_Function.SetFormValue(object_.nameof(s=>s.giachuan), "VNN_notpost");
                             object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
                             object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+                            object_.thanhtienThue = object_.thanhtien * thuesp.giatri / 100;
                             db.SaveChanges();
 
                             classFunc.TinhThueDonHang(dmh, userTK, dmh.md_phienbangia_id, dmh.md_phienbangia_id, db);
