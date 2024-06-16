@@ -188,6 +188,7 @@ public class JQGridMD_01_DDSDHModify : IHttpHandler, System.Web.SessionState.IRe
                 object_.sl_dagiao = 0;
                 object_.sl_hanngach = 0;
                 object_.sl_giamhanngach = 0;
+                object_.giadoichieu = gianhap;
                 VNN_Function.SetFormValue(object_.nameof(s=>s.sl_dathang), sl_dathang.ToString());
                 VNN_Function.SetFormValue(object_.nameof(s=>s.gianhap), gianhap.ToString());
                 VNN_Function.SetFormValue(object_.nameof(s=>s.md_sanpham_id), sp.md_sanpham_id);

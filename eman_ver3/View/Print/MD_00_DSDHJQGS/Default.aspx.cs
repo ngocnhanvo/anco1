@@ -84,7 +84,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_Default : System.Web.UI.Pag
                 , dvt.ma_edi
                 , ddsdh.sl_dathang
                 , ddsdh.gianhap
-                , (ddsdh.sl_dathang * ddsdh.gianhap) as thanhtien
+                , floor(ddsdh.sl_dathang * ddsdh.gianhap) as thanhtien
                 , dsdh.huongdanlamhang as hdlh
                 , dsdh.huongdanlamhangchung as hdlhchung
                 , ddsdh.huongdan_dathang

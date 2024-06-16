@@ -53,7 +53,8 @@ public partial class PrintControllers_MD_00_LenhSanXuatKH_lenhSanXuat : System.W
 	            sum(cdh.sl_dat) as sx,
                 sum(isnull(cdh.sl_danhapkho, 0)) as dg,
 	            sum(cdh.sl_dat - isnull(cdh.sl_danhapkho, 0)) as cl,
-	            lsx.donhang as dh_gc
+	            lsx.donhang as dh_gc,
+                lsx.mota
             from md_lenhsanxuat2 lsx
                 left join md_lenhsanxuat_tosx_cdh cdh on cdh.lsxCT = lsx.sochungtu
                 left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
@@ -73,7 +74,8 @@ public partial class PrintControllers_MD_00_LenhSanXuatKH_lenhSanXuat : System.W
                 sp.ban_thanhpham,
                 sp.mota_tiengviet,
                 dvt.ten_dvt,
-	            lsx.donhang
+	            lsx.donhang,
+                lsx.mota
             order by
 	            sp.ma_sanpham
 		";

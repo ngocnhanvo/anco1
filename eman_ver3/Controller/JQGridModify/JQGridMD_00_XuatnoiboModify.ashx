@@ -129,7 +129,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                     dh.sl_thucxuat = dongHang.sl_thucxuat;
                     dh.ghino = dongHang.ghino;
                 }
-                
+
                 if (sp == null)
                 {
                     msg = $@"Lỗi: ""{dh.md_sanpham_id}"" không tìm thấy mã HHVT từ ID này.";
@@ -138,6 +138,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
 
                 var khospServer = db.md_kho_sanpham.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                 var khosp = db.md_kho_sanpham.Local.Where(s => s.md_kho_id == xk.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+
                 if (khosp == null)
                 {
                     if (dh.sl_thucxuat > 0)
@@ -159,6 +160,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         loi = $@"Số lượng trong kho chỉ còn: ""{khosp.soluong.Value.DropTrailingZeros()} {tendvt}"""
                     });
                 }
+
+                dh.sl_tonkho = khosp == null ? 0 : khosp.soluong.GetValueOrDefault(0);
 
                 if (dh.ghino > 0)
                 {

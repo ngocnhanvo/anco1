@@ -2022,6 +2022,10 @@ modelBuilder.Entity<md_xuatkhonb_cdh>().HasKey<string>(p => p.md_xuatkhonb_cdh_i
                             .HasColumnName("sl_toida_trongLSXTo2")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_xuatkhonb_cdh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_xuatkhonb_cdh>()
                             .Property(p => p.sl_xuat)
                             .HasColumnName("sl_xuat")
                             .HasColumnType("decimal").HasPrecision(18, 8);

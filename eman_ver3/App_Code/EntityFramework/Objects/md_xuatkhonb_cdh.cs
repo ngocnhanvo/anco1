@@ -181,6 +181,12 @@
                         public Decimal? sl_toida_trongLSXTo2 { get; set; }
                 
 						
+                        #region md_xuatkhonb_cdh_sl_tonkho_wintaFN
+                        
+                        #endregion md_xuatkhonb_cdh_sl_tonkho_wintaFN
+                        public Decimal? sl_tonkho { get; set; }
+                
+						
                         #region md_xuatkhonb_cdh_sl_xuat_wintaFN
                         
                         #endregion md_xuatkhonb_cdh_sl_xuat_wintaFN
