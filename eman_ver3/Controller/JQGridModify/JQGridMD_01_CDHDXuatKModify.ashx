@@ -3,7 +3,10 @@ using System;
 using System.Web;
 using System.Linq;
 using System.Data.Linq;
+using System.Collections.Generic;
 using DataAcess;
+using Newtonsoft.Json;
+
 public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState.IRequiresSessionState
 {
     public EntityContext db = new EntityContext();
@@ -40,42 +43,47 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
 
     public void CA_01_CapnhatSLXBan(HttpContext context)
     {
-        string sel_val = context.Request.Form["sel_val"];
-        decimal slvc_case = decimal.Parse(context.Request.Form["slvc_case"]);
-        string[] vnn = context.Request.Form["id"].Split(',');
         string msg = "";
-        foreach (var xb_cdh in db.md_xuatban_cdh.Where(s => vnn.Contains(s.md_xuatban_cdh_id)).ToList())
+        string ma_module = context.Request.QueryString["ma_module"];
+        var rows = context.Request.Form["rows"];
+        string id = context.Request.Form["id"];
+
+        var vcnb = db.md_xuatban.Where(s=>s.md_xuatban_id == id).FirstOrDefault();
+        if (vcnb.trangthai == Helper.HIEULUC)
         {
-            var vcnb = db.md_xuatban.Where(s => s.md_xuatban_id == xb_cdh.md_xuatban_id).FirstOrDefault();
-            if(vcnb.trangthai == "HIEULUC")
-            {
-                msg = "<div style='color:red'>Lỗi:Dòng " + vcnb.sochungtu + " đã Hiệu lực.</div>";
-                break;
-            }
-            else {
-                decimal sltd = xb_cdh.sl_muonxuat.GetValueOrDefault(0);
-                if (sel_val == "0")
-                {
-                    xb_cdh.sl_xuat = sltd;
-                }
-                else {
-                    if (slvc_case <= sltd)
-                    {
-                        xb_cdh.sl_xuat = slvc_case;
-                    }
-                    else
-                    {
-                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == xb_cdh.md_sanpham_id).Take(1).FirstOrDefault();
-                        msg = "<div style='color:red'>Lỗi: Dòng \"" + sp.ma_sanpham + "\" chỉ có thể chuyển tối đa là: " + sltd.DropTrailingZeros() + "</div>";
-                        break;
-                    }
-                }
-            }
+            msg = $@"Phiếu đã Hiệu Lực";
+            goto EndEventHandler;
         }
+
+        try
+        {
+            var dongHangs = JsonConvert.DeserializeObject<List<md_xuatban_cdh>>(rows);
+            foreach (var cdvc in db.md_xuatban_cdh.Where(s => s.md_xuatban_id == id).ToList())
+            {
+                var dongHang = dongHangs.Where(s => s.md_xuatban_cdh_id == cdvc.md_xuatban_cdh_id).FirstOrDefault();
+                if (dongHang != null)
+                {
+                    cdvc.sl_xuat = dongHang.sl_xuat;
+                    cdvc.ngaycapnhat = DateTime.Now;
+                }
+            }
+
+            db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
         if (msg.Length <= 0)
         {
-            msg = "<div style='color:blue'>Cập nhật số lượng dự kiến xuất kho thành công</div>";
-            db.SaveChanges();
+            msg = $@"<div style='color:blue'>Cập nhật số lượng xuất bán thành công</div>";
+        }
+        else
+        {
+            msg = $@"<div style='color:red' error>{msg}</div>";
         }
         context.Response.Write(msg);
     }
