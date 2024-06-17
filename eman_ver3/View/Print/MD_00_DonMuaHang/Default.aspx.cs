@@ -86,7 +86,8 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
                 , thue.giatri as loaiThue
                 , isnull(dmh.hinhthucthanhtoan, @httt) as hinhthucthanhtoan
                 , dktt.ten_dieukien as dktt
-                , isnull(dmh.mota,'') as ghichu
+                , isnull(cdmh.mota,'') as ghichu
+                , isnull(dmh.mota,'') as hdlh
                 , (
                     case 
                         when isnull(sp.sanpham, 0) = 1 and isnull(sp.ban_thanhpham, 0) = 0
