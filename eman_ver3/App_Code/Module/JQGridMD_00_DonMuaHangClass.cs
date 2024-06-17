@@ -24,18 +24,18 @@ public class JQGridMD_00_DonMuaHangClass
 
         foreach (var cdmh1 in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).OrderBy(s => s.md_sanpham_id).ToList())
         {
-            var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh1.md_sanpham_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
+            //var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh1.md_sanpham_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
             var thue_sp = db.md_thue_sanpham.Where(s => s.md_thue_sanpham_id == cdmh1.thue).FirstOrDefault();
-            dongiamua = gsp.gia.Value;
-            if (md_phienbangia_id2 != md_phienbangia_id)
-            {
-                cdmh1.dongiamua = dongiamua;
-                cdmh1.giachuan = dongiamua;
-            }
-            else
-            {
-                dongiamua = (decimal)cdmh1.dongiamua.Value;
-            }
+            dongiamua = cdmh1.dongiamua.GetValueOrDefault(0);
+            //if (md_phienbangia_id2 != md_phienbangia_id)
+            //{
+            //    cdmh1.dongiamua = dongiamua;
+            //    cdmh1.giachuan = dongiamua;
+            //}
+            //else
+            //{
+            //    dongiamua = (decimal)cdmh1.dongiamua.Value;
+            //}
 
             string md_thue_sanpham_id = "";
             if (thue_sp != null)
