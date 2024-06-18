@@ -412,7 +412,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         {
                             object_.md_dongtien_id = bg.md_dongtien_id;
                             //Tính Thuế
-                            classFunc.TinhThueDonHang(object_, userTK, md_phienbangia_id, md_phienbangia_id2, db);
+                            //classFunc.TinhThueDonHang(object_, userTK, md_phienbangia_id, md_phienbangia_id2, db);
 
                             // cap nhat ke hoach mua vat tu
                             var kh = db.c_kehoachmuavt.Where(s => s.c_kehoachmuavt_id == object_.c_kehoachmuavt_id & s.c_donmuavattu_id.Contains(object_.sochungtu)).FirstOrDefault();
