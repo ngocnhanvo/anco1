@@ -373,40 +373,40 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         khmvtId = object_.c_kehoachmuavt_id;
                         md_phienbangia_id2 = object_.md_phienbangia_id;
                         var bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).Take(1).FirstOrDefault();
-                        var pbg = db.md_phienbangia.Where(s => s.md_banggia_id == bg.md_banggia_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
+                        //var pbg = db.md_phienbangia.Where(s => s.md_banggia_id == bg.md_banggia_id & s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
 
-                        if (bg == null)
-                        {
-                            msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có bảng giá.";
-                        }
-                        else if (pbg == null)
-                        {
-                            var pbg1 = db.md_phienbangia.Where(s => s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
-                            msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có phiên bảng giá \"" + pbg1.ten_phienbangia + "\" .";
-                        }
+                        //if (bg == null)
+                        //{
+                        //    msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có bảng giá.";
+                        //}
+                        //else if (pbg == null)
+                        //{
+                        //    var pbg1 = db.md_phienbangia.Where(s => s.md_phienbangia_id == md_phienbangia_id).FirstOrDefault();
+                        //    msg += "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\" không có phiên bảng giá \"" + pbg1.ten_phienbangia + "\" .";
+                        //}
 
-                        var c_donmuahang_cdmhs = from a in db.c_donmuahang_cdmh
-                                                 join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
-                                                 where a.c_donmuahang_id == object_.c_donmuahang_id
-                                                 select new { a.c_donmuahang_cdmh_id, a.md_sanpham_id, c.ma_sanpham };
+                        //var c_donmuahang_cdmhs = from a in db.c_donmuahang_cdmh
+                        //                         join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
+                        //                         where a.c_donmuahang_id == object_.c_donmuahang_id
+                        //                         select new { a.c_donmuahang_cdmh_id, a.md_sanpham_id, c.ma_sanpham };
 
-                        if (msg.Length <= 0)
-                        {
-                            foreach (var cdmh in c_donmuahang_cdmhs.OrderBy(s => s.md_sanpham_id).ToList())
-                            {
-                                var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh.md_sanpham_id & s.md_phienbangia_id == pbg.md_phienbangia_id).FirstOrDefault();
-                                if (gsp == null)
-                                {
-                                    msg_er += "không có giá của sản phẩm \"" + cdmh.ma_sanpham + "\"<br>";
-                                }
-                                else { }
-                            }
+                        //if (msg.Length <= 0)
+                        //{
+                        //foreach (var cdmh in c_donmuahang_cdmhs.OrderBy(s => s.md_sanpham_id).ToList())
+                        //{
+                        //    var gsp = db.md_giasanpham.Where(s => s.md_sanpham_id == cdmh.md_sanpham_id & s.md_phienbangia_id == pbg.md_phienbangia_id).FirstOrDefault();
+                        //    if (gsp == null)
+                        //    {
+                        //        msg_er += "không có giá của sản phẩm \"" + cdmh.ma_sanpham + "\"<br>";
+                        //    }
+                        //    else { }
+                        //}
 
-                            if (msg_er.Length > 0)
-                            {
-                                msg = "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\"<br>" + msg_er;
-                            }
-                        }
+                        //if (msg_er.Length > 0)
+                        //{
+                        //    msg = "false#Lỗi:Nhà cung cấp \"" + ma_dtkd + "\"<br>" + msg_er;
+                        //}
+                        //}
 
                         if (msg.Length <= 0)
                         {
@@ -429,8 +429,9 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
                         if (msg.Length <= 0)
                         {
-                            VNN_Function.SetFormValue(object_.nameof(s => s.md_doitackinhdoanh_id), md_doitackinhdoanh_id);
-                            VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), md_banggia_id);
+                            VNN_Function.SetFormValue(object_.nameof(s => s.md_doitackinhdoanh_id), Helper.VNN_notpost);
+                            VNN_Function.SetFormValue(object_.nameof(s => s.md_banggia_id), Helper.VNN_notpost);
+                            VNN_Function.SetFormValue(object_.nameof(s => s.md_phienbangia_id), Helper.VNN_notpost);
 
                             VNN_Function.SetFormValue(object_.nameof(s => s.huongdan_lamhang), "VNN_notpost");
                             VNN_Function.SetFormValue(object_.nameof(s => s.phieunhapkho), "VNN_notpost");
