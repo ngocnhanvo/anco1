@@ -91,17 +91,17 @@ public partial class PrintControllers_MD_00_DSDHJQGS_inDonHang : System.Web.UI.P
 
             select 
                 (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCOTRADING' then N'{ancoName}' 
+                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoName}' 
                     when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxName}' 
                     else isnull(dtkd.ten_dtkd, '') 
                 end) as tenCT,
                 (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCOTRADING' then N'{ancoAddress}' 
+                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoAddress}' 
                     when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxAddress}' 
                     else isnull(dtkd.diachi, '') 
                 end) as diachiCT,
 	            (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCOTRADING' then N'{ancoTelFaxEmail}' 
+                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoTelFaxEmail}' 
                     when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxTelFaxEmail}' 
                     else isnull(dtkd.tel, '') 
                 end) as sdtCT,

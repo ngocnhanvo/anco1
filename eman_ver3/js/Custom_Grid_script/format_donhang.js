@@ -85,8 +85,8 @@ var format_donhang = {
 
 							if($('#tukho')[0]) {
 								if ($('#tukho')[0].loadDonHangXB) {
-									let dht = cell.donhangtron ? cell.donhangtron : false;
-									$('#tukho')[0].loadDonHangXB(dht);
+                                    let dht = cell.donhangtron ? cell.donhangtron : false;
+                                    $('#tukho')[0].loadDonHangXB(dht, cell.loai);
 								}
 							}
                         }
@@ -102,7 +102,8 @@ var format_donhang = {
                         { key: false, fixed: true, label: 'Khách hàng', name: 'md_doitackinhdoanh_id', index: 'dtkd.ma_dtkd', width: 120, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Nhà Cung Ứng' } },
                         { key: false, fixed: true, label: 'Địa chỉ', name: 'diachigiaohang', index: 'dsdh.diachigiaohang', width: 120, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { maxLength: 32 }, frozen: false, formoptions: { label: 'Nhà Cung Ứng' } },
                         { key: false, fixed: true, label: 'sanxuatton', name: 'sanxuatton', index: 'dsdh.sanxuatton', width: 120, hidden: true },
-                        { key: false, fixed: true, label: 'donhangtron', name: 'donhangtron', index: 'dsdh.sanxuatton', width: 120, hidden: true }
+                        { key: false, fixed: true, label: 'donhangtron', name: 'donhangtron', index: 'dsdh.sanxuatton', width: 120, hidden: true },
+                        { key: false, fixed: true, label: 'loai', name: 'loai', index: 'dsdh.loai', width: 120, hidden: true }
                     ],
                     postData: {
                         where_ex: function () {

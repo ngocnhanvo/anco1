@@ -204,6 +204,9 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             if (msgErrs.Count > 0)
                 msg = "Thiếu thông tin";
 
+            if (msg.StartsWith("<br>"))
+                msg = msg.Substring(4);
+
             var result = new
             {
                 msg = $@"<div error style='color:red'>{msg}</div>",

@@ -111,11 +111,10 @@ public class JQGridMD_00_DonMuaHangClass
         }
         db.SaveChanges();
         //Start cap nhat don mua hang
-        decimal tong_tienhang = decimal.Parse("0.00");
-        try { tong_tienhang = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Select(s => s.thanhtien.Value).Sum(); } catch { }
-        decimal tong_tienthue = decimal.Parse("0.00");
-        try { tong_tienthue = db.c_donmuahang_thue.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Select(s => s.tong_tien_thue.Value).Sum(); } catch { }
-        decimal tong_tatca = tong_tienhang + Math.Floor(tong_tienthue);
+        var ddhs = db.c_donmuahang_cdmh.Local.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).ToList();
+        var tong_tienhang = ddhs.Sum(s => s.thanhtien.GetValueOrDefault(0));
+        var tong_tienthue = ddhs.Sum(s => s.thanhtienThue.GetValueOrDefault(0));
+        var tong_tatca = tong_tienhang + Math.Floor(tong_tienthue);
         //--
         string donvitinh = "VND";
         var dt = db.md_dongtien.Where(s => s.md_dongtien_id == object_.md_dongtien_id).Take(1).FirstOrDefault();
@@ -128,5 +127,26 @@ public class JQGridMD_00_DonMuaHangClass
         object_.chu_tong_tienhang = tth.Key;
         object_.chu_tong_tatca = ttc.Key;
         db.SaveChanges();
+    }
+
+    public void TinhThueDonBanHang(c_danhsachdathang object_, User_TK userTK, EntityContext db, bool? submit = false)
+    {
+        var ddhsServer = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).ToList();
+        var ddhs = db.c_dongdsdh.Local.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).ToList();
+        var tong_tienhang = ddhs.Sum(s => s.thanhtien.GetValueOrDefault(0));
+        var tong_tienthue = ddhs.Sum(s => s.thanhtienThue.GetValueOrDefault(0));
+        decimal tong_tatca = tong_tienhang + Math.Floor(tong_tienthue);
+        //--
+        string donvitinh = "VND";
+        //--
+        var tth = VNN_ConvertMoney.convert((double)tong_tienhang, donvitinh).FirstOrDefault();
+        var ttc = VNN_ConvertMoney.convert((double)tong_tatca, donvitinh).FirstOrDefault();
+        object_.tong_tienhang = (decimal)tth.Value;
+        object_.tong_tatca = (decimal)ttc.Value;
+        object_.chu_tong_tienhang = tth.Key;
+        object_.chu_tong_tatca = ttc.Key;
+
+        if(submit.GetValueOrDefault(false))
+            db.SaveChanges();
     }
 }

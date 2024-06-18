@@ -295,6 +295,18 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             .HasColumnName("tem_dan")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.thanhtien)
+                            .HasColumnName("thanhtien")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.thanhtienThue)
+                            .HasColumnName("thanhtienThue")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.thue)
+                            .HasColumnName("thue")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.v2)
                             .HasColumnName("v2")
                             .HasColumnType("numeric").HasPrecision(18, 8);

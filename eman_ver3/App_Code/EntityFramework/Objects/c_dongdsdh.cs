@@ -307,6 +307,24 @@
                         public string tem_dan { get; set; }
                 
 						
+                        #region c_dongdsdh_thanhtien_wintaFN
+                        
+                        #endregion c_dongdsdh_thanhtien_wintaFN
+                        public Decimal? thanhtien { get; set; }
+                
+						
+                        #region c_dongdsdh_thanhtienThue_wintaFN
+                        
+                        #endregion c_dongdsdh_thanhtienThue_wintaFN
+                        public Decimal? thanhtienThue { get; set; }
+                
+						
+                        #region c_dongdsdh_thue_wintaFN
+                        
+                        #endregion c_dongdsdh_thue_wintaFN
+                        public string thue { get; set; }
+                
+						
                         #region c_dongdsdh_v2_wintaFN
                         
                         #endregion c_dongdsdh_v2_wintaFN

@@ -37,6 +37,12 @@
                         public DateTime? anhDungTT { get; set; }
                 
 						
+                        #region c_danhsachdathang_banHHVT_wintaFN
+                        
+                        #endregion c_danhsachdathang_banHHVT_wintaFN
+                        public bool? banHHVT { get; set; }
+                
+						
                         #region c_danhsachdathang_bophancapnhat_wintaFN
                         
                         #endregion c_danhsachdathang_bophancapnhat_wintaFN
@@ -77,6 +83,18 @@
                         
                         #endregion c_danhsachdathang_chiHaTT_wintaFN
                         public DateTime? chiHaTT { get; set; }
+                
+						
+                        #region c_danhsachdathang_chu_tong_tatca_wintaFN
+                        
+                        #endregion c_danhsachdathang_chu_tong_tatca_wintaFN
+                        public string chu_tong_tatca { get; set; }
+                
+						
+                        #region c_danhsachdathang_chu_tong_tienhang_wintaFN
+                        
+                        #endregion c_danhsachdathang_chu_tong_tienhang_wintaFN
+                        public string chu_tong_tienhang { get; set; }
                 
 						
                         #region c_danhsachdathang_chungloai_wintaFN
@@ -239,6 +257,12 @@
                         
                         #endregion c_danhsachdathang_khoDG_wintaFN
                         public string khoDG { get; set; }
+                
+						
+                        #region c_danhsachdathang_loai_wintaFN
+                        
+                        #endregion c_danhsachdathang_loai_wintaFN
+                        public string loai { get; set; }
                 
 						
                         #region c_danhsachdathang_loaiVTDGK_wintaFN
@@ -433,6 +457,12 @@
                         public DateTime? ngaytauchayETD { get; set; }
                 
 						
+                        #region c_danhsachdathang_ngaythanhtoan_wintaFN
+                        
+                        #endregion c_danhsachdathang_ngaythanhtoan_wintaFN
+                        public DateTime? ngaythanhtoan { get; set; }
+                
+						
                         #region c_danhsachdathang_ngaythucteCont_wintaFN
                         
                         #endregion c_danhsachdathang_ngaythucteCont_wintaFN
@@ -539,6 +569,18 @@
                         
                         #endregion c_danhsachdathang_tiendo_wintaFN
                         public string tiendo { get; set; }
+                
+						
+                        #region c_danhsachdathang_tong_tatca_wintaFN
+                        
+                        #endregion c_danhsachdathang_tong_tatca_wintaFN
+                        public Decimal? tong_tatca { get; set; }
+                
+						
+                        #region c_danhsachdathang_tong_tienhang_wintaFN
+                        
+                        #endregion c_danhsachdathang_tong_tienhang_wintaFN
+                        public Decimal? tong_tienhang { get; set; }
                 
 						
                         #region c_danhsachdathang_tongVTDG_wintaFN

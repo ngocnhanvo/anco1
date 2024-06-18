@@ -101,6 +101,26 @@ public static class Helper
         "104"
     };
 
+    public static string[] checkVT_BTP_TP(bool? vt, bool? btp, bool? sp, string loai)
+    {
+        //La Vat Tu
+        int kq = 0;
+        if (vt.GetValueOrDefault(false) & !btp.GetValueOrDefault(false) & !sp.GetValueOrDefault(false))
+            kq = 0;
+        //La Hon Hop Tron
+        if (vt.GetValueOrDefault(false) & btp.GetValueOrDefault(false) & !sp.GetValueOrDefault(false))
+            kq = 0;
+        //La Hang Tho
+        if (!vt.GetValueOrDefault(false) & btp.GetValueOrDefault(false))
+            kq = 1;
+        //La Thanh Pham
+        if (!vt.GetValueOrDefault(false) & !btp.GetValueOrDefault(false) & sp.GetValueOrDefault(false))
+            kq = 2;
+
+
+        return new string[] { $@"T0{kq}", arrLoaiCT_DBH[kq], arrLoaiCT_DBH[int.Parse(loai.Substring(1))] };
+    }
+
     public static dynamic getInfoDB()
     {
         var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(Mbg.Data.SqlClient.SqlHelper.connectionString);
