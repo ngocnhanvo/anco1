@@ -48,24 +48,41 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
     public void CA_01_KetThucDonMuHang(HttpContext context)
     {
-        string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
+        string msg = "";
         try
         {
-            c_donmuahang object_ = db.c_donmuahang.Where(p => p.c_donmuahang_id == id).Take(1).FirstOrDefault();
-
-            object_.md_trangthai_id = "KETTHUC";
-            msg_success = "<div style='color:blue'> Kết thúc đơn hàng thành công.</div>";
-
-            if (msg.Length <= 0)
+            var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == id).FirstOrDefault();
+            if (dmh == null)
             {
-                db.SaveChanges();
-                msg = msg_success;
+                msg = $@"Không tìm thấy đơn mua hàng";
+                goto EndEventHandler;
             }
+
+            if (dmh.md_trangthai_id != Helper.HIEULUC)
+            {
+                msg = $@"Đơn mua hàng không ở trạng thái ""Hiệu Lực""";
+                goto EndEventHandler;
+            }
+
+            dmh.md_trangthai_id = Helper.KETTHUC;
+            //dmh.ngaycapnhat = DateTime.Now;
+            db.SaveChanges();
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"<div style='color:blue'>Xác nhận đơn mua hàng thành công</div>";
+        }
+        else
+        {
+            msg = $@"<div style='color:red' error>{msg}</div>";
         }
         context.Response.Write(msg);
     }
@@ -78,13 +95,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         try
         {
             var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == id).FirstOrDefault();
-            if(dmh == null)
+            if (dmh == null)
             {
                 msg = $@"Không tìm thấy đơn mua hàng";
                 goto EndEventHandler;
             }
 
-            if(dmh.md_trangthai_id != Helper.SOANTHAO)
+            if (dmh.md_trangthai_id != Helper.SOANTHAO)
             {
                 msg = $@"Đơn mua hàng không ở trạng thái ""Soạn Thảo""";
                 goto EndEventHandler;
@@ -94,14 +111,14 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             dmh.ngayxacnhan = DateTime.Now;
             db.SaveChanges();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             msg = ex.Message;
         }
 
     EndEventHandler:;
 
-        if(msg.Length <= 0)
+        if (msg.Length <= 0)
         {
             msg = $@"<div style='color:blue'>Xác nhận đơn mua hàng thành công</div>";
         }
@@ -119,13 +136,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         try
         {
             var dmh = db.c_donmuahang.Where(s => s.c_donmuahang_id == id).FirstOrDefault();
-            if(dmh == null)
+            if (dmh == null)
             {
                 msg = $@"Không tìm thấy đơn mua hàng";
                 goto EndEventHandler;
             }
 
-            if(dmh.md_trangthai_id != Helper.DANHAN)
+            if (dmh.md_trangthai_id != Helper.DANHAN)
             {
                 msg = $@"Đơn mua hàng không ở trạng thái ""Đã Xác Nhận""";
                 goto EndEventHandler;
@@ -153,14 +170,14 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
             }
             db.SaveChanges();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             msg = ex.Message;
         }
 
     EndEventHandler:;
 
-        if(msg.Length <= 0)
+        if (msg.Length <= 0)
         {
             msg = $@"<div style='color:blue'>Xác nhận đơn mua hàng thành công</div>";
         }
@@ -224,7 +241,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
         using (var transaction = db.Database.BeginTransaction())
         {
             try
-            { 
+            {
                 var object_ = db.c_donmuahang.Where(p => p.c_donmuahang_id == id).Take(1).FirstOrDefault();
                 int count = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == object_.c_donmuahang_id).Count();
 
@@ -288,7 +305,7 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                     if (msg.Length <= 0)
                     {
                         var bg = db.md_banggia.Where(s => s.md_banggia_id == md_banggia_id).Take(1).FirstOrDefault();
-                        
+
                         if (msg.Length <= 0)
                         {
                             object_.md_dongtien_id = bg.md_dongtien_id;
