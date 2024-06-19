@@ -287,7 +287,7 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
                     click: function () {
                         let inPDF = $("#inPDF").prop('checked') ? "1" : "";
                         let sothapphan = $('#sothapphan').val();
-                        let url = url_org_sys + "View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho"+
+                        let url = url_org_sys + "View/Print/MD_00_NhapkhotuNCC/Xacnhannhapkho.aspx?oper=CA_01_InPhieuNhapkho" +
                             "&ma_module=" + ma_module +
                             "&md_nhapkho_ncc_id=" + masterId.toString() +
                             "&inPDF=" + inPDF +
@@ -313,53 +313,68 @@ function CA_01_InPXNNKNCC(tengrid, id_parent, ma_case, Form_infor, Model_infor, 
 
 //start CA_01_TPNKMG2
 function CA_01_TPNKMG2(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    var masterId = id_parent;
-    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
-    if (masterId == null | masterId == '') {
+    let masterId = $(`#${tengrid}`).jqGrid('getGridParam', 'selrow');
+    let cell = $(`#${tengrid}`).getRowData(masterId);
+    if (masterId == null) {
         alert('Chưa chọn đối tượng cần thao tác.');
+        return;
     }
-    else {
-        var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid', '');
-        $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-            '<div class="dlg_content">Tạo phiếu nhập kho từ đơn mua hàng này.?</div>' +
-            '</div>');
-        $('#dlg_gridSmall').dialog({
-            modal: true,
-            width: CLform_infor.dodai,
-            height: CLform_infor.docao,
-            open: function (event, ui) {
-                Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
-            },
-            close: function () {
-                $(this).dialog('destroy').remove();
-            },
-            buttons: [
-                {
-                    id: 'btn-ok',
-                    text: 'Đồng ý',
-                    click: function () {
-                        $('#btn-ok').button('option', 'disabled', true);
-                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                        $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG2&ma_module=' + ma_module,
-                            { id: masterId.toString() }, function (result) {
+
+    if (cell.md_trangthai_id != 'DANHAN') {
+        alert(`Đơn mua hàng không ở trạng thái "Đã xác nhận".`);
+        return;
+    }
+
+    let CLform_infor = new get_Forminfor(ma_case, Form_infor);
+    let ma_module = tengrid.replace('grid', '');
+    $('body').append(`
+        <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+            <div class="dlg_content">Bạn muốn hiệu lực đơn mua hàng này?</div>
+        </div>`
+    );
+
+    let $dlg_gridSmall = $('#dlg_gridSmall');
+    $dlg_gridSmall.dialog({
+        modal: true,
+        width: CLform_infor.dodai,
+        height: CLform_infor.docao,
+        open: function (event, ui) {
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-ok',
+                text: 'Đồng ý',
+                click: function () {
+                    $('#btn-ok').button('option', 'disabled', true);
+                    $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                    $.post(`Controller/JQGridModify/JQGrid${ma_module}Modify.ashx?oper=${ma_case}&ma_module=${ma_module}`,
+                        { id: masterId.toString() }, function (result) {
+                            $('.dlg_content').html(result);
+                            $('.nhan_loading').remove();
+
+                            if (result.indexOf('error') <= -1) {
+                                $(`#${tengrid}`)[0].triggerToolbar();
+                                Close_Form($dlg_gridSmall, CLform_infor.dongform);
+                            }
+                            else {
                                 $('#btn-ok').button('option', 'disabled', false);
-                                $('.dlg_content').html(result);
-                                loadclick(tengrid, 'edit', load_stt);
-                                Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                            });
-                    }
-                },
-                {
-                    id: 'btn-close',
-                    text: 'Thoát',
-                    click: function () {
-                        $(this).dialog('destroy').remove();
-                    }
+                            }
+                        });
                 }
-            ]
-        });
-    }
+            },
+            {
+                id: 'btn-close',
+                text: 'Thoát',
+                click: function () {
+                    $(this).dialog('destroy').remove();
+                }
+            }
+        ]
+    });
 }
 //end CA_01_TPNKMG2
 
@@ -440,107 +455,68 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
 
 //start CA_01_TPNKMG
 function CA_01_TPNKMG(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    var masterId = id_parent, cell = null;
-    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
-    cell = $('#' + tengrid).getRowData(masterId);
+    let masterId = $(`#${tengrid}`).jqGrid('getGridParam', 'selrow');
+    let cell = $(`#${tengrid}`).getRowData(masterId);
     if (masterId == null) {
         alert('Chưa chọn đối tượng cần thao tác.');
+        return;
     }
-    else if (cell['md_trangthai_id'] != 'HIEULUC') {
-        alert('Chỉ có thể thao tác với đơn mua hàng có trạng thái \"Hiệu lực\".');
-    }
-    else {
-        var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid', '');
-        $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-            '<div class="dlg_content"><div class="nhan_loading">&nbsp;</div></div>' +
-            '</div>');
-        $('#dlg_gridSmall').dialog({
-            modal: true,
-            width: CLform_infor.dodai,
-            height: CLform_infor.docao,
-            open: function (event, ui) {
-                $.get('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=load_donghang&id=' + masterId, function (result) {
-                    $('.dlg_content').html(result);
-                    format_number($('.input_soluong'), 0, 4);
-                    var dem_chk = 0, sl_toida = $('.chk_tosx').length - $('.chk_tosx.nhan_disable').length;
-                    $('.chk_tosx').change(function () {
-                        var input = '.input_' + $(this).val();
-                        if ($(this).prop('checked') == true) {
-                            $(input).removeAttr('disabled').removeClass('nhan_disable');
-                            dem_chk++;
-                            if (dem_chk >= sl_toida) {
-                                $('.chk_tosx_all').prop('checked', true);
-                            }
-                        }
-                        else {
-                            dem_chk--;
-                            $('.chk_tosx_all').prop('checked', false);
-                            $(input).addClass('nhan_disable').attr('disabled', 'disabled');
-                        }
-                    });
 
-                    $('.chk_tosx_all').change(function () {
-                        if ($(this).prop('checked') == true) {
-                            $('.chk_tosx').each(function () {
-                                if (!$(this).hasClass('nhan_disable')) {
-                                    $(this).prop('checked', true);
-                                    $('.input_' + $(this).val()).removeAttr('disabled').removeClass('nhan_disable');;
-                                }
-                            });
-                            dem_chk = sl_toida;
-                        }
-                        else {
-                            $('.chk_tosx').prop('checked', false);
-                            $('.input_soluong').addClass('nhan_disable').attr('disabled', 'disabled');
-                            dem_chk = 0;
-                        }
-                    });
-                });
-                Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
-            },
-            close: function () {
-                $(this).dialog('destroy').remove();
-            },
-            buttons: [
-                {
-                    id: 'btn-ok',
-                    text: 'Đồng ý',
-                    click: function () {
-                        $('#btn-ok').button('option', 'disabled', true);
-                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                        var id_sel = '', value_sl = '';
-                        $('.chk_tosx').each(function (index, val) {
-                            if ($(this).prop('checked') == true) {
-                                id_sel += $(this).val() + ',';
-                                value_sl += $('.input_' + $(this).val()).val() + ',';
+    if (cell.md_trangthai_id != 'SOANTHAO') {
+        alert(`Đơn mua hàng không ở trạng thái "Soạn Thảo".`);
+        return;
+    }
+
+    let CLform_infor = new get_Forminfor(ma_case, Form_infor);
+    let ma_module = tengrid.replace('grid', '');
+    $('body').append(`
+        <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+            <div class="dlg_content">Bạn muốn xác nhận đơn mua hàng này?</div>
+        </div>`
+    );
+
+    let $dlg_gridSmall = $('#dlg_gridSmall');
+    $dlg_gridSmall.dialog({
+        modal: true,
+        width: CLform_infor.dodai,
+        height: CLform_infor.docao,
+        open: function (event, ui) {
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-ok',
+                text: 'Đồng ý',
+                click: function () {
+                    $('#btn-ok').button('option', 'disabled', true);
+                    $('.dlg_content').prepend('<div class="nhan_loading"></div>');
+                    $.post(`Controller/JQGridModify/JQGrid${ma_module}Modify.ashx?oper=${ma_case}&ma_module=${ma_module}`,
+                        { id: masterId.toString() }, function (result) {
+                            $('.dlg_content').html(result);
+                            $('.nhan_loading').remove();
+
+                            if (result.indexOf('error') <= -1) {
+                                $(`#${tengrid}`)[0].triggerToolbar();
+                                Close_Form($dlg_gridSmall, CLform_infor.dongform);
+                            }
+                            else {
+                                $('#btn-ok').button('option', 'disabled', false);
                             }
                         });
-                        $.post('Controller/JQGridModify/JQGridMD_00_DonMuaHangModify.ashx?oper=CA_01_TPNKMG&ma_module=' + ma_module,
-                            { id: masterId.toString(), id_sel: id_sel, value_sl: value_sl }, function (result) {
-                                if (result.indexOf('div') > -1) {
-                                    $('.dlg_content').html(result);
-                                    loadclick(tengrid, 'edit', load_stt);
-                                    Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                                }
-                                else {
-                                    $('#btn-ok').button('option', 'disabled', false);
-                                    $('.nhan_loading').remove();
-                                    alert(result);
-                                }
-                            });
-                    }
-                },
-                {
-                    id: 'btn-close',
-                    text: 'Thoát',
-                    click: function () {
-                        $(this).dialog('destroy').remove();
-                    }
                 }
-            ]
-        });
-    }
+            },
+            {
+                id: 'btn-close',
+                text: 'Thoát',
+                click: function () {
+                    $(this).dialog('destroy').remove();
+                }
+            }
+        ]
+    });
 }
 //end CA_01_TPNKMG
 

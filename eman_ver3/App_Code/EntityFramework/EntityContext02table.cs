@@ -461,12 +461,20 @@ modelBuilder.Entity<c_donmuahang>().HasKey<string>(p => p.c_donmuahang_id);
                             .HasColumnName("ngaygiaohang")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.ngayhieuluc)
+                            .HasColumnName("ngayhieuluc")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.ngaythanhtoan)
                             .HasColumnName("ngaythanhtoan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.ngayxacnhan)
+                            .HasColumnName("ngayxacnhan")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.nguoicapnhat)

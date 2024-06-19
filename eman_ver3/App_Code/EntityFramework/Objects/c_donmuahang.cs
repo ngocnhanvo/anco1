@@ -151,6 +151,12 @@
                         public DateTime? ngaygiaohang { get; set; }
                 
 						
+                        #region c_donmuahang_ngayhieuluc_wintaFN
+                        
+                        #endregion c_donmuahang_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region c_donmuahang_ngaytao_wintaFN
                         
                         #endregion c_donmuahang_ngaytao_wintaFN
@@ -161,6 +167,12 @@
                         
                         #endregion c_donmuahang_ngaythanhtoan_wintaFN
                         public DateTime? ngaythanhtoan { get; set; }
+                
+						
+                        #region c_donmuahang_ngayxacnhan_wintaFN
+                        
+                        #endregion c_donmuahang_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region c_donmuahang_nguoicapnhat_wintaFN

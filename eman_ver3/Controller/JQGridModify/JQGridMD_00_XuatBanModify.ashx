@@ -106,7 +106,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             var ngayXuat = VNN_Config.setDateTime(ngayXuatStr);
             if (!ngayXuat.IsDate())
             {
-                msg = $@"Lỗi: Giá trị ngày chuyển kho bị sai.";
+                msg = $@"Lỗi: Giá trị ngày xuất kho bị sai.";
                 goto EndEventHandler;
             }
             px.ngaychuyen = ngayXuat;
