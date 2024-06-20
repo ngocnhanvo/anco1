@@ -605,13 +605,13 @@ public class Public
         return bomId;
     }
 
-    public decimal getGiaBanSP(string sanphamId, string khachhang, EntityContext db)
+    public decimal getGiaBanSP(string sanphamId, string khachhang, EntityContext db, bool? nhancong = false)
     {
         var sp = db.md_sanpham.Where(s => s.md_sanpham_id == sanphamId).FirstOrDefault();
         if (sp == null)
             return -1;
 
-        var tuychon = sp.ban_thanhpham.GetValueOrDefault(false) ? Helper.NHANCONG : Helper.BANTP;
+        var tuychon = nhancong.GetValueOrDefault(false) ? Helper.NHANCONG : Helper.BANTP;
         var giaBanSP = from a in db.md_giasanpham
                        join b in db.md_phienbangia on a.md_phienbangia_id equals b.md_phienbangia_id
                        join c in db.md_banggia on b.md_banggia_id equals c.md_banggia_id
