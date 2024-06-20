@@ -78,7 +78,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                 var slyeucau = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).ToList().Sum(s => s.sl_duyet.GetValueOrDefault(0));
                 if (slyeucau <= 0)
                 {
-                    msg = $@"Phải có ít nhất 1 dòng hàng có số lượng yêu cầu lớn hơn 0";
+                    msg = $@"Phải có ít nhất 1 dòng hàng có số lượng đề nghị lớn hơn 0";
                     goto EndEventHandler;
                 }
 
