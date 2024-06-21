@@ -276,7 +276,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
             if (ck_dh != null)
             {
-                ck_dh.tong_sl_dat = ck_dh.tong_sl_dat - dh.sl_nhap;
+                ck_dh.tong_sl_dat = (ck_dh.tong_sl_dat.GetValueOrDefault(0) - dh.sl_nhap.GetValueOrDefault(0)).Set0WhenlessThan0();
             }
         }
         return id_new;
