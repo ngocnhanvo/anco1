@@ -276,7 +276,13 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
             if (ck_dh != null)
             {
-                ck_dh.tong_sl_dat = (ck_dh.tong_sl_dat.GetValueOrDefault(0) - dh.sl_nhap.GetValueOrDefault(0)).Set0WhenlessThan0();
+                var tsld = (ck_dh.tong_sl_dat.GetValueOrDefault(0) - dh.sl_nhap.GetValueOrDefault(0)).Set0WhenlessThan0();
+                ck_dh.tong_sl_dat = tsld;
+                var slmn = ck_dh.sl_muonnhap.GetValueOrDefault(0);
+                ck_dh.sl_muonnhap = slmn > tsld ? tsld : slmn;
+                var sltn = ck_dh.sl_nhap.GetValueOrDefault(0);
+                slmn = ck_dh.sl_muonnhap.GetValueOrDefault(0);
+                ck_dh.sl_nhap = sltn > slmn ? slmn : sltn;
             }
         }
         return id_new;
