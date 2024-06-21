@@ -157,7 +157,15 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 foreach (var cdh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).ToList())
                 {
                     var cd = db.c_kehoachmuavt_cdh.Where(s => s.md_sanpham_id == cdh.md_sanpham_id & s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id).FirstOrDefault();
-                    cd.sl_conlai = cd.sl_conlai.GetValueOrDefault(0) + cdh.sl_dadat2.GetValueOrDefault(0);
+                    cd.sl_conlai = cd.sl_conlai.GetValueOrDefault(0) + cdh.sl_dadat.GetValueOrDefault(0);
+                    if(cd.sl_conlai.GetValueOrDefault(0) > cd.sl_duyet2.GetValueOrDefault(0))
+                    {
+                        var sldamuaStr = cd.sl_conlai.GetValueOrDefault(0).DropTrailingZeros();
+                        var slduyetStr = cd.sl_duyet2.GetValueOrDefault(0).DropTrailingZeros();
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == cd.md_sanpham_id).FirstOrDefault();
+                        msg = $@"""{sp.ma_sanpham}"" có ""SL đã mua"" lớn hơn ""SL duyệt"" ({sldamuaStr} > {slduyetStr})";
+                        goto EndEventHandler;
+                    }
                 }
 
                 var khmvtDHsServer = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id & s.sl_conlai < s.sl_duyet).ToList();
