@@ -63,6 +63,14 @@ public class JQGridMD_01_CacDongVanChuyenModify : IHttpHandler, System.Web.Sessi
                 if (dongHang != null)
                 {
                     cdvc.soluong_dichchuyen = dongHang.soluong_dichchuyen;
+                    if(cdvc.soluong_dichchuyen > cdvc.soluong_muonchuyen)
+                    {
+                        var sp = db.md_sanpham.Where(s => s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                        var sldc = cdvc.soluong_dichchuyen.GetValueOrDefault().DropTrailingZeros();
+                        var slmc = cdvc.soluong_muonchuyen.GetValueOrDefault().DropTrailingZeros();
+                        msg = $@"HHVT ""{sp.ma_sanpham}"" có SL thực chuyển lớn hơn SL dự kiến ({sldc} > {slmc})";
+                        goto EndEventHandler;
+                    }
                     cdvc.ngaycapnhat = DateTime.Now;
                 }
             }
