@@ -1002,6 +1002,7 @@ public class Public
                                     cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
                                     cdvc.lsxId = tsx.md_lenhsanxuat_id;
                                     cdvc.tukho = tsx.md_lenhsanxuat_tosx_id;
+                                    
                                     cdvc.soluong_dachuyen = 0;
                                     cdvc.soluong_toida = lht.sl_layton;
                                     cdvc.soluong_muonchuyen = lht.sl_layton;
@@ -1067,6 +1068,10 @@ public class Public
                                     }
                                     else
                                     {
+                                        if(!cdvc.tukho.Contains(tsx.md_lenhsanxuat_tosx_id))
+                                        {
+                                            cdvc.tukho += "," + tsx.md_lenhsanxuat_tosx_id;
+                                        }
                                         cdvc.soluong_toida = cdvc.soluong_toida.GetValueOrDefault(0) + lht.sl_layton;
                                         cdvc.soluong_muonchuyen = cdvc.soluong_muonchuyen.GetValueOrDefault(0) + lht.sl_layton;
                                         cdvc.soluong_dichchuyen = cdvc.soluong_dichchuyen.GetValueOrDefault(0) + lht.sl_layton;
@@ -1376,64 +1381,74 @@ public class Public
                 {
                     if (layTonTPhoacBTP)
                     {
-                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho).FirstOrDefault();
-                        layTonTP = tsx.phieulayhttp == vcnb.sochungtu;
-                        layTonBTP = tsx.phieulayht == vcnb.sochungtu;
-                        if (layTonTP | layTonBTP)
+                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => vcnb_cdvc.tukho.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
+                        foreach (var tsx in tsxs)
                         {
-                            if (layTonTP)
+                            layTonTP = tsx.phieulayhttp == vcnb.sochungtu;
+                            layTonBTP = tsx.phieulayht == vcnb.sochungtu;
+                            if (layTonTP | layTonBTP)
                             {
-                                var dklhttp = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
-                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
-                                if (dklhttp != null)
+                                if (layTonTP)
                                 {
-                                    dklhttp.sl_layton1 = vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                    truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
-                                }
-                                khdh.trangthai = Helper.DaXLTTP;
-                                dsdh.md_trangthai_id = khdh.trangthai;
-                            }
-                            else if (layTonBTP)
-                            {
-                                var sldcSav = vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                var dklhtbtps = db.md_lenhsanxuat_tosx_dklht.Where(s =>
-                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).ToList();
-                                foreach (var dklhtbtp in dklhtbtps)
-                                {
-                                    if (sldcSav > 0)
+                                    var dklhttp = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+                                    if (dklhttp != null)
                                     {
-                                        var sllsx = dklhtbtp.sl_layton.GetValueOrDefault(0);
-                                        var sldc = sldcSav > sllsx ? sllsx : sldcSav;
-                                        sldcSav = sldcSav - sldc;
-                                        dklhtbtp.sl_layton1 = sldc;
-                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, sldc, spMain.ma_sanpham, dklhtbtp.macuoi, dklhtbtp.macuoi);
-
-                                        var cdhBTPServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                            s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
-                                            & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id
-                                            & s.macuoi == dklhtbtp.macuoi
-                                            & s.mathaydoi == dklhtbtp.macuoi).FirstOrDefault();
-                                        var cdhBTP = db.md_lenhsanxuat_tosx_cdh.Local.Where(s =>
-                                            s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
-                                                & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id
-                                            & s.macuoi == dklhtbtp.macuoi
-                                            & s.mathaydoi == dklhtbtp.macuoi).FirstOrDefault();
-
-                                        if (cdhBTP != null)
+                                        dklhttp.sl_layton1 = vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
+                                    }
+                                }
+                                else if (layTonBTP)
+                                {
+                                    var sldcSav = vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                    var dklhtbtps = db.md_lenhsanxuat_tosx_dklht.Where(s =>
+                                    s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).ToList();
+                                    foreach (var dklhtbtp in dklhtbtps)
+                                    {
+                                        if (sldcSav > 0)
                                         {
-                                            sanxuat = 4;
-                                            cdhBTP.sl_chiato = cdhBTP.sl_chiato.GetValueOrDefault(0) - sldc;
-                                            cdhBTP.sl_nhapkho = cdhBTP.sl_nhapkho.GetValueOrDefault(0) + sldc;
-                                            cdhBTP.sl_dahoanthanh = cdhBTP.sl_dahoanthanh.GetValueOrDefault(0) + sldc;
+                                            var sllsx = dklhtbtp.sl_layton.GetValueOrDefault(0);
+                                            var sldc = sldcSav > sllsx ? sllsx : sldcSav;
+                                            sldcSav = sldcSav - sldc;
+                                            dklhtbtp.sl_layton1 = sldc;
+                                            truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, sldc, spMain.ma_sanpham, dklhtbtp.macuoi, dklhtbtp.macuoi);
+
+                                            var cdhBTPServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>
+                                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                                & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id
+                                                & s.macuoi == dklhtbtp.macuoi
+                                                & s.mathaydoi == dklhtbtp.macuoi).FirstOrDefault();
+                                            var cdhBTP = db.md_lenhsanxuat_tosx_cdh.Local.Where(s =>
+                                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id
+                                                & s.macuoi == dklhtbtp.macuoi
+                                                & s.mathaydoi == dklhtbtp.macuoi).FirstOrDefault();
+
+                                            if (cdhBTP != null)
+                                            {
+                                                sanxuat = 4;
+                                                cdhBTP.sl_chiato = cdhBTP.sl_chiato.GetValueOrDefault(0) - sldc;
+                                                cdhBTP.sl_nhapkho = cdhBTP.sl_nhapkho.GetValueOrDefault(0) + sldc;
+                                                cdhBTP.sl_dahoanthanh = cdhBTP.sl_dahoanthanh.GetValueOrDefault(0) + sldc;
+                                            }
                                         }
                                     }
                                 }
-                                khdh.trangthai = Helper.DaXLTBTP;
-                                khdh.ngaybatdausx = DateTime.Now;
-                                dsdh.md_trangthai_id = khdh.trangthai;
                             }
+                        }
+
+                        if (layTonTP)
+                        {
+                            khdh.trangthai = Helper.DaXLTTP;
+                            dsdh.md_trangthai_id = khdh.trangthai;
+                        }
+                        else
+                        {
+                            khdh.trangthai = Helper.DaXLTBTP;
+                            khdh.ngaybatdausx = DateTime.Now;
+                            dsdh.md_trangthai_id = khdh.trangthai;
                         }
                     }
 
@@ -1444,38 +1459,7 @@ public class Public
                         s.md_lenhsanxuat_tosx_id == vcnb_cdvc.tukho
                         & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
 
-                    var ctHN = db.md_hanngachPXTo_chitiet.Where(s => s.md_hanngachPXTo_chitiet_id == vcnb_cdvc.denkho).FirstOrDefault();
-
-                    var chuyenVeKT = false;
-                    if (ctHN != null)
-                    {
-                        if (vcnb.laytonTP.GetValueOrDefault(false))
-                            ctHN.sllaytonTP = ctHN.sllaytonTP.GetValueOrDefault(0) - (int)vcnb_cdvc.soluong_toida.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                        else
-                        {
-                            ctHN.sllayton = ctHN.sllayton.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-
-                            var cTVK = db.md_hanngachPXTo_chuyenvekhoton.Where(s =>
-                                s.md_hanngachPXTo_chitiet_id == ctHN.md_hanngachPXTo_chitiet_id
-                                & s.toId == khoXuat.md_to_id).FirstOrDefault();
-
-                            if (cTVK != null)
-                            {
-                                cTVK.sldachuyen = cTVK.sldachuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                if (khoNhan.md_to_id != khoXuat.md_to_id)
-                                    cTVK.slchuyen = cTVK.slchuyen.GetValueOrDefault(0) + (int)vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-
-                                var dhCTVK = db.md_lenhsanxuat_tosx_cdh.Where(s =>
-                                    s.md_lenhsanxuat_tosx_id == cTVK.tosxId & s.md_sanpham_id == cTVK.md_sanpham_id).FirstOrDefault();
-                                if (dhCTVK != null)
-                                    dhCTVK.sl_nkton = dhCTVK.sl_nkton.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-
-                                chuyenVeKT = true;
-                            }
-                        }
-                    }
-
-                    if (cdhLSX != null & chuyenVeKT == false & !vcnb.laytonTP.GetValueOrDefault(false) & !layTonBTP)
+                    if (cdhLSX != null & !vcnb.laytonTP.GetValueOrDefault(false) & !layTonBTP)
                     {
                         if (koCapnhatDLSX)
                         {
