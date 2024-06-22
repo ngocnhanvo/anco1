@@ -13,7 +13,7 @@ public partial class PrintControllers_MD_00_XuatBan_lenhXuatKho : System.Web.UI.
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH XUẤT KHO.repx";
+        string nameTemp = "[KT] PHIẾU XUẤT KHO.repx";
         string nameRpt = "LỆNH XUẤT KHO {ngaylap}";
         string sql = CreateSql(context);
 
