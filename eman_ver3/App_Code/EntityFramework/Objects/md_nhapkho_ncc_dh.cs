@@ -169,6 +169,12 @@
                         public Decimal? sl_nhap2 { get; set; }
                 
 						
+                        #region md_nhapkho_ncc_dh_sl_tonkho_wintaFN
+                        
+                        #endregion md_nhapkho_ncc_dh_sl_tonkho_wintaFN
+                        public Decimal? sl_tonkho { get; set; }
+                
+						
                         #region md_nhapkho_ncc_dh_so_dmh_wintaFN
                         
                         #endregion md_nhapkho_ncc_dh_so_dmh_wintaFN

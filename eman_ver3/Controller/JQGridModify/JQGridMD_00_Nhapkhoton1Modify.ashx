@@ -120,9 +120,11 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
     public string nhap_kho(EntityContext db, md_nhapkhoton_cdh dh, md_nhapkhoton nk, decimal nhanvoi, User_TK us)
     {
         string id_new = Helper.getNewId();
-        md_kho_sanpham check_khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == nk.denkho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
-        md_kho_sanpham sp = check_khosp;
-        if (check_khosp == null)
+        var spServer = db.md_kho_sanpham.Where(s => s.md_kho_id == nk.denkho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+        var sp = db.md_kho_sanpham.Local.Where(s => s.md_kho_id == nk.denkho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+        var add = sp == null;
+        dh.sl_tonkho = spServer == null ? 0 : spServer.soluong.GetValueOrDefault(0);
+        if (add)
         {
             sp = new md_kho_sanpham();
             sp.md_kho_sanpham_id = id_new;
@@ -151,7 +153,7 @@ public class JQGridMD_00_Nhapkhoton1Modify : IHttpHandler, System.Web.SessionSta
         sp.hoatdong = true;
 
         //Kiem tra
-        if (check_khosp == null)
+        if (add)
         {
             sp.ngaytao = DateTime.Now;
             sp.ngaycapnhat = DateTime.Now;

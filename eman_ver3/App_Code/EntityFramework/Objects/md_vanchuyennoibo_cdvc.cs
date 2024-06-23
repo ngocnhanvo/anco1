@@ -145,6 +145,18 @@
                         public string sapxep { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_cdvc_sl_tonkhoDK_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_sl_tonkhoDK_wintaFN
+                        public Decimal? sl_tonkhoDK { get; set; }
+                
+						
+                        #region md_vanchuyennoibo_cdvc_sl_tonkhoTK_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_cdvc_sl_tonkhoTK_wintaFN
+                        public Decimal? sl_tonkhoTK { get; set; }
+                
+						
                         #region md_vanchuyennoibo_cdvc_soluong_dachuyen_wintaFN
                         
                         #endregion md_vanchuyennoibo_cdvc_soluong_dachuyen_wintaFN

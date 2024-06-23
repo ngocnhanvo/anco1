@@ -1416,6 +1416,10 @@ modelBuilder.Entity<md_nhapkho_ncc_dh>().HasKey<string>(p => p.md_nhapkho_ncc_dh
                             .HasColumnName("sl_nhap2")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_nhapkho_ncc_dh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_nhapkho_ncc_dh>()
                             .Property(p => p.so_dmh)
                             .HasColumnName("so_dmh")
                             .HasColumnType("nvarchar");
@@ -1956,6 +1960,10 @@ modelBuilder.Entity<md_nhapkhonb_cdh>().HasKey<string>(p => p.md_nhapkhonb_cdh_i
                             .HasColumnName("sl_toida_trongLSXTo2")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_nhapkhonb_cdh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_nhapkhonb_cdh>()
                             .Property(p => p.tenhang)
                             .HasColumnName("tenhang")
                             .HasColumnType("nvarchar");
@@ -2202,6 +2210,10 @@ modelBuilder.Entity<md_nhapkhoton_cdh>().HasKey<string>(p => p.md_nhapkhoton_cdh
                             modelBuilder.Entity<md_nhapkhoton_cdh>()
                             .Property(p => p.sl_nhap)
                             .HasColumnName("sl_nhap")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_nhapkhoton_cdh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_nhapkhoton_cdh>()
                             .Property(p => p.tong_sl_dat)

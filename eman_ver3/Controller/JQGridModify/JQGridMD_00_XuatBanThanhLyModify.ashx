@@ -228,6 +228,7 @@ public class JQGridMD_00_XuatBanThanhLyModify : IHttpHandler, System.Web.Session
 
                 if (msg.Length <= 0 & dh.sl_xuat > 0)
                 {
+                    dh.sl_tonkho = kho == null ? 0 : kho.soluong.GetValueOrDefault(0);
                     count_slxuat++;
                     soluong_xuat = "" + dh.sl_xuat.GetValueOrDefault(0).DropTrailingZeros();
                     //--cap nhat so luong xuat

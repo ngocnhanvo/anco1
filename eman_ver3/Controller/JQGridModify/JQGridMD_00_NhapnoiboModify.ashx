@@ -485,6 +485,7 @@ public class JQGridMD_00_NhapnoiboModify : IHttpHandler, System.Web.SessionState
         var spServer = db.md_kho_sanpham.Where(s => s.md_kho_id == nk.denkho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
         var sp = db.md_kho_sanpham.Local.Where(s => s.md_kho_id == nk.denkho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
         var add = sp == null;
+        dh.sl_tonkho = spServer == null ? 0 : spServer.soluong.GetValueOrDefault(0);
         if (add)
         {
             sp = new md_kho_sanpham();

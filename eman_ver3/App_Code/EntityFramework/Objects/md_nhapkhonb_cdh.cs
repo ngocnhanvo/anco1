@@ -169,6 +169,12 @@
                         public Decimal? sl_toida_trongLSXTo2 { get; set; }
                 
 						
+                        #region md_nhapkhonb_cdh_sl_tonkho_wintaFN
+                        
+                        #endregion md_nhapkhonb_cdh_sl_tonkho_wintaFN
+                        public Decimal? sl_tonkho { get; set; }
+                
+						
                         #region md_nhapkhonb_cdh_tenhang_wintaFN
                         
                         #endregion md_nhapkhonb_cdh_tenhang_wintaFN

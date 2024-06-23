@@ -465,6 +465,10 @@ modelBuilder.Entity<c_donmuahang>().HasKey<string>(p => p.c_donmuahang_id);
                             .HasColumnName("ngayhieuluc")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<c_donmuahang>()
+                            .Property(p => p.ngayketthuc)
+                            .HasColumnName("ngayketthuc")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<c_donmuahang>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");

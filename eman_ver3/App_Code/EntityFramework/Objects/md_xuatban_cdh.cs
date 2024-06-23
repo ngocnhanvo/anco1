@@ -103,6 +103,12 @@
                         public Decimal? sl_muonxuat { get; set; }
                 
 						
+                        #region md_xuatban_cdh_sl_tonkho_wintaFN
+                        
+                        #endregion md_xuatban_cdh_sl_tonkho_wintaFN
+                        public Decimal? sl_tonkho { get; set; }
+                
+						
                         #region md_xuatban_cdh_sl_xuat_wintaFN
                         
                         #endregion md_xuatban_cdh_sl_xuat_wintaFN

@@ -868,6 +868,14 @@ modelBuilder.Entity<md_vanchuyennoibo_cdvc>().HasKey<string>(p => p.md_vanchuyen
                             .HasColumnName("sapxep")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.sl_tonkhoDK)
+                            .HasColumnName("sl_tonkhoDK")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
+                            .Property(p => p.sl_tonkhoTK)
+                            .HasColumnName("sl_tonkhoTK")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_vanchuyennoibo_cdvc>()
                             .Property(p => p.soluong_dachuyen)
                             .HasColumnName("soluong_dachuyen")
                             .HasColumnType("decimal").HasPrecision(18, 8);
@@ -1570,6 +1578,10 @@ modelBuilder.Entity<md_xuatban_cdh>().HasKey<string>(p => p.md_xuatban_cdh_id);
                             modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.sl_muonxuat)
                             .HasColumnName("sl_muonxuat")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_xuatban_cdh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.sl_xuat)

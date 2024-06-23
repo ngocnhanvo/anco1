@@ -293,6 +293,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
     {
         string id_new = Helper.getNewId();
         var sp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.kho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+        dh.sl_tonkho = sp == null ? 0 : sp.soluong.GetValueOrDefault(0);
         var add = sp == null;
         if (add)
         {
