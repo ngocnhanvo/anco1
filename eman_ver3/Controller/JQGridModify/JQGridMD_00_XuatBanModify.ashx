@@ -147,7 +147,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
 
                 if (msg.Length <= 0 & dh.sl_xuat.GetValueOrDefault(0) > 0)
                 {
-                        dh.sl_tonkho = khosp == null ? 0 : khosp.soluong.GetValueOrDefault(0);
+                    dh.sl_tonkho = khosp == null ? 0 : khosp.soluong.GetValueOrDefault(0);
                     count_slxuat++;
                     //--cap nhat so luong xuat
                     edit_xuat(db, dh, px, userTK);
