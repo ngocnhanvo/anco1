@@ -595,8 +595,8 @@ public static class VNN_Config
 
     public static string get_NavFunc2(System.Web.HttpContext context, string ma_module, int capmodule)
     {
-        ADmin_JSON json = new ADmin_JSON();
-        var cases = json.ad_caseJSON().Where(s => s.ma_module == ma_module & s.hoatdong == true).ToList();
+        var json = new ADmin_JSON();
+        var cases = json.ad_caseJSON().Where(s => s.ma_module == ma_module & (s.isview ?? false) == false & s.hoatdong == true).ToList();
         var modules = json.ad_moduleJSON();
         var role_mmcs = json.ad_role_mmcJSON();
         var user_mmcs = json.ad_user_mmcJSON();
@@ -934,7 +934,7 @@ public static class VNN_Config
             default_FWH = "#FrmGrid_";
 
         string form_infor = "";
-        foreach (ad_case cn in cases.Where(s => s.ma_module == ma_module).OrderBy(p => p.sapxep).ToList())
+        foreach (ad_case cn in cases.Where(s => s.ma_module == ma_module & (s.isview ?? false) == false).OrderBy(p => p.sapxep).ToList())
         {
             if (cn.hamxuly != null)
             {

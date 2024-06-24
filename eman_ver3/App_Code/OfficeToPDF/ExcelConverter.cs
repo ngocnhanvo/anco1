@@ -373,7 +373,18 @@ namespace OfficeToPDF
                     foreach (var image in lstImage)
                     {
                         var oRange = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, image.column + 1];
-                        var pictureR = System.Drawing.Image.FromFile(image.link);
+                        System.Drawing.Image pictureR = null;
+                        if (image.link.StartsWith("http"))
+                        {
+                            var wc = new System.Net.WebClient();
+                            byte[] bytes = wc.DownloadData(image.link);
+                            var ms = new MemoryStream(bytes);
+                            pictureR = System.Drawing.Image.FromStream(ms);
+                        }
+                        else
+                        {
+                            pictureR = System.Drawing.Image.FromFile(image.link);
+                        }
                         float width = (float)((double)oRange.Width);
                         float height = (float)((double)oRange.RowHeight);
 

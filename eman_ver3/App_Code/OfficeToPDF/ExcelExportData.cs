@@ -61,27 +61,6 @@ namespace OfficeToPDF
                 file.Dispose();
             }
 
-            string tungay = context.Request.QueryString["tu"];
-            string denngay = context.Request.QueryString["den"];
-
-            string tu = string.IsNullOrWhiteSpace(tungay) ? "" : DateTime.ParseExact(tungay, "dd-MM-yyyy", null).ToString("dd/MM/yyyy");
-            string den = string.IsNullOrWhiteSpace(denngay) ? "" : DateTime.ParseExact(denngay, "dd-MM-yyyy", null).ToString("dd/MM/yyyy");
-            string donhang = context.Request.QueryString["donhang"];
-            string masp = context.Request.QueryString["masp"];
-
-            donhang = string.IsNullOrEmpty(donhang) ? "" : string.Format(@"and dsdh.so_po like N'{0}'", donhang);
-            masp = string.IsNullOrEmpty(masp) ? "" : string.Format(@"and sp.ma_sanpham like N'{0}'", masp);
-
-            string sql = string.Format(
-                sqlRun,
-                tu,
-                den,
-                donhang,
-                masp
-            );
-
-            //var dt = Mbg.Data.SqlClient.SqlHelper.GetData(sql);
-
             if (dt.Rows.Count > 0)
             {
                 foreach (DataColumn column in dt.Columns)
@@ -739,7 +718,9 @@ namespace OfficeToPDF
             else if (isImage)
             {
                 var linkIMG_ = dt.Rows[iRow][nameColumnData].ToString();
-                linkIMG_ = ExcuteSignalRStatic.mapPathSignalR("~/" + linkIMG_);
+                if (!linkIMG_.StartsWith("http"))
+                    linkIMG_ = ExcuteSignalRStatic.mapPathSignalR("~/" + linkIMG_);
+
                 float? top = null, left = null, width = null, height = null;
                 if (cell.CellComment != null)
                 {
@@ -754,7 +735,8 @@ namespace OfficeToPDF
 
                     lstRemoveComment.Add(cell);
                 }
-                if (File.Exists(linkIMG_))
+
+                if (File.Exists(linkIMG_) | linkIMG_.StartsWith("http"))
                 {
                     lstImage.Add(new AvariablePrj.lstImage()
                     {

@@ -58,58 +58,58 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
         try
         {
             var pbg = db.md_phienbangia.Where(s => s.md_phienbangia_id == id).FirstOrDefault();
-            if(pbg == null)
+            if (pbg == null)
             {
                 msg = $@"Phiên bản giá đang chọn không tồn tại";
                 goto EndEventHandler;
             }
 
-            if(pbg.trangthai != Helper.SOANTHAO)
+            if (pbg.trangthai != Helper.SOANTHAO)
             {
                 msg = $@"Phiên bản giá đang chọn đã ""Hiệu Lực""";
                 goto EndEventHandler;
             }
 
-            if(pbg.ten_phienbangia.removeAllSpaceOrTrimText(false).Length <= 0)
+            if (pbg.ten_phienbangia.removeAllSpaceOrTrimText(false).Length <= 0)
             {
                 msg = $@"Phiên bản giá đang chọn chưa có tên";
                 goto EndEventHandler;
             }
 
-            if(pbg.ngay_hieuluc == null)
+            if (pbg.ngay_hieuluc == null)
             {
                 msg = $@"Phiên bản giá đang chọn chưa có ngày hiệu lực";
                 goto EndEventHandler;
             }
 
             var khongCoGiaSP = db.md_giasanpham.Where(s => s.md_phienbangia_id == pbg.md_phienbangia_id).Take(1).Count() <= 0;
-            if(khongCoGiaSP)
+            if (khongCoGiaSP)
             {
                 msg = $@"Chưa có giá HHVT nào được thêm vào PBG này";
                 goto EndEventHandler;
             }
 
             var bg = db.md_banggia.Where(s => s.md_banggia_id == pbg.md_banggia_id).FirstOrDefault();
-            if(bg == null)
+            if (bg == null)
             {
                 msg = $@"Không tìm thấy bảng giá của phiên bản giá đang chọn";
                 goto EndEventHandler;
             }
 
-            if(bg.ten_banggia.removeAllSpaceOrTrimText(false).Length <= 0)
+            if (bg.ten_banggia.removeAllSpaceOrTrimText(false).Length <= 0)
             {
                 msg = $@"Bảng giá chưa có <b>tên</b>";
                 goto EndEventHandler;
             }
 
-            if(bg.tuychon.removeAllSpaceOrTrimText(false).Length <= 0)
+            if (bg.tuychon.removeAllSpaceOrTrimText(false).Length <= 0)
             {
                 msg = $@"Bảng giá chưa có <b>loại</b>";
                 goto EndEventHandler;
             }
 
             var canChonDTKD = new string[] { Helper.MUAVT, Helper.MUATP, Helper.BANTP }.Contains(bg.tuychon);
-            if(canChonDTKD & bg.lienket_bg.removeAllSpaceOrTrimText(false).Length <= 0)
+            if (canChonDTKD & bg.lienket_bg.removeAllSpaceOrTrimText(false).Length <= 0)
             {
                 msg = $@"Bảng giá chưa chọn <b>đối tác kinh doanh</b>";
                 goto EndEventHandler;
@@ -126,7 +126,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
 
     EndEventHandler:;
 
-        if(msg.Length <= 0)
+        if (msg.Length <= 0)
         {
             msg = $@"<div id=""rs_pbgHL"" style=""color:blue"" ttpbg=""{Helper.HIEULUC}"" ttbg=""{Helper.DADUYET}"">Hiệu lực thành công</div>";
         }
@@ -179,7 +179,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                     }
                 }
 
-                if(msg.Length <= 0)
+                if (msg.Length <= 0)
                 {
                     var ngaygoihan = DateTime.Now.AddDays(-120);
                     var xnbss = db.md_xuatkhonb.Where(s => s.phienbangiaNC == id);
@@ -189,7 +189,8 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                         xnbss = xnbss.Where(s => s.ngaytao >= ngaygoihan);
                     var xnbs = xnbss.ToList();
 
-                    foreach (var xnb in xnbs) {
+                    foreach (var xnb in xnbs)
+                    {
                         if (doiPBGMoiNhat == "1")
                             xnb.phienbangiaNC = pbgMoiNhat.md_phienbangia_id;
 
@@ -414,26 +415,35 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
             if (object_ == null)
             {
                 msg = $@"Không tìm thấy đối tượng cần sửa ";
+                goto EndEventHandler;
             }
-            else if (object_.trangthai != Helper.SOANTHAO)
+
+            if (object_.trangthai != Helper.SOANTHAO)
             {
-                msg = $@"PBG đã Hiệu Lực";
+                var suaPBGHL = Security.PhanQuyen_ChucNang(context, ma_module, "CA_01_SuaPBGHL");
+                if (!suaPBGHL)
+                {
+                    msg = $@"PBG đã Hiệu Lực";
+                    goto EndEventHandler;
+                }
             }
-            else if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0 & object_.ten_phienbangia != ten_pbg)
+
+            if (db.md_phienbangia.Where(s => s.ten_phienbangia == ten_pbg).Count() > 0 & object_.ten_phienbangia != ten_pbg)
             {
                 msg = $@"Đã tồn tại phiên bản giá ""{ten_pbg}""";
+                goto EndEventHandler;
             }
-            else
-            {
-                object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
-                object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
-                db.SaveChanges();
-            }
+
+            object_ = entityFunc.updateDataInEntity(object_, object_.GetType(), context);
+            object_ = Helper.setDefaultValueWhenInsertOrUpdate(object_, userTK, true);
+            db.SaveChanges();
         }
         catch (Exception ex)
         {
             msg = ex.Message;
         }
+
+    EndEventHandler:;
 
         if (msg.Length <= 0)
         {
@@ -462,7 +472,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
             {
                 msg = $@"Không tìm thấy đối tượng cần xóa";
             }
-            else if(object_.trangthai != Helper.SOANTHAO)
+            else if (object_.trangthai != Helper.SOANTHAO)
             {
                 msg = $@"PBG đã Hiệu Lực";
             }
@@ -471,11 +481,11 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
                 var pbg001s = db.md_vanchuyennoibo.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
                 var pbg002s = db.md_xuatkhonb.Where(s => s.phienbangiaNC == object_.md_phienbangia_id).Take(1).Count();
                 var pbg003s = db.c_donmuahang.Where(s => s.md_phienbangia_id == object_.md_phienbangia_id).Take(1).Count();
-                if(pbg001s > 0)
+                if (pbg001s > 0)
                     msg = $@"Phiên bảng giá đã được áp dụng cho phiếu chuyển kho";
-                else if(pbg002s > 0)
+                else if (pbg002s > 0)
                     msg = $@"Phiên bảng giá đã được áp dụng cho phiếu xuất kho nội bộ";
-                else if(pbg003s > 0)
+                else if (pbg003s > 0)
                     msg = $@"Phiên bảng giá đã được áp dụng cho đơn mua hàng hóa vật tư";
             }
 
@@ -491,7 +501,7 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
             msg = ex.Message;
         }
 
-        if(msg.Length <= 0)
+        if (msg.Length <= 0)
         {
             msg = $@"true#Xóa phiên bảng giá thành công";
             VNN_Function.loaddulieu_Auto(db, ma_module);
