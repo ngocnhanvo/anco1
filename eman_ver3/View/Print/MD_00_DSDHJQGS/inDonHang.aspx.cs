@@ -114,6 +114,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_inDonHang : System.Web.UI.P
 	            isnull(sp.ma_sanpham, ddh.md_sanpham_id) as maVTHH,
 	            ddh.ma_sanpham_khach as makhach,
 	            isnull(sp.mota_tiengviet, ddh.mota_tiengviet) as tenVTHH,
+                N'{Helper.hinhAnhSP_ANCO}' + sp.ma_sanpham as hinhanh,
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
 	            ddh.giadoichieu as gia,
