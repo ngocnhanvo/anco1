@@ -44,9 +44,59 @@ public class JQGridMD_01_PhienBangGiaJQGSModify : IHttpHandler, System.Web.Sessi
             case "CA_01_HieuLucPBG":
                 this.CA_01_HieuLucPBG(context);
                 break;
+            case "CA_01_XoaPBGDaHL":
+                this.CA_01_XoaPBGDaHL(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_XoaPBGDaHL(HttpContext context)
+    {
+        string msg = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+        string id_del = context.Request.Form["id"];
+        try
+        {
+            var object_ = db.md_phienbangia.Where(p => p.md_phienbangia_id == id_del).Take(1).FirstOrDefault();
+            if (object_ == null)
+            {
+                msg = $@"Không tìm thấy đối tượng cần xóa";
+                goto EndEventHandler;
+            }
+
+            if (object_.trangthai != Helper.HIEULUC)
+            {
+                msg = $@"PBG không ở trạng thái ""Hiệu Lực""";
+                goto EndEventHandler;
+            }
+
+            if (msg.Length <= 0)
+            {
+                string noidung = $@"{object_.ten_phienbangia}";
+                VNN_Function.Write_log(context, ma_module, null, oper, noidung, db);
+                db.md_phienbangia.Remove(object_);
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"<div style=""color:blue"">Xóa thành công</div>";
+        }
+        else
+        {
+            msg = $@"<div style=""color:red"" error>Lỗi: {msg}</div>";
+        }
+
+        context.Response.Write(msg);
     }
 
     public void CA_01_HieuLucPBG(HttpContext context)
