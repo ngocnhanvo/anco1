@@ -198,7 +198,6 @@
             <%=colModel[5] %>
             <%=colModel[7] %>
             Change_Value(Avariable(),'add');
-            countRows(tengrid, 'sapxep');
         },
         beforeSubmit: function (postdata, formid) {
             formid.prepend('<div class="nhan_loading">&nbsp;</div>');
@@ -216,7 +215,7 @@
                 <%=colModel[4] %>
                 <%=colModel[5] %>
                 <%=modifyForm[1][4] %>
-                id_new = response.responseText.split('#')[2]; countRows(tengrid, 'sapxep');
+                id_new = response.responseText.split('#')[2];
                 add_edit_del_complete('add'); loadclick(tengrid,null,load_stt); 
                 return [false, ''];
             }
