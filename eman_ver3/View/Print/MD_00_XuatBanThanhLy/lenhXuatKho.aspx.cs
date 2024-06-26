@@ -13,8 +13,8 @@ public partial class PrintControllers_MD_00_XuatBanThanhLy_lenhXuatKho : System.
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH XUẤT KHO.repx";
-        string nameRpt = "LỆNH XUẤT KHO {ngaylap}";
+        string nameTemp = "[KT] PHIẾU XUẤT KHO.repx";
+        string nameRpt = "PHIẾU XUẤT KHO {ngaylap}";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>
@@ -61,7 +61,7 @@ public partial class PrintControllers_MD_00_XuatBanThanhLy_lenhXuatKho : System.
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = vcnb.md_doitackinhdoanh_id
             where
-                vcnb.trangthai != '{Helper.SOANTHAO}'
+                and 1=1
                 and vcnb.md_xuatban_id = @id
                 and cdvc.sl_xuat > 0
             order by

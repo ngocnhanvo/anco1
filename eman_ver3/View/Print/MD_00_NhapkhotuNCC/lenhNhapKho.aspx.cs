@@ -13,8 +13,8 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_lenhNhapKho : System.We
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH NHẬP KHO.repx";
-        string nameRpt = "LỆNH NHẬP KHO {ngaylap}";
+        string nameTemp = "[KT] PHIẾU NHẬP KHO.repx";
+        string nameRpt = "PHIẾU NHẬP KHO {ngaylap}";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>
