@@ -53,12 +53,13 @@ public partial class PrintControllers_MD_00_Xuatnoibo_lenhXuatKho : System.Web.U
                 cdvc.sl_thucxuat as sltn,
 	            null as sldat,
 	            null as slkdat,
-                null as makh
+                pb.ten_phongban as makh
             from md_xuatkhonb vcnb
                 left join md_kho kho on kho.md_kho_id = vcnb.tukho
                 left join md_xuatkhonb_cdh cdvc on cdvc.md_xuatkhonb_id = vcnb.md_xuatkhonb_id
                 left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                left join ad_department pb on pb.md_phongban_id = vcnb.xuatden
             where
                 vcnb.trangthai != '{Helper.SOANTHAO}'
                 and vcnb.md_xuatkhonb_id = @id
