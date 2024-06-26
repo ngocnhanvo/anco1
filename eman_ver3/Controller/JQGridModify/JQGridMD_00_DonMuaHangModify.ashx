@@ -436,7 +436,11 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                                 goto EndEventHandler;
                             }
 
-                            var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id & s.stt >= 9998).OrderByDescending(s => s.stt).ToList();
+                            var tsxs = db.md_lenhsanxuat_tosx.Where(s => 
+                                s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id 
+                                & s.stt >= 9998
+                                & string.IsNullOrEmpty(s.xuongPhu)
+                                ).OrderByDescending(s => s.stt).ToList();
                             foreach (var tsx in tsxs)
                             {
                                 var cdhs = db.md_lenhsanxuat_tosx_cdh.Where(s =>
