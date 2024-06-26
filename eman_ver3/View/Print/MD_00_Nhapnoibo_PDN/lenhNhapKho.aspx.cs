@@ -40,14 +40,14 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
             select
                 (case when sp.vattu = 1 then upper(N'{loaiCT1}') else upper(N'{loaiCT0}') end) as loaiCT,
 	            vcnb.sochungtu as sophieu,
-	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
+	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
 	            cdvc.sl_muonnhap as slct,
-                cdvc.sl_nhap as sltn,
+                null as sltn,
 	            null as sldat,
 	            null as slkdat,
                 null as makh
@@ -57,9 +57,9 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
                 left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
             where
-                vcnb.trangthai != '{Helper.SOANTHAO}'
+                1=1
                 and vcnb.md_nhapkhonb_id = @id
-                and cdvc.sl_nhap > 0
+                and cdvc.sl_muonnhap > 0
             order by
 	            sp.ma_sanpham
 		";
