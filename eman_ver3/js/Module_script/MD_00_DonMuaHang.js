@@ -1,5 +1,61 @@
 //Add function at here (don't remove this line, please)
 
+//start CA_01_TraVeSoanThaoDMH
+function CA_01_TraVeSoanThaoDMH(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
+    let masterId = $(`#${tengrid}`).jqGrid('getGridParam', 'selrow');
+
+    $(`#${tengrid}`).jqGrid('getGridParam', 'selarrrow').toString();
+
+    let CLform_infor = new get_Forminfor(ma_case, Form_infor);
+    let ma_module = tengrid.replace('grid', '');
+    $('body').append(`
+        <div id="dlg_gridSmall" title="${CLform_infor.tieude}">
+		    <div class="dlg_content">Thực hiện chức năng này?</div>
+	    </div>
+    `);
+
+    let $dlgGrid = $('#dlg_gridSmall');
+    let $dlgGridContent = $dlgGrid.find('.dlg_content');
+    let dlgW = Number(CLform_infor.dodai);
+    $dlgGrid.dialog({
+        modal: true,
+        width: window.innerWidth >= dlgW + 50 ? dlgW : dlgW - 50,
+        height: CLform_infor.docao,
+        open: function (event, ui) {
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-ok',
+                text: 'Đồng ý',
+                click: function () {
+                    $('#btn-ok').button('option', 'disabled', true);
+                    $dlgGridContent.prepend('<div class="nhan_loading"></div>');
+                    $.post(`Controller/JQGridModify/JQGrid${ma_module}Modify.ashx?oper=${ma_case}&ma_module=${ma_module}`,
+                        { id: masterId }, function (result) {
+                            $dlgGridContent.html(result);
+                            if (result.lastIndexOf('error') <= -1) {
+                                $(`#${tengrid}`)[0].triggerToolbar();
+                                Close_Form($dlgGrid, CLform_infor.dongform);
+                            }
+                        });
+                }
+            },
+            {
+                id: 'btn-close',
+                text: 'Thoát',
+                click: function () {
+                    $(this).dialog('destroy').remove();
+                }
+            }
+        ]
+    });
+}
+//end CA_01_TraVeSoanThaoDMH
+
 //start CA_01_THemmoiDMHHVT
 function CA_01_THemmoiDMHHVT(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
     var masterId = id_parent;

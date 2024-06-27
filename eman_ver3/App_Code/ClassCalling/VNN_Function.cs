@@ -687,7 +687,7 @@ public static class VNN_Function
             ad_case cn = new ad_case
             {
                 ad_case_id = Helper.getNewId(),
-                ma_case = "CA_00_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt"),
+                ma_case = "CA_00_" + DateTime.Now.AddSeconds(i).ToString("ddMMyyyyhhmmssffftt"),
                 ten_case = ten_case.Split(':')[i],
                 ma_menu = ma_menu,
                 ma_module = ma_module,
