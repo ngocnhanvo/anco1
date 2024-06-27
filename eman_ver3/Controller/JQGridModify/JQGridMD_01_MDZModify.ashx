@@ -904,7 +904,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
                 {
                     ad_case_id = ad_case_id,
                     ad_module_id = ad_module_id,
-                    ma_case = "CA_01_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt") + count,
+                    ma_case = "CA_01_" + DateTime.Now.AddSeconds(count).ToString("ddMMyyyyhhmmssffftt"),
                     ma_module = ma_module,
                     ma_menu = mn.ma_menu,
                     thuake = cn.@ad_case_id,
@@ -939,7 +939,7 @@ public class JQGridMD_01_MDZModify : IHttpHandler, System.Web.SessionState.IRequ
             {
                 ad_case_id = ad_case_id_,
                 ad_module_id = ad_module_id,
-                ma_case = "CA_01_" + DateTime.Now.ToString("ddMMyyyyhhmmssffftt"),
+                ma_case = "CA_01_" + DateTime.Now.AddSeconds(count).ToString("ddMMyyyyhhmmssffftt"),
                 ma_module = ma_module,
                 ma_menu = mn.ma_menu,
                 thuake = "",
