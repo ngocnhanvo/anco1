@@ -135,7 +135,7 @@ function click_refresh_clearsearch(tengrid, reload = true) {
     $(a_).each(function (index, val) {
         $(this).val('');
     });
-    var b_ = $('.ui-search-table tr > .ui-search-input select');
+    var b_ = $(`.tbl_vnn_${tengrid} .ui-search-table tr > .ui-search-input select`);
     $(b_).each(function (index, val) {
         $(this).val('');
     });
