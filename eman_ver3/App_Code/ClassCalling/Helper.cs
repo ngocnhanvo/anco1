@@ -62,7 +62,8 @@ public static class Helper
         "Nhập kho điều chuyển nội bộ",
         "Nhập kho mua hàng",
         "Nhập kho SX hỗn hợp",
-        "Nhập kho điều chỉnh kiểm kê thừa"
+        "Nhập kho điều chỉnh kiểm kê thừa",
+        "Nhập tồn"
     };
 
     public static string[] arrLoaiCT_LXK = {

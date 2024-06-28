@@ -66,7 +66,7 @@ function timkiem_nktncc(id_elem, type) {
                     { key: false, fixed: true, label: 'Tham chiếu', name: 'sctkehoach', index: 'dmh.sctkehoach', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'CT Kế Hoạch mua VT' } },
                     { key: false, fixed: true, label: 'Địa điểm giao hàng', name: 'diadiem_giaohang', index: 'dmh.diadiem_giaohang', width: 100, editable: true, editrules: { edithidden: true }, hidden: true, align: 'left', searchoptions: { sopt: ['bw'] }, frozen: false, formoptions: { label: 'Địa điểm giao hàng' } },
                     { key: false, fixed: true, label: 'Mã NCC', name: 'md_doitackinhdoanh_id', index: 'dtkd.ma_dtkd', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] } },
-                    { key: false, fixed: true, label: 'Tên NCC', name: 'ten_dtkd', index: 'dtkd.ten_dtkd', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] } },
+                    { key: false, fixed: true, label: 'Tên NCC', name: 'ten_dtkd', index: 'dtkd.ten_dtkd', width: 100, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] } }
                 ],
                 postData: {
                     where_ex: function () {
@@ -141,7 +141,9 @@ function timkiem_nktncc(id_elem, type) {
                     { key: false, fixed: true, label: 'Thuế', search: false, name: 'thue', index: 'thue_sp.ten_thue_sanpham', width: 50, editable: true, editrules: { edithidden: true }, hidden: false, align: 'center' },
                     { key: false, fixed: true, label: 'Thành tiền', search: false, name: 'thanhtien', index: ' cdmh.thanhtien ', width: 90, editable: true, editrules: { edithidden: true }, hidden: true, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Thành tiền' } },
                     { key: false, fixed: true, label: 'Số DMH', search: false, name: 'so_donmuahang', index: 'dmh.so_donmuahang', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } } },
-                    { key: false, fixed: true, label: 'Kho', search: false, name: 'khomacdinh', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' }
+                    { key: false, fixed: true, label: 'Kho', search: false, name: 'khomacdinh', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
+                    { key: false, fixed: true, label: 'Vật tư', search: false, name: 'vattu', index: 'sp.vattu', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
+                    { key: false, fixed: true, label: 'Kho VTs', search: false, name: 'kvts', index: 'sp.vattu', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' }
                 ],
                 beforeRequest: function () {
                     let ids = jQuery('#' + namegrid).jqGrid('getGridParam', 'selarrrow');
@@ -222,10 +224,21 @@ function timkiem_nktncc(id_elem, type) {
                         let ddghs = [];
                         for (let i in rowsDT) {
                             let rowDT = rowsDT[i];
-                            console.log('rowDT', rowDT);
-                            let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh })[0];
-                            if (!chk)
-                                ddghs.push(rowDT.khomacdinh);
+                            let vattu = rowDT.vattu == 'true';
+                            let kvts = rowDT.kvts.split(',');
+                            if (vattu) {
+                                for (let i in kvts) {
+                                    let kvt = kvts[i];
+                                    let chk = ddghs.filter(function (a) { return a == kvt; })[0];
+                                    if (!chk)
+                                        ddghs.push(kvt);
+                                }
+                            }
+                            else {
+                                let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh; })[0];
+                                if (!chk)
+                                    ddghs.push(rowDT.khomacdinh);
+                            }
                         }
 
                         $('#value_khodonhang option').hide();

@@ -56,6 +56,8 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
                 orderby = sidx + " " + sord;
             }
 
+            var khovts = db.md_kho.Where(s => s.vattu == true).OrderByDescending(s=>s.ma_kho).Select(s => s.md_kho_id).ToList();
+            var kvtsStr = string.Join(",", khovts);
 
             string ROW_NUMBER = $"ROW_NUMBER() OVER (  ORDER BY {orderby})";
             string sql = $@"
@@ -73,6 +75,8 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
 	                , cdmh.thanhtien
                     , dmh.so_donmuahang
                     , sp.khomacdinh
+                    , sp.vattu
+                    , N'{kvtsStr}' as kvts
                     , {ROW_NUMBER} as RowNum
                fRoM c_donmuahang_cdmh cdmh 
 	                left join md_sanpham sp on cdmh.md_sanpham_id = sp.md_sanpham_id 

@@ -33,7 +33,7 @@ public partial class PrintControllers_MD_00_Nhapkhoton1_PDN_lenhNhapKho : System
     public String CreateSql(HttpContext context)
     {
         string id = context.Request.QueryString["id"];
-        string loaiCT = Helper.arrLoaiCT_LNK[2];
+        string loaiCT = Helper.arrLoaiCT_LNK[5];
         string sql = $@"
 		    declare @id nvarchar(32)= '{id}'
             select
