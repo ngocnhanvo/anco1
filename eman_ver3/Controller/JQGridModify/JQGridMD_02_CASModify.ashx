@@ -54,9 +54,9 @@ public class JQGridMD_02_CASModify : IHttpHandler, System.Web.SessionState.IRequ
             string id = context.Request.QueryString["id"];
             ad_module mod = db.ad_module.Where(p => p.ad_module_id == id).FirstOrDefault();
             string ad_case_id = id_new;
-            string ma_case = context.Request.Form["ma_case"];
-            string ten_case = context.Request.Form["ten_case"];
-            string hamxuly = context.Request.Form["hamxuly"];
+            string ma_case = context.Request.Form["ma_case"].removeAllSpaceOrTrimText(false);
+            string ten_case = context.Request.Form["ten_case"].removeAllSpaceOrTrimText(true);
+            string hamxuly = context.Request.Form["hamxuly"].removeAllSpaceOrTrimText(false);
             string logo = context.Request.Form["logo"];
             string sapxep = VNN_Config.load_number(context.Request.Form["sapxep"], 10);
             string thuake = context.Request.Form["thuake"];
