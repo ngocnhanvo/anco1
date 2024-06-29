@@ -693,7 +693,7 @@ public static class VNN_Function
                 ma_module = ma_module,
                 ad_module_id = ad_module_id,
                 hamxuly = hamxuly,
-                isview = isview,
+                isview = false,
                 dodaiForm = width,
                 id_parent = true,
                 sapxep = VNN_Config.load_number(i.ToString(), 10),
