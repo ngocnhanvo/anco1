@@ -121,7 +121,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                 }
             }
 
-            foreach (var dh in cdvcs.Where(s=>s.sl_xuat > 0).ToList())
+            foreach (var dh in cdvcs.Where(s => s.sl_xuat > 0).ToList())
             {
                 var khosp = db.md_kho_sanpham.Where(s => s.md_kho_id == px.tukho & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
                 var sp = db.md_sanpham.Where(s => s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
@@ -143,6 +143,34 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                         msp = sp.ma_sanpham,
                         loi = $@"Trong kho chỉ còn ""{khosp.soluong.Value.DropTrailingZeros()}"""
                     });
+                }
+
+                var ddsdh = db.c_dongdsdh.Where(s => s.c_danhsachdathang_id == px.c_danhsachdathang_id & s.md_sanpham_id == dh.md_sanpham_id).FirstOrDefault();
+                if (ddsdh == null)
+                {
+                    msg += $@"<br>Lỗi: ""{sp.ma_sanpham}"" không có trong đơn hàng ""{px.donhang_thamchieu}"".";
+                    msgErrs.Add(new Public.BaoLoiKhiHieuLuc()
+                    {
+                        msp = sp.ma_sanpham,
+                        loi = $@"không có trong đơn hàng ""{px.donhang_thamchieu}"""
+                    });
+                }
+                else
+                {
+                    var sltd = ddsdh.sl_donggoiTP.GetValueOrDefault(0) -
+                        ddsdh.sl_dagiao.GetValueOrDefault(0) - ddsdh.sl_thuhoi.GetValueOrDefault(0);
+
+                    var sltdDH = ddsdh.sl_dathang.GetValueOrDefault(0) - ddsdh.sl_giamhanngach.GetValueOrDefault(0);
+                    sltd = sltd > sltdDH ? sltdDH : sltd;
+                    if(dh.sl_xuat > sltd)
+                    {
+                        msg += $@"<br>Lỗi: ""{sp.ma_sanpham}"" vượt quá hạn mức được xuất ""{sltd.DropTrailingZeros()}"".";
+                        msgErrs.Add(new Public.BaoLoiKhiHieuLuc()
+                        {
+                            msp = sp.ma_sanpham,
+                            loi = $@"vượt quá hạn mức được xuất ""{sltd.DropTrailingZeros()}"""
+                        });
+                    }
                 }
 
                 if (msg.Length <= 0 & dh.sl_xuat.GetValueOrDefault(0) > 0)
