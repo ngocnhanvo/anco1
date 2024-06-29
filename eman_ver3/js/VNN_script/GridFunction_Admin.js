@@ -434,11 +434,19 @@ function set_ValueFilter(tengrid, ValueFilter, sord, sidx) {
         if (daucham > -1) {
             sidx = sidx.substr(daucham + 1);
         }
-        var s = '#jqgh_' + tengrid + '_' + sidx + ' .s-ico';
-        $(s).removeAttr('style');
-        $('#' + tengrid + '_' + sidx).attr('aria-selected', 'true');
-        $(s + ' > .ui-grid-ico-sort').addClass('ui-state-disabled');
-        $(s + ' > .ui-icon-' + sord).removeClass('ui-state-disabled');
+
+        var s = $('#jqgh_' + tengrid + '_' + sidx);
+        if (sord == 'desc') {
+            s.click();
+            s.click();
+        }
+        else {
+            s.click();
+        }
+        //$(s).removeAttr('style');
+        //$('#' + tengrid + '_' + sidx).attr('aria-selected', 'true');
+        //$(s + ' > .ui-grid-ico-sort').addClass('ui-state-disabled');
+        //$(s + ' > .ui-icon-' + sord).removeClass('ui-state-disabled');
     }
 }
 
