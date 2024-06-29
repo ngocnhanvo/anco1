@@ -411,7 +411,25 @@ namespace OfficeToPDF
                     rptGroupHeader.key = "";
                 }
                 totalRow += countDT - 1;
-                s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow);
+
+                if (infoExcel.detail != null)
+                {
+                    var imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
+                    foreach (var imageAfterDetail in imageAfterDetails)
+                    {
+                        imageAfterDetail.row = imageAfterDetail.row + totalRow;
+                        imageAfterDetail.rowLast = imageAfterDetail.rowLast + totalRow;
+                    }
+
+                    var fmlContainsLastRows = lstFormula.Where(s => s.formula.Contains("[lastRow]")).ToList();
+                    var dtFN = totalRow + infoExcel.detail.GetValueOrDefault(0) + 1;
+                    foreach (var fmlContainsLastRow in fmlContainsLastRows)
+                    {
+                        fmlContainsLastRow.formula = fmlContainsLastRow.formula.Replace("[lastRow]", dtFN.ToString());
+                    }
+
+                    s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow);
+                }
 
                 for (var iR = 0; iR < countDT; iR++)
                 {
