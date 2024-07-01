@@ -57,23 +57,24 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 	            format(@den, '{fmtDate}') as denngay,
 	            ncc.sochungtu as sct,
 	            format(ncc.ngaychuyen, '{fmtDate}') as ngaynk,
-	            dmh.so_po as donhang,
+	            kh.donhang_thamchieu as donhang,
 	            dtkd.ma_dtkd as maDTKD,
                 dtkd.ten_dtkd as tenDTKD,
 	            sp.ma_sanpham as maVTHH,
 	            sp.mota_tiengviet as tenVTHH,
 	            dvtsp.ten_dvt as dvt,
-	            dmhDH.sl_dathang as sldh,
-	            dh.sl_xuat as slnk,
-	            dmhDH.giadoichieu as dongia,
+	            dmhDH.sl_dadat as sldh,
+	            dh.sl_nhap as slnk,
+	            dmhDH.dongiamua as dongia,
 	            thue.giatri as vat,
 	            dmhDH.thanhtien,
 	            FLOOR(dmhDH.thanhtien + dmhDH.thanhtienThue) as thanhtienThue
-            from md_xuatban ncc
-	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
-	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
+            from md_nhapkho_ncc ncc
+	            left join c_donmuahang dmh on dmh.c_donmuahang_id = ncc.c_donmuahang_id
+	            left join c_donmuahang_cdmh dmhDH on dmhDH.c_donmuahang_id = ncc.c_donmuahang_id
 	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-	            left join md_xuatban_cdh dh on dh.md_xuatban_id = ncc.md_xuatban_id
+	            left join md_nhapkho_ncc_dh dh on dh.md_nhapkho_ncc_id = ncc.md_nhapkho_ncc_id
+	            left join c_kehoachdathang kh on kh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
 	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
 	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = dmhDH.thue
@@ -81,12 +82,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 	            dmhDH.md_sanpham_id = dh.md_sanpham_id
 	            and ncc.trangthai in ('{Helper.HIEULUC}')
 	            and ncc.ngaychuyen between @tu and @den
-	            and dmh.banHHVT = 1
                 {dtkd}
             order by
 	            ncc.ngaychuyen, sp.ma_sanpham
 		";
-
         return sql;
     }
 }
