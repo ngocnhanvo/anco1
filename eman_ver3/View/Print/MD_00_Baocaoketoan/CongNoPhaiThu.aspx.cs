@@ -67,8 +67,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
 	            dh.sl_xuat as slnk,
 	            dmhDH.giadoichieu as dongia,
 	            thue.giatri as vat,
-	            dmhDH.thanhtien,
-	            FLOOR(dmhDH.thanhtien + dmhDH.thanhtienThue) as thanhtienThue
+	            dmhDH.giadoichieu * dh.sl_xuat as thanhtien,
+	            FLOOR(dmhDH.giadoichieu * dh.sl_xuat + dmhDH.giadoichieu * dh.sl_xuat * thue.giatri / 100) as thanhtienThue
             from md_xuatban ncc
 	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
 	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
@@ -82,6 +82,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
 	            and ncc.trangthai in ('{Helper.HIEULUC}')
 	            and ncc.ngaychuyen between @tu and @den
 	            and dmh.banHHVT = 1
+                and dh.sl_xuat > 0
                 {dtkd}
             order by
 	            ncc.ngaychuyen, sp.ma_sanpham
