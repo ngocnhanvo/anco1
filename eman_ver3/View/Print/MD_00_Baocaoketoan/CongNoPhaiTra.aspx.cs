@@ -68,7 +68,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 	            dmhDH.giadoichieu as dongia,
 	            thue.giatri as vat,
 	            dmhDH.thanhtien,
-	            dmhDH.thanhtien + dmhDH.thanhtienThue as thanhtienThue
+	            FLOOR(dmhDH.thanhtien + dmhDH.thanhtienThue) as thanhtienThue
             from md_xuatban ncc
 	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
 	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
