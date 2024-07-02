@@ -48,8 +48,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 
         var fmtDate = "dd/MM/yyyy";
         string sql = $@"
-		    declare @tu datetime = convert(datetime, N'{tu}', 103)
-            declare @den datetime = convert(datetime, N'{den}', 103)
+		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
+            declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
 
             select
 	            format(getdate(), '{fmtDate}') as ngayin,
@@ -66,9 +66,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 	            dmhDH.sl_dadat as sldh,
 	            dh.sl_nhap as slnk,
 	            dmhDH.dongiamua as dongia,
-	            thue.giatri as vat,
-	            dmhDH.dongiamua * dh.sl_nhap as thanhtien,
-	            FLOOR(dmhDH.dongiamua * dh.sl_nhap + dmhDH.dongiamua * dh.sl_nhap * thue.giatri / 100) as thanhtienThue
+	            thue.giatri/100 as vat,
+	            FLOOR(dmhDH.dongiamua * dh.sl_nhap) as thanhtien,
+	            FLOOR(FLOOR(dmhDH.dongiamua * dh.sl_nhap) + FLOOR(dmhDH.dongiamua * dh.sl_nhap) * thue.giatri / 100) as thanhtienThue,
+                ROW_NUMBER() OVER (PARTITION BY dtkd.ma_dtkd ORDER BY dtkd.ma_dtkd ASC) AS cr
             from md_nhapkho_ncc ncc
 	            left join c_donmuahang dmh on dmh.c_donmuahang_id = ncc.c_donmuahang_id
 	            left join c_donmuahang_cdmh dmhDH on dmhDH.c_donmuahang_id = ncc.c_donmuahang_id
@@ -85,7 +86,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
                 and dh.sl_nhap > 0
                 {dtkd}
             order by
-	            ncc.ngaychuyen, sp.ma_sanpham
+	            dtkd.ma_dtkd, ncc.ngaychuyen, sp.ma_sanpham
 		";
         return sql;
     }

@@ -14,8 +14,15 @@ namespace OfficeToPDF
     /// <summary>
     /// Summary description for Objects
     /// </summary>
+
     public class ExcelExportData
     {
+        private class groupsReport
+        {
+            public int rowF { get; set; }
+            public int rowL { get; set; }
+        }
+
         public string title { get; set; }
         public string fileNameTemp { get; set; }
         public string DisplayName { get; set; }
@@ -100,6 +107,8 @@ namespace OfficeToPDF
                 var maxColumn = -1;
                 var area = "";
                 var columnText = "";
+
+                var groupsReport = new List<groupsReport>();
 
 
                 var commentFirst = s1.GetRow(0).GetCell(0);
@@ -236,7 +245,7 @@ namespace OfficeToPDF
                                     if (commentCol.StartsWith("wrap"))
                                     {
                                         var itemRP = lstTextReplace.Where(s => s.oldT == cell.StringCellValue).FirstOrDefault();
-                                        if(itemRP != null)
+                                        if (itemRP != null)
                                         {
                                             itemRP.wrap_Mer = true;
                                             itemRP.column_Mer = commentCol.Substring(4).ToNullableInt();
@@ -244,7 +253,7 @@ namespace OfficeToPDF
                                         cell.RemoveCellComment();
                                     }
                                 }
-                            
+
                                 if (cell.CellType == CellType.String)
                                 {
                                     if (!findlogo)
@@ -412,6 +421,8 @@ namespace OfficeToPDF
                 }
                 totalRow += countDT - 1;
 
+                var lstFMLNotNull = lstFormula.Where(s => !string.IsNullOrEmpty(s.formula)).ToList();
+
                 if (infoExcel.detail != null)
                 {
                     var imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
@@ -421,7 +432,7 @@ namespace OfficeToPDF
                         imageAfterDetail.rowLast = imageAfterDetail.rowLast + totalRow;
                     }
 
-                    var fmlContainsLastRows = lstFormula.Where(s => s.formula.Contains("[lastRow]")).ToList();
+                    var fmlContainsLastRows = lstFMLNotNull.Where(s => s.formula.Contains("[lastRow]")).ToList();
                     var dtFN = totalRow + infoExcel.detail.GetValueOrDefault(0) + 1;
                     foreach (var fmlContainsLastRow in fmlContainsLastRows)
                     {
@@ -431,16 +442,19 @@ namespace OfficeToPDF
                     s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow);
                 }
 
+                int lastG = 0;
                 for (var iR = 0; iR < countDT; iR++)
                 {
                     if (rptGroupHeader != null)
                     {
                         var keyStr = "";
+
                         foreach (var item in rptGroupHeader.arrAva)
                         {
                             keyStr += dt.Rows[iR][item].ToString();
                         }
 
+                        
                         if (rptGroupHeader.key != keyStr)
                         {
                             rptGroupHeader.moreVal += rptGroupHeader.key == "" ? 0 : rowAddGHeader;
@@ -466,8 +480,24 @@ namespace OfficeToPDF
                                 else
                                     setMaxHeight(rowGHT, maxHeight3);
                             }
+
+                            lastG = 0;
+                            groupsReport.Add(new ExcelExportData.groupsReport()
+                            {
+                                rowF = maxIGH,
+                                rowL = lastG
+                            });
                             rptGroupHeader.key = keyStr;
                             infoExcel.startSumGroup = maxIGH + 1;
+                        }
+                        else
+                        {
+                            lastG++;
+                            var grpN = groupsReport.OrderByDescending(s => s.rowF).FirstOrDefault();
+                            if(grpN != null)
+                            {
+                                grpN.rowL = lastG;
+                            }
                         }
 
                         var rowAtDetail = rptGroupHeader.start.Value + iR + rowAddGHeader + rptGroupHeader.moreVal;
@@ -529,6 +559,44 @@ namespace OfficeToPDF
                             maxHeight = float.Parse(colObj["maxHeight"].ToString());
                         }
                         setMaxHeight(rowDT, maxHeight);
+                    }
+                }
+
+                var grps = groupsReport.OrderBy(s => s.rowF).ToList();
+                foreach (var g in grps)
+                {
+                    var rowLG = s1.GetRow(g.rowF);
+                    if (rowLG != null)
+                    {
+                        foreach (var cell in rowLG.Cells)
+                        {
+                            if (cell.CellType == CellType.String)
+                            {
+                                if (cell.StringCellValue.Contains("{!!"))
+                                {
+                                    var str = cell.StringCellValue.Replace("[lastG]", (cell.RowIndex + 2 + g.rowL).ToString());
+                                    str = str.Replace("[0]", (cell.RowIndex + 2).ToString());
+                                    str = str.Replace("{!!", "").Replace("}", "");
+                                    
+                                    try
+                                    {
+                                        cell.SetCellFormula(str);
+                                        cell.SetCellType(CellType.Formula);
+
+                                        lstFormula.Add(new AvariablePrj.lstFormula()
+                                        {
+                                            row = cell.RowIndex + 1,
+                                            col = cell.ColumnIndex + 1,
+                                            formula = str
+                                        });
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -630,13 +698,14 @@ namespace OfficeToPDF
             , PrintAnco2 printCf, float maxHeight, HSSFWorkbook hssfwb, int iRow, string sothapphan, int columnMax, List<CellRangeAddress> merCell)
         {
             var StringCellValue = "";
-            if(cell.CellType == CellType.Numeric)
+            if (cell.CellType == CellType.Numeric)
                 StringCellValue = cell.NumericCellValue.ToString();
             else if (cell.CellType != CellType.Formula)
                 StringCellValue = cell.StringCellValue;
 
             var isDate = StringCellValue.StartsWith("{$");
             var isNumber = StringCellValue.StartsWith("{#");
+            var isFomulaG = StringCellValue.StartsWith("{!!");
             var isFomula = StringCellValue.StartsWith("{!");
             var isImage = StringCellValue.StartsWith("{%");
             var isText = StringCellValue.StartsWith("{");
@@ -649,6 +718,10 @@ namespace OfficeToPDF
                 isNumber
                 ?
                 StringCellValue.Replace("{#", "").Replace("}", "")
+                :
+                isFomulaG
+                ?
+                StringCellValue.Replace("{!!", "").Replace("}", "")
                 :
                 isFomula
                 ?
@@ -694,6 +767,10 @@ namespace OfficeToPDF
                     }
                 }
             }
+            else if(isFomulaG)
+            {
+                columnT.SetCellValue(StringCellValue);
+            }
             else if (isFomula)
             {
                 var cellFormula = nameColumnData;
@@ -718,7 +795,7 @@ namespace OfficeToPDF
                     col = columnT.ColumnIndex + 1,
                     formula = cellFormula
                 });
-                
+
                 try
                 {
                     columnT.SetCellType(CellType.Formula);
