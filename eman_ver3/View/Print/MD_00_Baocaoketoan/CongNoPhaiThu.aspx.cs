@@ -68,8 +68,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
 	            dmhDH.giadoichieu as dongia,
 	            thue.giatri/100 as vat,
 	            FLOOR(dmhDH.giadoichieu * dh.sl_xuat) as thanhtien,
-	            FLOOR(FLOOR(dmhDH.giadoichieu * dh.sl_xuat) + FLOOR(dmhDH.giadoichieu * dh.sl_xuat) * thue.giatri / 100) as thanhtienThue,
-                ROW_NUMBER() OVER (PARTITION BY dtkd.ma_dtkd ORDER BY dtkd.ma_dtkd ASC) AS cr
+	            FLOOR(FLOOR(dmhDH.giadoichieu * dh.sl_xuat) + FLOOR(dmhDH.giadoichieu * dh.sl_xuat) * thue.giatri / 100) as thanhtienThue
             from md_xuatban ncc
 	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
 	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
@@ -86,7 +85,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
                 and dh.sl_xuat > 0
                 {dtkd}
             order by
-	            dtkd.ma_dtkd, ncc.ngaychuyen, sp.ma_sanpham
+	            ncc.ngaychuyen, sp.ma_sanpham
 		";
 
         return sql;
