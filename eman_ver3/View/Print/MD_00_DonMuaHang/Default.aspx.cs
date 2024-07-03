@@ -68,6 +68,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
             declare @httt nvarchar(MAX) = (select top 1 ten from md_hinhthucthanhtoan order by sapxep asc)
 		    select 
                 dmh.so_donmuahang as sochungtu
+                , dmh.donhang_thamchieu as so_po
                 , N'' as loaiCT
                 , FORMAT(dmh.ngaydonhang, 'dd/MM/yyyy') as ngaylap
                 , FORMAT(dmh.ngaygiaohang, 'dd/MM/yyyy') as ngaygiaohang
