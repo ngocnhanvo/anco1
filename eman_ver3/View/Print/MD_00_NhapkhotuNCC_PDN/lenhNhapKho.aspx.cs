@@ -42,6 +42,7 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_PDN_lenhNhapKho : Syste
 	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            vcnb.donhang_thamchieu as donhang,
+                vcnb.so_donmuahang as soDMH,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
