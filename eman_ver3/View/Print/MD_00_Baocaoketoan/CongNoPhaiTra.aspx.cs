@@ -57,7 +57,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTra : System.
 	            format(@den, '{fmtDate}') as denngay,
 	            ncc.sochungtu as sct,
 	            format(ncc.ngaychuyen, '{fmtDate}') as ngaynk,
-	            kh.donhang_thamchieu as donhang,
+	            dmh.so_donmuahang as donhang,
 	            dtkd.ma_dtkd as maDTKD,
                 dtkd.ten_dtkd as tenDTKD,
 	            sp.ma_sanpham as maVTHH,
