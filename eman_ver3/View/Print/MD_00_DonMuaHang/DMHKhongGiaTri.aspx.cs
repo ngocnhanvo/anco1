@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.Data;
 using DataAcess;
 
-public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.Page
+public partial class PrintControllers_MD_00_DonMuaHang_DMHKhongGiaTri : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
     protected void Page_Load(object sender, EventArgs e)
@@ -17,8 +17,8 @@ public partial class PrintControllers_MD_00_DonMuaHang_Default : System.Web.UI.P
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[VT] Đơn mua hàng hóa vật tư.repx";
-        string nameRpt = "Đơn mua hàng hóa vật tư {ngaylap}";
+        string nameTemp = "[VT] Đơn mua hàng hóa vật tư (không giá trị).repx";
+        string nameRpt = "Đơn mua hàng hóa vật tư - không có giá trị {ngaylap}";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>

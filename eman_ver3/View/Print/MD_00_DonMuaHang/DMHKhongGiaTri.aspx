@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="PrintControllers_MD_00_DonMuaHang_Default" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="DMHKhongGiaTri.aspx.cs" Inherits="PrintControllers_MD_00_DonMuaHang_DMHKhongGiaTri" %>
 
 <%@ Register assembly="DevExpress.XtraReports.v16.1.Web, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
 

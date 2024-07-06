@@ -468,7 +468,12 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
 			    <table>
 				    <tr>
 					    <td><input id="rdoDMHHVT1" type="radio" name="rdoDMHHVT" style="outline:none" value="1" /></td>
-					    <td><label style="${lblStyle}" for="rdoDMHHVT1">In đơn mua hàng hóa vật tư</label></td>
+					    <td><label style="${lblStyle}" for="rdoDMHHVT1">In đơn mua hàng hóa vật tư (có giá trị)</label></td>
+				    </tr>
+
+                    <tr>
+					    <td><input id="rdoDMHHVT2" type="radio" name="rdoDMHHVT" style="outline:none" value="2" /></td>
+					    <td><label style="${lblStyle}" for="rdoDMHHVT2">In đơn mua hàng hóa vật tư (không có giá trị)</label></td>
 				    </tr>
 
                     <tr style="height: 30px;">
@@ -503,7 +508,12 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
                     let sel_val = $(`input:radio[name="rdoDMHHVT"]:checked`).val();
                     let inPDF = $("#kieuInBaoCao").val();
                     if (sel_val == 1) {
-                        url = `${url_org_sys}View/Print/${ma_module}/Default.aspx?ma_module=${ma_module}` +
+                        url = `${url_org_sys}View/Print/${ma_module}/DMHCoGiaTri.aspx?ma_module=${ma_module}` +
+                            "&id=" + masterId +
+                            "&inPDF=" + inPDF;
+                    }
+                    else if (sel_val == 2) {
+                        url = `${url_org_sys}View/Print/${ma_module}/DMHKhongGiaTri.aspx?ma_module=${ma_module}` +
                             "&id=" + masterId +
                             "&inPDF=" + inPDF;
                     }
