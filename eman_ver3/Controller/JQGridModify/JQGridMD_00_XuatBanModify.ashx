@@ -199,14 +199,14 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                     var checkKTServer = db.c_dongdsdh.Where(s =>
                         s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
                         (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
-                        ).Take(1).Count();
+                        ).Take(1).ToList();
 
                     var checkKT = db.c_dongdsdh.Local.Where(s =>
                         s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id &
                         (s.sl_hanngach ?? 0) + (s.sl_thuhoi ?? 0) < s.sl_dathang - (s.sl_giamhanngach ?? 0)
-                        ).Take(1).Count();
+                        ).Take(1).ToList();
 
-                    if (checkKT <= 0)
+                    if (checkKT.Count <= 0)
                     {
                         dsdh.trangthai = Helper.KETTHUC;
                         dsdh.md_trangthai_id = Helper.DaXuatHang;
