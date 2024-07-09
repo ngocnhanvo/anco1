@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using DataAcess;
 using System.Linq;
-public partial class PrintControllers_MD_00_DSDHJQGS_inDonHang : System.Web.UI.Page
+public partial class PrintControllers_MD_00_DSDHJQGS_DDHKhongCoGiaTri : System.Web.UI.Page
 {
     public string logo = "", sothapphan = "", inPDF = "";
     public string c_danhsachdathang_id = "";
@@ -14,8 +14,8 @@ public partial class PrintControllers_MD_00_DSDHJQGS_inDonHang : System.Web.UI.P
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KH] Đơn hàng AncoNexx.repx";
-        string nameRpt = "Đơn hàng {so_po}";
+        string nameTemp = "[KH] Đơn hàng AncoNexx (không giá trị).repx";
+        string nameRpt = "Đơn hàng {so_po} (không có giá trị)";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>

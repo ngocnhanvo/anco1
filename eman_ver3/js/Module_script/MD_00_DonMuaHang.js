@@ -494,6 +494,14 @@ function CA_01_donMuaHangHoaVatTu(tengrid, id_parent, ma_case, Form_infor, Model
         open: function (event, ui) {
             $('#rdoDMHHVT1').click();
             $("#kieuInBaoCao").val(3);
+
+            if (inDMHcoGiaTri) {
+                $('#rdoDMHHVT1').click();
+            }
+            else {
+                $('#rdoDMHHVT1').parent().parent().remove();
+                $('#rdoDMHHVT2').click();
+            }
             Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
         },
         close: function () {
