@@ -13,7 +13,7 @@ public partial class PrintControllers_MD_00_PVCDG2_lenhXuatKho : System.Web.UI.P
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] LỆNH XUẤT KHO.repx";
+        string nameTemp = "[KT] LỆNH XUẤT KHO - Điều chuyển.repx";
         string nameRpt = "LỆNH XUÁT KHO {ngaylap}";
         string sql = CreateSql(context);
 
@@ -42,7 +42,8 @@ public partial class PrintControllers_MD_00_PVCDG2_lenhXuatKho : System.Web.UI.P
                 N'{mau0}' as mauCT,
 	            vcnb.sochungtu as sophieu,
 	            format(vcnb.ngaychuyen, 'dd/MM/yyyy') as ngaylap,
-	            kho.ten_kho as kho,
+	            tkho.ma_kho as tukho,
+                dkho.ma_kho as denkho,
 	            vcnb.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
@@ -53,7 +54,8 @@ public partial class PrintControllers_MD_00_PVCDG2_lenhXuatKho : System.Web.UI.P
 	            null as slkdat,
                 null as makh
             from md_vanchuyennoibo vcnb
-                left join md_kho kho on kho.md_kho_id = vcnb.tukho
+                left join md_kho tkho on tkho.md_kho_id = vcnb.tukho
+                left join md_kho dkho on dkho.md_kho_id = vcnb.denkho
                 left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
                 left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
