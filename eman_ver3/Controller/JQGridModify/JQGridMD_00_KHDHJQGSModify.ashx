@@ -420,29 +420,37 @@ public class JQGridMD_00_KHDHJQGSModify : IHttpHandler, System.Web.SessionState.
                 }
                 else
                 {
-                    var dhpxOlds = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).ToList();
-                    var dhpxIds = dhpxOlds.Select(s => s.md_dondathangphanxuong_id).ToList();
-                    var lsxOlds = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).ToList();
-
-                    foreach (var lsxOld in lsxOlds)
+                    var ghn = db.md_hanngach.Where(s => s.c_danhsachdathang_id == object_.c_danhsachdathang_id).FirstOrDefault();
+                    if (ghn != null)
                     {
-                        db.md_lenhsanxuat.Remove(lsxOld);
+                        msg += $@"<br>Đơn hàng <b>{object_.donhang_thamchieu}</b> đã lập phiếu Giảm Hạn Ngạch <b>{ghn.sochungtu}</b>";
                     }
-
-                    foreach (var dhpxOld in dhpxOlds)
+                    else
                     {
-                        db.md_dondathangphanxuong.Remove(dhpxOld);
-                    }
+                        var dhpxOlds = db.md_dondathangphanxuong.Where(s => s.c_kehoachdathang_id == object_.c_kehoachdathang_id).ToList();
+                        var dhpxIds = dhpxOlds.Select(s => s.md_dondathangphanxuong_id).ToList();
+                        var lsxOlds = db.md_lenhsanxuat.Where(s => dhpxIds.Contains(s.md_dondathangphanxuong_id)).ToList();
 
-                    var ds = db.c_danhsachdathang.FirstOrDefault(s => s.so_po == object_.donhang_thamchieu);
-                    if (ds != null)
-                    {
-                        ds.md_trangthai_id = Helper.HIEULUC;
-                        ds.trangthai = Helper.SOANTHAO;
-                    }
+                        foreach (var lsxOld in lsxOlds)
+                        {
+                            db.md_lenhsanxuat.Remove(lsxOld);
+                        }
 
-                    VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
-                    db.c_kehoachdathang.Remove(object_);
+                        foreach (var dhpxOld in dhpxOlds)
+                        {
+                            db.md_dondathangphanxuong.Remove(dhpxOld);
+                        }
+
+                        var ds = db.c_danhsachdathang.FirstOrDefault(s => s.so_po == object_.donhang_thamchieu);
+                        if (ds != null)
+                        {
+                            ds.md_trangthai_id = Helper.HIEULUC;
+                            ds.trangthai = Helper.SOANTHAO;
+                        }
+
+                        VNN_Function.Write_log(context, ma_module, null, oper, "TKHĐH:" + object_.ten_kh, db);
+                        db.c_kehoachdathang.Remove(object_);
+                    }
                 }
             }
 

@@ -76,12 +76,12 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
 	            left join md_xuatban_cdh dh on dh.md_xuatban_id = ncc.md_xuatban_id
 	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = dmhDH.thue
+	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = isnull(dmhDH.thue, sp.md_thue_sanpham_id)
             where
 	            dmhDH.md_sanpham_id = dh.md_sanpham_id
 	            and ncc.trangthai in ('{Helper.HIEULUC}')
 	            and ncc.ngaychuyen between @tu and @den
-	            and dmh.banHHVT = 1
+	            --and dmh.banHHVT = 1
                 and dh.sl_xuat > 0
                 {dtkd}
             order by

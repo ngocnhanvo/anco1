@@ -50,7 +50,7 @@ function timkiem_dtkd(id_elem, type) {
                             //--here
                             $('#bg_' + id_elem).val(cell['banggia_id']);
                             $('#diachi').val(cell['diachi']);
-                            $('#md_banggia_id').val(cell['banggia_id']).change();
+                            //$('#md_banggia_id').val(cell['banggia_id']).change();
                             $('#ten_dtkd').val(cell['ten_dtkd']);
                             $('#diachigiaohang').val(cell['diachi']);
                             $('#nguoi_dathang').val(cell['daidien']);
@@ -109,7 +109,7 @@ function timkiem_dtkd(id_elem, type) {
                         $('#gridMD_00_DTKD_cp').jqGrid('setSelection', $('#' + id_elem).val());
                         load_sp = 1;
                         if (top_rowid.indexOf('<a style=\'color:red\'>') <= -1 & type == 1 & countrow == 1) {
-                            $('#bg_' + id_elem).val(cell['banggia_id']);
+                            //$('#bg_' + id_elem).val(cell['banggia_id']);
                             $('#dlg_gridSmal_2').dialog('destroy').remove();
                         }
                     }
