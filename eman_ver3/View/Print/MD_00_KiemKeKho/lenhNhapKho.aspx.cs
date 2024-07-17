@@ -42,6 +42,7 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhNhapKho : System.Web.U
 	            format(vcnb.ngay_kiemke, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
 	            null as donhang,
+                null as soDMH,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
