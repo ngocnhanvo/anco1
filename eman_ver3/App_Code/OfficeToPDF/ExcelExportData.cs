@@ -786,7 +786,7 @@ namespace OfficeToPDF
                 {
                     cellFormula = cellFormula
                     .Replace("[0]", (row.RowNum + 1).ToString())
-                    .Replace(" ", "");
+                    .removeAllSpaceOrTrimText(true);
                 }
 
                 lstFormula.Add(new AvariablePrj.lstFormula()
