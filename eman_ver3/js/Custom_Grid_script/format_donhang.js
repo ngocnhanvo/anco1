@@ -71,7 +71,7 @@ var format_donhang = {
                     pager: `#pager${gridMasterId}`,
                     onSelectRow: function (ids) {
                         checkbox_JQgrid($gridMaster.attr('id'), 0);
-                        if (ids.indexOf('<a style=\'color:red\'') <= -1) {
+                        if (ids.indexOf('<a style=\'color:red\'') <= -1 & ids != '0') {
                             cell = $gridMaster.getRowData(ids);
                             $elem.val(cell.sochungtu);
                             $('#donhang_thamchieu').val(cell.so_po);
@@ -172,8 +172,9 @@ var format_donhang = {
                                             from c_dongdsdh
                                             where 
                                                 c_danhsachdathang_id = dsdh.c_danhsachdathang_id
+                                                and isnull(sl_giamhanngach, 0) > 0
                                                 and isnull(sl_nhaphang, 0) > 0
-                                                and (isnull(sl_nhaphang, 0) - isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
+                                                and (isnull(sl_nhaphang, 0) - isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0) - isnull(sl_giamhanngach, 0)) > 0
                                         ) > 0
                                     `;
                                 }
