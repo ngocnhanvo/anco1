@@ -174,7 +174,7 @@ var format_donhang = {
                                                 c_danhsachdathang_id = dsdh.c_danhsachdathang_id
                                                 and isnull(sl_giamhanngach, 0) > 0
                                                 and isnull(sl_nhaphang, 0) > 0
-                                                and (isnull(sl_nhaphang, 0) - isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0) - isnull(sl_giamhanngach, 0)) > 0
+                                                and (isnull(sl_nhaphang, 0) - isnull(sl_donggoiTP, 0) - isnull(sl_dagiao, 0) - isnull(sl_thuhoi, 0)) > 0
                                         ) > 0
                                     `;
                                 }
