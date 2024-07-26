@@ -50,13 +50,15 @@ public partial class PrintControllers_MD_00_NhapkhotuNCC_lenhNhapKho : System.We
                 cdvc.sl_nhap as sltn,
 	            null as sldat,
 	            null as slkdat,
-                dtkd.ma_dtkd as makh
+                dtkd.ma_dtkd as makh,
+                dmh.donhang_thamchieu as ghichu
             from md_nhapkho_ncc vcnb
                 left join md_kho kho on kho.md_kho_id = vcnb.kho
                 left join md_nhapkho_ncc_dh cdvc on cdvc.md_nhapkho_ncc_id = vcnb.md_nhapkho_ncc_id
                 left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = vcnb.md_doitackinhdoanh_id
+                left join c_donmuahang dmh on dmh.sochungtu = cdvc.so_dmh
             where
                 vcnb.trangthai != '{Helper.SOANTHAO}'
                 and vcnb.md_nhapkho_ncc_id = @id

@@ -42,7 +42,7 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
 	            vcnb.sochungtu as sophieu,
 	            format(vcnb.ngaydenghi, 'dd/MM/yyyy') as ngaylap,
 	            kho.ten_kho as kho,
-	            vcnb.donhang_thamchieu as donhang,
+	            replace(vcnb.donhang_thamchieu, ',', CHAR(13)+CHAR(10)) as donhang,
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
@@ -50,7 +50,9 @@ public partial class PrintControllers_MD_00_Nhapnoibo_PDN_lenhNhapKho : System.W
                 null as sltn,
 	            null as sldat,
 	            null as slkdat,
-                null as makh
+                null as makh,
+                null as ghichu,
+                null as soDMH
             from md_nhapkhonb vcnb
                 left join md_kho kho on kho.md_kho_id = vcnb.denkho
                 left join md_nhapkhonb_cdh cdvc on cdvc.md_nhapkhonb_id = vcnb.md_nhapkhonb_id
