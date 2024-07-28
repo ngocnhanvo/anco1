@@ -39,6 +39,9 @@ function timkiem_sanpham(id_elem, type) {
             btp = true;
             where_ex += ` and sp.ban_thanhpham = 1 and isnull(sp.vattu, 0) = 0`;
         }
+        else {
+            where_ex += ` and (isnull(sp.ban_thanhpham, 0) = 0 or isnull(sp.vattu, 0) = 0)`;
+        }
     }
 
     id_elem = $(id_elem).prev();
