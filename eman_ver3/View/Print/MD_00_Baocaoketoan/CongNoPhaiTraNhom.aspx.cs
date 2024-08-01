@@ -72,11 +72,11 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTraNhom : Sys
 	            FLOOR(FLOOR(dmhDH.dongiamua * dh.sl_nhap) + FLOOR(dmhDH.dongiamua * dh.sl_nhap) * thue.giatri / 100) as thanhtienThue,
                 ROW_NUMBER() OVER (PARTITION BY dtkd.ma_dtkd ORDER BY dtkd.ma_dtkd ASC) AS cr
             from md_nhapkho_ncc ncc
-	            left join c_donmuahang dmh on dmh.c_donmuahang_id = ncc.c_donmuahang_id
-	            left join c_donmuahang_cdmh dmhDH on dmhDH.c_donmuahang_id = ncc.c_donmuahang_id
-	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
 	            left join md_nhapkho_ncc_dh dh on dh.md_nhapkho_ncc_id = ncc.md_nhapkho_ncc_id
+	            left join c_donmuahang dmh on dmh.sochungtu = dh.so_dmh
+	            left join c_donmuahang_cdmh dmhDH on dmhDH.c_donmuahang_id = dmh.c_donmuahang_id
 	            left join c_kehoachdathang kh on kh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
+	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
 	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
 	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = dmhDH.thue
