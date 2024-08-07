@@ -50,14 +50,19 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
     {
         string tu = context.Request.QueryString["tu"].removeAllSpaceOrTrimText(true).Replace("-", "/");
         string den = context.Request.QueryString["den"].removeAllSpaceOrTrimText(true).Replace("-", "/");
+        //Kho
         string kho = context.Request.QueryString["kho"].removeAllSpaceOrTrimText(true).Replace("'", "''");
         if (!string.IsNullOrWhiteSpace(kho))
             kho = $@"and kh.md_kho_id = N'{kho}'";
-
+        //Bo Phan
         string boPhan = context.Request.QueryString["boPhan"].removeAllSpaceOrTrimText(true).Replace("'", "''");
         string boPhanSel = boPhan;
         if (!string.IsNullOrWhiteSpace(boPhan))
             boPhan = $@"and (pb.md_phongban_id = N'{boPhan}' or pbCha1.md_phongban_id = N'{boPhan}' or pbCha2.md_phongban_id = N'{boPhan}')";
+        //San pham
+        string masp = context.Request.QueryString["masp"].removeAllSpaceOrTrimText(true).Replace("'", "''");
+        if (!string.IsNullOrWhiteSpace(masp))
+            masp = $@"and sp.ma_sanpham = N'{masp}'";
 
         var fmtDate = "dd/MM/yyyy";
         string sql = $@"
@@ -103,7 +108,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
                 and kgd.dongnhapxuat not like 'PVC%'
-                {kho} {boPhan}
+                {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham
 		";

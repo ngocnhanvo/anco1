@@ -89,6 +89,7 @@ public partial class PrintControllers_MD_00_LichXuatHang_LichXuatHangTheoTuan : 
 	            dsdh.hangiaohang_po between @monday and @sunday
 	            and isnull(dsdh.sanxuatton, 0) = 0
 	            and isnull(dsdh.donhangtron, 0) = 0
+                and isnull(dsdh.banHHVT, 0) = 0
 	            and dsdh.trangthai != 'DAGUI'
             order by
                 isnull(dsdh.giahangngaygiao, dsdh.hangiaohang_po), dsdh.so_po
