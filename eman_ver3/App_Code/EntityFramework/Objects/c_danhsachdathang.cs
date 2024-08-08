@@ -67,6 +67,12 @@
                         public Decimal? cbm { get; set; }
                 
 						
+                        #region c_danhsachdathang_cbmTN_wintaFN
+                        
+                        #endregion c_danhsachdathang_cbmTN_wintaFN
+                        public Decimal? cbmTN { get; set; }
+                
+						
                         #region c_danhsachdathang_check_nangluc_wintaFN
                         
                         #endregion c_danhsachdathang_check_nangluc_wintaFN
@@ -334,7 +340,7 @@
                         #region c_danhsachdathang_ngaycoHDDG_wintaFN
                         
                         #endregion c_danhsachdathang_ngaycoHDDG_wintaFN
-                        public DateTime? ngaycoHDDG { get; set; }
+                        public string ngaycoHDDG { get; set; }
                 
 						
                         #region c_danhsachdathang_ngaycoPallet_wintaFN
@@ -478,7 +484,7 @@
                         #region c_danhsachdathang_ngayTTDDH_wintaFN
                         
                         #endregion c_danhsachdathang_ngayTTDDH_wintaFN
-                        public DateTime? ngayTTDDH { get; set; }
+                        public string ngayTTDDH { get; set; }
                 
 						
                         #region c_danhsachdathang_ngayTTKCS_wintaFN

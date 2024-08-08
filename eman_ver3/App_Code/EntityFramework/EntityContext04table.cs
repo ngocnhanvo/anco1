@@ -920,12 +920,20 @@ modelBuilder.Entity<md_hanngach>().HasKey<string>(p => p.md_hanngach_id);
                             .HasColumnName("ngayduyet")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_hanngach>()
+                            .Property(p => p.ngayhieuluc)
+                            .HasColumnName("ngayhieuluc")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_hanngach>()
                             .Property(p => p.ngaytao)
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_hanngach>()
                             .Property(p => p.ngaytrinh)
                             .HasColumnName("ngaytrinh")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_hanngach>()
+                            .Property(p => p.ngayxacnhan)
+                            .HasColumnName("ngayxacnhan")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_hanngach>()
                             .Property(p => p.nguoicapnhat)

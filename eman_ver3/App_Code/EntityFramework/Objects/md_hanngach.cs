@@ -61,6 +61,12 @@
                         public DateTime? ngayduyet { get; set; }
                 
 						
+                        #region md_hanngach_ngayhieuluc_wintaFN
+                        
+                        #endregion md_hanngach_ngayhieuluc_wintaFN
+                        public DateTime? ngayhieuluc { get; set; }
+                
+						
                         #region md_hanngach_ngaytao_wintaFN
                         
                         #endregion md_hanngach_ngaytao_wintaFN
@@ -71,6 +77,12 @@
                         
                         #endregion md_hanngach_ngaytrinh_wintaFN
                         public DateTime? ngaytrinh { get; set; }
+                
+						
+                        #region md_hanngach_ngayxacnhan_wintaFN
+                        
+                        #endregion md_hanngach_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
                 
 						
                         #region md_hanngach_nguoicapnhat_wintaFN

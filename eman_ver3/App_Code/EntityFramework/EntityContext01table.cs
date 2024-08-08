@@ -1078,6 +1078,10 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("cbm")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.cbmTN)
+                            .HasColumnName("cbmTN")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.check_nangluc)
                             .HasColumnName("check_nangluc")
                             .HasColumnType("bit");
@@ -1256,7 +1260,7 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.ngaycoHDDG)
                             .HasColumnName("ngaycoHDDG")
-                            .HasColumnType("datetime");
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.ngaycoPallet)
                             .HasColumnName("ngaycoPallet")
@@ -1352,7 +1356,7 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.ngayTTDDH)
                             .HasColumnName("ngayTTDDH")
-                            .HasColumnType("datetime");
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.ngayTTKCS)
                             .HasColumnName("ngayTTKCS")
