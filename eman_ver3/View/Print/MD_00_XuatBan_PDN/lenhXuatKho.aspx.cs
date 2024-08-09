@@ -49,7 +49,7 @@ public partial class PrintControllers_MD_00_XuatBan_PDN_lenhXuatKho : System.Web
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
-	            cdvc.sl_muonxuat as slct,
+	            cdvc.tong_sl_xuat as slct,
                 null as sltn,
 	            null as sldat,
 	            null as slkdat,

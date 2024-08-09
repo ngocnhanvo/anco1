@@ -556,6 +556,10 @@ modelBuilder.Entity<md_travexacnhan>().HasKey<string>(p => p.md_travexacnhan_id)
                             .HasColumnName("sct_lienquan")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_travexacnhan>()
+                            .Property(p => p.trangthai)
+                            .HasColumnName("trangthai")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_travexacnhan>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");
