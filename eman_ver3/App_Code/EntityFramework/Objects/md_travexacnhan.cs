@@ -25,6 +25,18 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_travexacnhan_denkho_wintaFN
+                        
+                        #endregion md_travexacnhan_denkho_wintaFN
+                        public string denkho { get; set; }
+                
+						
+                        #region md_travexacnhan_donhang_wintaFN
+                        
+                        #endregion md_travexacnhan_donhang_wintaFN
+                        public string donhang { get; set; }
+                
+						
                         #region md_travexacnhan_hoatdong_wintaFN
                         
                         #endregion md_travexacnhan_hoatdong_wintaFN
@@ -107,6 +119,12 @@
                         
                         #endregion md_travexacnhan_trangthai_wintaFN
                         public string trangthai { get; set; }
+                
+						
+                        #region md_travexacnhan_tukho_wintaFN
+                        
+                        #endregion md_travexacnhan_tukho_wintaFN
+                        public string tukho { get; set; }
                 
 						
                         #region md_travexacnhan_vaitrocapnhat_wintaFN
