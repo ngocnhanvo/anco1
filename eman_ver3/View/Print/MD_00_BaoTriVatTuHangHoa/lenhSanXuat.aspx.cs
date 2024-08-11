@@ -43,13 +43,13 @@ public partial class PrintControllers_MD_00_BaoTriVatTuHangHoa_lenhSanXuat : Sys
               sp.ma_sanpham as maHHVT, 
               sp.mota_tiengviet as tenHHVT, 
               sum(
-                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0)
+                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) 
               ) as slcsx, 
               sum(
-                isnull(cdh.sl_dagiao, 0)
+                isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0)
               ) as sldg, 
               sum(
-                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) - isnull(cdh.sl_dagiao, 0)
+                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) - isnull(cdh.sl_dagiao, 0) + isnull(cdh.sl_nhapkho, 0)
               ) as slcl 
             fRoM 
               md_lenhsanxuat_tosx_cdh cdh 
