@@ -58,7 +58,8 @@ public partial class PrintControllers_MD_00_PVCDG_lenhNhapKho : System.Web.UI.Pa
                 left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                 left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
             where
-                vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
+                1=1
+                --and vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
                 and vcnb.md_vanchuyennoibo_id = @khid
                 and cdvc.soluong_muonchuyen > 0
             order by
