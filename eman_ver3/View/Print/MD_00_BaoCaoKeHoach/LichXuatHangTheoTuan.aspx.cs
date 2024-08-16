@@ -33,15 +33,17 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
     public String CreateSql(HttpContext context)
     {
         string id = context.Request.QueryString["id"];
-        string date = context.Request.QueryString["ngayin"];
+        string date1 = context.Request.QueryString["ngayin1"];
+        string date2 = context.Request.QueryString["ngayin2"];
         string fmt = "dd/MM/yyyy";
         string sql = $@"
-            declare @date datetime = convert(datetime, N'{date}', 103)
-		    declare @monday datetime = (SELECT DATEADD(wk, DATEDIFF(wk,0,@date), 0) MondayOfCurrentWeek)
-            declare @sunday datetime = dateadd(SECOND, 23*60 *60 + 59*60 + 59, @monday + 6)
+            declare @date1 datetime = convert(datetime, N'{date1} 00:00:00', 103)
+            declare @date2 datetime = convert(datetime, N'{date2} 23:59:59', 103)
+		    --declare @monday datetime = (SELECT DATEADD(wk, DATEDIFF(wk,0,@date), 0) MondayOfCurrentWeek)
+            --declare @sunday datetime = dateadd(SECOND, 23*60 *60 + 59*60 + 59, @monday + 6)
 
             select 
-                format(@date, '{fmt}') as ngayin
+                format(getdate(), '{fmt}') as ngayin
 	            , isnull(dsdh.nhanVienLH, dsdh.nguoi_dathang) as nvlh
 	            , dsdh.so_po
 	            , (
@@ -64,7 +66,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
 	            , dsdh.cont40hc
 	            , format(dsdh.ngayhieuluc, '{fmt}') as ngaydathang
 	            , format(dsdh.hangiaohang_po, '{fmt}') as ngaygiaohang
-	            , dsdh.giahangngaygiao as giahan
+	            , format(dsdh.giahangngaygiao, '{fmt}') as giahan
 	            , dsdh.huongdanlamhang
 	            , dsdh.huongdanlamhangchung
 	            , (
@@ -75,7 +77,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
                 , dsdh.reportKCS as kcsFN
                 , format(dsdh.ngaykhachkiemDK, '{fmt}') as ngaykhachkiem1
                 , format(dsdh.ngaykhachkiemTT, '{fmt}') as ngaykhachkiem2
-                , format(dsdh.ngaycoHDDG, '{fmt}') as ngaycoHDDG
+                , dsdh.ngaycoHDDG as ngaycoHDDG
                 , format(dsdh.ngaycoTSDG, '{fmt}') as ngaycoTSDG
                 , format(dsdh.ngaycoTem, '{fmt}') as tem
                 , format(dsdh.ngaycoBaoBi, '{fmt}') as baobi
@@ -94,7 +96,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_LichXuatHangTheoTuan :
 	            c_danhsachdathang dsdh
 	            left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = dsdh.so_po
             where
-	            dsdh.hangiaohang_po between @monday and @sunday
+	            isnull(dsdh.giahangngaygiao, dsdh.hangiaohang_po) between @date1 and @date2
 	            and isnull(dsdh.sanxuatton, 0) = 0
 	            and isnull(dsdh.donhangtron, 0) = 0
 	            and dsdh.trangthai != 'DAGUI'

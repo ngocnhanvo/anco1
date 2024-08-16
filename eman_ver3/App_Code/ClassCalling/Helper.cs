@@ -103,6 +103,24 @@ public static class Helper
         "104"
     };
 
+    public static Dictionary<string,string> dicTrangThaiDH = new Dictionary<string, string>() {
+        {"HIEULUC", "Hiệu lực" },
+        {"DaXLTTP", "Đã xử lý tồn TP" },
+        {"DaXLTBTP", "Đã xử lý tồn thô" },
+        {"DATSX", "Đặt hàng xong" },
+        {"ChoDG", "Nhập hàng xong" },
+        {"ChoXH", "Đóng gói xong" },
+        {"DaXuatHang", "Đã xuất hàng" },
+        {"SOANTHAO", "Soạn thảo" },
+        {"DAGUI", "Chưa nhận" },
+        {"DANHAN", "Đã nhận" },
+        {"HUYBO", "Hủy bỏ" },
+        {"KETTHUC", "Kết thúc" },
+        {"TTBS1", "Chờ TSDG hoặc HD TEM & BB" },
+        {"TTBS2", "Chờ VTDG về" },
+        {"TTBS3", "Chờ đóng gói" }
+    };
+
     public static string[] checkVT_BTP_TP(bool? vt, bool? btp, bool? sp, string loai)
     {
         //La Vat Tu
