@@ -48,9 +48,57 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
             case "CA_01_CopyKehoach":
                 this.CA_01_CopyKehoach(context);
                 break;
+            case "CA_01_TraVeSoanThaoKHMHHVT":
+                this.CA_01_TraVeSoanThaoKHMHHVT(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_TraVeSoanThaoKHMHHVT(HttpContext context)
+    {
+        string msg = "";
+        var msgErrs = new List<string>();
+        try
+        {
+            var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            var khmvts = db.c_kehoachmuavt.Where(p => ids.Contains(p.c_kehoachmuavt_id)).ToList();
+            if(khmvts.Count <= 0)
+            {
+                msgErrs.Add("Lỗi:Không tìm thấy đối tượng");
+                goto EndEventHandler;
+            }
+
+            foreach (var object_ in khmvts)
+            {
+                if (object_.md_trangthai_id != Helper.DANHAN)
+                {
+                    msgErrs.Add($@"Lỗi: {object_.sochungtu} không ở trạng thái ""Đã xác nhận""");
+                }
+                else
+                {
+                    object_.md_trangthai_id = Helper.SOANTHAO;
+                }
+            }
+
+            if (msgErrs.Count <= 0)
+                db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msgErrs.Add(ex.ToString());
+        }
+
+    EndEventHandler:;
+
+        if (msgErrs.Count > 0)
+        {
+            msgErrs = msgErrs.Select(x => $@"<div error style='color:red'>{x}</div>").ToList();
+            msg = string.Join("", msgErrs);
+        }
+
+        context.Response.Write(msg);
     }
 
     public void CA_01_TongHopLHMVT(HttpContext context)
