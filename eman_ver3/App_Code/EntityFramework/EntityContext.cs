@@ -97,6 +97,7 @@ public virtual DbSet<md_dongtien> md_dongtien { get; set; }
 public virtual DbSet<md_donvitinh> md_donvitinh { get; set; }
 public virtual DbSet<md_donvitinhsanpham> md_donvitinhsanpham { get; set; }
 public virtual DbSet<md_donvitinhsanpham_cddv> md_donvitinhsanpham_cddv { get; set; }
+public virtual DbSet<md_ghichuhdlh> md_ghichuhdlh { get; set; }
 public virtual DbSet<md_giasanpham> md_giasanpham { get; set; }
 public virtual DbSet<md_giasanpham_giaodich> md_giasanpham_giaodich { get; set; }
 public virtual DbSet<md_hanngach> md_hanngach { get; set; }

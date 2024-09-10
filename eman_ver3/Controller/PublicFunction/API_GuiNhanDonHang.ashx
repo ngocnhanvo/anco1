@@ -15,6 +15,9 @@ public class API_GuiNhanDonHang : IHttpHandler
         string oper = context.Request.QueryString["oper"];
         switch (oper)
         {
+            case "guiHDLH2":
+                this.guiHDLH2(context);
+                break;
             case "guiHDLH":
                 this.guiHDLH(context);
                 break;
@@ -25,6 +28,72 @@ public class API_GuiNhanDonHang : IHttpHandler
                 this.getListDSDH(context);
                 break;
         }
+    }
+
+    public void guiHDLH2(HttpContext context)
+    {
+        string msg = "", msgEx = "";
+        string strdata = context.Request.Form["data"];
+        try
+        {
+            var update = false;
+            var taptins = new List<md_ghichuhdlh>();
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            var result = JsonConvert.DeserializeObject<List<md_ghichuhdlh>>(data["result"] + "");
+            var hdlh = (data["hdlh"] + "");
+            var chdk = (data["chdk"] + "");
+
+            if(result.Count <= 0)
+            {
+                msg = "Không có hướng dẫn làm hàng chi tiết.";
+                goto EndEventHandler;
+            }
+
+            if(string.IsNullOrWhiteSpace(hdlh) & string.IsNullOrWhiteSpace(chdk))
+            {
+                msg = "Không có hướng dẫn làm hàng tổng thể";
+                goto EndEventHandler;
+            }
+
+            var dhid = result.Select(s => s.lienket).Distinct().FirstOrDefault();
+            var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == dhid).FirstOrDefault();
+            if(dsdh == null)
+            {
+                msg = "Không tìm thấy đơn hàng.";
+                goto EndEventHandler;
+            }
+
+            foreach (var a in result)
+            {
+                var tt = new md_ghichuhdlh();
+                a.CopyPropertiesTo(tt);
+                tt.viewed = false;
+                db.md_ghichuhdlh.Add(tt);
+                update = true;
+            }
+
+            if (update)
+            {
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+            msgEx = ex.ToString();
+        }
+
+    EndEventHandler:;
+
+        if(msg.Length > 0)
+        {
+            msg = $@"
+                <div style='color:red'>Có lỗi xảy ra: {msg}</div>
+                <div style='display:none'>{msgEx}</div>
+            ";
+        }
+
+        context.Response.Write(msg);
     }
 
     public void guiHDLH(HttpContext context)
