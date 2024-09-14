@@ -87,12 +87,12 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-                outer apply (
+                cross apply (
 		            select xnb.xuatden from md_xuatkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
 		            union
 		            select pbXB.md_phongban_id 
 		            from md_xuatban xnb
-		            inner join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
+		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
 		            where xnb.sochungtu = kgd.dongnhapxuat
 	            ) xnb
                 left join ad_department pb on pb.md_phongban_id = xnb.xuatden
