@@ -84,7 +84,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 	            dvtsp.ten_dvt as dvt,
 	            kgd.soluong_dichchuyen as soluong,
                 dbh.giadoichieu as dongia,
-                isnull(pb.ten_phongban, dtkd.ten_dtkd) as xuatden
+                isnull(pb.ten_phongban, dtkd.ma_dtkd) as xuatden
             from md_kho_giaodich kgd
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
