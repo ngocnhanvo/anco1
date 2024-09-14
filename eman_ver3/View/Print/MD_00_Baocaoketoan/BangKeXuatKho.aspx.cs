@@ -82,7 +82,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
 	            sp.ma_sanpham as maVTHH,
 	            sp.mota_tiengviet as tenVTHH,
 	            dvtsp.ten_dvt as dvt,
-	            kgd.soluong_dichchuyen as soluong
+	            kgd.soluong_dichchuyen as soluong,
+                isnull(pb.ten_phongban, dtkd.ten_dtkd) as xuatden
             from md_kho_giaodich kgd
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
@@ -90,7 +91,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
                 cross apply (
 		            select xnb.xuatden from md_xuatkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
 		            union
-		            select pbXB.md_phongban_id 
+		            select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) 
 		            from md_xuatban xnb
 		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
 		            where xnb.sochungtu = kgd.dongnhapxuat
@@ -98,6 +99,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
                 left join ad_department pb on pb.md_phongban_id = xnb.xuatden
                 left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
 	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
+                left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.xuatden
             where
 	            1=1
                 and kgd.kieuchuyen = N'{Helper.XuatKho}'
