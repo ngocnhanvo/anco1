@@ -88,7 +88,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-                cross apply (
+                outer apply (
 		            select xnb.xuatden, '' as c_danhsachdathang_id
 		            from md_xuatkhonb xnb 
 		            where xnb.sochungtu = kgd.dongnhapxuat

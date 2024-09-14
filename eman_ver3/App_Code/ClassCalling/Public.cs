@@ -180,6 +180,15 @@ public class Public
             {
                 var vattusp = vattuspT.a;
                 var vattusp2 = vattuspT.b;
+
+                if (!vattusp2.vattu.GetValueOrDefault(false) & !vattusp2.ban_thanhpham.GetValueOrDefault(false))
+                {
+                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
+                    {
+                        item.loi = $@"""{vattusp2.ma_sanpham}"" chưa đánh dấu là ""bán thành phẩm""";
+                    }
+                    break;
+                }
                 //var bomVT = db.md_sanpham_bom.
                 //    Where(s =>
                 //    s.md_sanpham_id == vattusp.md_sanpham_id

@@ -235,10 +235,22 @@
                         public string huongdanlamhang { get; set; }
                 
 						
+                        #region c_danhsachdathang_huongdanlamhang2_wintaFN
+                        
+                        #endregion c_danhsachdathang_huongdanlamhang2_wintaFN
+                        public string huongdanlamhang2 { get; set; }
+                
+						
                         #region c_danhsachdathang_huongdanlamhangchung_wintaFN
                         
                         #endregion c_danhsachdathang_huongdanlamhangchung_wintaFN
                         public string huongdanlamhangchung { get; set; }
+                
+						
+                        #region c_danhsachdathang_huongdanlamhangchung2_wintaFN
+                        
+                        #endregion c_danhsachdathang_huongdanlamhangchung2_wintaFN
+                        public string huongdanlamhangchung2 { get; set; }
                 
 						
                         #region c_danhsachdathang_isgui_hdlh_wintaFN

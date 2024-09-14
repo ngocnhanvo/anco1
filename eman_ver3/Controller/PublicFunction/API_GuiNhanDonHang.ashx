@@ -63,6 +63,9 @@ public class API_GuiNhanDonHang : IHttpHandler
                 goto EndEventHandler;
             }
 
+            dsdh.huongdanlamhang2 = hdlh;
+            dsdh.huongdanlamhangchung2 = chdk;
+
             foreach (var a in result)
             {
                 var tt = new md_ghichuhdlh();

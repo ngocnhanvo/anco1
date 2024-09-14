@@ -1190,8 +1190,16 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .HasColumnName("huongdanlamhang")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.huongdanlamhang2)
+                            .HasColumnName("huongdanlamhang2")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.huongdanlamhangchung)
                             .HasColumnName("huongdanlamhangchung")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.huongdanlamhangchung2)
+                            .HasColumnName("huongdanlamhangchung2")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.isgui_hdlh)
