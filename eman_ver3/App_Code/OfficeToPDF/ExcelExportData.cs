@@ -789,15 +789,16 @@ namespace OfficeToPDF
                     .removeAllSpaceOrTrimText(true);
                 }
 
-                lstFormula.Add(new AvariablePrj.lstFormula()
-                {
-                    row = row.RowNum + 1,
-                    col = columnT.ColumnIndex + 1,
-                    formula = cellFormula
-                });
+                //lstFormula.Add(new AvariablePrj.lstFormula()
+                //{
+                //    row = row.RowNum + 1,
+                //    col = columnT.ColumnIndex + 1,
+                //    formula = cellFormula
+                //});
 
                 try
                 {
+                    columnT.SetCellFormula(cellFormula);
                     columnT.SetCellType(CellType.Formula);
 
                     if (columnT.CellStyle.GetDataFormatString() == "#####")
