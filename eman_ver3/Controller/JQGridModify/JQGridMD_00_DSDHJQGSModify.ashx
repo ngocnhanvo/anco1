@@ -725,6 +725,12 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                             db.md_taptin.Remove(taptin);
                         }
 
+                        var hdlhs = db.md_ghichuhdlh.Where(s => s.lienket == object_.c_danhsachdathang_id).ToList();
+                        foreach (var hdlh in hdlhs)
+                        {
+                            db.md_ghichuhdlh.Remove(hdlh);
+                        }
+
                         VNN_Function.Write_log(context, ma_module, null, oper, "MĐH:" + object_.sochungtu + ", TĐH:" + object_.so_po, db);
                         db.c_danhsachdathang.Remove(object_);
                         db.SaveChanges();
