@@ -431,7 +431,7 @@ public static class Helper
         }
         else
         {
-            url = $"{Security.UrlBase()}ViewPDFPublic/index.aspx?url_pdf={linkView}&remove=true&zoom=page-width&zoomprint=0.999&id={Guid.NewGuid()}&namedown={name}";
+            url = $"{Security.UrlBase()}ViewPDFPublic/index.aspx?url_pdf={linkView}&remove=true&zoom=1&zoomprint=0.999&id={Guid.NewGuid()}&namedown={name}";
         }
 
         HttpContext.Current.Response.Redirect(url);

@@ -51,9 +51,56 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
             case "CA_01_TraVeSoanThaoKHMHHVT":
                 this.CA_01_TraVeSoanThaoKHMHHVT(context);
                 break;
+            case "CA_01_LamMoiDuLieuXuatKho":
+                this.CA_01_LamMoiDuLieuXuatKho(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_LamMoiDuLieuXuatKho(HttpContext context)
+    {
+        string idparent = context.Request.Form["id"];
+        string msg = "";
+
+        try
+        {
+            var khmvt = db.c_kehoachmuavt.FirstOrDefault(s => s.c_kehoachmuavt_id == idparent);
+            if (khmvt.md_trangthai_id == Helper.HIEULUC)
+            {
+                msg = string.Format(@"Kế hoach này đã ""Hiệu Lực"".");
+            }
+            else
+            {
+                foreach (var khmvt_cdh in db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == idparent).ToList())
+                {
+                    var slxk = db.md_kho_giaodich.Where(s =>
+                        s.ngaychuyen >= khmvt.tungay
+                        & s.ngaychuyen <= khmvt.denngay
+                        & s.kieuchuyen == Helper.XuatKho
+                        & s.md_sanpham_id == khmvt_cdh.md_sanpham_id)
+                        .ToList().Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
+                    khmvt_cdh.sl_xuatkho = slxk;
+                }
+                db.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if (msg.Length <= 0)
+        {
+
+        }
+        else
+        {
+            msg = $@"<div style=""color:red"">Lỗi:{msg}</div>";
+        }
+
+        context.Response.Write(msg);
     }
 
     public void CA_01_TraVeSoanThaoKHMHHVT(HttpContext context)

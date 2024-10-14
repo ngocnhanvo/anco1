@@ -86,6 +86,8 @@ public virtual DbSet<md_congthuctrongtinhgia> md_congthuctrongtinhgia { get; set
 public virtual DbSet<md_congthuctrongtinhgia_mausac> md_congthuctrongtinhgia_mausac { get; set; }
 public virtual DbSet<md_dbbiendong> md_dbbiendong { get; set; }
 public virtual DbSet<md_dieukienthanhtoan> md_dieukienthanhtoan { get; set; }
+public virtual DbSet<md_doikhodoingay> md_doikhodoingay { get; set; }
+public virtual DbSet<md_doikhodoingay_cdh> md_doikhodoingay_cdh { get; set; }
 public virtual DbSet<md_doimaudodang> md_doimaudodang { get; set; }
 public virtual DbSet<md_doimaudodang_dh> md_doimaudodang_dh { get; set; }
 public virtual DbSet<md_doitackinhdoanh> md_doitackinhdoanh { get; set; }
