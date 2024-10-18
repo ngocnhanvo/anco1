@@ -33,6 +33,9 @@ namespace GenerateModels.Controllers
         protected UpdateSQLStatement update;
         public SQLController()
         {
+            mdbc = new MSSQL();
+            tenDB = mdbc.nameDB;
+            urlRoot = $"{AppDomain.CurrentDomain.BaseDirectory}{urlMid}\\";
             update = new UpdateSQLStatement();
         }
 
@@ -48,9 +51,6 @@ namespace GenerateModels.Controllers
 
         public ActionResult MSSQL()
         {
-            mdbc = new MSSQL();
-            tenDB = mdbc.nameDB;
-            urlRoot = $"{AppDomain.CurrentDomain.BaseDirectory}{urlMid}\\";
             ViewBag.tenDB = tenDB;
             ViewBag.urlRoot = urlRoot;
             ViewBag.jqxTree = loadJQXTree();
@@ -224,7 +224,7 @@ order by
                         {
                             sql = sql.Split('\n')[0];
                             string name = sql.Replace("--(download) ", "");
-                            sql = $@"{ViewBag.urlRoot}\\{name}";
+                            sql = $@"{urlRoot}\\{name}";
                             msg += $@"<br><br><a class=""a_download"" onclick=""window.location.href=`Download?link={sql}`"">Click to download file ""{name}""</a>";
                         }
 
