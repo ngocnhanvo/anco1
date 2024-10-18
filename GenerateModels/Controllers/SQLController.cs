@@ -224,7 +224,8 @@ order by
                         {
                             sql = sql.Split('\n')[0];
                             string name = sql.Replace("--(download) ", "");
-                            sql = $@"{urlRoot}\\{name}";
+                            sql = $@"{urlRoot}{name}";
+                            sql = sql.Replace("\\","\\\\");
                             msg += $@"<br><br><a class=""a_download"" onclick=""window.location.href=`Download?link={sql}`"">Click to download file ""{name}""</a>";
                         }
 
