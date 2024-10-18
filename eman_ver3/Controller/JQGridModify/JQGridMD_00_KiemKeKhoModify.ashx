@@ -112,7 +112,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
                             helperEntity.obj.giaTriVND = 0;
                             helperEntity.obj.khoId = kk.md_kho_id;
                             helperEntity.obj.kieuchuyen = helperEntity.kieuXuatKho;
-                            helperEntity.obj.ngayChuyen = kk.ngay_kiemke;
+                            helperEntity.obj.ngayChuyen = nkk;
                             helperEntity.obj.theoKg = false;
                             helperEntity.obj.laphieuKK = true;
                             helperEntity.themHoacSuaLichSuNhapXuatKho(db, userTK);
@@ -137,7 +137,7 @@ public class JQGridMD_00_KiemKeKhoModify : IHttpHandler, System.Web.SessionState
 
                             khoId = kk.md_kho_id,
                             kieuchuyen = helperEntity.kieuNhapKho,
-                            ngayChuyen = kk.ngay_kiemke,
+                            ngayChuyen = nkk,
                             theoKg = false,
                             laphieuKK = true
                         };

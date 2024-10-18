@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Git Module (ANCO1)";
+}
+
+<div class="jumbotron">
+    <h1>Git Module (ANCO1)</h1>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" align="center">
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject000(this)">Pull code</button>
+            </p>
+        </div>
+        <div class="col-md-6" align="center">
+            <p>
+                <button class="btn blue" type="button" onclick="WriteObject001(this)">Stash Changes</button>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="resultGenerate hide">
+            <div style="margin-top:20px;max-width: 600px;margin: 20px auto 0px auto;background-color: #000;color: #FFF;padding: 20px 0px 0px 20px;" class="msg"></div>
+            <a style="margin: 5px auto;display: table;background-color: #CCC;padding: 5px 10px 5px 10px;border: 1px solid #000" href="javascript:void(0)" onclick="$(this).parent().addClass('hide');" class="msg">Close</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var buttons = $('button.btn.blue');
+    var resultGenerate = $('.resultGenerate');
+
+    var WriteObject000 = function (btnA) {
+        $('.loadingPage').removeClass('hide');
+
+        $(buttons).prop('disabled', true);
+
+        $.ajax({
+            url: '/Git/WriteObject000',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                result.msg = result.msg.replace(/\r\n/g, '<br>');
+                resultGenerate.find('div.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+
+                if (result.link)
+                    window.open(result.link, '_blank');
+            }
+        });
+    };
+
+    var WriteObject001 = function (btnA) {
+        $('.loadingPage').removeClass('hide');
+
+        $(buttons).prop('disabled', true);
+
+        $.ajax({
+            url: '/Git/WriteObject001',
+            dataType: 'json',
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (result) {
+                $('.loadingPage').addClass('hide');
+                result.msg = result.msg.replace(/\r\n/g, '<br>');
+                resultGenerate.find('div.msg').html(result.msg);
+                resultGenerate.removeClass("R0").removeClass("R1").removeClass('hide').addClass(`R${result.status}`);
+                $(buttons).prop('disabled', false);
+
+                if (result.link)
+                    window.open(result.link, '_blank');
+            }
+        });
+    };
+
+</script>
