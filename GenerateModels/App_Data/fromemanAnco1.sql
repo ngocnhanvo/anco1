@@ -728,6 +728,28 @@ IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'value_vaitrocapnhat' AND 
 IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'value_vaitrotao' AND Object_ID = Object_ID(N'dbo.ad_log'))) begin ALTER TABLE ad_log ADD value_vaitrotao nvarchar(150) NULL; end ELSE begin ALTER TABLE ad_log alter column value_vaitrotao nvarchar(150) NULL; end 
 
 IF(EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'idForCreateTable_____' AND Object_ID = Object_ID(N'dbo.ad_log'))) begin ALTER TABLE ad_log DROP COLUMN idForCreateTable_____ end 
+IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ad_logmssql')) begin CREATE TABLE ad_logmssql(idForCreateTable_____ int); end 
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'ad_logmssql_id' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD ad_logmssql_id varchar(32) NOT NULL; end ELSE begin ALTER TABLE ad_logmssql alter column ad_logmssql_id varchar(32) NOT NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'clientip' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD clientip nvarchar(50) NOT NULL; end ELSE begin ALTER TABLE ad_logmssql alter column clientip nvarchar(50) NOT NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'hoatdong' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD hoatdong bit NULL; end ELSE begin ALTER TABLE ad_logmssql alter column hoatdong bit NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'mota' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD mota nvarchar(2000) NULL; end ELSE begin ALTER TABLE ad_logmssql alter column mota nvarchar(2000) NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'ngaycapnhat' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD ngaycapnhat datetime NULL; end ELSE begin ALTER TABLE ad_logmssql alter column ngaycapnhat datetime NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'ngaytao' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD ngaytao datetime NULL; end ELSE begin ALTER TABLE ad_logmssql alter column ngaytao datetime NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'nguoicapnhat' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD nguoicapnhat nvarchar(32) NULL; end ELSE begin ALTER TABLE ad_logmssql alter column nguoicapnhat nvarchar(32) NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'nguoitao' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD nguoitao nvarchar(32) NULL; end ELSE begin ALTER TABLE ad_logmssql alter column nguoitao nvarchar(32) NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'sql' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD sql nvarchar(MAX) NULL; end ELSE begin ALTER TABLE ad_logmssql alter column sql nvarchar(MAX) NULL; end 
+
+IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'user' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql ADD user nvarchar(50) NULL; end ELSE begin ALTER TABLE ad_logmssql alter column user nvarchar(50) NULL; end 
+
+IF(EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'idForCreateTable_____' AND Object_ID = Object_ID(N'dbo.ad_logmssql'))) begin ALTER TABLE ad_logmssql DROP COLUMN idForCreateTable_____ end 
 IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'ad_menu')) begin CREATE TABLE ad_menu(idForCreateTable_____ int); end 
 IF(NOT EXISTS(SELECT 1 FROM sys.columns WHERE Name = N'ad_menu_id' AND Object_ID = Object_ID(N'dbo.ad_menu'))) begin ALTER TABLE ad_menu ADD ad_menu_id varchar(32) NOT NULL; end ELSE begin ALTER TABLE ad_menu alter column ad_menu_id varchar(32) NOT NULL; end 
 
