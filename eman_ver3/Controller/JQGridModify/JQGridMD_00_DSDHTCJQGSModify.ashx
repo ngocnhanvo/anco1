@@ -27,6 +27,12 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     public EntityContext db = new EntityContext();
     public EntityFunction entityFunc = new EntityFunction();
     User_TK userTK = null;
+    public Dictionary<string, string> arrTrangThai = new Dictionary<string, string>() {
+        { Helper.SOANTHAO, "Soạn Thảo" },
+        { Helper.HIEULUC, "Hiệu Lực" },
+        { Helper.HUYBO, "Hủy Bỏ" },
+        { Helper.KETTHUC, "Kết thúc" }
+    };
 
     public string oper = "vnn";
     public void ProcessRequest(HttpContext context)
@@ -69,63 +75,79 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
     {
         string msg = "", msg_success = "";
         string id = context.Request.Form["id"];
+        string ma_module = context.Request.QueryString["ma_module"];
         string check_1 = context.Request.Form["check"];
         string[] vnn = id.Split(',');
         try
         {
-            foreach (var dsdh in db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).ToList())
+            var dsdh = db.c_danhsachdathang.Where(s => vnn.Contains(s.c_danhsachdathang_id)).FirstOrDefault();
+            if (dsdh == null)
             {
-                if (dsdh.trangthai != "DANHAN" & dsdh.trangthai != "SOANTHAO")
+                msg = $@"Không tìm thấy đơn hàng cần thao tác";
+                goto EndEventHandler;
+            }
+
+            string trangThaiDangCo = dsdh.trangthai;
+            if (trangThaiDangCo == Helper.DANHAN | trangThaiDangCo == Helper.SOANTHAO)
+            {
+                msg = "Đơn hàng chưa hiệu lực";
+                goto EndEventHandler;
+            }
+
+            if (check_1 == "1")
+            {
+                dsdh.trangthai = Helper.HUYBO;
+                var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                if (khdh != null)
                 {
-                    if (check_1 == "1")
-                    {
-                        dsdh.trangthai = Helper.HUYBO;
-                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if (khdh != null)
-                        {
-                            khdh.trangthaiSav = khdh.trangthai;
-                            khdh.trangthai = Helper.KETTHUC;
-                        }
-                        msg_success = "<div style='color:blue'> Hủy bỏ đơn hàng thành công.</div>";
-                    }
-                    else if (check_1 == "2")
-                    {
-                        dsdh.trangthai = Helper.KETTHUC;
-                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if (khdh != null)
-                        {
-                            khdh.trangthaiSav = khdh.trangthai;
-                            khdh.trangthai = Helper.KETTHUC;
-                        }
-                        msg_success = "<div style='color:blue'> Kết thúc đơn hàng thành công.</div>";
-                    }
-                    else if (check_1 == "3")
-                    {
-                        dsdh.trangthai = Helper.HIEULUC;
-                        var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
-                        if (khdh != null)
-                        {
-                            if (!string.IsNullOrWhiteSpace(khdh.trangthaiSav))
-                                khdh.trangthai = khdh.trangthaiSav;
-                        }
-                        msg_success = "<div style='color:blue'>Tái Hiệu Lực đơn hàng thành công.</div>";
-                    }
-                }
-                else
-                {
-                    msg = "<div style='color:red'>Đơn hàng chưa hiệu lực.</div>";
+                    khdh.trangthaiSav = khdh.trangthai;
+                    khdh.trangthai = Helper.KETTHUC;
                 }
             }
-            if (msg.Length <= 0)
+            else if (check_1 == "2")
             {
-                db.SaveChanges();
-                msg = msg_success;
+                dsdh.trangthai = Helper.KETTHUC;
+                var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                if (khdh != null)
+                {
+                    khdh.trangthaiSav = khdh.trangthai;
+                    khdh.trangthai = Helper.KETTHUC;
+                }
             }
+            else if (check_1 == "3")
+            {
+                dsdh.trangthai = Helper.HIEULUC;
+                var khdh = db.c_kehoachdathang.Where(s => s.c_danhsachdathang_id == dsdh.c_danhsachdathang_id).FirstOrDefault();
+                if (khdh != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(khdh.trangthaiSav))
+                        khdh.trangthai = khdh.trangthaiSav;
+                }
+            }
+
+            if (ma_module == "MD_00_DSDHJQGS")
+                oper = "CA_01_HuyBoDonHangAnco";
+
+            msg_success = $@"""{dsdh.so_po}"" đã đổi trạng thái từ ""{arrTrangThai[trangThaiDangCo]}"" sang ""{arrTrangThai[dsdh.trangthai]}""";
+            VNN_Function.Write_log(context, ma_module, null, oper, msg_success, db);
+            db.SaveChanges();
         }
         catch (Exception ex)
         {
-            msg = "false#" + ex.Message;
+            msg = ex.ToString();
         }
+
+    EndEventHandler:;
+
+        if(msg.Length <= 0)
+        {
+            msg = $@"<div style='color:blue'>{msg_success}</div>";
+        }
+        else
+        {
+            msg = $@"<div style='color:red'>{msg}</div>";
+        }
+
         context.Response.Write(msg);
     }
 
@@ -500,7 +522,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                 goto EndEventHandler;
             }
 
-            
+
             var object_ = new c_danhsachdathang();
             object_.c_danhsachdathang_id = id_new;
             object_.md_trangthai_id = Helper.HIEULUC;
