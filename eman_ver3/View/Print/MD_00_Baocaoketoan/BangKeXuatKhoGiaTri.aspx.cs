@@ -69,6 +69,27 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
             declare @pbSel nvarchar(MAX) = (select ten_phongban from ad_department where md_phongban_id = '{boPhanSel}')            
+            
+            declare @tbl table (
+	            maVTHH nvarchar(MAX),
+	            dg decimal(18,4),
+	            rank_no int
+            )
+
+            insert into @tbl
+            select
+	            sp.ma_sanpham,
+	            isnull(cdh.dongiamua, 0) as dg,
+	            RANK () OVER (partition by sp.ma_sanpham ORDER BY (case when isnull(cdh.dongiamua, 0) > 0 then 0 else 1 end), ngaychuyen desc) AS Rank_no
+            from md_kho_giaodich kgd
+	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
+	            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
+	            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
+            where 1=1
+                and kgd.kieuchuyen = N'{Helper.NhapKho}'
+	            and kgd.ngaychuyen between @tu and @den
+	            and kgd.soluong_dichchuyen > 0
+	            and isnull(kgd.mota, '') != '' {masp}
 
             select
 	            format(getdate(), '{fmtDate}') as ngayin,
@@ -83,7 +104,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 	            sp.mota_tiengviet as tenVTHH,
 	            dvtsp.ten_dvt as dvt,
 	            kgd.soluong_dichchuyen as soluong,
-                dbh.giadoichieu as dongia,
+                dmh.dg as dongia,
                 isnull(pb.ten_phongban, dtkd.ma_dtkd) as xuatden
             from md_kho_giaodich kgd
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
@@ -99,11 +120,11 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
 		            where xnb.sochungtu = kgd.dongnhapxuat
 	            ) xnb
-                left join c_dongdsdh dbh on dbh.c_danhsachdathang_id = xnb.c_danhsachdathang_id and dbh.md_sanpham_id = sp.md_sanpham_id
                 left join ad_department pb on pb.md_phongban_id = xnb.xuatden
                 left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
 	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.xuatden
+                cross apply (select dg from @tbl where rank_no = 1 and maVTHH = sp.ma_sanpham) dmh
             where
 	            1=1
                 and kgd.kieuchuyen = N'{Helper.XuatKho}'
