@@ -24,6 +24,7 @@ public virtual DbSet<ad_import_ava> ad_import_ava { get; set; }
 public virtual DbSet<ad_import_column> ad_import_column { get; set; }
 public virtual DbSet<ad_import_ex> ad_import_ex { get; set; }
 public virtual DbSet<ad_log> ad_log { get; set; }
+public virtual DbSet<ad_logmssql> ad_logmssql { get; set; }
 public virtual DbSet<ad_menu> ad_menu { get; set; }
 public virtual DbSet<ad_mess> ad_mess { get; set; }
 public virtual DbSet<ad_module> ad_module { get; set; }

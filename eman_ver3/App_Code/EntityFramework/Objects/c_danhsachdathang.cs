@@ -529,6 +529,12 @@
                         public string nguoicapnhat { get; set; }
                 
 						
+                        #region c_danhsachdathang_nguoinhan_wintaFN
+                        
+                        #endregion c_danhsachdathang_nguoinhan_wintaFN
+                        public string nguoinhan { get; set; }
+                
+						
                         #region c_danhsachdathang_nguoitao_wintaFN
                         
                         #endregion c_danhsachdathang_nguoitao_wintaFN

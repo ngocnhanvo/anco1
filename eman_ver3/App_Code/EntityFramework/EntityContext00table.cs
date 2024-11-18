@@ -1423,6 +1423,48 @@ modelBuilder.Entity<ad_log>().HasKey<string>(p => p.ad_log_id);
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");
+modelBuilder.Entity<ad_logmssql>().ToTable("ad_logmssql");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.ad_logmssql_id)
+                            .HasColumnName("ad_logmssql_id")
+                            .HasColumnType("varchar");
+modelBuilder.Entity<ad_logmssql>().HasKey<string>(p => p.ad_logmssql_id);
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.clientip)
+                            .HasColumnName("clientip")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.hoatdong)
+                            .HasColumnName("hoatdong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.mota)
+                            .HasColumnName("mota")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.ngaycapnhat)
+                            .HasColumnName("ngaycapnhat")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.ngaytao)
+                            .HasColumnName("ngaytao")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.nguoicapnhat)
+                            .HasColumnName("nguoicapnhat")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.nguoitao)
+                            .HasColumnName("nguoitao")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.sql)
+                            .HasColumnName("sql")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_logmssql>()
+                            .Property(p => p.user)
+                            .HasColumnName("user")
+                            .HasColumnType("nvarchar");
 modelBuilder.Entity<ad_menu>().ToTable("ad_menu");
                             modelBuilder.Entity<ad_menu>()
                             .Property(p => p.ad_menu_id)
@@ -1994,92 +2036,6 @@ modelBuilder.Entity<ad_removeline>().HasKey<string>(p => p.ad_removeline_id);
                             .HasColumnName("value_vaitrocapnhat")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_removeline>()
-                            .Property(p => p.value_vaitrotao)
-                            .HasColumnName("value_vaitrotao")
-                            .HasColumnType("nvarchar");
-modelBuilder.Entity<ad_role>().ToTable("ad_role");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.ad_role_id)
-                            .HasColumnName("ad_role_id")
-                            .HasColumnType("varchar");
-modelBuilder.Entity<ad_role>().HasKey<string>(p => p.ad_role_id);
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.bophancapnhat)
-                            .HasColumnName("bophancapnhat")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.bophantao)
-                            .HasColumnName("bophantao")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.hoatdong)
-                            .HasColumnName("hoatdong")
-                            .HasColumnType("bit");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.ma_role)
-                            .HasColumnName("ma_role")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.md_phongban_id)
-                            .HasColumnName("md_phongban_id")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.mota)
-                            .HasColumnName("mota")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.ngaycapnhat)
-                            .HasColumnName("ngaycapnhat")
-                            .HasColumnType("datetime");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.ngaytao)
-                            .HasColumnName("ngaytao")
-                            .HasColumnType("datetime");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.nguoicapnhat)
-                            .HasColumnName("nguoicapnhat")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.nguoitao)
-                            .HasColumnName("nguoitao")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.role_thuake)
-                            .HasColumnName("role_thuake")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.ten_role)
-                            .HasColumnName("ten_role")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.vaitrocapnhat)
-                            .HasColumnName("vaitrocapnhat")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.vaitrotao)
-                            .HasColumnName("vaitrotao")
-                            .HasColumnType("varchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.value_bophancapnhat)
-                            .HasColumnName("value_bophancapnhat")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.value_bophantao)
-                            .HasColumnName("value_bophantao")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.value_nguoicapnhat)
-                            .HasColumnName("value_nguoicapnhat")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.value_nguoitao)
-                            .HasColumnName("value_nguoitao")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
-                            .Property(p => p.value_vaitrocapnhat)
-                            .HasColumnName("value_vaitrocapnhat")
-                            .HasColumnType("nvarchar");
-                            modelBuilder.Entity<ad_role>()
                             .Property(p => p.value_vaitrotao)
                             .HasColumnName("value_vaitrotao")
                             .HasColumnType("nvarchar");

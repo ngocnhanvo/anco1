@@ -556,8 +556,9 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
                     dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id;
                     dsdh.ngaycapnhat = DateTime.Now;
                     dsdh.ngaynhan = DateTime.Now;
-                    dsdh.trangthai = "DANHAN";
-                    dsdh.md_trangthai_id = "HIEULUC";
+                    dsdh.nguoinhan = Security.id_taikhoan(context);
+                    dsdh.trangthai = Helper.DANHAN;
+                    dsdh.md_trangthai_id = Helper.HIEULUC;
                     db.SaveChanges();
                 }
             }
