@@ -1134,6 +1134,10 @@ modelBuilder.Entity<md_ghichuhdlh>().HasKey<string>(p => p.md_ghichuhdlh_id);
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_ghichuhdlh>()
+                            .Property(p => p.ngayxacnhan)
+                            .HasColumnName("ngayxacnhan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_ghichuhdlh>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");

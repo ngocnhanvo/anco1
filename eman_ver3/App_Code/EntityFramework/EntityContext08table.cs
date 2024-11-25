@@ -454,6 +454,10 @@ modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
                             .HasColumnName("ngaytao")
                             .HasColumnType("datetime");
                             modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.ngayxacnhan)
+                            .HasColumnName("ngayxacnhan")
+                            .HasColumnType("datetime");
+                            modelBuilder.Entity<md_taptin>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");
@@ -473,6 +477,10 @@ modelBuilder.Entity<md_taptin>().HasKey<string>(p => p.md_taptin_id);
                             .Property(p => p.tentaptin)
                             .HasColumnName("tentaptin")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_taptin>()
+                            .Property(p => p.trangthai)
+                            .HasColumnName("trangthai")
+                            .HasColumnType("varchar");
                             modelBuilder.Entity<md_taptin>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")

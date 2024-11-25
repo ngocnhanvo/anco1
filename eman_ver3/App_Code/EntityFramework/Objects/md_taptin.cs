@@ -73,6 +73,12 @@
                         public DateTime? ngaytao { get; set; }
                 
 						
+                        #region md_taptin_ngayxacnhan_wintaFN
+                        
+                        #endregion md_taptin_ngayxacnhan_wintaFN
+                        public DateTime? ngayxacnhan { get; set; }
+                
+						
                         #region md_taptin_nguoicapnhat_wintaFN
                         
                         #endregion md_taptin_nguoicapnhat_wintaFN
@@ -101,6 +107,12 @@
                         
                         #endregion md_taptin_tentaptin_wintaFN
                         public string tentaptin { get; set; }
+                
+						
+                        #region md_taptin_trangthai_wintaFN
+                        
+                        #endregion md_taptin_trangthai_wintaFN
+                        public string trangthai { get; set; }
                 
 						
                         #region md_taptin_vaitrocapnhat_wintaFN
