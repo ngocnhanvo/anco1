@@ -186,6 +186,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                     item["c_danhsachdathang_id"] = dsdh.c_danhsachdathang_id;
                     item["trangthai"] = dsdh.trangthai == "HIEULUC" ? "DAHIEULUC" : dsdh.trangthai;
                     item["hdlhs"] = JsonConvert.SerializeObject(db.md_ghichuhdlh.Where(s => s.lienket == dsdh.c_danhsachdathang_id & (s.viewed ?? false) == true).ToList());
+                    item["tts"] = JsonConvert.SerializeObject(db.md_taptin.Where(s => s.lienket == dsdh.c_danhsachdathang_id & (s.viewed ?? false) == true).ToList());
                     lst.Add(item);
                 }
             }

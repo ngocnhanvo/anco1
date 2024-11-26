@@ -29,10 +29,10 @@ public class Download : IHttpHandler
             {
                 if (!tt.viewed.GetValueOrDefault(false))
                 {
-                    tt.viewed = true;
-                    db.SaveChanges();
-                    var hubExec = new MainHubExcute();
-                    hubExec.Exec("daXemHuongDanLamHang", JsonConvert.SerializeObject(tt));
+                    //tt.viewed = true;
+                    //db.SaveChanges();
+                    //var hubExec = new MainHubExcute();
+                    //hubExec.Exec("daXemHuongDanLamHang", JsonConvert.SerializeObject(tt));
                 }
             }
             context.Response.WriteFile(path);
