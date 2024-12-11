@@ -13,7 +13,6 @@ public static class Helper
     public static string[] mimeTypes = { ".jpg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".pdf" }; 
     public static string VNN_notpost = "VNN_notpost";
     public static string SOANTHAO = "SOANTHAO";
-    public static string DANHAN = "DANHAN";
     public static string HIEULUC = "HIEULUC";
     public static string HUYBO = "HUYBO";
     public static string KETTHUC = "KETTHUC";
@@ -37,10 +36,15 @@ public static class Helper
     public static string ChoXH = "ChoXH";
     public static string DaXuatHang = "DaXuatHang";
 
+    public static string CHUAGUI = "CHUAGUI";
+    public static string DAGUI = "DAGUI";
+    public static string TUCHOI = "TUCHOI";
+    public static string DANHAN = "DANHAN";
+
     public static string CHODUYET = "CHODUYET";
     public static string DADUYET = "DADUYET";
 
-    public static string TUCHOI = "TUCHOI";
+    
     public static string NhapKho = "Nhập kho";
     public static string XuatKho = "Xuất kho";
 

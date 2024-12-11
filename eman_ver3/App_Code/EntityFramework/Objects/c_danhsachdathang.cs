@@ -625,6 +625,12 @@
                         public string trangthai { get; set; }
                 
 						
+                        #region c_danhsachdathang_trangthaiHDLH_wintaFN
+                        
+                        #endregion c_danhsachdathang_trangthaiHDLH_wintaFN
+                        public string trangthaiHDLH { get; set; }
+                
+						
                         #region c_danhsachdathang_vaitrocapnhat_wintaFN
                         
                         #endregion c_danhsachdathang_vaitrocapnhat_wintaFN

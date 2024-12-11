@@ -77,6 +77,7 @@ public class API_GuiNhanDonHang : IHttpHandler
 
             if (update)
             {
+                dsdh.trangthaiHDLH = Helper.DAGUI;
                 db.SaveChanges();
             }
         }
@@ -145,6 +146,7 @@ public class API_GuiNhanDonHang : IHttpHandler
 
             if (update)
             {
+                dsdh.trangthaiHDLH = Helper.DAGUI;
                 db.SaveChanges();
             }
         }
@@ -224,6 +226,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                         c_dsdh.anco_check = true;
                         c_dsdh.check_nangluc = false;
                         c_dsdh.reportKCS = "-";
+                        c_dsdh.trangthaiHDLH = Helper.CHUAGUI;
                         c_dsdh.c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
                         c_dsdh.c_donhang_id = item["c_donhang_id"] + "";
                         c_dsdh.dg_nangluc = false;
