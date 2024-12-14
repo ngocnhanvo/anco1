@@ -37,6 +37,12 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
             {
                 tbl.Rows[0]["kho"] = "";
             }
+
+            var bophans = tbl.AsEnumerable().Select(s => s.Field<string>("bophan")).Distinct().ToList();
+            if (bophans.Count > 1)
+            {
+                tbl.Rows[0]["bophan"] = "";
+            }
         }
     }
 
@@ -47,12 +53,21 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
         string kho = context.Request.QueryString["kho"].removeAllSpaceOrTrimText(true).Replace("'", "''");
         if (!string.IsNullOrWhiteSpace(kho))
             kho = $@"and kh.md_kho_id = N'{kho}'";
-
+        //Bo Phan
+        string boPhan = context.Request.QueryString["boPhan"].removeAllSpaceOrTrimText(true).Replace("'", "''");
+        string boPhanSel = boPhan;
+        if (!string.IsNullOrWhiteSpace(boPhan))
+            boPhan = $@"and (pb.md_phongban_id = N'{boPhan}' or pbCha1.md_phongban_id = N'{boPhan}' or pbCha2.md_phongban_id = N'{boPhan}')";
+        //San pham
+        string masp = context.Request.QueryString["masp"].removeAllSpaceOrTrimText(true).Replace("'", "''");
+        if (!string.IsNullOrWhiteSpace(masp))
+            masp = $@"and sp.ma_sanpham = N'{masp}'";
         var fmtDate = "dd/MM/yyyy";
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-
+            declare @pbSel nvarchar(MAX) = (select ten_phongban from ad_department where md_phongban_id = '{boPhanSel}') 
+            
             select
 	            format(getdate(), '{fmtDate}') as ngayin,
 	            format(@tu, '{fmtDate}') as tungay,
@@ -60,21 +75,35 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
 	            kgd.dongnhapxuat as sct,
 	            format(kgd.ngaychuyen, '{fmtDate}') as nnk,
                 kh.ten_kho as kho,
+                @pbSel as bophan,
 	            sp.ma_sanpham as maVTHH,
 	            sp.mota_tiengviet as tenVTHH,
 	            dvtsp.ten_dvt as dvt,
-	            kgd.soluong_dichchuyen as soluong
+	            kgd.soluong_dichchuyen as soluong,
+	            isnull(pb.ten_phongban, dtkd.ma_dtkd) as nhaptu
             from md_kho_giaodich kgd
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                cross apply (
+		            select xnb.nhaptu from md_nhapkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
+		            union
+		            select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) as nhaptu 
+		            from md_nhapkho_ncc xnb
+		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
+		            where xnb.sochungtu = kgd.dongnhapxuat
+	            ) xnb
+                left join ad_department pb on pb.md_phongban_id = xnb.nhaptu
+                left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
+	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
+                left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.nhaptu
             where
 	            1=1
                 and kgd.kieuchuyen = N'{Helper.NhapKho}'
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
                 and kgd.dongnhapxuat not like 'PVC%'
-                {kho}
+                {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham
 		";
