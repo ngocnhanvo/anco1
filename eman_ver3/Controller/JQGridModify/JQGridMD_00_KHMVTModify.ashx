@@ -749,6 +749,7 @@ public class JQGridMD_00_KHMVTModify : IHttpHandler, System.Web.SessionState.IRe
                         s.ngaychuyen >= object_.tungay
                         & s.ngaychuyen <= object_.denngay
                         & s.kieuchuyen == Helper.XuatKho
+                        & !s.dongnhapxuat.StartsWith("PVC")
                         & s.md_sanpham_id == cdvt.md_sanpham_id)
                         .ToList().Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
                         cdvt.sl_xuatkho = slxk;

@@ -36,11 +36,15 @@ public partial class MainPage : System.Web.UI.Page
                 date_ip = ttc.date_import.Value.ToString(VNN_Config.get_FormatDate());
             }
 
-            var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + tk.ma_user + "/layoutSize.json");
-            if (System.IO.File.Exists(filepath))
+            try
             {
-                layoutSize = System.IO.File.ReadAllText(filepath);
+                var filepath = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/CustomGrid/" + tk.ma_user + "/layoutSize.json");
+                if (System.IO.File.Exists(filepath))
+                {
+                    layoutSize = System.IO.File.ReadAllText(filepath);
+                }
             }
+            catch { }
         }
     }
 }
