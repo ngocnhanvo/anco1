@@ -176,6 +176,7 @@ public class JQGridMD_01_CDKHVattuModify : IHttpHandler, System.Web.SessionState
                         s.ngaychuyen >= khmvt.tungay
                         & s.ngaychuyen <= khmvt.denngay
                         & s.kieuchuyen == Helper.XuatKho
+                        & !s.dongnhapxuat.StartsWith("PVC")
                         & s.md_sanpham_id == khmvt_cdh.md_sanpham_id)
                         .ToList().Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
                     khmvt_cdh.sl_xuatkho = slxk;
