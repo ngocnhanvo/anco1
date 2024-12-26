@@ -70,6 +70,10 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
 
             dmh.md_trangthai_id = Helper.SOANTHAO;
             //dmh.ngaycapnhat = DateTime.Now;
+
+            var cdhs = db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id & s.sl_tonkho != null).ToList();
+            foreach (var cdh in cdhs)
+                cdh.sl_tonkho = null;
             db.SaveChanges();
         }
         catch (Exception ex)
@@ -209,6 +213,8 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                         msg = $@"""{sp.ma_sanpham}"" có ""SL đã mua"" lớn hơn ""SL duyệt"" ({sldamuaStr} > {slduyetStr})";
                         goto EndEventHandler;
                     }
+
+                    cdh.sl_tonkho = db.md_kho_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).ToList().Sum(s => s.soluong.GetValueOrDefault(0));
                 }
 
                 var khmvtDHsServer = db.c_kehoachmuavt_cdh.Where(s => s.c_kehoachmuavt_id == khmvt.c_kehoachmuavt_id & s.sl_conlai < s.sl_duyet).ToList();
@@ -217,6 +223,13 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 if (khmvtDHs.Count <= 0)
                 {
                     khmvt.md_trangthai_id = Helper.KETTHUC;
+                }
+            }
+            else
+            {
+                foreach (var cdh in db.c_donmuahang_cdmh.Where(s => s.c_donmuahang_id == dmh.c_donmuahang_id).ToList())
+                {
+                    cdh.sl_tonkho = db.md_kho_sanpham.Where(s => s.md_sanpham_id == cdh.md_sanpham_id).ToList().Sum(s => s.soluong.GetValueOrDefault(0));
                 }
             }
             db.SaveChanges();

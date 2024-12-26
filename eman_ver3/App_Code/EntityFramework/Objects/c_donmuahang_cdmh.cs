@@ -127,6 +127,12 @@
                         public Decimal? sl_hanngach { get; set; }
                 
 						
+                        #region c_donmuahang_cdmh_sl_tonkho_wintaFN
+                        
+                        #endregion c_donmuahang_cdmh_sl_tonkho_wintaFN
+                        public Decimal? sl_tonkho { get; set; }
+                
+						
                         #region c_donmuahang_cdmh_thanhtien_wintaFN
                         
                         #endregion c_donmuahang_cdmh_thanhtien_wintaFN

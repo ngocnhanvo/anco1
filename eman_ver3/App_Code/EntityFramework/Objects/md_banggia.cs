@@ -31,6 +31,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_banggia_check1_wintaFN
+                        
+                        #endregion md_banggia_check1_wintaFN
+                        public bool? check1 { get; set; }
+                
+						
                         #region md_banggia_hoatdong_wintaFN
                         
                         #endregion md_banggia_hoatdong_wintaFN

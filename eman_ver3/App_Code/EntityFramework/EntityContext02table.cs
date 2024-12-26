@@ -781,6 +781,10 @@ modelBuilder.Entity<c_donmuahang_cdmh>().HasKey<string>(p => p.c_donmuahang_cdmh
                             .HasColumnName("sl_hanngach")
                             .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<c_donmuahang_cdmh>()
+                            .Property(p => p.sl_tonkho)
+                            .HasColumnName("sl_tonkho")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<c_donmuahang_cdmh>()
                             .Property(p => p.thanhtien)
                             .HasColumnName("thanhtien")
                             .HasColumnType("decimal").HasPrecision(18, 8);

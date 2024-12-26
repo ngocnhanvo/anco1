@@ -527,6 +527,10 @@ modelBuilder.Entity<md_banggia>().HasKey<string>(p => p.md_banggia_id);
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_banggia>()
+                            .Property(p => p.check1)
+                            .HasColumnName("check1")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_banggia>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");
