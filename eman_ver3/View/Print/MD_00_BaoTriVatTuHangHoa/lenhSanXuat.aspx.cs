@@ -46,10 +46,10 @@ public partial class PrintControllers_MD_00_BaoTriVatTuHangHoa_lenhSanXuat : Sys
                 cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) 
               ) as slcsx, 
               sum(
-                isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0)
+                isnull(case when isnull(cdh.sl_dagiao, 0) < isnull(cdh.sl_nhapkho, 0) then 0 else isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0) end, 0)
               ) as sldg, 
               sum(
-                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) - isnull(cdh.sl_dagiao, 0) + isnull(cdh.sl_nhapkho, 0)
+                cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) - isnull((case when isnull(cdh.sl_dagiao, 0) < isnull(cdh.sl_nhapkho, 0) then 0 else isnull(cdh.sl_dagiao, 0) - isnull(cdh.sl_nhapkho, 0) end), 0)
               ) as slcl 
             fRoM 
               md_lenhsanxuat_tosx_cdh cdh 
