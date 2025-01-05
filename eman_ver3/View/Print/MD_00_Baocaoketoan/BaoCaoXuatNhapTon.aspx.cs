@@ -70,7 +70,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTon : Sys
 	            sum(A.sldk) as tonDK,
 	            sum(A.slntk) as nhapTK,
 	            sum(A.slxtk) as xuatTK,
-                @tenkho as kho
+                @tenkho as kho,
+                null as po
             from (
 	            select
 		            kgd.dongnhapxuat as sct,
