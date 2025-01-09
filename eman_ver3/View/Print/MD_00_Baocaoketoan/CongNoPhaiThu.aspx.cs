@@ -65,10 +65,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
 	            dvtsp.ten_dvt as dvt,
 	            dmhDH.sl_dathang as sldh,
 	            dh.sl_xuat as slnk,
-	            dmhDH.giadoichieu as dongia,
+	            dmhDH.gianhap as dongia,
 	            thue.giatri/100 as vat,
-	            FLOOR(dmhDH.giadoichieu * dh.sl_xuat) as thanhtien,
-	            FLOOR(FLOOR(dmhDH.giadoichieu * dh.sl_xuat) + FLOOR(dmhDH.giadoichieu * dh.sl_xuat) * thue.giatri / 100) as thanhtienThue
+	            FLOOR(dmhDH.gianhap * dh.sl_xuat) as thanhtien,
+	            FLOOR(FLOOR(dmhDH.gianhap * dh.sl_xuat) + FLOOR(dmhDH.gianhap * dh.sl_xuat) * thue.giatri / 100) as thanhtienThue
             from md_xuatban ncc
 	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
 	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
