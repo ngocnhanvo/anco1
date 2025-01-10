@@ -60,62 +60,67 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
             declare @tenkho nvarchar(MAX) = (select ten_kho from md_kho where md_kho_id = '{khoId}')
 
-            select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
-	            A.maVTHH,
-	            A.tenVTHH,
-	            A.dvt,
-	            sum(A.sldk) as tonDK,
-	            sum(A.slntk) as nhapTK,
-	            sum(A.slxtk) as xuatTK,
-                @tenkho as kho,
-                A.po
+            select A.* 
             from (
-	            select
-		            kgd.dongnhapxuat as sct,
-		            format(kgd.ngaychuyen, '{fmtDate}') as nnxk,
-		            sp.ma_sanpham as maVTHH,
-		            sp.mota_tiengviet as tenVTHH,
-		            dvtsp.ten_dvt as dvt,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
-		            0 as slntk,
-		            0 as slxtk,
-                    kgd.mota as po
-	            from md_kho_giaodich kgd
-		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            where
-		            1=1
-		            and kgd.ngaychuyen < @dauky
-		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota, '') like '[0-9][0-9][0-9]%'
-                    {masp} {kho}
-	            union
+                select
+	                format(getdate(), '{fmtDate}') as ngayin,
+	                format(@tu, '{fmtDate}') as tungay,
+	                format(@den, '{fmtDate}') as denngay,
+	                A.maVTHH,
+	                A.tenVTHH,
+	                A.dvt,
+	                sum(A.sldk) as tonDK,
+	                sum(A.slntk) as nhapTK,
+	                sum(A.slxtk) as xuatTK,
+                    @tenkho as kho,
+                    A.po
+                from (
+	                select
+		                kgd.dongnhapxuat as sct,
+		                format(kgd.ngaychuyen, '{fmtDate}') as nnxk,
+		                sp.ma_sanpham as maVTHH,
+		                sp.mota_tiengviet as tenVTHH,
+		                dvtsp.ten_dvt as dvt,
+		                (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
+		                0 as slntk,
+		                0 as slxtk,
+                        kgd.mota as po
+	                from md_kho_giaodich kgd
+		                left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
+		                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+	                where
+		                1=1
+		                and kgd.ngaychuyen < @dauky
+		                and kgd.soluong_dichchuyen > 0
+                        and isnull(kgd.mota, '') like '[0-9][0-9][0-9]%'
+                        {masp} {kho}
+	                union
 
-	            select
-		            kgd.dongnhapxuat as sct,
-		            format(kgd.ngaychuyen, '{fmtDate}') as nnxk,
-		            sp.ma_sanpham as maVTHH,
-		            sp.mota_tiengviet as tenVTHH,
-		            dvtsp.ten_dvt as dvt,
-		            0 as sldk,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 else kgd.soluong_dichchuyen end) as slntk,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then kgd.soluong_dichchuyen else 0 end) as slxtk,
-                    kgd.mota as po
-	            from md_kho_giaodich kgd
-		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            where
-		            1=1
-		            and kgd.ngaychuyen between @tu and @den
-		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota, '') like '[0-9][0-9][0-9]%'
-                    {masp} {kho}
+	                select
+		                kgd.dongnhapxuat as sct,
+		                format(kgd.ngaychuyen, '{fmtDate}') as nnxk,
+		                sp.ma_sanpham as maVTHH,
+		                sp.mota_tiengviet as tenVTHH,
+		                dvtsp.ten_dvt as dvt,
+		                0 as sldk,
+		                (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 else kgd.soluong_dichchuyen end) as slntk,
+		                (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then kgd.soluong_dichchuyen else 0 end) as slxtk,
+                        kgd.mota as po
+	                from md_kho_giaodich kgd
+		                left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
+		                left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+	                where
+		                1=1
+		                and kgd.ngaychuyen between @tu and @den
+		                and kgd.soluong_dichchuyen > 0
+                        and isnull(kgd.mota, '') like '[0-9][0-9][0-9]%'
+                        {masp} {kho}
+                )A
+                group by
+	                A.maVTHH, A.tenVTHH, A.dvt, A.po
             )A
-            group by
-	            A.maVTHH, A.tenVTHH, A.dvt, A.po
+            where 
+                A.tonDK != 0 or A.nhapTK != 0 or A.xuatTK != 0
             order by
 	             A.po, A.maVTHH
 		";

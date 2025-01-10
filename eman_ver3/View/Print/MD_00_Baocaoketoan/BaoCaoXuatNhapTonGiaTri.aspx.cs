@@ -131,7 +131,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 	            sum(A.sldk) as tonDK,
 	            sum(A.slntk) as nhapTK,
 	            sum(A.slxtk) as xuatTK,
-                @tenkho as kho
+                @tenkho as kho,
+                null as po
             from @tbl A
             cross apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
             group by A.maVTHH, A.tenVTHH, A.dvt, B.dg
