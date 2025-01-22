@@ -20,6 +20,7 @@ public partial class MainPage : System.Web.UI.Page
         }
         else
         {
+
             tk = VNN_Function.get_user(
                 Security.id_taikhoan(Context),
                 Security.id_vaitro(Context),

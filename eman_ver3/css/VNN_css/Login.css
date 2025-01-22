@@ -40,7 +40,13 @@ span {
     color: #666 !important
 }
 
-#txtMatKhau, #txtTaiKhoan {
+#txtMaXacThuc {
+    letter-spacing: 1px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+#txtMatKhau, #txtTaiKhoan, #txtMaXacThuc {
     padding: 8px 10px;
     color: #333;
     min-width: 294px;
@@ -120,7 +126,7 @@ div.ui-layout-north.toolbar {
 }
 
 #lblCaption {
-    width: 100%;
+    width: calc(100% - 40px);
     display: block;
     white-space: pre-line;
     color: red;

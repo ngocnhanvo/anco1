@@ -19,6 +19,7 @@ public class GoogleMail
 {
     private int _port;
     private String _email, _password, _smtp;
+    private bool _ssl;
 
     public String Smtp
     {
@@ -42,6 +43,17 @@ public class GoogleMail
     {
         get { return _port; }
         set { _port = value; }
+    }
+
+    public bool SSL
+    {
+        get { return _ssl; }
+        set { _ssl = value; }
+    }
+
+    public GoogleMail(int? custom)
+    {
+
     }
 
     public GoogleMail()
@@ -122,12 +134,14 @@ public class GoogleMail
             mail.Bcc.Add(bcc);
         }
 
-
+        //ServicePointManager.ServerCertificateValidationCallback += (o, c, ch, er) => true;
         SmtpClient client = new SmtpClient(_smtp, _port);
-        client.Timeout = 1000;
-        client.EnableSsl = true;
-        client.UseDefaultCredentials = false;
+        //client.Timeout = 1000;
+        client.EnableSsl = SSL;
+        client.UseDefaultCredentials = true;
         client.Credentials = new NetworkCredential(_email, _password);
         client.Send(mail);
+        mail.Dispose();
+        client.Dispose();
     }
 }

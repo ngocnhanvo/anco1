@@ -2,13 +2,6 @@
 <%@ Import Namespace="System.Data.Linq" %>
 <%@ Import Namespace="DataAcess" %>
 
-<% 
-    var json = new ADmin_JSON();
-    var ttc = json.ad_systemconfigJSON().FirstOrDefault();
-    string url_server = Request.Url.Host;
-    string urlBalse = Security.UrlBase();
-    string logo = ttc == null ? urlBalse + " images/logo/imagenotfound.jpg" : urlBalse + ttc.logo + "?ver1";
-%>
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -82,29 +75,39 @@
 										    <div style="height:10px"></div>
 									    </td>
 								    </tr>
-								    <tr>
+								    <tr id="trMaTaiKhoan1" runat="server">
 									    <td>
-										    <asp:TextBox TabIndex="1" placeholder="Nhập tài khoản" required="" ID="txtTaiKhoan" runat="server"></asp:TextBox>
+										    <asp:TextBox TabIndex="1" placeholder="Nhập tài khoản" ID="txtTaiKhoan" runat="server"></asp:TextBox>
 									    </td>
 								    </tr>
-								    <tr>
+								    <tr id="trMaTaiKhoan2" runat="server">
+									    <td>
+										    <div style="height:1px"></div>
+									    </td>
+								    </tr>
+								    <tr id="trMatKhau1" runat="server">
+									    <td>
+										    <asp:TextBox TabIndex="2" placeholder="Nhập mật khẩu" ID="txtMatKhau" TextMode="Password" runat="server"></asp:TextBox>
+									    </td>
+								    </tr>
+								    <tr id="trMatKhau2" runat="server">
+									    <td>
+										    <div style="height:1px"></div>
+									    </td>
+								    </tr>
+                                    <tr id="trMaXacThuc1" runat="server">
+									    <td>
+										    <asp:TextBox TabIndex="3" placeholder="Nhập mã xác thực" ID="txtMaXacThuc" runat="server"></asp:TextBox>
+									    </td>
+								    </tr>
+								    <tr id="trMaXacThuc2" runat="server">
 									    <td>
 										    <div style="height:1px"></div>
 									    </td>
 								    </tr>
 								    <tr>
 									    <td>
-										    <asp:TextBox TabIndex="2" placeholder="Nhập mật khẩu" required="" ID="txtMatKhau" TextMode="Password" runat="server"></asp:TextBox>
-									    </td>
-								    </tr>
-								    <tr>
-									    <td>
-										    <div style="height:1px"></div>
-									    </td>
-								    </tr>
-								    <tr>
-									    <td>
-										    <asp:Button TabIndex="3" ID="btnLogin" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Đăng nhập" OnClick="btnLogin_Click" />
+										    <asp:Button TabIndex="4" ID="btnLogin" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Đăng nhập" OnClick="btnLogin_Click" />
 									    </td>
 								    </tr>
 								    <tr>

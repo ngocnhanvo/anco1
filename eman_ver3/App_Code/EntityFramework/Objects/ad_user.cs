@@ -73,6 +73,18 @@
                         public string fax { get; set; }
                 
 						
+                        #region ad_user_googleAuthenticator_wintaFN
+                        
+                        #endregion ad_user_googleAuthenticator_wintaFN
+                        public bool? googleAuthenticator { get; set; }
+                
+						
+                        #region ad_user_googlePass_wintaFN
+                        
+                        #endregion ad_user_googlePass_wintaFN
+                        public string googlePass { get; set; }
+                
+						
                         #region ad_user_hoatdong_wintaFN
                         
                         #endregion ad_user_hoatdong_wintaFN

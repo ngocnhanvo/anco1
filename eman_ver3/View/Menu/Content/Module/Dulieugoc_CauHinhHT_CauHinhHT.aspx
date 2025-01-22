@@ -11,15 +11,18 @@
 
 <style type="text/css">
     #frm_system table tr td {
-        font-size: 13px;
-        padding: 0 32px 12px 0;
+        padding: 10px;
     }
 
     table#tb_system {
-        padding: 29px 0px 9px 34px;
+        padding: 15px 10px;
         border: 2px solid rgb(63, 125, 150);
         border-radius: 0px 0px 12px 12px;
-        margin: -21px 0px 0px 0px;
+        margin: 30px auto;
+        background-color: #FFF;
+        max-width: 500px;
+        width: 100%;
+        user-select: none;
     }
 
     table#tb_system2 {
@@ -62,10 +65,12 @@
 
     #tb_system tr td label {
         color: #0A64A0;
+        position: relative;
+        top: -6px;
     }
 
-    #tb_system2 tr td label {
-        color: #0A64A0;
+    #tb_system tr td input, #tb_system tr td select {
+        width: 100%;
     }
 
     input#txt_fileupload {
@@ -81,24 +86,16 @@
     #nhan_cauhinhhethong {
         background-color: #DEF0F3;
     }
-
-    @media only screen and (min-width: 1300px) {
-        .divFloatLeft {
-            float: left;
-        }
-    }
 </style>
 
 <div class="sub_mainpage">
     <form runat="server" id="frm_system" name="frm_system" action="Controller/PublicFunction/ConfigSystem.ashx?oper=configSystem" method="post">
         <div>
-            <div id="main_hethong" class="divFloatLeft">
-                <div class="tieude">CẤU HÌNH THÔNG TIN CHÍNH</div>
-                <table id="tb_system" style="margin-left: 10px;">
+            <div id="main_hethong">
+                <table id="tb_system">
                     <tr>
                         <td>
-                            <label>Tên công ty </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Tên công ty </label><br />
                             <input type="text" id="txt_tencongty" name="txt_tencongty" value="" runat="server" />
                         </td>
 
@@ -128,128 +125,59 @@
                         </td>
 
                         <td>
-                            <label>Website</label><br />
-                            <input type="text" id="txt_website" name="txt_website" runat="server" />
+                            <label>Bật SSL</label><br />
+                            <select id="txt_website" name="txt_website" runat="server">
+                                <option value="0">Tắt</option>
+                                <option value="1">Bật</option>
+                            </select>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <label>Email server </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Email server </label><br />
                             <input type="text" id="txt_emailserver" name="txt_emailserver" runat="server" />
                         </td>
 
                         <td>
-                            <label>Port </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Port </label><br />
                             <input type="text" id="txt_port" name="txt_port" runat="server" />
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <label>Tài khoản email </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Tài khoản email </label><br />
                             <input type="text" id="txt_email" name="txt_email" runat="server" />
                         </td>
 
                         <td>
-                            <label>Mật khẩu </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Mật khẩu </label><br />
                             <input type="password" id="txt_matkhau" name="txt_matkhau" runat="server" />
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <label>Định dạng ngày </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Định dạng ngày </label><br />
                             <input type="text" id="txt_format_ngay" name="txt_format_ngay" runat="server" />
                         </td>
 
                         <td>
-                            <label>Định dạng số </label>
-                            <b style="color: Red">(*)</b><br />
+                            <label>Định dạng số </label><br />
                             <input type="text" id="txt_format_so" name="txt_format_so" runat="server" />
                         </td>
                     </tr>
 
                     <tr>
                         <td colspan="2">
-                            <input type="button" class="btnPress" onclick="xoaRacChuongTrinh()" value="Xóa rác chương trình" id="btnClean" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="divFloatLeft">
-                <div class="tieude">CẤU HÌNH THÔNG TIN PHỤ</div>
-                <table id="tb_system2" style="margin-left: 10px;">
-                    <tr>
-                        <td>
-                            <label>Tên cảnh báo</label><br />
-                            <input type="text" id="txt_tencanhbao" name="txt_tencanhbao" value="" runat="server" /></td>
-                        <td>
-                            <label>Logo trang chủ</label><br />
-                            <input type="file" id="txt_Logo_tc" onchange="hienthiduongdan('Logo_tc')" onmouseover="hienthilogo('Logo_tc')" name="txt_Logo_tc" runat="server" />
-                            <input type="text" id="Logo_tc" onclick="$('#txt_Logo_tc').click();" name="Logo_tc" runat="server" />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <label>Số lượng record trên grid</label><br />
-                            <input type="text" id="txt_soluong_grid" name="txt_soluong_grid" runat="server" /></td>
-
-                        <td>
-                            <label>Danh sách số lương trên grid</label><br />
-                            <input type="text" id="txt_soluong_grid_2" name="txt_soluong_grid_2" runat="server" /></td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <label>Thời hạn SX mặc định</label><br />
-                            <input type="text" id="txt_domain" name="txt_domain" runat="server" /></td>
-
-                        <td>
-                            <label>Thời hạn hoàn thành mặc định</label><br />
-                            <input type="text" id="txt_email_hotro" name="txt_email_hotro" runat="server" /></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label>Url Linq</label><br />
-                            <input type="text" id="txt_url_linq" name="txt_url_linq" runat="server" />
-                        </td>
-
-                        <td>
-                            <label>Tên Database</label><br />
-                            <input type="text" id="txt_ten_db" name="txt_ten_db" runat="server" />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <label>Tên Linq</label><br />
-                            <input type="text" id="txt_ten_linq" name="txt_ten_linq" runat="server" />
-                        </td>
-
-                        <td>
-                            <label>Tên ConnectionString</label><br />
-                            <input type="text" id="txt_ten_connectstring" name="txt_ten_connectstring" runat="server" />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2">
-                            <label>ConnectString AncoTrading</label><br />
-                            <input type="text" id="txt_connectstring_anco" style="width: 100%" name="txt_connectstring_anco" runat="server" />
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="2">
                             <input type="button" class="btnPress" onclick="themthongtinchung()" value="Lưu thông tin đã thiết lập" id="btn_changeinformation" name="btn_changeinformation" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <input type="button" class="btnPress" onclick="xoaRacChuongTrinh()" value="Xóa rác chương trình" id="btnClean" />
                         </td>
                     </tr>
                 </table>

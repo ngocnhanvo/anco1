@@ -10,22 +10,20 @@
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
-        var context = HttpContext.Current;
-        var response = context.Response;
-		var urlstr = Request.Url.ToString();
-		var urlhost = Request.Url.Host;
+        var response = Context.Response;
+        var urlstr = Request.Url.ToString();
+        var urlhost = Request.Url.Host;
         if (!urlhost.StartsWith("www") & !Request.Url.IsLoopback & !urlhost.StartsWith("1") & !urlhost.StartsWith(".local") & urlhost.IndexOf(".") < 2)
         {
-			UriBuilder builder = new UriBuilder(Request.Url);
-			builder.Host = "www." + Request.Url.Host;
-			Response.StatusCode = 301;
-			Response.AddHeader("Location", builder.ToString());
-			Response.End();
-			urlstr = builder.ToString();
+            UriBuilder builder = new UriBuilder(Request.Url);
+            builder.Host = "www." + Request.Url.Host;
+            Response.StatusCode = 301;
+            Response.AddHeader("Location", builder.ToString());
+            Response.End();
+            urlstr = builder.ToString();
         }
-		
-		//if (urlstr.Contains("http://") & !urlhost.StartsWith("192") & !urlhost.StartsWith("localhost"))
-			//Response.Redirect(urlstr.Replace("http","https"));
+        //if (urlstr.Contains("http://") & !urlhost.StartsWith("192") & !urlhost.StartsWith("localhost"))
+        //Response.Redirect(urlstr.Replace("http","https"));
     }
 
     void Application_End(object sender, EventArgs e)
@@ -40,7 +38,7 @@
 
     void Session_Start(object sender, EventArgs e)
     {
-        Session.Timeout = 3600;
+
     }
 
     void Session_End(object sender, EventArgs e)

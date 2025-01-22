@@ -854,6 +854,14 @@ modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
                             .HasColumnName("fax")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_user>()
+                            .Property(p => p.googleAuthenticator)
+                            .HasColumnName("googleAuthenticator")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<ad_user>()
+                            .Property(p => p.googlePass)
+                            .HasColumnName("googlePass")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_user>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
                             .HasColumnType("bit");

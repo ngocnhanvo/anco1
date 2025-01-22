@@ -325,14 +325,14 @@ public class ConfigSystem : IHttpHandler, System.Web.SessionState.IRequiresSessi
 
                     try
                     {
-                        ttc_edit.soluong_grid = int.Parse(context.Request.Params["txt_soluong_grid"]);
+                        //ttc_edit.soluong_grid = int.Parse(context.Request.Params["txt_soluong_grid"]);
                     }
                     catch
                     {
-                        ttc_edit.soluong_grid = 15;
+                        //ttc_edit.soluong_grid = 15;
                     }
 
-                    ttc_edit.soluong_grid_2 = context.Request.Params["txt_soluong_grid_2"];
+                    //ttc_edit.soluong_grid_2 = context.Request.Params["txt_soluong_grid_2"];
                     ttc_edit.tencongty = context.Request.Params["txt_tencongty"];
                     ttc_edit.website = context.Request.Params["txt_website"];
                     ttc_edit.taikhoanemail = context.Request.Params["txt_email"];
