@@ -64,7 +64,7 @@ div.ui-layout-north.toolbar {
     height: 81px
 }
 
-#btnLogin {
+#btnLogin, #btnVerify {
     font-family: Arial,Helvetica,sans-serif;
     font-size: 18px;
     color: #fff;
@@ -91,7 +91,7 @@ div.ui-layout-north.toolbar {
     margin-left: 18px
 }
 
-    #btnLogin:hover {
+    #btnLogin:hover, #btnVerify {
         cursor: pointer;
         background: -moz-linear-gradient(top,#036 0,#42aaff);
         background: -webkit-gradient(linear,left top,left bottom,from(#036),to(#42aaff))
@@ -171,7 +171,7 @@ div.ui-layout-north.toolbar {
         text-align: center;
     }
 
-    #btnLogin {
+    #btnLogin, #btnVerify {
         margin-top: unset;
         margin-bottom: unset;
         margin-left: unset;

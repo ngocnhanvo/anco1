@@ -105,11 +105,17 @@
 										    <div style="height:1px"></div>
 									    </td>
 								    </tr>
-								    <tr>
+								    <tr id="trMaXacThuc3" runat="server">
 									    <td>
 										    <asp:Button TabIndex="4" ID="btnLogin" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Đăng nhập" OnClick="btnLogin_Click" />
 									    </td>
 								    </tr>
+                                    <tr id="trMaXacThuc4" runat="server">
+									    <td>
+										    <asp:Button TabIndex="4" ID="btnVerify" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Xác nhận" OnClick="btnVerify_Click" />
+									    </td>
+								    </tr>
+
 								    <tr>
 									    <td colspan="3">
 										    <asp:Label ID="lblCaption" runat="server" Text=""></asp:Label>
