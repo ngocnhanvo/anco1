@@ -148,6 +148,10 @@ div.ui-layout-north.toolbar {
     #form1 {
         zoom: 95%;
     }
+
+    #thoigianxacthuc {
+        top: 0px;
+    }
 }
 
 @media (max-width: 811px) {
