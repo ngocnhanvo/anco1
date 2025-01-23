@@ -137,6 +137,13 @@ div.ui-layout-north.toolbar {
     text-align: justify;
 }
 
+#thoigianxacthuc {
+    margin-left: 20px;
+    font-size: medium;
+    position: relative;
+    top: -12px;
+}
+
 @media (max-width: 400px) {
     #form1 {
         zoom: 95%;

@@ -1,6 +1,4 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Login.aspx.cs" Inherits="Login" %>
-<%@ Import Namespace="System.Data.Linq" %>
-<%@ Import Namespace="DataAcess" %>
 
 <!DOCTYPE html>
 
@@ -107,12 +105,14 @@
 								    </tr>
 								    <tr id="trMaXacThuc3" runat="server">
 									    <td>
-										    <asp:Button TabIndex="4" ID="btnLogin" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Đăng nhập" OnClick="btnLogin_Click" />
+										    <asp:Button TabIndex="4" ID="btnLogin" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Đăng nhập" OnClientClick="setTimeout(()=>{ this.disabled = true; },10);" OnClick="btnLogin_Click" />
 									    </td>
 								    </tr>
                                     <tr id="trMaXacThuc4" runat="server">
 									    <td>
-										    <asp:Button TabIndex="4" ID="btnVerify" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Xác nhận" OnClick="btnVerify_Click" />
+										    <asp:Button TabIndex="4" ID="btnVerify" CssClass="fm-button ui-state-default ui-corner-all fm-button-icon-left ui-state-hover" runat="server" Text="Xác nhận" OnClientClick="setTimeout(()=>{ this.disabled = true; },10);" OnClick="btnVerify_Click" />
+
+                                            <span id="thoigianxacthuc"></span>
 									    </td>
 								    </tr>
 
@@ -128,5 +128,25 @@
 				    </div>
 			    </div>
 		    </div>
+
+            <script type="text/javascript">
+                let time = new Date('<%=Session["time"]%>');
+                let inter = setInterval(function () {
+                    let now = new Date();
+                    let total = Math.round(120 - ((now - time) / 1000));
+
+                    if (total <= 0) {
+                        clearInterval(inter);
+                        total = '';
+                        alert('Login again, please');
+                        window.location.href = '';
+                    }
+                    else {
+                        total = total + ' giây';
+                    }
+
+                    $('#thoigianxacthuc').html(total);
+                }, 1000);
+            </script>
     </body>
 </html>

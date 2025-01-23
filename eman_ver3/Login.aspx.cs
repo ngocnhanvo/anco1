@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Security;
 using DataAcess;
-using Google.Authenticator;
 
 public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequiresSessionState
 {
@@ -13,20 +12,28 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
     public bool xacthuc2buoc = false;
     string duongdan = Security.UrlBase();
 
-    protected void Page_Load(object sender, EventArgs e)
+    public void taitrang()
     {
-        ttc = json.ad_systemconfigJSON().FirstOrDefault();
-        string url_server = Request.Url.Host;
-        string urlBalse = Security.UrlBase();
-        logo = ttc == null ? urlBalse + " images/logo/imagenotfound.jpg" : urlBalse + ttc.logo + "?ver1";
+        xacthuc2buoc = false;
 
-        var chk = Helper.checkBrower(Context);
-        if (!chk.ok)
+        foreach (var key in Session.Keys)
         {
-            lblCaption.Text = $@"Trình duyệt ""{chk.userAgent}"" không được hỗ trợ.{Environment.NewLine}Chỉ hỗ trợ các trình duyệt ""{Helper.trinhDuyets}""";
+            if (key.ToString() == "login")
+                xacthuc2buoc = true;
         }
 
-        xacthuc2buoc = Session["login"] != null;
+        if (xacthuc2buoc)
+        {
+            var dateLG = DateTime.Parse(Session["time"].ToString());
+            var total = 120 - (DateTime.Now - dateLG).TotalSeconds;
+            if (total <= 0)
+            {
+                Session.Remove("login");
+                Session.Remove("time");
+                xacthuc2buoc = false;
+            }
+        }
+
         if (xacthuc2buoc)
         {
             trMaTaiKhoan1.Style.Add("display", "none");
@@ -51,6 +58,23 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
         }
     }
 
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        ttc = json.ad_systemconfigJSON().FirstOrDefault();
+        string url_server = Request.Url.Host;
+        string urlBalse = Security.UrlBase();
+        logo = ttc == null ? urlBalse + " images/logo/imagenotfound.jpg" : urlBalse + ttc.logo + "?ver1";
+
+        var chk = Helper.checkBrower(Context);
+        if (!chk.ok)
+        {
+            lblCaption.Text = $@"Trình duyệt ""{chk.userAgent}"" không được hỗ trợ.{Environment.NewLine}Chỉ hỗ trợ các trình duyệt ""{Helper.trinhDuyets}""";
+        }
+
+        lblCaption.Text = "";
+        taitrang();
+    }
+
     protected void btnVerify_Click(object sender, EventArgs e)
     {
         try
@@ -62,7 +86,8 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
             var us = db.ad_user.Where(s => s.ad_user_id == aduserid).FirstOrDefault();
             if (txtMaXacThuc.Text.removeAllSpaceOrTrimText(true) == us.googlePass)
             {
-                Session["login"] = null;
+                Session.Remove("login");
+                Session.Remove("time");
                 FormsAuthentication.SetAuthCookie(token, true);
                 Response.Redirect(duongdan);
             }
@@ -79,7 +104,6 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
 
     protected void btnLogin_Click(object sender, EventArgs e)
     {
-
         string userId = Security.id_taikhoan(Context);
         try
         {
@@ -96,7 +120,6 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
             else
             {
                 var db = new EntityContext();
-                var usss = db.ad_autoload.FirstOrDefault();
                 pass = Security.EncodeMd5Hash(pass);
                 var us = db.ad_user.Where(s =>
                     s.ma_user == taikhoan
@@ -138,15 +161,22 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
                         gm.Port = ttc.port.ToNullableInt().GetValueOrDefault(25);
                         gm.SSL = ttc.website == "1";
 
-                        String uniqueUserKey = Convert.ToString(Guid.NewGuid()).Replace("-", "").Substring(0, 10);
-                        string tieude = $"OTP đăng nhập Anco1 vào ngày {DateTime.Now.ToString("dd")} tháng {DateTime.Now.ToString("MM")} năm {DateTime.Now.ToString("yyyy")}";
-                        string noidung = $"Mật khẩu của bạn là: <b>{uniqueUserKey}</b>";
+                        string uniqueUserKey = Convert.ToString(Guid.NewGuid()).Replace("-", "").Substring(0, 10);
+                        var ngay = DateTime.Now.ToString("dd");
+                        var thang = DateTime.Now.ToString("MM");
+                        var nam = DateTime.Now.ToString("yyyy");
+                        var gio = DateTime.Now.ToString("HH");
+                        var phut = DateTime.Now.ToString("mm");
+                        string tieude = $"Mã đăng nhập Anco1 được cấp vào ngày {ngay} tháng {thang} năm {nam} lúc {gio} giờ {phut} phút";
+                        string noidung = $"Mã đăng nhập của bạn là: <b>{uniqueUserKey}</b>";
                         gm.Send(us.email, tieude, noidung, "");
-                        Session["login"] = token;
+                        Session.Add("login", token);
+                        Session.Add("time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        //Session["login"] = token;
+                        //Session["time"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                         Session.Timeout = 2;
                         us.googlePass = uniqueUserKey;
                         db.SaveChanges();
-                        Response.Redirect(duongdan);
                     }
                     else
                     {
@@ -160,5 +190,7 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
         {
             lblCaption.Text = ex.Message;
         }
+
+        taitrang();
     }
 }
