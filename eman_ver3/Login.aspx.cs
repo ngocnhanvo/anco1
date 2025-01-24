@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Web.Security;
 using DataAcess;
+using QRCoder;
 
 public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequiresSessionState
 {
@@ -167,9 +170,21 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
                         var nam = DateTime.Now.ToString("yyyy");
                         var gio = DateTime.Now.ToString("HH");
                         var phut = DateTime.Now.ToString("mm");
+                        var qrcode = GenerateQRCode(uniqueUserKey);
                         string tieude = $"Mã đăng nhập Anco1 được cấp vào ngày {ngay} tháng {thang} năm {nam} lúc {gio} giờ {phut} phút";
                         string noidung = $"Mã đăng nhập của bạn là: <b>{uniqueUserKey}</b>";
-                        gm.Send(us.email, tieude, noidung, "");
+
+                        using (var stream = new MemoryStream(qrcode))
+                        {
+                            string tempFilePath = Path.GetTempFileName();
+                            File.WriteAllBytes(tempFilePath, qrcode);
+                            var attachment = new System.Net.Mail.Attachment(tempFilePath);
+                            attachment.ContentDisposition.FileName = "Mã đăng nhập QRCode.png";
+                            gm.Attachments = new List<System.Net.Mail.Attachment>();
+                            gm.Attachments.Add(attachment);
+                            gm.Send(us.email, tieude, noidung, "");
+                            File.Delete(tempFilePath);
+                        }
                         Session.Add("login", token);
                         Session.Add("time", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         //Session["login"] = token;
@@ -192,5 +207,20 @@ public partial class Login : System.Web.UI.Page, System.Web.SessionState.IRequir
         }
 
         taitrang();
+    }
+
+    public byte[] GenerateQRCode(string data)
+    {
+        var qrGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+        var qrCode = new QRCode(qrCodeData);
+        var qrCodeImage = qrCode.GetGraphic(20);
+
+        using (var ms = new MemoryStream())
+        {
+            qrCodeImage.Save(ms, ImageFormat.Png);
+            byte[] imageBytes = ms.ToArray();
+            return imageBytes;
+        }
     }
 }

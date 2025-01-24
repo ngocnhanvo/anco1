@@ -14,8 +14,15 @@
     <link href="css/VNN_css/Login.css" rel="stylesheet" type="text/css" />
 	<script src="js/Public_script/jquery-1.10.2.js" type="text/javascript"></script>
 	<script src="js/VNN_script/GridFunction_Admin.js" type="text/javascript"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
     <body>
+        <div id="qrcodeBG">
+            <div id="qr-reader">
+
+            </div>
+            <input type="button" id="btnThoatVid" value="ngưng quét mã QRCode và thoát màn hình này" />
+        </div>
 	    <div id="wapper-layout" class="ui-layout-center">
 		    <div style="background-color: #fff;" id="main0" class="ui-layout-north toolbar">
 			    <div align="center" style="background: url('images/bg-logo.png') no-repeat center center; position: relative; top: -8px; left: 10px; height: 105px; width: 200px;"> 
@@ -94,9 +101,10 @@
 									    </td>
 								    </tr>
                                     <tr id="trMaXacThuc1" runat="server">
-									    <td>
-										    <asp:TextBox TabIndex="3" placeholder="Nhập mã xác thực" ID="txtMaXacThuc" runat="server"></asp:TextBox>
-									    </td>
+									    <td style="position:relative">
+										    <asp:TextBox TabIndex="3" autocomplete="off" placeholder="Nhập mã xác thực" ID="txtMaXacThuc" runat="server"></asp:TextBox>
+									        <img id="btnVideo" src="images/icon/video.png" />
+                                        </td>
 								    </tr>
 								    <tr id="trMaXacThuc2" runat="server">
 									    <td>
@@ -128,25 +136,54 @@
 				    </div>
 			    </div>
 		    </div>
+        </div>
 
-            <script type="text/javascript">
-                let time = new Date('<%=Session["time"]%>');
-                let inter = setInterval(function () {
-                    let now = new Date();
-                    let total = Math.round(120 - ((now - time) / 1000));
+         <script type="text/javascript">
+            let time = new Date('<%=Session["time"]%>');
+            let inter = setInterval(function () {
+                let now = new Date();
+                let total = Math.round(120 - ((now - time) / 1000));
 
-                    if (total <= 0) {
-                        clearInterval(inter);
-                        total = '';
-                        alert('Login again, please');
-                        window.location.href = '';
+                if (total <= 0) {
+                    clearInterval(inter);
+                    total = '';
+                    alert('Login again, please');
+                    window.location.href = '';
+                }
+                else {
+                    total = total + ' giây';
+                }
+
+                $('#thoigianxacthuc').html(total);
+            }, 1000);
+
+            $('#btnVideo').click(function () {
+                $('#qrcodeBG').show();
+
+                var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+                html5QrcodeScanner.render(onScanSuccess);
+             });
+
+             $('#btnThoatVid').click(function () {
+                 let $btn = $('#html5-qrcode-button-camera-stop');
+                 if ($btn.attr('id')) {
+                     $btn.click();
+                 }
+                 $('#qrcodeBG').hide();
+             });
+
+             let lastResult, countResults = 0;
+             function onScanSuccess(decodedText, decodedResult) {
+                if (decodedText !== lastResult) {
+                    ++countResults;
+                    lastResult = decodedText;
+                    if (decodedResult.decodedText) {
+                        $('#txtMaXacThuc').val(decodedResult.decodedText);
+                        $('#btnThoatVid').click();
+                        $('#btnVerify').click();
                     }
-                    else {
-                        total = total + ' giây';
-                    }
-
-                    $('#thoigianxacthuc').html(total);
-                }, 1000);
-            </script>
+                }
+            }
+        </script>
     </body>
 </html>

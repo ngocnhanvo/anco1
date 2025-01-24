@@ -14,6 +14,7 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.IO;
 using DataAcess;
+using System.Collections.Generic;
 
 public class GoogleMail
 {
@@ -50,6 +51,8 @@ public class GoogleMail
         get { return _ssl; }
         set { _ssl = value; }
     }
+
+    public List<Attachment> Attachments { get; set; }
 
     public GoogleMail(int? custom)
     {
@@ -97,7 +100,7 @@ public class GoogleMail
 
         MailMessage mail = new MailMessage();
         mail.From = new MailAddress(from);
-        mail.ReplyTo = new MailAddress(from);
+        //mail.ReplyTo = new MailAddress(from);
 
 
         int dem = 0;
@@ -111,7 +114,11 @@ public class GoogleMail
             attachment = new System.Net.Mail.Attachment(attachments.Split('#')[i]);
             mail.Attachments.Add(attachment);
         }
-
+        
+        foreach (var attachment in Attachments)
+        {
+            mail.Attachments.Add(attachment);
+        }
 
         to = to.Replace(" ", "");
         string[] tos = to.Split(";,".ToArray());
@@ -141,6 +148,12 @@ public class GoogleMail
         client.UseDefaultCredentials = true;
         client.Credentials = new NetworkCredential(_email, _password);
         client.Send(mail);
+
+        foreach (var attachment in Attachments)
+        {
+            attachment.Dispose();
+        }
+
         mail.Dispose();
         client.Dispose();
     }
