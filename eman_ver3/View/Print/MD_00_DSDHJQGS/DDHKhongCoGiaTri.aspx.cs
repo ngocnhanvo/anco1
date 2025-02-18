@@ -40,11 +40,13 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHKhongCoGiaTri : System.W
 
         var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var sumSL = tbl.Compute("Sum(sl)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
+        var sumP = tbl.Compute("Sum(phi)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var discount = double.Parse(tbl.Rows[0]["discount"].ToString());
         var sumTTcoDis = sumTT * discount / 100;
         var sumTTcoDiscoPhi = sumTT - sumTTcoDis + (double)sumCong - (double)sumTru;
         //Header
         tbl.Columns.Add("sum_sl", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_phi", Type.GetType("System.Double"));
         tbl.Columns.Add("tongcong", Type.GetType("System.Double"));
         tbl.Columns.Add("discountVal", Type.GetType("System.Double"));
         tbl.Columns.Add("diengiai_phitru", Type.GetType("System.String"));
@@ -58,6 +60,8 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHKhongCoGiaTri : System.W
         foreach (DataRow row in tbl.Rows)
         {
             row["sum_sl"] = sumSL;
+
+            row["sum_phi"] = sumP;
 
             row["tongcong"] = sumTT;
 
@@ -117,8 +121,9 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHKhongCoGiaTri : System.W
                 N'{Helper.hinhAnhSP_ANCO}' + sp.ma_sanpham as hinhanh,
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
-	            ddh.giadoichieu as gia,
-	            ddh.giadoichieu * ddh.sl_dathang as thanhtien,
+                isnull(ddh.gianhap, 0) - isnull(ddh.giachuan, 0) as phi,
+	            null as gia,
+	            null as thanhtien,
 	            (cast(ddh.sl_inner as nvarchar) + ' ' + ddh.dvt_inner) as dginner,
                 (cast(ddh.sl_outer as nvarchar) + ' ' + ddh.dvt_outer) as dgouter,
 	            isnull(dh.discount, 0) as discount,
