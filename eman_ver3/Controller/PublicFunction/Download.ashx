@@ -18,10 +18,11 @@ public class Download : IHttpHandler
         md_taptin tt = db.md_taptin.Where(p => p.md_taptin_id == md_taptin_id).FirstOrDefault();
         if (tt != null)
         {
+            string encodedFileName = Uri.EscapeDataString(tt.tentaptin);
             context.Response.Clear();
             context.Response.Buffer = true;
             context.Response.ContentType = tt.mimetype;
-            context.Response.AddHeader("Content-Disposition", "attachment;filename=" + tt.tentaptin);
+            context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
             context.Response.Charset = "";
             context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
             string path = ExcuteSignalRStatic.mapPathSignalR($@"~/{tt.path}");
@@ -45,9 +46,10 @@ public class Download : IHttpHandler
             string path = ExcuteSignalRStatic.mapPathSignalR("~/" + md_taptin_id);
             if (File.Exists(path))
             {
+                string encodedFileName = Uri.EscapeDataString(filename);
                 context.Response.Clear();
                 context.Response.Buffer = true;
-                context.Response.AddHeader("Content-Disposition", "attachment;filename=" + filename);
+                context.Response.AddHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
                 context.Response.Charset = "";
                 context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 context.Response.WriteFile(path);
