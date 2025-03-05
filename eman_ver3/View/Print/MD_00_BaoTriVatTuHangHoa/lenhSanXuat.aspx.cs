@@ -61,7 +61,7 @@ public partial class PrintControllers_MD_00_BaoTriVatTuHangHoa_lenhSanXuat : Sys
             WHeRe 
               1 = 1 
               and pb.md_phongban_id = @id
-              and lsx2.trangthai != 'SOANTHAO' 
+              and lsx2.trangthai not in ('SOANTHAO', 'KETTHUC') 
             GrOuP bY 
               sp.md_sanpham_id, 
               sp.ma_sanpham, 
