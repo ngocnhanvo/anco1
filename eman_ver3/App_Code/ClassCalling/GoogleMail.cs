@@ -114,10 +114,13 @@ public class GoogleMail
             attachment = new System.Net.Mail.Attachment(attachments.Split('#')[i]);
             mail.Attachments.Add(attachment);
         }
-        
-        foreach (var attachment in Attachments)
+
+        if (Attachments != null)
         {
-            mail.Attachments.Add(attachment);
+            foreach (var attachment in Attachments)
+            {
+                mail.Attachments.Add(attachment);
+            }
         }
 
         to = to.Replace(" ", "");
@@ -149,9 +152,12 @@ public class GoogleMail
         client.Credentials = new NetworkCredential(_email, _password);
         client.Send(mail);
 
-        foreach (var attachment in Attachments)
+        if (Attachments != null)
         {
-            attachment.Dispose();
+            foreach (var attachment in Attachments)
+            {
+                attachment.Dispose();
+            }
         }
 
         mail.Dispose();

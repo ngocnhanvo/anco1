@@ -583,6 +583,12 @@
                         public DateTime? tau2 { get; set; }
                 
 						
+                        #region c_danhsachdathang_ten_nguoi_dathang_wintaFN
+                        
+                        #endregion c_danhsachdathang_ten_nguoi_dathang_wintaFN
+                        public string ten_nguoi_dathang { get; set; }
+                
+						
                         #region c_danhsachdathang_thoigiansx_wintaFN
                         
                         #endregion c_danhsachdathang_thoigiansx_wintaFN

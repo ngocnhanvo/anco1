@@ -41,10 +41,81 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             case "CA_01_XacNhanXuatKho":
                 this.CA_01_XacNhanXuatKho(context);
                 break;
+            case "CA_01_XuatBanGuiMail":
+                this.CA_01_XuatBanGuiMail(context);
+                break;
             default:
                 break;
         }
     }
+
+    public void CA_01_XuatBanGuiMail(HttpContext context)
+    {
+        string msg = "", id = context.Request.Form["id"];
+        string mailFrom = userTK.email.removeAllSpaceOrTrimText(true);
+        string mailTo = context.Request.Form["mailTo"].removeAllSpaceOrTrimText(true);
+
+        try
+        {
+            var px = db.md_xuatban.Where(s => s.md_xuatban_id == id).FirstOrDefault();
+
+            if (px == null)
+            {
+                msg = $@"Không tìm thấy phiếu xuất bán";
+                goto EndEventHandler;
+            }
+            if (px.trangthai != Helper.HIEULUC)
+            {
+                msg = $@"Lỗi: dòng ""{px.sochungtu}"" cần ở trạng thái ""Hiệu lực"".";
+                goto EndEventHandler;
+            }
+            if(!Security.IsValidEmail(mailFrom))
+            {
+                msg = $@"Lỗi: Email của người gửi ""{mailFrom}"" không đúng định dạng.";
+                goto EndEventHandler;
+            }
+            if(!Security.IsValidEmail(mailTo))
+            {
+                msg = $@"Lỗi: Email của người nhận ""{mailTo}"" không đúng định dạng.";
+                goto EndEventHandler;
+            }
+
+            var gm = new GoogleMail(null);
+            var json = new ADmin_JSON();
+            var ttc = json.ad_systemconfigJSON().FirstOrDefault();
+            gm.Email = ttc.taikhoanemail;
+            gm.Password = ttc.passemail;
+            gm.Smtp = ttc.emailserver;
+            gm.Port = ttc.port.ToNullableInt().GetValueOrDefault(25);
+            gm.SSL = ttc.website == "1";
+            string loaicont = db.md_loaicont.Where(s => s.md_loaicont_id == px.loai_cont).Select(s => s.ten_cont).FirstOrDefault();
+            string tieude = $"Đơn hàng {px.donhang_thamchieu} đã được xuất tại xưởng, số phiếu là {px.sochungtu}";
+            string noidung = $"";
+            noidung += $"Số cont: {px.so_cont}<br>";
+            noidung += $"Số seal: {px.so_seal}<br>";
+            noidung += $"Loại cont: {loaicont}<br>";
+            noidung += $"Ngày xuất: {px.ngaychuyen.Value.ToString("dd/MM/yyyy")}";
+
+            gm.Send2(gm.Email, mailTo, mailFrom, "", tieude, noidung, "");
+        }
+        catch (Exception ex)
+        {
+            msg = ex.ToString();
+        }
+
+    EndEventHandler:;
+
+        if (msg.Length <= 0)
+        {
+            msg = $@"<div style='color:blue'>Gửi mail thành công</div>";
+        }
+        else
+        {
+            msg = $@"<div style='color:red'>{msg}</div>";
+        }
+        context.Response.Write(msg);
+    }
+
     public void CA_01_XacNhanXuatKho(HttpContext context)
     {
         string md_xuatban_id = context.Request.QueryString["id"];

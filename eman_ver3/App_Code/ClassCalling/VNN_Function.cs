@@ -62,6 +62,8 @@ public static class VNN_Function
         user.btnDongMenuConTuDong = tk.btnDongMenuConTuDong;
         user.chinhanh = pb.md_doitackinhdoanh_id;
         user.ma_nhanvien = tk.ma_nhanvien;
+        user.email = tk.email;
+        user.email_pass = tk.email_pass;
         return user;
     }
 

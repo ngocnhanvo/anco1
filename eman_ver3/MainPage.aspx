@@ -781,6 +781,7 @@
         let mauBackgroundDF = '<%=tk.mauBackground %>';
         load_doimau_client(mauBackgroundDF);
         let ma_tk = '<%=tk.ma_user %>';
+        var email_tk = '<%=tk.email %>';
         let ma_nhanvien = '<%=tk.ma_nhanvien %>';
         let hoten_nv = '<%=string.IsNullOrWhiteSpace(tk.ma_nhanvien) ? "" : tk.hoten %>';
         let hoten_tk = '<%=tk.hoten %>';

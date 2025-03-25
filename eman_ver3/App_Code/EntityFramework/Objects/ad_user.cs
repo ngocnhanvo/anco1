@@ -67,6 +67,12 @@
                         public string email { get; set; }
                 
 						
+                        #region ad_user_email_pass_wintaFN
+                        
+                        #endregion ad_user_email_pass_wintaFN
+                        public string email_pass { get; set; }
+                
+						
                         #region ad_user_fax_wintaFN
                         
                         #endregion ad_user_fax_wintaFN

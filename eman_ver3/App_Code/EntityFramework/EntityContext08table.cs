@@ -2022,6 +2022,10 @@ modelBuilder.Entity<md_xuatban>().HasKey<string>(p => p.md_xuatban_id);
                             .HasColumnName("ketoan")
                             .HasColumnType("bit");
                             modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.loai_cont)
+                            .HasColumnName("loai_cont")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.md_doitackinhdoanh_id)
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("nvarchar");
@@ -2072,6 +2076,18 @@ modelBuilder.Entity<md_xuatban>().HasKey<string>(p => p.md_xuatban_id);
                             modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.sctdathang)
                             .HasColumnName("sctdathang")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.sent)
+                            .HasColumnName("sent")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.so_cont)
+                            .HasColumnName("so_cont")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.so_seal)
+                            .HasColumnName("so_seal")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.tiencongghep)

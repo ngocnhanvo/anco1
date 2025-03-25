@@ -115,6 +115,12 @@
                         public string soluong_grid_2 { get; set; }
                 
 						
+                        #region ad_systemconfig_ssl_wintaFN
+                        
+                        #endregion ad_systemconfig_ssl_wintaFN
+                        public bool? ssl { get; set; }
+                
+						
                         #region ad_systemconfig_taikhoanemail_wintaFN
                         
                         #endregion ad_systemconfig_taikhoanemail_wintaFN

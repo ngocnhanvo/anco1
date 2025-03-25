@@ -339,6 +339,8 @@ public class User_TK
     public bool? btnDongMenuConTuDong { get; set; }
     public string user_role { get; set; }
     public string user_part { get; set; }
+    public string email { get; set; }
+    public string email_pass { get; set; }
     public bool? googleAuthenticator { get; set; }
 }
 

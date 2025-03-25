@@ -61,6 +61,12 @@
                         public bool? ketoan { get; set; }
                 
 						
+                        #region md_xuatban_loai_cont_wintaFN
+                        
+                        #endregion md_xuatban_loai_cont_wintaFN
+                        public string loai_cont { get; set; }
+                
+						
                         #region md_xuatban_md_doitackinhdoanh_id_wintaFN
                         
                         #endregion md_xuatban_md_doitackinhdoanh_id_wintaFN
@@ -137,6 +143,24 @@
                         
                         #endregion md_xuatban_sctdathang_wintaFN
                         public string sctdathang { get; set; }
+                
+						
+                        #region md_xuatban_sent_wintaFN
+                        
+                        #endregion md_xuatban_sent_wintaFN
+                        public bool? sent { get; set; }
+                
+						
+                        #region md_xuatban_so_cont_wintaFN
+                        
+                        #endregion md_xuatban_so_cont_wintaFN
+                        public string so_cont { get; set; }
+                
+						
+                        #region md_xuatban_so_seal_wintaFN
+                        
+                        #endregion md_xuatban_so_seal_wintaFN
+                        public string so_seal { get; set; }
                 
 						
                         #region md_xuatban_tiencongghep_wintaFN

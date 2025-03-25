@@ -750,6 +750,10 @@ modelBuilder.Entity<ad_systemconfig>().HasKey<string>(p => p.ad_systemconfig_id)
                             .HasColumnName("soluong_grid_2")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_systemconfig>()
+                            .Property(p => p.ssl)
+                            .HasColumnName("ssl")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<ad_systemconfig>()
                             .Property(p => p.taikhoanemail)
                             .HasColumnName("taikhoanemail")
                             .HasColumnType("nvarchar");
@@ -848,6 +852,10 @@ modelBuilder.Entity<ad_user>().HasKey<string>(p => p.ad_user_id);
                             modelBuilder.Entity<ad_user>()
                             .Property(p => p.email)
                             .HasColumnName("email")
+                            .HasColumnType("nvarchar");
+                            modelBuilder.Entity<ad_user>()
+                            .Property(p => p.email_pass)
+                            .HasColumnName("email_pass")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<ad_user>()
                             .Property(p => p.fax)
@@ -1515,6 +1523,10 @@ modelBuilder.Entity<c_danhsachdathang>().HasKey<string>(p => p.c_danhsachdathang
                             .Property(p => p.tau2)
                             .HasColumnName("tau2")
                             .HasColumnType("datetime");
+                            modelBuilder.Entity<c_danhsachdathang>()
+                            .Property(p => p.ten_nguoi_dathang)
+                            .HasColumnName("ten_nguoi_dathang")
+                            .HasColumnType("nvarchar");
                             modelBuilder.Entity<c_danhsachdathang>()
                             .Property(p => p.thoigiansx)
                             .HasColumnName("thoigiansx")
