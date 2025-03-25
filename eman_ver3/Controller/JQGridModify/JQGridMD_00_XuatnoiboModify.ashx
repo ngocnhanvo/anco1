@@ -128,6 +128,8 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 {
                     dh.sl_thucxuat = dongHang.sl_thucxuat;
                     dh.ghino = dongHang.ghino;
+                    if(string.IsNullOrWhiteSpace(dh.tenhang))
+                        dh.tenhang = xk.donhang_thamchieu;
                 }
 
                 if (sp == null)
