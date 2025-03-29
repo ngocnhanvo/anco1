@@ -94,7 +94,7 @@ public static class Security
 	
     public static string UrlBase()
     {
-        return "/v01/";
+        return HttpContext.Current.Request.ApplicationPath + "/";
     }
 
     public static Dictionary<string, object> all_taikhoan(HttpContext context)
@@ -122,6 +122,24 @@ public static class Security
         catch
         {
             return new Dictionary<string, object>();
+        }
+    }
+
+    public static bool googleAuthenticator_taikhoan(HttpContext context)
+    {
+        if (context.User == null)
+            return false;
+
+        string token = context.User.Identity.Name;
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            var tokenJson = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(token);
+            string googleAuthenticator = tokenJson["googleAuthenticator"].ToString();
+            return googleAuthenticator == "1";
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -234,39 +252,32 @@ public static class Security
         string ad_user_id = id_taikhoan(context);
 
         ADmin_JSON json = new ADmin_JSON();
-
-        var user_mmcs = json.ad_user_mmcJSON();
-
-        var cnMMC = user_mmcs.Where(s => s.ad_case_id == ad_case_id & s.ad_user_id == ad_user_id).FirstOrDefault();
-        if (cnMMC == null)
+        var caseM = json.ad_caseJSON().Where(s => s.ad_case_id == ad_case_id | s.ma_case == ad_case_id).FirstOrDefault();
+        if (caseM != null)
         {
-            var modules = json.ad_moduleJSON();
-            var cases = json.ad_caseJSON();
-            var role_mmcs = json.ad_role_mmcJSON();
-
-            string ad_module_id = modules.Where(s => s.ma_module.Equals(ma_module)).Select(s => s.ad_module_id).Take(1).FirstOrDefault();
-            if (ad_role_id != null & ad_role_id != "")
+            var user_mmcs = json.ad_user_mmcJSON();
+            var cnMMC = user_mmcs.Where(s => s.ad_case_id == caseM.ad_case_id & s.ad_user_id == ad_user_id).FirstOrDefault();
+            if (cnMMC == null)
             {
-                if (ad_module_id != null & ad_module_id != "")
-                {
-                    string ad_case_id_ = cases.Where(s => s.ma_case.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
-                    if (ad_case_id_ == "" | ad_case_id_ == null)
-                    {
-                        ad_case_id_ = cases.Where(s => s.ad_case_id.Equals(ad_case_id)).Select(s => s.ad_case_id).Take(1).FirstOrDefault();
-                    }
+                var modules = json.ad_moduleJSON();
 
-                    if (ad_case_id_ != "" & ad_case_id_ != null)
+                var role_mmcs = json.ad_role_mmcJSON();
+
+                string ad_module_id = modules.Where(s => s.ma_module.Equals(ma_module)).Select(s => s.ad_module_id).Take(1).FirstOrDefault();
+                if (ad_role_id != null & ad_role_id != "")
+                {
+                    if (ad_module_id != null & ad_module_id != "")
                     {
-                        string pq_chucnang = role_mmcs.Where(s => s.ad_role_id.Equals(ad_role_id) & s.ad_module_id.Equals(ad_module_id) & s.ad_case_id.Equals(ad_case_id_)).Select(s => s.ad_role_mmc_id).Take(1).FirstOrDefault();
+                        string pq_chucnang = role_mmcs.Where(s => s.ad_role_id.Equals(ad_role_id) & s.ad_module_id.Equals(ad_module_id) & s.ad_case_id.Equals(caseM.ad_case_id)).Select(s => s.ad_role_mmc_id).Take(1).FirstOrDefault();
                         if (pq_chucnang != null & pq_chucnang != "")
                             quyen = true;
                     }
                 }
             }
-        }
-        else
-        {
-            quyen = string.IsNullOrEmpty(cnMMC.ad_role_id) ? true : (cnMMC.ad_role_id == ad_role_id ? true : false);
+            else
+            {
+                quyen = string.IsNullOrEmpty(cnMMC.ad_role_id) ? true : (cnMMC.ad_role_id == ad_role_id ? true : false);
+            }
         }
         return quyen;
     }
@@ -363,4 +374,22 @@ public static class Security
         }
         return ok;
     }
-}
+
+    public static bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return false;
+        }
+
+        try
+        {
+            var mailAddress = new System.Net.Mail.MailAddress(email);
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
+} 
