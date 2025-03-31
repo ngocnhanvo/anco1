@@ -190,7 +190,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 nknb_cdh.md_xuatkhonb_id = '{0}'
                 and nknb_cdh.sl_thucxuat > 0
                 and nknb_cdh.md_kho_id = '{2}'
-            order by nknb_cdh.tenhang, sp.ma_sanpham asc
+            order by sp.ma_sanpham asc
 		"
         , xk.md_xuatkhonb_id
         , khonhap
