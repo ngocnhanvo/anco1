@@ -51,9 +51,9 @@ public partial class PrintControllers_MD_00_LenhSanXuatKH_lenhSanXuat : System.W
                 sp.mota_tiengviet as tenVTHH,
                 sp.ban_thanhpham,
                 dvt.ten_dvt as dvt,
-	            sum(cdh.sl_dat - isnull(cdh.sl_chiato2, 0)) as sx,
+	            sum(cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0)) as sx,
                 sum(isnull(cdh.sl_danhapkho, 0)) as dg,
-	            sum(cdh.sl_dat - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_danhapkho, 0)) as cl,
+	            sum(cdh.sl_chiato - isnull(cdh.sl_chiato2, 0) - isnull(cdh.sl_datncc, 0) - isnull(cdh.sl_datncc2, 0) -  isnull(cdh.sl_danhapkho, 0)) as cl,
 	            lsx.donhang as dh_gc,
                 lsx.mota
             from md_lenhsanxuat2 lsx
