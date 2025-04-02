@@ -175,6 +175,12 @@
                         public string nguoicapnhat { get; set; }
                 
 						
+                        #region md_nhapkhonb_nguoiHL_wintaFN
+                        
+                        #endregion md_nhapkhonb_nguoiHL_wintaFN
+                        public string nguoiHL { get; set; }
+                
+						
                         #region md_nhapkhonb_nguoitao_wintaFN
                         
                         #endregion md_nhapkhonb_nguoitao_wintaFN

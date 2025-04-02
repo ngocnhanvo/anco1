@@ -122,6 +122,10 @@ modelBuilder.Entity<md_nhapkhonb>().HasKey<string>(p => p.md_nhapkhonb_id);
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_nhapkhonb>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkhonb>()
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
@@ -416,6 +420,10 @@ modelBuilder.Entity<md_nhapkhoton>().HasKey<string>(p => p.md_nhapkhoton_id);
                             modelBuilder.Entity<md_nhapkhoton>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkhoton>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_nhapkhoton>()
                             .Property(p => p.nguoitao)

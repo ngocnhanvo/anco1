@@ -1850,6 +1850,10 @@ modelBuilder.Entity<md_nhapkho_ncc>().HasKey<string>(p => p.md_nhapkho_ncc_id);
                             .HasColumnName("nguoidung")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_nhapkho_ncc>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_nhapkho_ncc>()
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");

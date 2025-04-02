@@ -187,6 +187,12 @@
                         public string nguoicapnhat { get; set; }
                 
 						
+                        #region md_vanchuyennoibo_nguoiHL_wintaFN
+                        
+                        #endregion md_vanchuyennoibo_nguoiHL_wintaFN
+                        public string nguoiHL { get; set; }
+                
+						
                         #region md_vanchuyennoibo_nguoitao_wintaFN
                         
                         #endregion md_vanchuyennoibo_nguoitao_wintaFN

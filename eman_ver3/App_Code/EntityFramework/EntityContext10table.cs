@@ -126,6 +126,10 @@ modelBuilder.Entity<md_xuatkhonb>().HasKey<string>(p => p.md_xuatkhonb_id);
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_xuatkhonb>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_xuatkhonb>()
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");

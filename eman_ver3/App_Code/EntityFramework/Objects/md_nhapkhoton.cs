@@ -133,6 +133,12 @@
                         public string nguoicapnhat { get; set; }
                 
 						
+                        #region md_nhapkhoton_nguoiHL_wintaFN
+                        
+                        #endregion md_nhapkhoton_nguoiHL_wintaFN
+                        public string nguoiHL { get; set; }
+                
+						
                         #region md_nhapkhoton_nguoitao_wintaFN
                         
                         #endregion md_nhapkhoton_nguoitao_wintaFN

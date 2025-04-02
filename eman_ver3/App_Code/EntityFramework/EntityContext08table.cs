@@ -1322,6 +1322,10 @@ modelBuilder.Entity<md_vanchuyennoibo>().HasKey<string>(p => p.md_vanchuyennoibo
                             .HasColumnName("nguoicapnhat")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_vanchuyennoibo>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_vanchuyennoibo>()
                             .Property(p => p.nguoitao)
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
@@ -2064,6 +2068,10 @@ modelBuilder.Entity<md_xuatban>().HasKey<string>(p => p.md_xuatban_id);
                             modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.nguoicapnhat)
                             .HasColumnName("nguoicapnhat")
+                            .HasColumnType("varchar");
+                            modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.nguoiHL)
+                            .HasColumnName("nguoiHL")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.nguoitao)
