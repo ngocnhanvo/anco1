@@ -292,6 +292,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                 msg = msg_success + msg;
                 xk.trangthai = Helper.HIEULUC;
                 xk.ngayhieuluc = DateTime.Now;
+                xk.nguoiHL = userTK.ad_user_id;
                 db.SaveChanges();
 
                 if (spsghino.Count > 0)
