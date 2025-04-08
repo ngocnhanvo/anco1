@@ -97,8 +97,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 		            1=1
 		            and kgd.ngaychuyen < @dauky
 		            and kgd.soluong_dichchuyen > 0
-                    and kgd.mota not like N'%,%'
-                    and kgd.mota not in (N'{donhanghuy}')
+                    and isnull(kgd.mota,'') not like N'%,%'
+                    and isnull(kgd.mota,'') not in (N'{donhanghuy}')
                     {masp} {kho}
 
 	            union
@@ -121,8 +121,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 		            1=1
 		            and kgd.ngaychuyen between @tu and @den
 		            and kgd.soluong_dichchuyen > 0
-                    and kgd.mota not like N'%,%'
-                    and kgd.mota not in (N'{donhanghuy}')
+                    and isnull(kgd.mota,'') not like N'%,%'
+                    and isnull(kgd.mota,'') not in (N'{donhanghuy}')
                     {masp} {kho}
             )A
 
