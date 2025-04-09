@@ -87,9 +87,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 	            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
             where 1=1
                 and kgd.kieuchuyen = N'{Helper.NhapKho}'
-	            and kgd.ngaychuyen between @tu and @den
+	            and kgd.ngaychuyen <= @den
 	            and kgd.soluong_dichchuyen > 0
-	            and isnull(kgd.mota, '') != '' {masp}
+	            and isnull(kgd.dongnhapxuat, '') like N'PNKNCC%' 
+                {masp}
 
             select
 	            format(getdate(), '{fmtDate}') as ngayin,
@@ -124,7 +125,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
                 left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
 	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
                 left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.xuatden
-                cross apply (select dg from @tbl where rank_no = 1 and maVTHH = sp.ma_sanpham) dmh
+                outer apply (select dg from @tbl where rank_no = 1 and maVTHH = sp.ma_sanpham) dmh
             where
 	            1=1
                 and kgd.kieuchuyen = N'{Helper.XuatKho}'
