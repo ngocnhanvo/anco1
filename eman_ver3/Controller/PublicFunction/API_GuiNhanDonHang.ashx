@@ -27,7 +27,77 @@ public class API_GuiNhanDonHang : IHttpHandler
             case "getListDSDH":
                 this.getListDSDH(context);
                 break;
+            case "getPhieuXKs":
+                this.getPhieuXKs(context);
+                break;
+            case "getPhieuXKsCDH":
+                this.getPhieuXKsCDH(context);
+                break;
         }
+    }
+
+    public void getPhieuXKs(HttpContext context)
+    {
+        string msg = "";
+        try
+        {
+            string strdata = context.Request.Form["data"];
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            string dsdhId = data["dsdhId"].ToString();
+            var pxbs = db.md_xuatban.Where(s => s.trangthai == Helper.HIEULUC & s.c_danhsachdathang_id == dsdhId).ToList()
+                    .Select(s=> new {
+                        s.md_xuatban_id,
+                        s.sochungtu,
+                        s.ngaychuyen,
+                        s.so_cont,
+                        s.so_seal,
+                        loai_cont = db.md_loaicont.Where(t=>t.md_loaicont_id == s.loai_cont).Select(t => t.ten_cont).FirstOrDefault(),
+                        tongsl = db.md_xuatban_cdh.Where(t=>t.md_xuatban_id == s.md_xuatban_id & t.sl_xuat > 0).Sum(t => t.sl_xuat)
+                    })
+                    .ToList();
+            msg = JsonConvert.SerializeObject(pxbs);
+        }
+        catch (Exception ex)
+        {
+            msg = "false##" + ex.Message;
+        }
+        context.Response.Write(msg);
+    }
+
+    public void getPhieuXKsCDH(HttpContext context)
+    {
+        string msg = "";
+        try
+        {
+            string strdata = context.Request.Form["data"];
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            string dsdhId = data["md_xuatban_id"].ToString();
+            var xb = db.md_xuatban.Where(s => s.md_xuatban_id == dsdhId).FirstOrDefault();
+            if (xb == null)
+                msg = "[]";
+            else
+            {
+                var pxbs = db.md_xuatban_cdh.Where(s => s.md_xuatban_id == dsdhId & s.sl_xuat > 0).ToList()
+                        .Select(s => new
+                        {
+                            xb.c_danhsachdathang_id,
+                            s.md_xuatban_cdh_id,
+                            s.md_xuatban_id,
+                            md_sanpham_id = db.md_sanpham.Where(t => t.md_sanpham_id == s.md_sanpham_id).Select(t => t.ma_sanpham).FirstOrDefault(),
+                            sl_po = 0,
+                            sl_dathang = 0,
+                            sl_nhapthucte = s.sl_xuat,
+                            sl_conlai = 0
+                        })
+                        .ToList();
+                msg = JsonConvert.SerializeObject(pxbs);
+            }
+        }
+        catch (Exception ex)
+        {
+            msg = "false##" + ex.Message;
+        }
+        context.Response.Write(msg);
     }
 
     public void guiHDLH2(HttpContext context)
