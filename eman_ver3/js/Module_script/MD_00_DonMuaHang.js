@@ -243,10 +243,10 @@ function CA_01_KetThucDonMuHang(tengrid, id_parent, ma_case, Form_infor, Model_i
         return;
     }
 
-    if (cell.md_trangthai_id != 'HIEULUC') {
-        alert(`Đơn mua hàng không ở trạng thái "Hiệu lực".`);
-        return;
-    }
+    //if (cell.md_trangthai_id != 'HIEULUC') {
+    //    alert(`Đơn mua hàng không ở trạng thái "Hiệu lực".`);
+    //    return;
+    //}
 
     let CLform_infor = new get_Forminfor(ma_case, Form_infor);
     let ma_module = tengrid.replace('grid', '');

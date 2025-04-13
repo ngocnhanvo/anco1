@@ -107,9 +107,10 @@ public class JQGridMD_00_DonMuaHangModify : IHttpHandler, System.Web.SessionStat
                 goto EndEventHandler;
             }
 
-            if (dmh.md_trangthai_id != Helper.HIEULUC)
+            var tts = new string[] { Helper.HIEULUC, "CHUAXONG" };
+            if (!tts.Contains(dmh.md_trangthai_id))
             {
-                msg = $@"Đơn mua hàng không ở trạng thái ""Hiệu Lực""";
+                msg = $@"Đơn mua hàng không ở trạng thái ""Hiệu Lực hoặc Chưa nhập hết""";
                 goto EndEventHandler;
             }
 
