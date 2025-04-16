@@ -90,11 +90,11 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 cross apply (
 		            select xnb.xuatden from md_xuatkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
-		            union
-		            select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) 
-		            from md_xuatban xnb
-		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
-		            where xnb.sochungtu = kgd.dongnhapxuat
+		            --union
+		            --select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) 
+		            --from md_xuatban xnb
+		            --left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
+		            --where xnb.sochungtu = kgd.dongnhapxuat
 	            ) xnb
                 left join ad_department pb on pb.md_phongban_id = xnb.xuatden
                 left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId

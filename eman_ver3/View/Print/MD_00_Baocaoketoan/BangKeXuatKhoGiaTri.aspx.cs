@@ -115,11 +115,11 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 		            select xnb.xuatden, '' as c_danhsachdathang_id
 		            from md_xuatkhonb xnb 
 		            where xnb.sochungtu = kgd.dongnhapxuat
-		            union
-		            select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id), xnb.c_danhsachdathang_id 
-		            from md_xuatban xnb
-		            left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
-		            where xnb.sochungtu = kgd.dongnhapxuat
+		            --union
+		            --select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id), xnb.c_danhsachdathang_id 
+		            --from md_xuatban xnb
+		            --left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
+		            --where xnb.sochungtu = kgd.dongnhapxuat
 	            ) xnb
                 left join ad_department pb on pb.md_phongban_id = xnb.xuatden
                 left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
@@ -132,6 +132,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
                 and kgd.dongnhapxuat not like 'PVC%'
+                and kgd.dongnhapxuat not like 'PXKXB%'
                 {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham

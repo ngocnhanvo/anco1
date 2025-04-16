@@ -101,7 +101,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
                     and isnull(kgd.mota,'') not in (N'{donhanghuy}')
                     {masp} {kho}
 
-	            union
+	            union all
 
 	            select
 		            kgd.ngaychuyen,
@@ -110,8 +110,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 		            dvtsp.ten_dvt as dvt,
 		            isnull(cdh.dongiamua, 0) as dg,
 		            0 as sldk,
-		            (case when kgd.kieuchuyen = N'Xuất Kho' then 0 else kgd.soluong_dichchuyen end) as slntk,
-		            (case when kgd.kieuchuyen = N'Xuất Kho' then kgd.soluong_dichchuyen else 0 end) as slxtk
+		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 else kgd.soluong_dichchuyen end) as slntk,
+		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then kgd.soluong_dichchuyen else 0 end) as slxtk
 	            from md_kho_giaodich kgd
 		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
@@ -140,7 +140,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
                 @tenkho as kho,
                 null as po
             from @tbl A
-            cross apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
+            outer apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
             group by A.maVTHH, A.tenVTHH, A.dvt, B.dg
             order by A.maVTHH
 		";

@@ -103,7 +103,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
                     and isnull(kgd.mota,'') not in (N'{donhanghuy}')
                     {masp} {kho}
 
-	            union
+	            union all
 
 	            select
 		            kgd.ngaychuyen,

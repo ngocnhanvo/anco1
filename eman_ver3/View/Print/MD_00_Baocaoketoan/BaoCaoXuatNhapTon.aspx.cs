@@ -94,7 +94,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTon : Sys
                     and isnull(kgd.mota,'') not like N'%,%'
                     and isnull(kgd.mota,'') not in ('{donhanghuy}')
                     {masp} {kho}
-	            union
+	            union all
 
 	            select
 		            kgd.dongnhapxuat as sct,
