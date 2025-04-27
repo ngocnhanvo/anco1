@@ -36,9 +36,50 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
             case "CA_01_CapnhatSLXBan":
                 this.CA_01_CapnhatSLXBan(context);
                 break;
+            case "CA_01_GhepKien":
+                this.CA_01_GhepKien(context);
+                break;
             default:
                 break;
         }
+    }
+
+    public void CA_01_GhepKien(HttpContext context)
+    {
+        string msg = "";
+        string ma_module = context.Request.QueryString["ma_module"];
+        var rows = context.Request.Form["rows"];
+        var id = context.Request.Form["id"].removeAllSpaceOrTrimText(true);
+        var ids = context.Request.Form["ids"].removeAllSpaceOrTrimText(true).Split(',');
+        var tenkien = context.Request.Form["tenkien"].removeAllSpaceOrTrimText(true);
+        var sokien = context.Request.Form["sokien"].removeAllSpaceOrTrimText(true);
+
+        var vcnb = db.md_xuatban.Where(s=>s.md_xuatban_id == id).FirstOrDefault();
+        if (vcnb.sent.GetValueOrDefault(false))
+        {
+            msg = $@"Phiếu đã gửi cho Ancotrading";
+            goto EndEventHandler;
+        }
+
+        try
+        {
+            foreach (var cdvc in db.md_xuatban_cdh.Where(s => ids.Contains(s.md_xuatban_cdh_id)).ToList())
+            {
+                cdvc.tenkien = tenkien;
+                cdvc.sokien = sokien.ToNullableInt();
+                cdvc.ngaycapnhat = DateTime.Now;
+            }
+
+            db.SaveChanges();
+        }
+        catch(Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+    EndEventHandler:;
+
+        context.Response.Write(msg);
     }
 
     public void CA_01_CapnhatSLXBan(HttpContext context)
@@ -64,6 +105,8 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
                 if (dongHang != null)
                 {
                     cdvc.sl_xuat = dongHang.sl_xuat;
+                    cdvc.sl_inner = dongHang.sl_inner;
+                    cdvc.sl_outer = dongHang.sl_outer;
                     cdvc.ngaycapnhat = DateTime.Now;
                 }
             }

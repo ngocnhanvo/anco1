@@ -97,10 +97,22 @@
                         public Decimal? sl_daxuat { get; set; }
                 
 						
+                        #region md_xuatban_cdh_sl_inner_wintaFN
+                        
+                        #endregion md_xuatban_cdh_sl_inner_wintaFN
+                        public Decimal? sl_inner { get; set; }
+                
+						
                         #region md_xuatban_cdh_sl_muonxuat_wintaFN
                         
                         #endregion md_xuatban_cdh_sl_muonxuat_wintaFN
                         public Decimal? sl_muonxuat { get; set; }
+                
+						
+                        #region md_xuatban_cdh_sl_outer_wintaFN
+                        
+                        #endregion md_xuatban_cdh_sl_outer_wintaFN
+                        public Decimal? sl_outer { get; set; }
                 
 						
                         #region md_xuatban_cdh_sl_tonkho_wintaFN
@@ -115,10 +127,22 @@
                         public Decimal? sl_xuat { get; set; }
                 
 						
+                        #region md_xuatban_cdh_sokien_wintaFN
+                        
+                        #endregion md_xuatban_cdh_sokien_wintaFN
+                        public int? sokien { get; set; }
+                
+						
                         #region md_xuatban_cdh_tenhang_wintaFN
                         
                         #endregion md_xuatban_cdh_tenhang_wintaFN
                         public string tenhang { get; set; }
+                
+						
+                        #region md_xuatban_cdh_tenkien_wintaFN
+                        
+                        #endregion md_xuatban_cdh_tenkien_wintaFN
+                        public string tenkien { get; set; }
                 
 						
                         #region md_xuatban_cdh_tong_sl_xuat_wintaFN

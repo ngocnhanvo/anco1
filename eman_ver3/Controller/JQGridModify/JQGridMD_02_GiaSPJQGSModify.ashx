@@ -154,7 +154,7 @@ public class JQGridMD_02_GiaSPJQGSModify : IHttpHandler, System.Web.SessionState
         }
         catch (Exception ex)
         {
-            msg.Add(ex.Message);
+            msg.Add(ex.ToString());
         }
 
         context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(msg));
