@@ -87,7 +87,13 @@ public class API_GuiNhanDonHang : IHttpHandler
                             sl_po = 0,
                             sl_dathang = 0,
                             sl_nhapthucte = s.sl_xuat,
-                            sl_conlai = 0
+                            sl_conlai = 0,
+                            s.sl_inner,
+                            dvt_inner = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t=>t.dvt_inner).FirstOrDefault(),
+                            s.sl_outer,
+                            dvt_outer = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t=>t.dvt_outer).FirstOrDefault(),
+                            s.tenkien,
+                            s.sokien
                         })
                         .ToList();
                 msg = JsonConvert.SerializeObject(pxbs);
