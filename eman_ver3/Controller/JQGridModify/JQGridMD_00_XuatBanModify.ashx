@@ -189,6 +189,8 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
                 if (dongHang != null)
                 {
                     dh.sl_xuat = dongHang.sl_xuat;
+                    dh.sl_inner = dongHang.sl_inner;
+                    dh.sl_outer = dongHang.sl_outer;
                 }
             }
 
