@@ -40,6 +40,8 @@ public partial class PrintControllers_MD_00_BaoTriVatTuHangHoa_lenhSanXuat : Sys
               pb.ten_phongban as xuongSX,
               lsx2.sochungtu as sctLSX, 
               lsx2.donhang as tenLSX, 
+              format(lsx2.ngayhoanthanh, 'dd/MM/yyyy') as ngaygiao,
+              lsx2.mota as hdlh,
               sp.ma_sanpham as maHHVT, 
               sp.mota_tiengviet as tenHHVT, 
               sum(
