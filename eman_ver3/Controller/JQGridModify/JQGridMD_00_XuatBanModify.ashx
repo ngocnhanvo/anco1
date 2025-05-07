@@ -95,7 +95,11 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             noidung += $"Số seal: {px.so_seal}<br>";
             noidung += $"Loại cont: {loaicont}<br>";
             noidung += $"Ngày xuất: {px.ngaychuyen.Value.ToString("dd/MM/yyyy")}";
-
+            string linkConnect = $@"View/Print/MD_00_XuatBan/yeuCauXuatHang.aspx?id={px.md_xuatban_id}&inPDF=2";
+            var msgDT = VNN_VariablePublic.GetModule(linkConnect, $"id={px.md_xuatban_id}&inPDF=2");
+            gm.Attachments = new List<System.Net.Mail.Attachment>();
+            var ata = new System.Net.Mail.Attachment(msgDT);
+            gm.Attachments.Add(ata);
             gm.Send2(gm.Email, mailTo, mailFrom, "", tieude, noidung, "");
         }
         catch (Exception ex)
