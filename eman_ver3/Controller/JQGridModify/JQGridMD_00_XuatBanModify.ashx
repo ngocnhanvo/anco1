@@ -99,6 +99,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             var msgDT = VNN_VariablePublic.GetModule(linkConnect, $"id={px.md_xuatban_id}&inPDF=2");
             gm.Attachments = new List<System.Net.Mail.Attachment>();
             var ata = new System.Net.Mail.Attachment(msgDT);
+            ata.ContentDisposition.FileName = $"Yêu cầu xuất hàng {px.ngaychuyen.Value.ToString("ddMMyy")}.xls";
             gm.Attachments.Add(ata);
             gm.Send2(gm.Email, mailTo, mailFrom, "", tieude, noidung, "");
         }
