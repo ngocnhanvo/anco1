@@ -117,6 +117,7 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHKhongCoGiaTri : System
                 N'{Helper.hinhAnhSP_ANCO}' + sp.ma_sanpham as hinhanh,
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
+                isnull(ddh.gianhap, 0) - isnull(ddh.giachuan, 0) as phi,
 	            ddh.giadoichieu as gia,
 	            ddh.giadoichieu * ddh.sl_dathang as thanhtien,
 	            (cast(ddh.sl_inner as nvarchar) + ' ' + ddh.dvt_inner) as dginner,
