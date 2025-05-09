@@ -40,11 +40,13 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHCoGiaTri : System.Web.
 
         var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var sumSL = tbl.Compute("Sum(sl)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
+        var sumP = tbl.Compute("Sum(phi)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var discount = double.Parse(tbl.Rows[0]["discount"].ToString());
         var sumTTcoDis = sumTT * discount / 100;
         var sumTTcoDiscoPhi = sumTT - sumTTcoDis + (double)sumCong - (double)sumTru;
         //Header
         tbl.Columns.Add("sum_sl", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_phi", Type.GetType("System.Double"));
         tbl.Columns.Add("tongcong", Type.GetType("System.Double"));
         tbl.Columns.Add("discountVal", Type.GetType("System.Double"));
         tbl.Columns.Add("diengiai_phitru", Type.GetType("System.String"));
@@ -58,6 +60,8 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHCoGiaTri : System.Web.
         foreach (DataRow row in tbl.Rows)
         {
             row["sum_sl"] = sumSL;
+
+            row["sum_phi"] = sumP;
 
             row["tongcong"] = sumTT;
 
