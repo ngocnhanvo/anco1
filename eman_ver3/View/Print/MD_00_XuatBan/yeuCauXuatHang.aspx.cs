@@ -22,13 +22,29 @@ public partial class PrintControllers_MD_00_XuatBan_yeuCauXuatHang : System.Web.
             viewReport(sql);
         });
 
-        ReportViewer1.Attributes["download"] = "1";
+        ReportViewer1.Attributes["download"] = Request.QueryString["download"];
         PrintAnco2.exportDataWithType(task, sql, inPDF, nameTemp, nameRpt, ReportViewer1, true);
     }
 
     public void viewReport(String SqlQuery)
     {
         var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
+        tbl.Columns.Add("sum_sokien", Type.GetType("System.Double"));
+        decimal sumSLK = 0;
+        string tenkien = "---";
+        var rows = tbl.AsEnumerable().OrderBy(s => s.Field<string>("tenkien"));
+        foreach (var r in rows)
+        {
+            if(r["tenkien"].ToString() != tenkien)
+            {
+                tenkien = r["tenkien"].ToString();
+                sumSLK = sumSLK + r["sokien"].ToString().ToNullableDecimal().GetValueOrDefault(0);
+            }
+        }
+
+        tbl.Rows[0]["sum_sokien"] = sumSLK;
+        tbl.Rows[tbl.Rows.Count - 2]["sum_sokien"] = sumSLK;
+        tbl.Rows[tbl.Rows.Count - 1]["sum_sokien"] = sumSLK;
     }
 
     public String CreateSql(HttpContext context)
@@ -61,9 +77,11 @@ public partial class PrintControllers_MD_00_XuatBan_yeuCauXuatHang : System.Web.
 	            cdh.tenkien,
 	            cdh.sokien,
 	            cdh.mota as ghichu,
-	            round(cdh.sl_xuat * sp.trongluong, 2) as nw,
-	            round(cdh.sl_xuat * sp.trongluong, 2) as gw,
-	            round(ddsdh.v2/ddsdh.sl_dathang * cdh.sl_xuat, 3) as cbm,
+	            cdh.nw,
+	            cdh.gw,
+	            cdh.cbm,
+                xb.tare,
+                xb.mg,
                 dsdh.huongdanlamhang as ddhh,
                 dsdh.huongdanlamhangchung as hdlh
             from md_xuatban xb
@@ -76,7 +94,6 @@ public partial class PrintControllers_MD_00_XuatBan_yeuCauXuatHang : System.Web.
             left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
             where
 	            xb.md_xuatban_id = @id
-	            and xb.trangthai = '{Helper.HIEULUC}'
             order by
 	            sp.ma_sanpham
 		";

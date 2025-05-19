@@ -25,6 +25,12 @@
                         public string bophantao { get; set; }
                 
 						
+                        #region md_xuatban_cdh_cbm_wintaFN
+                        
+                        #endregion md_xuatban_cdh_cbm_wintaFN
+                        public Decimal? cbm { get; set; }
+                
+						
                         #region md_xuatban_cdh_check_kho_wintaFN
                         
                         #endregion md_xuatban_cdh_check_kho_wintaFN
@@ -35,6 +41,12 @@
                         
                         #endregion md_xuatban_cdh_ghichu_donvi2_wintaFN
                         public string ghichu_donvi2 { get; set; }
+                
+						
+                        #region md_xuatban_cdh_gw_wintaFN
+                        
+                        #endregion md_xuatban_cdh_gw_wintaFN
+                        public Decimal? gw { get; set; }
                 
 						
                         #region md_xuatban_cdh_hoatdong_wintaFN
@@ -91,6 +103,12 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region md_xuatban_cdh_nw_wintaFN
+                        
+                        #endregion md_xuatban_cdh_nw_wintaFN
+                        public Decimal? nw { get; set; }
+                
+						
                         #region md_xuatban_cdh_sl_daxuat_wintaFN
                         
                         #endregion md_xuatban_cdh_sl_daxuat_wintaFN
@@ -143,6 +161,12 @@
                         
                         #endregion md_xuatban_cdh_tenkien_wintaFN
                         public string tenkien { get; set; }
+                
+						
+                        #region md_xuatban_cdh_tldg_wintaFN
+                        
+                        #endregion md_xuatban_cdh_tldg_wintaFN
+                        public Decimal? tldg { get; set; }
                 
 						
                         #region md_xuatban_cdh_tong_sl_xuat_wintaFN

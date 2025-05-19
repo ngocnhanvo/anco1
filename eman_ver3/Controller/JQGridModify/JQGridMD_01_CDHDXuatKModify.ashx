@@ -107,6 +107,10 @@ public class JQGridMD_01_CDHDXuatKModify : IHttpHandler, System.Web.SessionState
                     cdvc.sl_xuat = dongHang.sl_xuat;
                     cdvc.sl_inner = dongHang.sl_inner;
                     cdvc.sl_outer = dongHang.sl_outer;
+                    cdvc.tldg = dongHang.tldg;
+                    cdvc.nw = dongHang.nw;
+                    cdvc.gw = dongHang.gw;
+                    cdvc.cbm = dongHang.cbm;
                     cdvc.ngaycapnhat = DateTime.Now;
                 }
             }

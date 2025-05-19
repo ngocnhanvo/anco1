@@ -73,6 +73,12 @@
                         public string md_doitackinhdoanh_id { get; set; }
                 
 						
+                        #region md_xuatban_mg_wintaFN
+                        
+                        #endregion md_xuatban_mg_wintaFN
+                        public Decimal? mg { get; set; }
+                
+						
                         #region md_xuatban_mota_wintaFN
                         
                         #endregion md_xuatban_mota_wintaFN
@@ -167,6 +173,12 @@
                         
                         #endregion md_xuatban_so_seal_wintaFN
                         public string so_seal { get; set; }
+                
+						
+                        #region md_xuatban_tare_wintaFN
+                        
+                        #endregion md_xuatban_tare_wintaFN
+                        public Decimal? tare { get; set; }
                 
 						
                         #region md_xuatban_tiencongghep_wintaFN

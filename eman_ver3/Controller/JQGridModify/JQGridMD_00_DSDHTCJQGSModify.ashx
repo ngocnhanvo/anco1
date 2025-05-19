@@ -595,7 +595,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
                     if (countPO > 0)
                         msg = string.Format(@"Lỗi:Số đơn hàng đã tồn tại.");
                 }
-                int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
+                //int thoigianht = int.Parse(context.Request.Form["thoigianht"]);
                 DateTime ngaylap = VNN_Config.setDateTime(context.Request.Form["ngaylap"]);
                 DateTime hangiaohang_po = VNN_Config.setDateTime(context.Request.Form["hangiaohang_po"]);
                 //DateTime ngaybatdau = hangiaohang_po.AddDays(0 - thoigiansx);

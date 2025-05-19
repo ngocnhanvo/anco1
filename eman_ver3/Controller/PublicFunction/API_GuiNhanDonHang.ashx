@@ -52,7 +52,9 @@ public class API_GuiNhanDonHang : IHttpHandler
                         s.so_cont,
                         s.so_seal,
                         loai_cont = db.md_loaicont.Where(t=>t.md_loaicont_id == s.loai_cont).Select(t => t.ten_cont).FirstOrDefault(),
-                        tongsl = db.md_xuatban_cdh.Where(t=>t.md_xuatban_id == s.md_xuatban_id & t.sl_xuat > 0).Sum(t => t.sl_xuat)
+                        tongsl = db.md_xuatban_cdh.Where(t=>t.md_xuatban_id == s.md_xuatban_id & t.sl_xuat > 0).Sum(t => t.sl_xuat),
+                        s.tare,
+                        s.mg
                     })
                     .ToList();
             msg = JsonConvert.SerializeObject(pxbs);
@@ -93,7 +95,11 @@ public class API_GuiNhanDonHang : IHttpHandler
                             s.sl_outer,
                             dvt_outer = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t=>t.dvt_outer).FirstOrDefault(),
                             s.tenkien,
-                            s.sokien
+                            s.sokien,
+                            s.tldg,
+                            s.nw,
+                            s.gw,
+                            s.cbm
                         })
                         .ToList();
                 msg = JsonConvert.SerializeObject(pxbs);

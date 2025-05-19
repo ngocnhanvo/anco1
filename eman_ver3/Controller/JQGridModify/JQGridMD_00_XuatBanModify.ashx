@@ -95,8 +95,8 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
             noidung += $"Số seal: {px.so_seal}<br>";
             noidung += $"Loại cont: {loaicont}<br>";
             noidung += $"Ngày xuất: {px.ngaychuyen.Value.ToString("dd/MM/yyyy")}";
-            string linkConnect = $@"View/Print/MD_00_XuatBan/yeuCauXuatHang.aspx?id={px.md_xuatban_id}&inPDF=2";
-            var msgDT = VNN_VariablePublic.GetModule(linkConnect, $"id={px.md_xuatban_id}&inPDF=2");
+            string linkConnect = $@"View/Print/MD_00_XuatBan/yeuCauXuatHang.aspx?id={px.md_xuatban_id}&inPDF=2&download=1";
+            var msgDT = VNN_VariablePublic.GetModule(linkConnect, $"");
             gm.Attachments = new List<System.Net.Mail.Attachment>();
             var ata = new System.Net.Mail.Attachment(msgDT);
             ata.ContentDisposition.FileName = $"Yêu cầu xuất hàng {px.ngaychuyen.Value.ToString("ddMMyy")}.xls";

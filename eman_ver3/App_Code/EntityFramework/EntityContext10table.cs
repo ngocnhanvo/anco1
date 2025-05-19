@@ -54,6 +54,10 @@ modelBuilder.Entity<md_xuatban>().HasKey<string>(p => p.md_xuatban_id);
                             .HasColumnName("md_doitackinhdoanh_id")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.mg)
+                            .HasColumnName("mg")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.mota)
                             .HasColumnName("mota")
                             .HasColumnType("nvarchar");
@@ -117,6 +121,10 @@ modelBuilder.Entity<md_xuatban>().HasKey<string>(p => p.md_xuatban_id);
                             .Property(p => p.so_seal)
                             .HasColumnName("so_seal")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban>()
+                            .Property(p => p.tare)
+                            .HasColumnName("tare")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_xuatban>()
                             .Property(p => p.tiencongghep)
                             .HasColumnName("tiencongghep")
@@ -184,6 +192,10 @@ modelBuilder.Entity<md_xuatban_cdh>().HasKey<string>(p => p.md_xuatban_cdh_id);
                             .HasColumnName("bophantao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_xuatban_cdh>()
+                            .Property(p => p.cbm)
+                            .HasColumnName("cbm")
+                            .HasColumnType("numeric").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.check_kho)
                             .HasColumnName("check_kho")
                             .HasColumnType("bit");
@@ -191,6 +203,10 @@ modelBuilder.Entity<md_xuatban_cdh>().HasKey<string>(p => p.md_xuatban_cdh_id);
                             .Property(p => p.ghichu_donvi2)
                             .HasColumnName("ghichu_donvi2")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban_cdh>()
+                            .Property(p => p.gw)
+                            .HasColumnName("gw")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.hoatdong)
                             .HasColumnName("hoatdong")
@@ -228,6 +244,10 @@ modelBuilder.Entity<md_xuatban_cdh>().HasKey<string>(p => p.md_xuatban_cdh_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<md_xuatban_cdh>()
+                            .Property(p => p.nw)
+                            .HasColumnName("nw")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
+                            modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.sl_daxuat)
                             .HasColumnName("sl_daxuat")
                             .HasColumnType("decimal").HasPrecision(18, 8);
@@ -263,6 +283,10 @@ modelBuilder.Entity<md_xuatban_cdh>().HasKey<string>(p => p.md_xuatban_cdh_id);
                             .Property(p => p.tenkien)
                             .HasColumnName("tenkien")
                             .HasColumnType("nvarchar");
+                            modelBuilder.Entity<md_xuatban_cdh>()
+                            .Property(p => p.tldg)
+                            .HasColumnName("tldg")
+                            .HasColumnType("decimal").HasPrecision(18, 8);
                             modelBuilder.Entity<md_xuatban_cdh>()
                             .Property(p => p.tong_sl_xuat)
                             .HasColumnName("tong_sl_xuat")
