@@ -293,7 +293,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             kh.trangthai = Helper.SOANTHAO;
             if (sanxuatton | donhangtron)
             {
-                kh.trangthai = Helper.DATNCC;
+                kh.trangthai = Helper.DATSX;
             }
             kh.xulykehoach = false;
             kh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id;
