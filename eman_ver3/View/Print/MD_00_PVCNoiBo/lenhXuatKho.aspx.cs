@@ -111,8 +111,7 @@ public partial class PrintControllers_MD_00_PVCNoiBo_lenhXuatKho : System.Web.UI
                     left join md_kho dkho on dkho.md_kho_id = vcnb.denkho
                     left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
 	                left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = vcnb.donhang_thamchieu
-	                left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and cdh.md_sanpham_id = cdvc.md_sanpham_id
-	                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
+	                left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
                     left join md_donvitinhsanpham dvt on dvt.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 where
                     vcnb.md_trangthai_id != '{Helper.SOANTHAO}'
