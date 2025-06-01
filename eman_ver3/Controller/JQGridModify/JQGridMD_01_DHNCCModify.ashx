@@ -55,7 +55,7 @@ public class JQGridMD_01_DHNCCModify : IHttpHandler, System.Web.SessionState.IRe
             }
             else
             {
-                decimal sltd = nk_ncc_dh.tong_sl_dat.Value - nk_ncc_dh.sl_danhap.Value;
+                decimal sltd = nk_ncc_dh.sl_muonnhap.GetValueOrDefault(0);
                 decimal tile = 1;
                 if (sp.md_donvitinhsanpham_id != nk_ncc_dh.md_donvitinhsanpham_id)
                 {

@@ -1,5 +1,4 @@
-﻿e
-<%@ WebHandler Language="C#" Class="JQGridMD_00_DSDHTCJQGSModify" %>
+﻿<%@ WebHandler Language="C#" Class="JQGridMD_00_DSDHTCJQGSModify" %>
 using System;
 using System.Data;
 using System.Web;
@@ -293,7 +292,7 @@ public class JQGridMD_00_DSDHTCJQGSModify : IHttpHandler, System.Web.SessionStat
             kh.trangthai = Helper.SOANTHAO;
             if (sanxuatton | donhangtron)
             {
-                kh.trangthai = Helper.DATSX;
+                kh.trangthai = Helper.DaXLTBTP;
             }
             kh.xulykehoach = false;
             kh.c_danhsachdathang_id = dsdh.c_danhsachdathang_id;

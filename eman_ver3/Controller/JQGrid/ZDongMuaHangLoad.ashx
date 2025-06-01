@@ -74,7 +74,7 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
 	                , thue_sp.ten_thue_sanpham as thue
 	                , cdmh.thanhtien
                     , dmh.so_donmuahang
-                    , sp.khomacdinh
+                    , (case when kh.sanxuatton = 1 then sp.khoton else sp.khomacdinh end) as khomacdinh
                     , sp.vattu
                     , N'{kvtsStr}' as kvts
                     , {ROW_NUMBER} as RowNum
@@ -82,6 +82,7 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
 	                left join md_sanpham sp on cdmh.md_sanpham_id = sp.md_sanpham_id 
 	                left join md_thue_sanpham thue_sp on thue_sp.md_thue_sanpham_id = cdmh.thue
                     left join c_donmuahang dmh on cdmh.c_donmuahang_id = dmh.c_donmuahang_id
+                    left join c_kehoachdathang kh on dmh.c_kehoachdathang_dhncc_id = kh.c_kehoachdathang_id
                 WHeRe 1=1 and cdmh.c_donmuahang_id in ('{id}') {filter}
             ) P 
             WHeRe 
