@@ -1338,15 +1338,10 @@ public class Public
                 vcnb_cdvcs = db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id).ToList();
             vcnb_cdvcs = vcnb_cdvcs.Where(s => s.soluong_dichchuyen.GetValueOrDefault(0) > 0).ToList();
             var slChuyen = vcnb_cdvcs.Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
-            if (slChuyen <= 0)
-            {
-                loiHL0 = true;
-                msg = $@"Phiếu ""{vcnb.sochungtu}"" phải có ít nhất 1 dòng hàng có SL thực chuyển lớn hơn 0";
-                goto EndEventHandler2;
-            }
-
             var giaoHang = vcnb.loaichuyen == "VANCNBCTKGH";
             var layTonTPhoacBTP = vcnb.loaichuyen == "VANCNBTC" & !string.IsNullOrWhiteSpace(vcnb.c_doichieuhangton_id);
+            bool layTonTP = false, layTonBTP = false;
+            
             c_kehoachdathang khdh = null;
             c_danhsachdathang dsdh = null;
             if (layTonTPhoacBTP)
@@ -1365,6 +1360,14 @@ public class Public
                     goto EndEventHandler;
                 }
             }
+
+            if (slChuyen <= 0)
+            {
+                loiHL0 = true;
+                msg = $@"Phiếu ""{vcnb.sochungtu}"" phải có ít nhất 1 dòng hàng có SL thực chuyển lớn hơn 0";
+                goto EndEventHandler2;
+            }
+
             vcnb.ngayhieuluc = DateTime.Now;
             string dsdhId = "", lsxId = "";
             var tsxIds = new List<string>();
@@ -1380,7 +1383,7 @@ public class Public
             }
 
             var khoSPDic = new Dictionary<string, decimal>();
-            bool layTonTP = false, layTonBTP = false;
+            
             foreach (var vcnb_cdvc in vcnb_cdvcs)
             {
                 var spMain = db.md_sanpham.Where(s => s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
@@ -1693,10 +1696,36 @@ public class Public
         EndEventHandler2:;
 
             if(loiHL0)
-            { 
-                if(chophepHL0.GetValueOrDefault(false))
+            {
+                if (chophepHL0.GetValueOrDefault(false))
                 {
                     msg = "";
+                    if (layTonTPhoacBTP)
+                    {
+                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp == vcnb.sochungtu).FirstOrDefault();
+                        if(tsx != null)
+                        {
+                            layTonTP = true;
+                        }
+                        else
+                        {
+                            tsx = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht == vcnb.sochungtu).FirstOrDefault();
+                            if (tsx != null)
+                                layTonBTP = true;
+                        }
+
+                        if (layTonTP)
+                        {
+                            khdh.trangthai = Helper.DaXLTTP;
+                            dsdh.md_trangthai_id = khdh.trangthai;
+                        }
+                        else
+                        {
+                            khdh.trangthai = Helper.DaXLTBTP;
+                            khdh.ngaybatdausx = DateTime.Now;
+                            dsdh.md_trangthai_id = khdh.trangthai;
+                        }
+                    }
                 }
             }
 
