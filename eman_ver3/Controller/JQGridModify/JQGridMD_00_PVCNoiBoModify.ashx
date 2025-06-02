@@ -58,6 +58,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string ma_module = context.Request.QueryString["ma_module"];
         string id = context.Request.Form["id"];
         var rows = context.Request.Form["rows"];
+        var chkHL0 = context.Request.Form["chkHL0"] == "1";
         var msgErrs = new List<Public.BaoLoiKhiHieuLuc>();
 
         var vcnb = db.md_vanchuyennoibo.Where(s => s.md_vanchuyennoibo_id == id).FirstOrDefault();
@@ -92,7 +93,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
             }
         }
 
-        msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs);
+        msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs, chkHL0);
         msgErrs = pub.msgErrsPL.Clone();
 
     EndEventHandler:;

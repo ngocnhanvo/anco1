@@ -1291,11 +1291,12 @@ public class Public
         string id,
         string koCapnhatDLSXStr,
         md_vanchuyennoibo vcnb = null,
-        List<md_vanchuyennoibo_cdvc> vcnb_cdvcs = null
+        List<md_vanchuyennoibo_cdvc> vcnb_cdvcs = null,
+        bool? chophepHL0 = false
         )
     {
         string msg = "";
-
+        bool loiHL0 = false;
         var koCapnhatDLSX = koCapnhatDLSXStr == "true";
 
         if (msgErrsPL == null)
@@ -1339,8 +1340,9 @@ public class Public
             var slChuyen = vcnb_cdvcs.Sum(s => s.soluong_dichchuyen.GetValueOrDefault(0));
             if (slChuyen <= 0)
             {
+                loiHL0 = true;
                 msg = $@"Phiếu ""{vcnb.sochungtu}"" phải có ít nhất 1 dòng hàng có SL thực chuyển lớn hơn 0";
-                goto EndEventHandler;
+                goto EndEventHandler2;
             }
 
             var giaoHang = vcnb.loaichuyen == "VANCNBCTKGH";
@@ -1685,6 +1687,16 @@ public class Public
                     var daHT = donghangs.Where(s => s.sl_dathang.GetValueOrDefault(0) - s.sl_giamhanngach.GetValueOrDefault(0) - s.sl_nhaphang.GetValueOrDefault(0) > 0).Count() <= 0;
                     if (daHT & donghangs.Count > 0)
                         dsdh.md_trangthai_id = Helper.ChoDG;
+                }
+            }
+
+        EndEventHandler2:;
+
+            if(loiHL0)
+            { 
+                if(chophepHL0.GetValueOrDefault(false))
+                {
+                    msg = "";
                 }
             }
 
