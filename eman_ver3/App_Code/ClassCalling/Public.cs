@@ -13,6 +13,12 @@ public class Public
 
     }
 
+    public class TsxsID
+    {
+        public string tsxID { get; set; }
+        public int? stt { get; set; }
+    }
+
     public class BaoLoiKhiHieuLuc
     {
         public string msp { get; set; }
@@ -1370,7 +1376,7 @@ public class Public
 
             vcnb.ngayhieuluc = DateTime.Now;
             string dsdhId = "", lsxId = "";
-            var tsxIds = new List<string>();
+            var tsxIds = new List<TsxsID>();
             md_lenhsanxuat_tosx tsxInLSX = null;
             if (giaoHang)
             {
@@ -1378,8 +1384,8 @@ public class Public
                 dsdhId = dsdh == null ? "" : dsdh.c_danhsachdathang_id;
                 lsxId = db.md_lenhsanxuat.Where(s => s.donhang_thamchieu == vcnb.donhang_thamchieu).Select(s => s.md_lenhsanxuat_id).FirstOrDefault();
                 tsxInLSX = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId & s.hoatdong == true).OrderByDescending(s => s.stt).FirstOrDefault();
-                var sttM = dsdh.sanxuatton.GetValueOrDefault(false) ? 9998 : 9999;
-                tsxIds = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId & s.hoatdong == true & s.stt == sttM).Select(s => s.md_lenhsanxuat_tosx_id).ToList();
+                //var sttM = dsdh.sanxuatton.GetValueOrDefault(false) ? 9998 : 9999;
+                tsxIds = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_id == lsxId & s.hoatdong == true).Select(s => new TsxsID { tsxID = s.md_lenhsanxuat_tosx_id, stt = s.stt }).ToList();
             }
 
             var khoSPDic = new Dictionary<string, decimal>();
@@ -1495,36 +1501,46 @@ public class Public
                 if (giaoHang)
                 {
                     sanxuat = 3;
-                    var cais = db.md_lenhsanxuat_tosx_cdh.Where(
+                    var kss = dsdh.sanxuatton.GetValueOrDefault(false) ? spMain.khoton == vcnb.denkho : spMain.khomacdinh == vcnb.tukho | spMain.khomacdinh == vcnb.denkho;
+                    var tsxIds2 = new List<string>();
+                    if (kss)
+                    {
+                        if (spMain.sanpham.GetValueOrDefault(false))
+                            tsxIds2 = tsxIds.Where(s => s.stt == 9999).Select(s => s.tsxID).ToList();
+                        else if (spMain.ban_thanhpham.GetValueOrDefault(false))
+                            tsxIds2 = tsxIds.Where(s => s.stt == 9998).Select(s => s.tsxID).ToList();
+
+                        var cais = db.md_lenhsanxuat_tosx_cdh.Where(
                             s =>
-                                tsxIds.Contains(s.md_lenhsanxuat_tosx_id)
+                                tsxIds2.Contains(s.md_lenhsanxuat_tosx_id)
                                 & s.mabo.Contains(spMain.ma_sanpham)
                             ).ToList();
 
-                    foreach (var cai in cais)
-                    {
-                        cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + sl_dichchuyen_thucte;
-                        lstSPId.Add(cai.md_sanpham_id);
-                    }
-                    var ddsdhServer = db.c_dongdsdh.Where(s =>
-                    s.c_danhsachdathang_id == dsdhId
-                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
-                    var ddsdh = db.c_dongdsdh.Local.Where(s =>
-                    s.c_danhsachdathang_id == dsdhId
-                    & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
-                    if (ddsdh != null)
-                    {
-                        ddsdh.sl_nhaphang = ddsdh.sl_nhaphang.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
-                        if (dsdh.sanxuatton.GetValueOrDefault(false))
+                        foreach (var cai in cais)
                         {
-                            ddsdh.sl_conlai = ddsdh.sl_conlai.GetValueOrDefault(0) - ddsdh.sl_nhaphang.GetValueOrDefault(0);
+                            cai.sl_dagiao = cai.sl_dagiao.GetValueOrDefault(0) + sl_dichchuyen_thucte;
+                            lstSPId.Add(cai.md_sanpham_id);
+                        }
+                        var ddsdhServer = db.c_dongdsdh.Where(s =>
+                        s.c_danhsachdathang_id == dsdhId
+                        & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+                        var ddsdh = db.c_dongdsdh.Local.Where(s =>
+                        s.c_danhsachdathang_id == dsdhId
+                        & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
+                        if (ddsdh != null)
+                        {
+                            ddsdh.sl_nhaphang = ddsdh.sl_nhaphang.GetValueOrDefault(0) + vcnb_cdvc.soluong_dichchuyen.GetValueOrDefault(0);
+                            if (dsdh.sanxuatton.GetValueOrDefault(false))
+                            {
+                                ddsdh.sl_conlai = ddsdh.sl_conlai.GetValueOrDefault(0) - ddsdh.sl_nhaphang.GetValueOrDefault(0);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    if (sl_dichchuyen_thucte > 0)
-                        lstSPId.Add(vcnb_cdvc.md_sanpham_id);
+                    else
+                    {
+                        if (sl_dichchuyen_thucte > 0)
+                            lstSPId.Add(vcnb_cdvc.md_sanpham_id);
+                    }
                 }
 
                 var kspsServer = db.md_kho_sanpham.Where(s => s.md_kho_id == vcnb.tukho & lstSPId.Contains(s.md_sanpham_id)).ToList();

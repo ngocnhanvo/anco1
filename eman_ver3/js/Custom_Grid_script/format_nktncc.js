@@ -143,6 +143,8 @@ function timkiem_nktncc(id_elem, type) {
                     { key: false, fixed: true, label: 'Số DMH', search: false, name: 'so_donmuahang', index: 'dmh.so_donmuahang', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } } },
                     { key: false, fixed: true, label: 'Kho', search: false, name: 'khomacdinh', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
                     { key: false, fixed: true, label: 'Vật tư', search: false, name: 'vattu', index: 'sp.vattu', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
+                    { key: false, fixed: true, label: 'BTP', search: false, name: 'ban_thanhpham', index: 'sp.ban_thanhpham', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
+                    { key: false, fixed: true, label: 'c_kehoachdathang_id', search: false, name: 'c_kehoachdathang_id', index: 'khdh.c_kehoachdathang_id', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
                     { key: false, fixed: true, label: 'Kho VTs', search: false, name: 'kvts', index: 'sp.vattu', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' }
                 ],
                 beforeRequest: function () {
@@ -225,19 +227,30 @@ function timkiem_nktncc(id_elem, type) {
                         for (let i in rowsDT) {
                             let rowDT = rowsDT[i];
                             let vattu = rowDT.vattu == 'true';
+                            let btp = rowDT.ban_thanhpham == 'true';
+                            let khdh = rowDT.c_kehoachdathang_id;
                             let kvts = rowDT.kvts.split(',');
-                            if (vattu) {
-                                for (let i in kvts) {
-                                    let kvt = kvts[i];
-                                    let chk = ddghs.filter(function (a) { return a == kvt; })[0];
-                                    if (!chk)
-                                        ddghs.push(kvt);
-                                }
-                            }
-                            else {
+                            
+
+                            if (khdh) {
                                 let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh; })[0];
                                 if (!chk)
                                     ddghs.push(rowDT.khomacdinh);
+                            }
+                            else {
+                                if (vattu) {
+                                    for (let i in kvts) {
+                                        let kvt = kvts[i];
+                                        let chk = ddghs.filter(function (a) { return a == kvt; })[0];
+                                        if (!chk)
+                                            ddghs.push(kvt);
+                                    }
+                                }
+                                else {
+                                    let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh; })[0];
+                                    if (!chk)
+                                        ddghs.push(rowDT.khomacdinh);
+                                }
                             }
                         }
 
