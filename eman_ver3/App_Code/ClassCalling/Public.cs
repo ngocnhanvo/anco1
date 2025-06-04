@@ -1538,9 +1538,18 @@ public class Public
                     }
                     else
                     {
-                        if (sl_dichchuyen_thucte > 0)
-                            lstSPId.Add(vcnb_cdvc.md_sanpham_id);
+                        msg += $@"<br>Lỗi: dòng ""{spMain.ma_sanpham}"" có kho sản xuất hoặc kho tồn chưa chính xác.";
+                        msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc()
+                        {
+                            msp = spMain.ma_sanpham,
+                            loi = $"có kho sản xuất hoặc kho tồn chưa chính xác."
+                        });
                     }
+                }
+                else
+                {
+                    if (sl_dichchuyen_thucte > 0)
+                        lstSPId.Add(vcnb_cdvc.md_sanpham_id);
                 }
 
                 var kspsServer = db.md_kho_sanpham.Where(s => s.md_kho_id == vcnb.tukho & lstSPId.Contains(s.md_sanpham_id)).ToList();
