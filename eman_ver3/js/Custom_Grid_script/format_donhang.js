@@ -160,7 +160,8 @@ var format_donhang = {
                                             where 
                                                 lsx.donhang_thamchieu = dsdh.so_po
                                                 and isnull(cdh.sl_giamhanngach, 0) > 0
-                                                and isnull(cdh.sl_danhapkho, 0) + isnull(cdh.sl_datncc, 0) + isnull(cdh.sl_nhapkho, 0) - isnull(cdh.sl_nkton, 0) > cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)
+                                                and isnull(cdh.sl_danhapkho, 0) + isnull(cdh.sl_datncc, 0) + isnull(cdh.sl_nhapkho, 0) - isnull(cdh.sl_nkton, 0) >= cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)
+                                                and isnull(cdh.sl_danhapkho, 0) + isnull(cdh.sl_datncc, 0) + isnull(cdh.sl_nhapkho, 0) - isnull(cdh.sl_nkton, 0) > 0
                                         ) > 0
                                     `;
                                 }
