@@ -86,6 +86,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
                 cross apply (
+                    select '' as nhaptu from md_vanchuyennoibo xnb where xnb.sochungtu = kgd.dongnhapxuat
+		            union
                     select '' as nhaptu from md_nhapkhoton xnb where xnb.sochungtu = kgd.dongnhapxuat
 		            union
                     select '' as nhaptu from md_kiemke xnb where xnb.sochungtu = kgd.dongnhapxuat
@@ -106,9 +108,6 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
                 and kgd.kieuchuyen = N'{Helper.NhapKho}'
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
-                and kgd.dongnhapxuat not like 'PVC%'
-                and kgd.dongnhapxuat not like 'PCTPDG%'
-                and kgd.dongnhapxuat not like 'PCTTP%'
                 {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham
