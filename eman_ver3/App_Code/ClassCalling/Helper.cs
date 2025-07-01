@@ -10,7 +10,8 @@ using System.Collections.Generic;
 /// </summary>
 public static class Helper
 {
-    public static string[] mimeTypes = { ".jpg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".pdf" }; 
+    public static string[] mimeTypes = { ".jpg", ".png", ".doc", ".docx", ".xls", ".xlsx", ".pdf" };
+    public static string fmtDate = "dd/MM/yyyy";
     public static string VNN_notpost = "VNN_notpost";
     public static string SOANTHAO = "SOANTHAO";
     public static string HIEULUC = "HIEULUC";
