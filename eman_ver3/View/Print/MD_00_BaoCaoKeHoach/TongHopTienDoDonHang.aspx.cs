@@ -54,19 +54,21 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopTienDoDonHang :
                 format(@tu, @fmtD) as tungay,
                 format(@den, @fmtD) as denngay,
 	            A.*,
+	            isnull(A.sltp0 - A.sltp, 0) as sltp2,
 	            isnull(tho.tontho, 0) as tontho,
 	            isnull(tho.sltho, 0) as sltho,
-	            isnull(tho.sltho2, 0) as sltho2
+	            isnull(tho.sltho0 - tho.sltho, 0) as sltho2
             from (
 	            select
 		            dmh.so_po as donhang,
+                    dmh.hangiaohang_po,
 		            sp.ma_sanpham as maVTHH,
 		            sp.mota_tiengviet as tenVTHH,
 		            dvtsp.ten_dvt as dvt,
 		            sum(cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)) as sldh,
 		            sum(isnull(cdh.sl_nhapkho, 0)) as tontp,
-		            sum(isnull(cdh.sl_danhapkho, 0)) as sltp,
-		            sum(cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0) - isnull(cdh.sl_danhapkho, 0)) as sltp2
+		            sum(case when isnull(cdh.sl_datncc, 0) > 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_danhapkho, 0) end) as sltp,
+		            sum(cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)) as sltp0
 	            from c_danhsachdathang dmh
 		            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
 		            left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = dmh.so_po
@@ -81,6 +83,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopTienDoDonHang :
 	            group by
 		            cdh.md_sanpham_id, 
 		            dmh.so_po,
+                    dmh.hangiaohang_po,
 		            sp.ma_sanpham, 
 		            sp.mota_tiengviet, 
 		            dvtsp.ten_dvt
@@ -88,8 +91,8 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopTienDoDonHang :
             outer apply (
 	            select 
 		            sum(isnull(cdh.sl_nhapkho, 0)) as tontho, 
-		            sum(isnull(cdh.sl_danhapkho, 0)) as sltho,
-		            sum(isnull(cdh.sl_chiato, 0) - isnull(cdh.sl_danhapkho, 0)) as sltho2
+		            sum(case when isnull(cdh.sl_datncc, 0) > 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_danhapkho, 0) end) as sltho,
+		            sum(isnull(cdh.sl_chiato, 0)) as sltho0
 	            from md_lenhsanxuat lsx
 	            inner join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
                 inner join md_sanpham spc on spc.md_sanpham_id = cdh.md_sanpham_id
