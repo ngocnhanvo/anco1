@@ -660,7 +660,7 @@ namespace OfficeToPDF
 
                 if (msg.Length <= 0)
                 {
-                    var download = viewer.Attributes["download"] == "1";
+                    var download = viewer.Attributes != null ? viewer.Attributes["download"] == "1" : false;
                     if (download)
                     {
                         context.Response.Clear();
