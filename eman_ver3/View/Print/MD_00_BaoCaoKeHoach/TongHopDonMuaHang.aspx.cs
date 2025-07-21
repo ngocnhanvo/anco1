@@ -42,17 +42,19 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopDonMuaHang : Sy
         string dtkd = context.Request.QueryString["dtkd"].removeAllSpaceOrTrimText(true).Replace("'", "''");
         if (!string.IsNullOrWhiteSpace(dtkd))
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
-
-        var fmtDate = "dd/MM/yyyy";
+        
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
+            declare @fmtD nvarchar(MAX) = '{Helper.fmtDate}';
 
             select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
+	            format(getdate(), @fmtD) as ngayin,
+	            format(@tu, @fmtD) as tungay,
+	            format(@den, @fmtD) as denngay,
 	            dtkd.ma_dtkd as maNCC,
+                khdh.donhang_thamchieu as donhang,
+	            khdh.hangiaohangPO,
 	            dmh.sochungtu as dmh,
 	            sp.ma_sanpham as maVTHH,
 	            sp.mota_tiengviet as tenVTHH,
@@ -61,6 +63,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopDonMuaHang : Sy
 	            cdh.sl_dadat as slDMH,
 	            cdh.sl_hanngach as slDG
             from c_donmuahang dmh
+                left join c_kehoachdathang khdh on khdh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
                 left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id
 	            left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id

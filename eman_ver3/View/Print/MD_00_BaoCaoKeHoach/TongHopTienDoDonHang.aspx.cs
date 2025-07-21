@@ -54,7 +54,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopTienDoDonHang :
                 format(@tu, @fmtD) as tungay,
                 format(@den, @fmtD) as denngay,
 	            A.*,
-	            isnull(A.sltp0 - A.sltp, 0) as sltp2,
+	            isnull(A.sltp0 - A.sltp - A.tontp, 0) as sltp2,
 	            isnull(tho.tontho, 0) as tontho,
 	            isnull(tho.sltho, 0) as sltho,
 	            isnull(tho.sltho0 - tho.sltho, 0) as sltho2
