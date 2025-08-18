@@ -300,7 +300,7 @@ var format_lenhsx = {
                             if (xuatVTtheoBOM) {
                                 return `
                                     ${whereAll}
-                                    and (
+                                    and EXISTS (
 	                                    select 
 		                                    top 1 1
 	                                    from 
@@ -309,11 +309,11 @@ var format_lenhsx = {
 	                                    where 
 		                                    1=1 
 		                                    and cdh.lsxCT = lsx2.sochungtu
-		                                    and vt.sp1 in (select ma_sanpham from md_sanpham where md_sanpham_id = cdh.md_sanpham_id) 
+		                                    and vt.sp1 = cdh.sp1
 		                                    and cdh.md_lenhsanxuat_tosx_id = vt.md_lenhsanxuat_tosx_id 
 		                                    and isnull(vt.vattu, 0) = 1
                                             and isnull(vt.soluong, 0) > isnull(vt.sl_hanngach, 0)
-                                    ) > 0
+                                    )
                                 `;
                             }
                             else if (xuatVTBoSung) {
@@ -324,7 +324,7 @@ var format_lenhsx = {
                             else if (xuatHangTho) {
                                 return `
                                     ${whereAll}
-                                    and (
+                                    and EXISTS (
 	                                    select 
 		                                    top 1 1
 	                                    from 
@@ -333,12 +333,12 @@ var format_lenhsx = {
 	                                    where 
 		                                    1=1 
 		                                    and cdh.lsxCT = lsx2.sochungtu
-		                                    and vt.sp1 in (select ma_sanpham from md_sanpham where md_sanpham_id = cdh.md_sanpham_id) 
+		                                    and vt.sp1 = cdh.sp1
 		                                    and cdh.md_lenhsanxuat_tosx_id = vt.md_lenhsanxuat_tosx_id 
 		                                    and isnull(vt.bantp, 0) = 1
                                             and isnull(vt.vattu, 0) = 0
                                             and isnull(vt.soluong, 0) > isnull(vt.sl_hanngach, 0)
-                                    ) > 0
+                                    )
                                 `;
                             }
                             else if (nhapKhoHH) {

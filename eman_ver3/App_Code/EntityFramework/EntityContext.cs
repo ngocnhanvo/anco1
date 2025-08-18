@@ -77,6 +77,7 @@ public virtual DbSet<c_yeucaumuavt> c_yeucaumuavt { get; set; }
 public virtual DbSet<c_yeucaumuavt_cdh> c_yeucaumuavt_cdh { get; set; }
 //Unable to generate DBset for table 'dbo.cpip_11042025022007838PM'. table have no primary key
 //Unable to generate DBset for table 'dbo.cpip_12042025030514526PM'. table have no primary key
+//Unable to generate DBset for table 'dbo.cpip_27052025104827390AM'. table have no primary key
 public virtual DbSet<md_banggia> md_banggia { get; set; }
 public virtual DbSet<md_baotrivthh> md_baotrivthh { get; set; }
 public virtual DbSet<md_baotrivthh_cdh> md_baotrivthh_cdh { get; set; }

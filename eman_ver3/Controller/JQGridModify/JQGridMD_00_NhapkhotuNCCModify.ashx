@@ -117,6 +117,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
             if (dmh != null & xetDK)
             {
+                var stts = new int?[] { 9998, 9999 };
                 var kht = db.c_kehoachdathangtong.Where(s => s.c_kehoachdathangtong_id == dmh.c_kehoachdathang_dhncc_id).FirstOrDefault();
                 if (kht == null)
                 {
@@ -132,10 +133,10 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
 
                         var lsxs = db.md_lenhsanxuat.Where(s => s.c_kehoachdathang_id == kh.c_kehoachdathang_id).OrderBy(s => s.ngayketthuc).ToList();
                         var lsxIds = lsxs.Select(s => s.md_lenhsanxuat_id).ToList();
-                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9998).ToList();
+                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & stts.Contains(s.stt)).ToList();
                         tsxIds = tsxs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
-                        var tsxVTs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9999).ToList();
-                        tsxVTIds = tsxVTs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
+                        //var tsxVTs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9999).ToList();
+                        //tsxVTIds = tsxVTs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
                         foreach (var lsx in lsxs.Where(s=>(s.sxton ?? false) == true).ToList())
                             khlsxIds.Add(new khdh_lsx() { khdhid = lsx.c_kehoachdathang_id, lsxid = lsx.md_lenhsanxuat_id });
                     }
@@ -144,10 +145,10 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                 {
                     var lsxs = db.md_lenhsanxuat.Where(s => s.nhomKH == kht.ten_kh).OrderBy(s => s.ngayketthuc).ToList();
                     var lsxIds = lsxs.Select(s => s.md_lenhsanxuat_id).ToList();
-                    var tsxs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9998).ToList();
+                    var tsxs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & stts.Contains(s.stt)).ToList();
                     tsxIds = tsxs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
-                    var tsxVTs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9999).ToList();
-                    tsxVTIds = tsxVTs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
+                    //var tsxVTs = db.md_lenhsanxuat_tosx.Where(s => lsxIds.Contains(s.md_lenhsanxuat_id) & s.stt == 9999).ToList();
+                    //tsxVTIds = tsxVTs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
                     foreach (var lsx in lsxs.Where(s => (s.sxton ?? false) == true).ToList())
                         khlsxIds.Add(new khdh_lsx() { khdhid = lsx.c_kehoachdathang_id, lsxid = lsx.md_lenhsanxuat_id });
                 }

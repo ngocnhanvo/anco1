@@ -170,7 +170,7 @@ public class Public
                       where
                          a.md_sanpham_bom_id == bomSpId
                          & a.sanphamId == sp.md_sanpham_id
-                      select new { a, b, b.ban_thanhpham, b.vattu, b.phongbanId, sp.md_donvitinhsanpham_id }).ToList();
+                      select new { a, b, b.ban_thanhpham, b.vattu, a.lavt, b.phongbanId, sp.md_donvitinhsanpham_id }).ToList();
 
         cdh.noigiaohang = bomSpId;
         cdh.bomId = bomSpId;
@@ -195,23 +195,22 @@ public class Public
                     }
                     break;
                 }
-                //var bomVT = db.md_sanpham_bom.
-                //    Where(s =>
-                //    s.md_sanpham_id == vattusp.md_sanpham_id
-                //    & s.ngay_hieuluc <= DateTime.Now
-                //    ).OrderByDescending(s => s.ngay_hieuluc).Take(1).FirstOrDefault();
-                var BomlaVT = vattusp2.vattu.GetValueOrDefault(false) & !vattusp2.ban_thanhpham.GetValueOrDefault(false);
+
+                var laHHT = vattusp2.vattu.GetValueOrDefault(false) & vattusp2.ban_thanhpham.GetValueOrDefault(false);
+
+                var BomlaVT = false;
+
+                if (!laHHT)
+                {
+                    if (vattusp2.ban_thanhpham.GetValueOrDefault(false))
+                        BomlaVT = vattusp.lavt.GetValueOrDefault(false);
+                    else
+                        BomlaVT = true;
+                }
+
                 if (BomlaVT | !sp.vattu.GetValueOrDefault(false))
                 {
                     var sp1 = spchaBS == null ? sp.ma_sanpham : spchaBS.ma_sanpham;
-                    //var toSXVTsServer = db.md_lenhsanxuat_tosx_vattu.Where(s =>
-                    //        s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
-                    //        & s.md_sanpham_id == vattusp.md_sanpham_id
-                    //        & s.md_lenhsanxuat_tosx_id == cdh.xuongChinh + cdh.xuongPhu
-                    //        & s.sp1 == sp1
-                    //        & s.sp2 == spcha1.ma_sanpham
-                    //        & s.sp3 == spcha2.ma_sanpham
-                    //        ).ToList();
 
                     var toSXVTs = db.md_lenhsanxuat_tosx_vattu.Local.Where(s =>
                             s.md_lenhsanxuat_id == lsx.md_lenhsanxuat_id
@@ -240,8 +239,9 @@ public class Public
                         vtlsxto.sl_hanngach = 0;
                         vtlsxto.sl_giamhanngach = 0;
                         vtlsxto.vattu = vattuspT.vattu.GetValueOrDefault(false);
+                        vtlsxto.laVT = BomlaVT;
                         vtlsxto.bantp = vattuspT.ban_thanhpham.GetValueOrDefault(false);
-                        vtlsxto.hoatdong = !vattuspT.ban_thanhpham.GetValueOrDefault(false);
+                        vtlsxto.hoatdong = BomlaVT;
                         vtlsxto.soluong = slvtct;
                     }
                     else
@@ -266,7 +266,7 @@ public class Public
                     //        & s.sp1 == sp1
                     //        & s.sp2 == spcha1.ma_sanpham
                     //        & s.sp3 == spcha2.ma_sanpham).FirstOrDefault();
-                    
+
                     var vtbk = db.md_lenhsanxuat_tosx_vattuBackup.Local.Where(s =>
                             //s.sp == sp.md_sanpham_id
                             s.vt == vattusp.md_sanpham_id
@@ -319,31 +319,38 @@ public class Public
             var btps = bomSPs.Where(s => (s.ban_thanhpham ?? false) == true).ToList();
             foreach (var btp in btps)
             {
-                if (string.IsNullOrWhiteSpace(btp.b.phongbanId) & string.IsNullOrWhiteSpace(btp.b.nhacungung))
+                if (btp.lavt == true & !btp.vattu.GetValueOrDefault(false))
                 {
-                    foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
-                    {
-                        item.loi = $@"""{btp.b.ma_sanpham}"" không thể bỏ trống ""Xưởng sản xuất"" và ""NCC mặc định""";
-                    }
+                    //Không xét các bán thành phẩm được đánh dấu là vật tư
                 }
                 else
                 {
-                    var slct = (decimal)btp.a.soluong.GetValueOrDefault(0);
-                    if (hhtronCuoi)
+                    if (string.IsNullOrWhiteSpace(btp.b.phongbanId) & string.IsNullOrWhiteSpace(btp.b.nhacungung))
                     {
-                        stt = stt + 1;
-                        if (spchaBS == null)
+                        foreach (var item in msgBLHLs.Where(s => string.IsNullOrWhiteSpace(s.loi) & s.msp == maSPDH))
                         {
-                            spchaBS = sp;
+                            item.loi = $@"""{btp.b.ma_sanpham}"" không thể bỏ trống ""Xưởng sản xuất"" và ""NCC mặc định""";
                         }
-                        //else
-                        slct = (decimal)btp.a.soluong.GetValueOrDefault(0) * soluongBOM;
-
-                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, spcha1, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs, spchaBS);
                     }
                     else
                     {
-                        msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, sp, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs);
+                        var slct = (decimal)btp.a.soluong.GetValueOrDefault(0);
+                        if (hhtronCuoi)
+                        {
+                            stt = stt + 1;
+                            if (spchaBS == null)
+                            {
+                                spchaBS = sp;
+                            }
+                            //else
+                            slct = (decimal)btp.a.soluong.GetValueOrDefault(0) * soluongBOM;
+
+                            msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, spcha1, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs, spchaBS);
+                        }
+                        else
+                        {
+                            msgBLHLs = kiemtraBomVaGia(db, lsx, cdhPX, spcha2, sp, btp.b, pbgnc, userTK, maSPDH, slct, btp.a.soluong.GetValueOrDefault(0), soluongBOM1, kiemtragia, stt, msgBLHLs);
+                        }
                     }
                 }
             }
@@ -1986,7 +1993,7 @@ public class Public
                            join sp in db.md_sanpham on a.md_sanpham_id equals sp.md_sanpham_id
                            where
                              e.c_kehoachdathang_id == khdh.c_kehoachdathang_id
-                             & (sp.vattu ?? false) == true
+                             & (a.laVT ?? false) == true
                              & (a.soluong ?? 0) - (a.sl_giamhanngach ?? 0) > 0
                              & !cdhLSXs.Contains(a.md_sanpham_id + c.md_lenhsanxuat_id)
                            select a).ToList();

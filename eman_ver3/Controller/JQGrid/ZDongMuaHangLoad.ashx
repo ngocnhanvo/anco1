@@ -75,6 +75,7 @@ public class ZDongMuaHangLoad : IHttpHandler, System.Web.SessionState.IRequiresS
 	                , cdmh.thanhtien
                     , dmh.so_donmuahang
                     , (case when kh.sanxuatton = 1 then sp.khoton else sp.khomacdinh end) as khomacdinh
+                    , sp.khoton
                     , sp.vattu
                     , sp.ban_thanhpham
                     , kh.c_kehoachdathang_id

@@ -31,6 +31,12 @@
                         public bool? hoatdong { get; set; }
                 
 						
+                        #region md_sanpham_bom_vattu_lavt_wintaFN
+                        
+                        #endregion md_sanpham_bom_vattu_lavt_wintaFN
+                        public bool? lavt { get; set; }
+                
+						
                         #region md_sanpham_bom_vattu_md_donvitinhsanpham_id_wintaFN
                         
                         #endregion md_sanpham_bom_vattu_md_donvitinhsanpham_id_wintaFN

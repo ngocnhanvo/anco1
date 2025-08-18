@@ -142,6 +142,7 @@ function timkiem_nktncc(id_elem, type) {
                     { key: false, fixed: true, label: 'Thành tiền', search: false, name: 'thanhtien', index: ' cdmh.thanhtien ', width: 90, editable: true, editrules: { edithidden: true }, hidden: true, formatter: vnn_number, unformat: disable_formatter, align: 'right', searchoptions: { sopt: ['en'], dataInit: function (elem) { search_number(elem); } }, editoptions: { defaultValue: '0', dataInit: function (elem) { format_number(elem, 0); } }, frozen: false, formatoptions: { decimalSeparator: vnn_formatnumber()[0], thousandsSeparator: vnn_formatnumber()[1], decimalPlaces: 'auto', suffix: '' }, formoptions: { label: 'Thành tiền' } },
                     { key: false, fixed: true, label: 'Số DMH', search: false, name: 'so_donmuahang', index: 'dmh.so_donmuahang', width: 95, editable: true, editrules: { edithidden: true }, hidden: false, align: 'left', searchoptions: { sopt: ['bw'] }, editoptions: { dataInit: function (elem) { format_vattuBTPvaSP(elem); } } },
                     { key: false, fixed: true, label: 'Kho', search: false, name: 'khomacdinh', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
+                    { key: false, fixed: true, label: 'Kho tồn', search: false, name: 'khoton', index: 'sp.khomacdinh', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
                     { key: false, fixed: true, label: 'Vật tư', search: false, name: 'vattu', index: 'sp.vattu', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
                     { key: false, fixed: true, label: 'BTP', search: false, name: 'ban_thanhpham', index: 'sp.ban_thanhpham', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
                     { key: false, fixed: true, label: 'c_kehoachdathang_id', search: false, name: 'c_kehoachdathang_id', index: 'khdh.c_kehoachdathang_id', width: 60, editable: true, editrules: { edithidden: true }, hidden: true, align: 'center' },
@@ -247,9 +248,9 @@ function timkiem_nktncc(id_elem, type) {
                                     }
                                 }
                                 else {
-                                    let chk = ddghs.filter(function (a) { return a == rowDT.khomacdinh; })[0];
+                                    let chk = ddghs.filter(function (a) { return a == rowDT.khoton; })[0];
                                     if (!chk)
-                                        ddghs.push(rowDT.khomacdinh);
+                                        ddghs.push(rowDT.khoton);
                                 }
                             }
                         }
