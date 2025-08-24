@@ -48,6 +48,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
 
     public String CreateSql(HttpContext context)
     {
+        string donhanghuy = System.IO.File.ReadAllText(ExcuteSignalRStatic.mapPathSignalR("~/App_Data/JsonData/0_donhanghuy.txt"));
+        donhanghuy = donhanghuy.Replace("\r\n", "',N'");
         string tu = context.Request.QueryString["tu"].removeAllSpaceOrTrimText(true).Replace("-", "/");
         string den = context.Request.QueryString["den"].removeAllSpaceOrTrimText(true).Replace("-", "/");
         //Kho
@@ -88,7 +90,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
                 left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
 	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-                cross apply (
+                outer apply (
 		            select xnb.xuatden from md_xuatkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
 		            --union
 		            --select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) 
@@ -105,7 +107,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
                 and kgd.kieuchuyen = N'{Helper.XuatKho}'
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
-                and kgd.dongnhapxuat not like 'PVC%'
+                and isnull(kgd.mota,'') not like N'%,%'
+                and isnull(kgd.mota,'') not in ('{donhanghuy}')
                 {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham

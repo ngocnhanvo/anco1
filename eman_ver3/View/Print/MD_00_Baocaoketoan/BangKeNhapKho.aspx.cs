@@ -48,6 +48,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
 
     public String CreateSql(HttpContext context)
     {
+        string donhanghuy = System.IO.File.ReadAllText(ExcuteSignalRStatic.mapPathSignalR("~/App_Data/JsonData/0_donhanghuy.txt"));
+        donhanghuy = donhanghuy.Replace("\r\n", "',N'");
         string tu = context.Request.QueryString["tu"].removeAllSpaceOrTrimText(true).Replace("-", "/");
         string den = context.Request.QueryString["den"].removeAllSpaceOrTrimText(true).Replace("-", "/");
         string kho = context.Request.QueryString["kho"].removeAllSpaceOrTrimText(true).Replace("'", "''");
@@ -108,6 +110,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
                 and kgd.kieuchuyen = N'{Helper.NhapKho}'
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
+                isnull(kgd.mota,'') not like N'%,%'
+                and isnull(kgd.mota,'') not in ('{donhanghuy}')
                 {kho} {boPhan} {masp}
             order by
 	            kgd.ngaychuyen, sp.ma_sanpham
