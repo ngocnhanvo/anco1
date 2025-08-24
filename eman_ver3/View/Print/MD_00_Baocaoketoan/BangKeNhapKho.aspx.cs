@@ -110,7 +110,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeNhapKho : System.
                 and kgd.kieuchuyen = N'{Helper.NhapKho}'
 	            and kgd.ngaychuyen between @tu and @den
                 and kgd.soluong_dichchuyen > 0
-                isnull(kgd.mota,'') not like N'%,%'
+                and isnull(kgd.mota,'') not like N'%,%'
                 and isnull(kgd.mota,'') not in ('{donhanghuy}')
                 {kho} {boPhan} {masp}
             order by
