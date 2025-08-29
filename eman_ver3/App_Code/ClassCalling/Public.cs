@@ -202,8 +202,12 @@ public class Public
 
                 if (!laHHT)
                 {
+                    //if (vattusp2.ban_thanhpham.GetValueOrDefault(false))
+                    //    BomlaVT = vattusp.lavt.GetValueOrDefault(false);
+                    //else
+                    //    BomlaVT = true;
                     if (vattusp2.ban_thanhpham.GetValueOrDefault(false))
-                        BomlaVT = vattusp.lavt.GetValueOrDefault(false);
+                        BomlaVT = false;
                     else
                         BomlaVT = true;
                 }
@@ -319,9 +323,13 @@ public class Public
             var btps = bomSPs.Where(s => (s.ban_thanhpham ?? false) == true).ToList();
             foreach (var btp in btps)
             {
-                if (btp.lavt == true & !btp.vattu.GetValueOrDefault(false))
+                //if (btp.lavt == true & !btp.vattu.GetValueOrDefault(false))
+                //{
+                //    //Không xét các bán thành phẩm được đánh dấu là vật tư
+                //}
+                if (1==2)
                 {
-                    //Không xét các bán thành phẩm được đánh dấu là vật tư
+                    //Không xét các vật tư và 
                 }
                 else
                 {
