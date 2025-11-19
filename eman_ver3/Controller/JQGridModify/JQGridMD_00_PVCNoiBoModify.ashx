@@ -96,7 +96,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs, chkHL0);
         msgErrs = pub.msgErrsPL.Clone();
 
-    EndEventHandler:;
+        EndEventHandler:;
 
         if (msg.Length <= 0 & msgErrs.Count <= 0)
         {
@@ -219,7 +219,7 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                         var tsxThos = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht == object_.sochungtu).ToList();
                         if(tsxs.Count <= 0 & tsxThos.Count <= 0)
                         {
-                            object_.md_trangthai_id = "SOANTHAO";
+                            object_.md_trangthai_id = Helper.SOANTHAO;
                         }
                         else
                         {
