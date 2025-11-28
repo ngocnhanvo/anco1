@@ -41,6 +41,8 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
         var sumTT = tbl.Compute("Sum(thanhtien)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var sumSL = tbl.Compute("Sum(sl)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var sumP = tbl.Compute("Sum(phi)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
+        var sumTL = tbl.Compute("Sum(trongluong)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
+        var sumCBM = tbl.Compute("Sum(cbm)", string.Empty).ToString().ToNullableDouble().GetValueOrDefault(0);
         var discount = double.Parse(tbl.Rows[0]["discount"].ToString());
         var sumTTcoDis = sumTT * discount / 100;
         var sumTTcoDiscoPhi = sumTT - sumTTcoDis + (double)sumCong - (double)sumTru;
@@ -48,6 +50,8 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
         tbl.Columns.Add("sum_sl", Type.GetType("System.Double"));
         tbl.Columns.Add("sum_phi", Type.GetType("System.Double"));
         tbl.Columns.Add("tongcong", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_tl", Type.GetType("System.Double"));
+        tbl.Columns.Add("sum_cbm", Type.GetType("System.Double"));
         tbl.Columns.Add("discountVal", Type.GetType("System.Double"));
         tbl.Columns.Add("diengiai_phitru", Type.GetType("System.String"));
         tbl.Columns.Add("diengiai_phicong", Type.GetType("System.String"));
@@ -64,6 +68,10 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
             row["sum_phi"] = sumP;
 
             row["tongcong"] = sumTT;
+
+            row["sum_tl"] = sumTL;
+
+            row["sum_cbm"] = sumCBM;
 
             row["discountVal"] = sumTTcoDis;
 
@@ -85,10 +93,10 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
     {
         c_danhsachdathang_id = context.Request.QueryString["id"];
         var ancoName = "ANCO COMPANY LIMITED";
-        var ancoAddress = "3B/2, 1B Hamlet, An Phu Ward, Thuan An Dist., Binh Duong Province, Vietnam";
+        var ancoAddress = "3B/2, Quarter 1B, An Phu Ward, Ho Chi Minh City, Vietnam";
         var ancoTelFaxEmail = "Tel.: (84-274) 3740 973   Fax:  (84-274) 3740 621  Email: anco@ancopottery.com";
         var nexxName = "NEXX DECOR COMPANY LIMITED";
-        var nexxAddress = "3B/2, 1B Hamlet, An Phu Ward, Thuan An Dist., Binh Duong Province, Vietnam";
+        var nexxAddress = "3B/2, Quarter 1B, An Phu Ward, Ho Chi Minh City, Vietnam";
         var nexxTelFaxEmail = "Tel: +84 (0)961 802 325/+84 (0)903 342 885  Email: hoangbui@nexxdecor.vn / sales@nexxdecor.vn";
         string sql = $@"
 		    declare @id nvarchar(32) = '{c_danhsachdathang_id}'
@@ -130,7 +138,9 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
                 format(dh.hangiaohang_po, 'dd/MM/yyyy') as hangiaohang,
                 dh.diachigiaohang as diadiemxuathang,
 	            dh.huongdanlamhang,
-                dh.huongdanlamhangchung
+                dh.huongdanlamhangchung,
+                isnull(sp.trongluong, 0) * ddh.sl_dathang as trongluong,
+                isnull(ddh.v2, 0) as cbm
             from 
 	            c_danhsachdathang dh
 	            left join c_dongdsdh ddh on ddh.c_danhsachdathang_id = dh.c_danhsachdathang_id
