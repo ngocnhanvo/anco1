@@ -140,7 +140,9 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHKhongCoGiaTri : System
 	            dh.huongdanlamhang,
                 dh.huongdanlamhangchung,
                 isnull(sp.trongluong, 0) * ddh.sl_dathang as trongluong,
-                isnull(ddh.v2, 0) as cbm
+                isnull(ddh.v2, 0) as cbm,
+                isnull(sp.trongluong, 0) as tl_sp,
+                round(isnull(ddh.v2, 0)/ddh.sl_dathang, 3) as cbm_sp
             from 
 	            c_danhsachdathang dh
 	            left join c_dongdsdh ddh on ddh.c_danhsachdathang_id = dh.c_danhsachdathang_id
