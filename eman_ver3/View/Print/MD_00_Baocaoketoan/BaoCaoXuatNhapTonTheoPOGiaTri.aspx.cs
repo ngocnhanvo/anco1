@@ -80,7 +80,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 	            A.*,
 	            RANK () OVER (partition by A.maVTHH ORDER BY (case when dg > 0 then 0 else 1 end), ngaychuyen desc) AS Rank_no 
             from (
-	            select
+	            select distinct
 		            kgd.ngaychuyen,
 		            sp.ma_sanpham as maVTHH,
 		            sp.mota_tiengviet as tenVTHH,
@@ -99,13 +99,14 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 		            1=1
 		            and kgd.ngaychuyen < @dauky
 		            and kgd.soluong_dichchuyen > 0
+                    and isnull(kgd.donhang,'') like '[0-9][0-9][0-9]%'
                     and isnull(kgd.donhang,'') not like N'%,%'
                     and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
                     {masp} {kho}
 
 	            union all
 
-	            select
+	            select distinct
 		            kgd.ngaychuyen,
 		            sp.ma_sanpham as maVTHH,
 		            sp.mota_tiengviet as tenVTHH,
@@ -124,6 +125,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 		            1=1
 		            and kgd.ngaychuyen between @tu and @den
 		            and kgd.soluong_dichchuyen > 0
+                    and isnull(kgd.donhang,'') like '[0-9][0-9][0-9]%'
                     and isnull(kgd.donhang,'') not like N'%,%'
                     and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
                     {masp} {kho}
@@ -131,25 +133,36 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 
             select A.*
             from (
-                select
+                select 
                     format(getdate(), '{fmtDate}') as ngayin,
 	                format(@tu, '{fmtDate}') as tungay,
 	                format(@den, '{fmtDate}') as denngay,
-	                A.maVTHH,
-	                A.tenVTHH,
-	                A.dvt,
-	                B.dg,
-	                sum(A.sldk) as tonDK,
+                    sum(A.sldk) as tonDK,
 	                sum(A.slntk) as nhapTK,
 	                sum(A.slxtk) as xuatTK,
-                    @tenkho as kho,
-                    A.po
-                from @tbl A
-                    cross apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
-                where
-                    isnull(A.po, '') like '[0-9][0-9][0-9]%'
+                    A.maVTHH,
+	                A.tenVTHH,
+	                A.dvt,
+	                A.dg,
+                    A.po,
+                    @tenkho as kho
+                from (
+                    select distinct
+	                    A.maVTHH,
+	                    A.tenVTHH,
+	                    A.dvt,
+	                    B.dg,
+                        A.po,
+                        A.sldk,
+			            A.slntk,
+			            A.slxtk
+                    from @tbl A
+                        cross apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
+                    where
+                        1=1
+                ) A
                 group by 
-                    A.maVTHH, A.tenVTHH, A.dvt, B.dg, A.po
+                    A.maVTHH, A.tenVTHH, A.dvt, A.dg, A.po
             )A
             where 
                 A.tonDK != 0 or A.nhapTK != 0 or A.xuatTK != 0

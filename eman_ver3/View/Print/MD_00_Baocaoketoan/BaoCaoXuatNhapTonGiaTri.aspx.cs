@@ -79,7 +79,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 	            A.*,
 	            RANK () OVER (partition by A.maVTHH ORDER BY (case when dg > 0 then 0 else 1 end), ngaychuyen desc) AS Rank_no 
             from (
-	            select
+	            select distinct
 		            kgd.ngaychuyen,
 		            sp.ma_sanpham as maVTHH,
 		            sp.mota_tiengviet as tenVTHH,
@@ -103,7 +103,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 
 	            union all
 
-	            select
+	            select distinct
 		            kgd.ngaychuyen,
 		            sp.ma_sanpham as maVTHH,
 		            sp.mota_tiengviet as tenVTHH,
@@ -130,18 +130,28 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
                 format(getdate(), '{fmtDate}') as ngayin,
 	            format(@tu, '{fmtDate}') as tungay,
 	            format(@den, '{fmtDate}') as denngay,
-	            A.maVTHH,
+                A.maVTHH,
 	            A.tenVTHH,
 	            A.dvt,
-	            B.dg,
-	            sum(A.sldk) as tonDK,
+	            A.dg,
+                sum(A.sldk) as tonDK,
 	            sum(A.slntk) as nhapTK,
 	            sum(A.slxtk) as xuatTK,
                 @tenkho as kho,
                 null as po
-            from @tbl A
-            outer apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
-            group by A.maVTHH, A.tenVTHH, A.dvt, B.dg
+            from (
+                select distinct
+	                A.maVTHH,
+	                A.tenVTHH,
+	                A.dvt,
+	                B.dg,
+                    A.sldk,
+                    A.slntk,
+                    A.slxtk
+                from @tbl A
+                outer apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
+            )A
+            group by A.maVTHH, A.tenVTHH, A.dvt, A.dg
             order by A.maVTHH
 		";
 
