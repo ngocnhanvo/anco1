@@ -47,8 +47,8 @@ public partial class PrintControllers_MD_00_KiemKeKho_PDN_lenhXuatKho : System.W
 	            sp.ma_sanpham as maVTHH,
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
-	            isnull(cdvc.sl_sosach, 0) as slct,
-                cdvc.sl_demduoc as sltn,
+	            cdvc.sl_sosach as sltn,
+                cdvc.sl_demduoc as slct,
 	            null as sldat,
 	            null as slkdat,
                 null as makh
@@ -60,7 +60,7 @@ public partial class PrintControllers_MD_00_KiemKeKho_PDN_lenhXuatKho : System.W
             where
                 vcnb.ma_kiemke != '{Helper.SOANTHAO}'
                 and vcnb.md_kiemke_id = @khid
-                and cdvc.sl_demduoc - cdvc.sl_sosach > 0
+                and isnull(cdvc.sl_demduoc, 0) - isnull(cdvc.sl_sosach, 0) > 0
             order by
 	            sp.ma_sanpham
 		";
