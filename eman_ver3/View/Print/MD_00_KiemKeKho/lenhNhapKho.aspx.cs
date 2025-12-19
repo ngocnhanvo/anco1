@@ -47,7 +47,7 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhNhapKho : System.Web.U
                 sp.mota_tiengviet as tenVTHH,
                 dvt.ten_dvt as dvt,
 	            cdvc.sl_sosach as sltn,
-                cdvc.sl_demduoc as slct,
+                isnull(cdvc.sl_demduoc, 0) as slct,
 	            null as sldat,
 	            null as slkdat,
                 null as makh,
