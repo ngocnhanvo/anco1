@@ -71,9 +71,9 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 	                A.maVTHH,
 	                A.tenVTHH,
 	                A.dvt,
-	                sum(A.sldk) as tonDK,
-	                sum(A.slntk) as nhapTK,
-	                sum(A.slxtk) as xuatTK,
+	                sum(isnull(A.sldk, 0)) as tonDK,
+	                sum(isnull(A.slntk, 0)) as nhapTK,
+	                sum(isnull(A.slxtk, 0)) as xuatTK,
                     @tenkho as kho,
                     A.po
                 from (
