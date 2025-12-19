@@ -53,7 +53,7 @@ public class HelperEntity
             kgd.dongvanchuyen = obj.dongNhapXuat;
             kgd.dongkiemkho = obj.dongNhapXuat;
             kgd.dongsanxuat = obj.dongNhapXuat;
-            //kgd.donhang = obj.sctDonHang;
+            kgd.donhang = obj.sctDonHang;
             //kgd.theoKg = obj.theoKg;
             kgd.mota = obj.mota;
             kgd.ngaychuyen = obj.ngayChuyen;

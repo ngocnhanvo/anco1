@@ -49,6 +49,12 @@
                         public string dongvanchuyen { get; set; }
                 
 						
+                        #region md_kho_giaodich_donhang_wintaFN
+                        
+                        #endregion md_kho_giaodich_donhang_wintaFN
+                        public string donhang { get; set; }
+                
+						
                         #region md_kho_giaodich_gianhancong_wintaFN
                         
                         #endregion md_kho_giaodich_gianhancong_wintaFN

@@ -1628,6 +1628,7 @@ public class Public
                             kho_gd.gianhancong = vcnb_cdvc.gianhancong;
                             kho_gd.pbgNC = vcnb.phienbangiaNC;
                             kho_gd.mota = vcnb_cdvc.tenhang;
+                            kho_gd.donhang = vcnb_cdvc.tenhang;
                             kho_gd.hoatdong = true;
 
                             kho_gd = Helper.setDefaultValueWhenInsertOrUpdate(kho_gd, userTK, false);
@@ -1678,6 +1679,7 @@ public class Public
                         sapxep = "",
                         sanxuat = sanxuat,
                         mota = vcnb_cdvc.tenhang,
+                        donhang = vcnb_cdvc.tenhang,
                         hoatdong = true
                     };
                     kho_gd_nhapkho = Helper.setDefaultValueWhenInsertOrUpdate(kho_gd_nhapkho, userTK, false);

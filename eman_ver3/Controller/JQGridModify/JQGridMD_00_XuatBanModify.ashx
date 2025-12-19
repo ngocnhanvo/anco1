@@ -376,6 +376,7 @@ public class JQGridMD_00_XuatBanModify : IHttpHandler, System.Web.SessionState.I
         giao.dongsanxuat = px.sochungtu;
         giao.md_donvitinhsanpham_id = dh.md_donvitinhsanpham_id;
         giao.mota = px.donhang_thamchieu;
+        giao.donhang = px.donhang_thamchieu;
         giao = Helper.setDefaultValueWhenInsertOrUpdate(giao, userTK, false);
         giao.hoatdong = true;
         giao.ngaytao = DateTime.Now;

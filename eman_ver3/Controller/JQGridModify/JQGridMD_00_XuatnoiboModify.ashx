@@ -269,6 +269,7 @@ public class JQGridMD_00_XuatnoiboModify : IHttpHandler, System.Web.SessionState
                         sapxep = "",
                         sanxuat = 0,
                         mota = xk.donhang_thamchieu,
+                        donhang = xk.donhang_thamchieu,
                         hoatdong = true
                     };
                     lsXK = Helper.setDefaultValueWhenInsertOrUpdate(lsXK, userTK, false);

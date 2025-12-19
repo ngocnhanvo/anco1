@@ -224,7 +224,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
                 //--cap nhat vao kho
                 string khospId = add_kho(db, dh, px, userTK);
                 //--tao lich su nhap kho
-                add_kho_ls(db, dh, px, userTK);
+                add_kho_ls(db, dh, px, userTK, dmh);
 
                 msg_success += $@"<div>HHVT ""{sp.ma_sanpham}"" đã nhập kho ""{soluong_nhap.DropTrailingZeros()}""</div>";
 
@@ -277,7 +277,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             db.SaveChanges();
         }
 
-    EndEventHandler:;
+        EndEventHandler:;
 
         if (msg.Length <= 0)
         {
@@ -378,7 +378,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
     }
 
     //--tao lich su nhap kho
-    public string add_kho_ls(EntityContext db, md_nhapkho_ncc_dh dh, md_nhapkho_ncc px, User_TK us)
+    public string add_kho_ls(EntityContext db, md_nhapkho_ncc_dh dh, md_nhapkho_ncc px, User_TK us, c_donmuahang dmh = null)
     {
         string id_new = Helper.getNewId();
         string abc = "";
@@ -402,6 +402,7 @@ public class JQGridMD_00_NhapkhotuNCCModify : IHttpHandler, System.Web.SessionSt
             giao.dongsanxuat = px.sochungtu;
             giao.md_donvitinhsanpham_id = dvt.md_donvitinhsanpham_id;
             giao.mota = dh.so_dmh;
+            giao.donhang = dmh == null ? "" : dmh.donhang_thamchieu;
 
             giao.nguoitao = us.ad_user_id;
             giao.vaitrotao = us.ad_role_id;
