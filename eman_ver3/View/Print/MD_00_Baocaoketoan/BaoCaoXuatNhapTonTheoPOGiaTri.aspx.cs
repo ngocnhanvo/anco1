@@ -89,18 +89,18 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 		            (case when kgd.kieuchuyen = N'Xuất Kho' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
 		            0 as slntk,
 		            0 as slxtk,
-                    kgd.mota as po
+                    kgd.donhang as po
 	            from md_kho_giaodich kgd
 		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
+		            left join c_donmuahang dmh on dmh.sochungtu = kgd.donhang
 		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
 	            where
 		            1=1
 		            and kgd.ngaychuyen < @dauky
 		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota,'') not like N'%,%'
-                    and isnull(kgd.mota,'') not in (N'{donhanghuy}')
+                    and isnull(kgd.donhang,'') not like N'%,%'
+                    and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
                     {masp} {kho}
 
 	            union all
@@ -114,18 +114,18 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonTheoPO
 		            0 as sldk,
 		            (case when kgd.kieuchuyen = N'Xuất Kho' then 0 else kgd.soluong_dichchuyen end) as slntk,
 		            (case when kgd.kieuchuyen = N'Xuất Kho' then kgd.soluong_dichchuyen else 0 end) as slxtk,
-                    kgd.mota as po
+                    kgd.donhang as po
 	            from md_kho_giaodich kgd
 		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
+		            left join c_donmuahang dmh on dmh.sochungtu = kgd.donhang
 		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
 	            where
 		            1=1
 		            and kgd.ngaychuyen between @tu and @den
 		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota,'') not like N'%,%'
-                    and isnull(kgd.mota,'') not in (N'{donhanghuy}')
+                    and isnull(kgd.donhang,'') not like N'%,%'
+                    and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
                     {masp} {kho}
             )A
 

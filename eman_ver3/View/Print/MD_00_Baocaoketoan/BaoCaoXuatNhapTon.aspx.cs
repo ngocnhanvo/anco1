@@ -91,8 +91,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTon : Sys
 		            1=1
 		            and kgd.ngaychuyen < @dauky
 		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota,'') not like N'%,%'
-                    and isnull(kgd.mota,'') not in ('{donhanghuy}')
+                    and isnull(kgd.donhang,'') not like N'%,%'
+                    and isnull(kgd.donhang,'') not in ('{donhanghuy}')
                     {masp} {kho}
 	            union all
 
@@ -112,8 +112,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTon : Sys
 		            1=1
 		            and kgd.ngaychuyen between @tu and @den
 		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.mota,'') not like N'%,%'
-                    and isnull(kgd.mota,'') not in ('{donhanghuy}')
+                    and isnull(kgd.donhang,'') not like N'%,%'
+                    and isnull(kgd.donhang,'') not in ('{donhanghuy}')
                     {masp} {kho}
             )A
             group by
