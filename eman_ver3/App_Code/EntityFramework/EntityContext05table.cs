@@ -1772,6 +1772,10 @@ modelBuilder.Entity<md_kiemke>().HasKey<string>(p => p.md_kiemke_id);
                             .HasColumnName("ten_kiemke")
                             .HasColumnType("nvarchar");
                             modelBuilder.Entity<md_kiemke>()
+                            .Property(p => p.tudong)
+                            .HasColumnName("tudong")
+                            .HasColumnType("bit");
+                            modelBuilder.Entity<md_kiemke>()
                             .Property(p => p.vaitrocapnhat)
                             .HasColumnName("vaitrocapnhat")
                             .HasColumnType("varchar");

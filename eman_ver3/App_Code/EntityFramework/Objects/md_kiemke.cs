@@ -115,6 +115,12 @@
                         public string ten_kiemke { get; set; }
                 
 						
+                        #region md_kiemke_tudong_wintaFN
+                        
+                        #endregion md_kiemke_tudong_wintaFN
+                        public bool? tudong { get; set; }
+                
+						
                         #region md_kiemke_vaitrocapnhat_wintaFN
                         
                         #endregion md_kiemke_vaitrocapnhat_wintaFN
