@@ -85,13 +85,13 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 		            sp.mota_tiengviet as tenVTHH,
 		            dvtsp.ten_dvt as dvt,
 		            isnull(cdh.dongiamua, 0) as dg,
-		            (case when kgd.kieuchuyen = N'Xuất Kho' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
+		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
 		            0 as slntk,
 		            0 as slxtk
 	            from md_kho_giaodich kgd
 		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.donhang
+		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
 		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
 	            where
 		            1=1
@@ -115,7 +115,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
 	            from md_kho_giaodich kgd
 		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
 		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.donhang
+		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
 		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
 	            where
 		            1=1
