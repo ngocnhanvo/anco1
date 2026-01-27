@@ -898,6 +898,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>().HasKey<string>(p => p.md_lenhsa
                             .HasColumnName("sl_layton")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
+                            .Property(p => p.sl_layton_dachot)
+                            .HasColumnName("sl_layton_dachot")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_dklht>()
                             .Property(p => p.sl_layton1)
                             .HasColumnName("sl_layton1")
                             .HasColumnType("decimal").HasPrecision(18, 4);
@@ -1006,6 +1010,10 @@ modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>().HasKey<string>(p => p.md_lenh
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>()
                             .Property(p => p.sl_layton)
                             .HasColumnName("sl_layton")
+                            .HasColumnType("decimal").HasPrecision(18, 4);
+                            modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>()
+                            .Property(p => p.sl_layton_dachot)
+                            .HasColumnName("sl_layton_dachot")
                             .HasColumnType("decimal").HasPrecision(18, 4);
                             modelBuilder.Entity<md_lenhsanxuat_tosx_dklhttp>()
                             .Property(p => p.sl_layton1)

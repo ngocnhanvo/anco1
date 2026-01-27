@@ -902,34 +902,9 @@ public class Public
             }
 
             string phongbanId = "-1";
-            var khoTonTho = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTHO).FirstOrDefault();
-            var khoTonTP = db.md_kho.Where(s => s.ma_kho == Helper.KHOTONTP).FirstOrDefault();
-            var KhoThoChoHoanThien = db.md_kho.Where(s => s.ma_kho == Helper.KhoThoChoHoanThien).FirstOrDefault();
-            var KhoHangSauHoanThien = db.md_kho.Where(s => s.ma_kho == Helper.KhoHangSauHoanThien).FirstOrDefault();
-            md_vanchuyennoibo vcnb = null;
-            var vcnbs = new List<md_vanchuyennoibo>();
-            var taoPVC = false;
-
-            string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
-            vcnb = new md_vanchuyennoibo();
-            vcnb.md_vanchuyennoibo_id = Helper.getNewId();
-            vcnb.md_trangthai_id = Helper.DANHAN;
-            vcnb.sochungtu = sochungtu;
-            vcnb.c_doichieuhangton_id = khdh.c_kehoachdathang_id;
-            vcnb.tukho = layTho.GetValueOrDefault(false) ? khoTonTho.md_kho_id : khoTonTP.md_kho_id;
-            vcnb.denkho = layTho.GetValueOrDefault(false) ? KhoThoChoHoanThien.md_kho_id : KhoHangSauHoanThien.md_kho_id;
-            vcnb.loaichuyen = "VANCNBTC";
-            vcnb.loaichuyen_id = Helper.CHUAHOANTHANH;
-            vcnb.chungtuthamchieu = "";
-            vcnb.laytonTPhoacBTP = true;
-            vcnb.ketoan = !layTho.GetValueOrDefault(false);
-            vcnb.sctdathang = khdh.sodonhang;
-            vcnb.donhang_thamchieu = khdh.donhang_thamchieu;
-            vcnb.ngaydenghi = DateTime.Now;
-            vcnb.ngaychuyen = DateTime.Now;
-            vcnb.hoatdong = true;
-            vcnb = Helper.setDefaultValueWhenInsertOrUpdate(vcnb, us, false);
-
+            var listLHTTP = new List<md_lenhsanxuat_tosx_dklhttp>();
+            var listLHT = new List<md_lenhsanxuat_tosx_dklht>();
+            
             foreach (var tsx in tsxs.OrderBy(s => s.phongbanId))
             {
                 if (phongbanId != tsx.phongbanId)
@@ -944,189 +919,316 @@ public class Public
                         layhangtonTP = true;
                     }
                 }
-
-                if (layhangtonTP)
+                
+                if (tsx.md_lenhsanxuat_tosx_id != tsx.md_lenhsanxuat_tosx_id)
                 {
-                    khotps = db.md_kho.Where(s => string.IsNullOrEmpty(s.md_to_id) & s.hangton == true & (s.vattu ?? false) == false & s.hoatdong == true).ToList();
-                    khotpsIds = khotps.Select(s => s.md_kho_id).ToList();
-                }
-
-                if (msg.Length <= 0)
-                {
-                    var listLHTTP = new List<md_lenhsanxuat_tosx_dklhttp>();
-                    var listLHT = new List<md_lenhsanxuat_tosx_dklht>();
-
-
-                    if (tsx.md_lenhsanxuat_tosx_id != tsx.md_lenhsanxuat_tosx_id)
-                    {
-                        if (layhangtonTP)
-                        {
-                            if (string.IsNullOrEmpty(tsx.phieulayhttp) & tsx.tinhhangtontp == true)
-                                idsTHTonTP.Add(tsx.md_lenhsanxuat_tosx_id);
-                        }
-                        else
-                        {
-                            if (string.IsNullOrEmpty(tsx.phieulayht) & tsx.tinhhangton == true)
-                                idsTHTon.Add(tsx.md_lenhsanxuat_tosx_id);
-                        }
-                    }
-
-                    var cdhsServer = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList();
-                    var cdhs = db.md_lenhsanxuat_tosx_cdh.Local.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList();
-
                     if (layhangtonTP)
                     {
-                        foreach (var cdh in cdhs)
-                        {
-                            var lhtsServer = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
-                                s.md_sanpham_id == cdh.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.sl_layton >= 0
-                            ).ToList();
-
-                            var lhts = db.md_lenhsanxuat_tosx_dklhttp.Local.Where(s =>
-                                s.md_sanpham_id == cdh.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.sl_layton >= 0
-                            ).ToList();
-
-                            if (lhts.Count > 0)
-                                listLHTTP.AddRange(lhts);
-                        }
+                        if (string.IsNullOrEmpty(tsx.phieulayhttp) & tsx.tinhhangtontp == true)
+                            idsTHTonTP.Add(tsx.md_lenhsanxuat_tosx_id);
                     }
                     else
                     {
-                        foreach (var cdh in cdhs)
+                        if (string.IsNullOrEmpty(tsx.phieulayht) & tsx.tinhhangton == true)
+                            idsTHTon.Add(tsx.md_lenhsanxuat_tosx_id);
+                    }
+                }
+
+                var cdhsServer = db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList();
+                var cdhs = db.md_lenhsanxuat_tosx_cdh.Local.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList();
+
+                if (layhangtonTP)
+                {
+                    foreach (var cdh in cdhs)
+                    {
+                        var lhtsServer = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
+                            s.md_sanpham_id == cdh.md_sanpham_id
+                            & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                            & s.sl_layton >= 0
+                        ).ToList();
+
+                        var lhts = db.md_lenhsanxuat_tosx_dklhttp.Local.Where(s =>
+                            s.md_sanpham_id == cdh.md_sanpham_id
+                            & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                            & s.sl_layton >= 0
+                        ).ToList();
+
+                        if (lhts.Count > 0)
                         {
-                            var lhtsServer = db.md_lenhsanxuat_tosx_dklht.Where(s =>
-                                s.md_sanpham_id == cdh.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.sl_layton >= 0
-                            ).ToList();
-
-                            var lhts = db.md_lenhsanxuat_tosx_dklht.Local.Where(s =>
-                                s.md_sanpham_id == cdh.md_sanpham_id
-                                & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
-                                & s.sl_layton >= 0
-                            ).ToList();
-
-                            if (lhts.Count > 0)
-                                listLHT.AddRange(lhts);
+                            foreach (var lht in lhts)
+                            {
+                                lht.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id;
+                                lht.sl_layton_dachot = 0;
+                                listLHTTP.Add(lht);
+                            }
                         }
                     }
-
-                    if (msg.Length <= 0)
+                }
+                else
+                {
+                    foreach (var cdh in cdhs)
                     {
-                        if (layhangtonTP)
+                        var lhtsServer = db.md_lenhsanxuat_tosx_dklht.Where(s =>
+                            s.md_sanpham_id == cdh.md_sanpham_id
+                            & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                            & s.sl_layton >= 0
+                        ).ToList();
+
+                        var lhts = db.md_lenhsanxuat_tosx_dklht.Local.Where(s =>
+                            s.md_sanpham_id == cdh.md_sanpham_id
+                            & s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                            & s.sl_layton >= 0
+                        ).ToList();
+
+                        if (lhts.Count > 0)
                         {
-                            if (listLHTTP.Sum(s => s.sl_layton.GetValueOrDefault(0)) > 0)
+                            foreach (var lht in lhts)
                             {
-                                taoPVC = true;
-                                vcnbs.Add(vcnb);
-                                foreach (var lht in listLHTTP.Distinct().Where(s => s.sl_layton > 0))
-                                {
-                                    var cdvc = new md_vanchuyennoibo_cdvc();
-                                    cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
-                                    cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
-                                    cdvc.md_sanpham_id = lht.md_sanpham_id;
-                                    cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
-                                    cdvc.lsxId = tsx.md_lenhsanxuat_id;
-                                    cdvc.tukho = tsx.md_lenhsanxuat_tosx_id;
-                                    
-                                    cdvc.soluong_dachuyen = 0;
-                                    cdvc.soluong_toida = lht.sl_layton;
-                                    cdvc.soluong_muonchuyen = lht.sl_layton;
-                                    cdvc.soluong_dichchuyen = lht.sl_layton;
-                                    cdvc.tenhang = khdh.donhang_thamchieu;
-                                    cdvc.chuyenton = true;
-                                    cdvc.hoatdong = true;
-                                    cdvc = Helper.setDefaultValueWhenInsertOrUpdate(cdvc, us, false);
-                                    cdvc.mota = lht.mota;
-                                    db.md_vanchuyennoibo_cdvc.Add(cdvc);
-                                }
-
-                                idsTP.Add(vcnb.md_vanchuyennoibo_id);
-
-                                //tsx.tolaytontpId = toLayHTId;
-                                tsx.phieulayhttp = vcnb.sochungtu;
-                                db.SaveChanges();
-                            }
-                            else
-                            {
-                                foreach (var lht in listLHTTP)
-                                    lht.sl_layton1 = 0;
-                                tsx.phieulayhttp = "";
-                                tsx.tolaytontpId = "";
-                                db.SaveChanges();
-                            }
-                        }
-                        else
-                        {
-                            if (listLHT.Sum(s => s.sl_layton.GetValueOrDefault(0)) > 0)
-                            {
-                                taoPVC = true;
-                                vcnbs.Add(vcnb);
-                                foreach (var lht in listLHT.Distinct().Where(s => s.sl_layton > 0))
-                                {
-                                    var cdvcServer = db.md_vanchuyennoibo_cdvc.Where(s =>
-                                        s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
-                                        & s.md_sanpham_id == lht.md_sanpham_id).FirstOrDefault();
-
-                                    var cdvc = db.md_vanchuyennoibo_cdvc.Local.Where(s =>
-                                        s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
-                                        & s.md_sanpham_id == lht.md_sanpham_id).FirstOrDefault();
-
-                                    var addCDVC = cdvc == null;
-                                    if (addCDVC)
-                                    {
-                                        cdvc = new md_vanchuyennoibo_cdvc();
-                                        cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
-                                        cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
-                                        cdvc.md_sanpham_id = lht.md_sanpham_id;
-                                        cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
-                                        cdvc.lsxId = tsx.md_lenhsanxuat_id;
-                                        cdvc.tukho = tsx.md_lenhsanxuat_tosx_id;
-                                        cdvc.soluong_dachuyen = 0;
-                                        cdvc.soluong_toida = lht.sl_layton;
-                                        cdvc.soluong_muonchuyen = lht.sl_layton;
-                                        cdvc.soluong_dichchuyen = lht.sl_layton;
-                                        cdvc.chuyenton = true;
-                                        cdvc.hoatdong = true;
-                                        cdvc = Helper.setDefaultValueWhenInsertOrUpdate(cdvc, us, false);
-                                        cdvc.mota = lht.mota;
-                                        db.md_vanchuyennoibo_cdvc.Add(cdvc);
-                                    }
-                                    else
-                                    {
-                                        if(!cdvc.tukho.Contains(tsx.md_lenhsanxuat_tosx_id))
-                                        {
-                                            cdvc.tukho += "," + tsx.md_lenhsanxuat_tosx_id;
-                                        }
-                                        cdvc.soluong_toida = cdvc.soluong_toida.GetValueOrDefault(0) + lht.sl_layton;
-                                        cdvc.soluong_muonchuyen = cdvc.soluong_muonchuyen.GetValueOrDefault(0) + lht.sl_layton;
-                                        cdvc.soluong_dichchuyen = cdvc.soluong_dichchuyen.GetValueOrDefault(0) + lht.sl_layton;
-                                    }
-                                }
-                                tsx.phieulayht = vcnb.sochungtu;
-                                //tsx.tolaytonId = toLayHTId;
-                                //tsx.tolayton = toLayHT;
-                                ids.Add(vcnb.md_vanchuyennoibo_id);
-                                db.SaveChanges();
-                            }
-                            else
-                            {
-                                foreach (var lht in listLHT)
-                                    lht.sl_layton1 = 0;
-                                tsx.phieulayht = "";
-                                tsx.tolaytonId = "";
-                                db.SaveChanges();
+                                lht.md_lenhsanxuat_id = tsx.md_lenhsanxuat_id;
+                                lht.sl_layton_dachot = 0;
+                                listLHT.Add(lht);
                             }
                         }
                     }
                 }
             }
 
-            if (taoPVC)
+            var khotons = new List<md_kho>();
+            if (layTho.GetValueOrDefault(false))
+            {
+                var ktts = Helper.KHOTONTHO.Split(',');
+                khotons = db.md_kho.Where(s => ktts.Contains(s.ma_kho)).ToList();
+            }
+            else
+            {
+                var kttps = Helper.KHOTONTP.Split(',');
+                khotons = db.md_kho.Where(s => kttps.Contains(s.ma_kho)).ToList();
+            }
+            var KhoThoChoHoanThien = db.md_kho.Where(s => s.ma_kho == Helper.KhoThoChoHoanThien).FirstOrDefault();
+            var KhoHangSauHoanThien = db.md_kho.Where(s => s.ma_kho == Helper.KhoHangSauHoanThien).FirstOrDefault();
+            var vcnbs = new List<md_vanchuyennoibo>();
+            foreach (var khoton in khotons)
+            {
+                string sochungtu = VNN_VariablePublic.sochungtu(db, "PVC", 1);
+                var vcnb = new md_vanchuyennoibo();
+                vcnb.md_vanchuyennoibo_id = Helper.getNewId();
+                vcnb.md_trangthai_id = Helper.DANHAN;
+                vcnb.sochungtu = sochungtu;
+                vcnb.c_doichieuhangton_id = khdh.c_kehoachdathang_id;
+                vcnb.tukho = khoton.md_kho_id;
+                vcnb.denkho = layTho.GetValueOrDefault(false) ? KhoThoChoHoanThien.md_kho_id : KhoHangSauHoanThien.md_kho_id;
+                vcnb.loaichuyen = "VANCNBTC";
+                vcnb.loaichuyen_id = Helper.CHUAHOANTHANH;
+                vcnb.chungtuthamchieu = "";
+                vcnb.laytonTPhoacBTP = true;
+                vcnb.ketoan = !layTho.GetValueOrDefault(false);
+                vcnb.sctdathang = khdh.sodonhang;
+                vcnb.donhang_thamchieu = khdh.donhang_thamchieu;
+                vcnb.ngaydenghi = DateTime.Now;
+                vcnb.ngaychuyen = DateTime.Now;
+                vcnb.hoatdong = true;
+                vcnb = Helper.setDefaultValueWhenInsertOrUpdate(vcnb, us, false);
+
+                if (layhangtonTP)
+                {
+                    md_lenhsanxuat_tosx tsxTP = null;
+                    var lst_dis = listLHTTP.Where(s => s.sl_layton > 0).OrderBy(s => s.md_lenhsanxuat_tosx_id).Distinct();
+                    if (lst_dis.Sum(s=>s.sl_layton.GetValueOrDefault(0)) > 0)
+                    {
+                        var coTaoDongHang = false;
+                        foreach (var lht in lst_dis)
+                        {
+                            var sltkServer = db.md_kho_sanpham.Where(s =>
+                                s.md_kho_id == khoton.md_kho_id &
+                                s.md_sanpham_id == lht.md_sanpham_id
+                                ).FirstOrDefault();
+
+                            var sltk = db.md_kho_sanpham.Local.Where(s =>
+                                s.md_kho_id == khoton.md_kho_id &
+                                s.md_sanpham_id == lht.md_sanpham_id
+                                ).FirstOrDefault();
+
+                            decimal sltd = lht.sl_layton.GetValueOrDefault(0) - lht.sl_layton_dachot.GetValueOrDefault(0);
+                            if (sltk == null)
+                                sltd = 0;
+
+                            if (sltd > 0)
+                                sltd = sltk.soluong.GetValueOrDefault(0) > sltd ? sltd : sltk.soluong.GetValueOrDefault(0);
+
+                            if (sltd > 0)
+                            {
+                                lht.sl_layton_dachot = lht.sl_layton_dachot.GetValueOrDefault(0) + sltd;
+                                var cdvc = new md_vanchuyennoibo_cdvc();
+                                cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
+                                cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
+                                cdvc.md_sanpham_id = lht.md_sanpham_id;
+                                cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
+                                cdvc.lsxId = lht.md_lenhsanxuat_id;
+                                cdvc.tukho = lht.md_lenhsanxuat_tosx_id;
+
+                                cdvc.soluong_dachuyen = 0;
+                                cdvc.soluong_toida = sltd;
+                                cdvc.soluong_muonchuyen = sltd;
+                                cdvc.soluong_dichchuyen = sltd;
+                                cdvc.tenhang = khdh.donhang_thamchieu;
+                                cdvc.chuyenton = true;
+                                cdvc.hoatdong = true;
+                                cdvc = Helper.setDefaultValueWhenInsertOrUpdate(cdvc, us, false);
+                                cdvc.mota = lht.mota;
+                                db.md_vanchuyennoibo_cdvc.Add(cdvc);
+
+                                var cocapnhatTSX = false;
+                                if (tsxTP == null)
+                                    cocapnhatTSX = true;
+                                else
+                                {
+                                    if (tsxTP.md_lenhsanxuat_id != lht.md_lenhsanxuat_tosx_id)
+                                        cocapnhatTSX = true;
+                                }
+                                if (cocapnhatTSX)
+                                {
+                                    var tsxTPServer = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == lht.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                    tsxTP = db.md_lenhsanxuat_tosx.Local.Where(s => s.md_lenhsanxuat_tosx_id == lht.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                }
+
+                                if (string.IsNullOrWhiteSpace(tsxTP.phieulayhttp))
+                                    tsxTP.phieulayhttp = vcnb.sochungtu;
+                                else
+                                {
+                                    if (!tsxTP.phieulayhttp.Contains(vcnb.sochungtu))
+                                        tsxTP.phieulayhttp = $@"{tsxTP.phieulayhttp},{vcnb.sochungtu}";
+                                }
+                                coTaoDongHang = true;
+                            }
+                        }
+
+                        if (coTaoDongHang)
+                        {
+                            idsTP.Add(vcnb.md_vanchuyennoibo_id);
+                            vcnbs.Add(vcnb);
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        foreach (var lht in listLHTTP)
+                            lht.sl_layton1 = 0;
+                        tsxTP.phieulayhttp = "";
+                        tsxTP.tolaytontpId = "";
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
+                    md_lenhsanxuat_tosx tsxTho = null;
+                    var lst_dis = listLHT.Where(s => s.sl_layton > 0).OrderBy(s => s.md_lenhsanxuat_tosx_id).Distinct();
+                    if (lst_dis.Sum(s => s.sl_layton.GetValueOrDefault(0)) > 0)
+                    {
+                        var coTaoDongHang = false;
+                        foreach (var lht in lst_dis)
+                        {
+                            var sltkServer = db.md_kho_sanpham.Where(s =>
+                                s.md_kho_id == khoton.md_kho_id &
+                                s.md_sanpham_id == lht.md_sanpham_id
+                                ).FirstOrDefault();
+
+                            var sltk = db.md_kho_sanpham.Local.Where(s =>
+                                s.md_kho_id == khoton.md_kho_id &
+                                s.md_sanpham_id == lht.md_sanpham_id
+                                ).FirstOrDefault();
+
+                            decimal sltd = lht.sl_layton.GetValueOrDefault(0) - lht.sl_layton_dachot.GetValueOrDefault(0);
+                            if (sltk == null)
+                                sltd = 0;
+
+                            if (sltd > 0)
+                                sltd = sltk.soluong.GetValueOrDefault(0) > sltd ? sltd : sltk.soluong.GetValueOrDefault(0);
+
+                            if (sltd > 0)
+                            {
+                                var cdvcServer = db.md_vanchuyennoibo_cdvc.Where(s =>
+                                    s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
+                                    & s.md_sanpham_id == lht.md_sanpham_id).FirstOrDefault();
+
+                                var cdvc = db.md_vanchuyennoibo_cdvc.Local.Where(s =>
+                                    s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
+                                    & s.md_sanpham_id == lht.md_sanpham_id).FirstOrDefault();
+
+                                var addCDVC = cdvc == null;
+                                if (addCDVC)
+                                {
+                                    cdvc = new md_vanchuyennoibo_cdvc();
+                                    cdvc.md_vanchuyennoibo_cdvc_id = Helper.getNewId();
+                                    cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id;
+                                    cdvc.md_sanpham_id = lht.md_sanpham_id;
+                                    cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
+                                    cdvc.lsxId = lht.md_lenhsanxuat_id;
+                                    cdvc.tukho = lht.md_lenhsanxuat_tosx_id;
+                                    cdvc.soluong_dachuyen = 0;
+                                    cdvc.soluong_toida = lht.sl_layton;
+                                    cdvc.soluong_muonchuyen = lht.sl_layton;
+                                    cdvc.soluong_dichchuyen = lht.sl_layton;
+                                    cdvc.chuyenton = true;
+                                    cdvc.hoatdong = true;
+                                    cdvc = Helper.setDefaultValueWhenInsertOrUpdate(cdvc, us, false);
+                                    cdvc.mota = lht.mota;
+                                    db.md_vanchuyennoibo_cdvc.Add(cdvc);
+                                }
+                                else
+                                {
+                                    if (!cdvc.tukho.Contains(lht.md_lenhsanxuat_tosx_id))
+                                    {
+                                        cdvc.tukho += "," + lht.md_lenhsanxuat_tosx_id;
+                                    }
+                                    cdvc.soluong_toida = cdvc.soluong_toida.GetValueOrDefault(0) + lht.sl_layton;
+                                    cdvc.soluong_muonchuyen = cdvc.soluong_muonchuyen.GetValueOrDefault(0) + lht.sl_layton;
+                                    cdvc.soluong_dichchuyen = cdvc.soluong_dichchuyen.GetValueOrDefault(0) + lht.sl_layton;
+                                }
+
+                                var cocapnhatTSX = false;
+                                if (tsxTho == null)
+                                    cocapnhatTSX = true;
+                                else
+                                {
+                                    if (tsxTho.md_lenhsanxuat_id != lht.md_lenhsanxuat_tosx_id)
+                                        cocapnhatTSX = true;
+                                }
+                                if (cocapnhatTSX)
+                                {
+                                    var tsxThoServer = db.md_lenhsanxuat_tosx.Where(s => s.md_lenhsanxuat_tosx_id == lht.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                    tsxTho = db.md_lenhsanxuat_tosx.Local.Where(s => s.md_lenhsanxuat_tosx_id == lht.md_lenhsanxuat_tosx_id).FirstOrDefault();
+                                }
+
+                                if (string.IsNullOrWhiteSpace(tsxTho.phieulayht))
+                                    tsxTho.phieulayht = vcnb.sochungtu;
+                                else
+                                {
+                                    if (!tsxTho.phieulayht.Contains(vcnb.sochungtu))
+                                        tsxTho.phieulayht = $@"{tsxTho.phieulayht},{vcnb.sochungtu}";
+                                }
+                                coTaoDongHang = true;
+                            }
+                        }
+
+                        if (coTaoDongHang)
+                        {
+                            vcnbs.Add(vcnb);
+                            ids.Add(vcnb.md_vanchuyennoibo_id);
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        foreach (var lht in listLHT)
+                            lht.sl_layton1 = 0;
+                        tsxTho.phieulayht = "";
+                        tsxTho.tolaytonId = "";
+                        db.SaveChanges();
+                    }
+                }
+            }
+
+            if (vcnbs.Count > 0)
             {
                 db.md_vanchuyennoibo.AddRange(vcnbs.Distinct());
                 db.SaveChanges();
@@ -1305,6 +1407,58 @@ public class Public
         return "";
     }
 
+    private void capNhatTrangThaiDonHangSauKhiLayTon(EntityContext db, bool layTonTPhoacBTP, bool layTonTP, bool layTonBTP, md_vanchuyennoibo vcnb, c_kehoachdathang khdh, c_danhsachdathang dsdh)
+    {
+        if (layTonTPhoacBTP)
+        {
+            string sctPVC = "";
+            var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp.Contains(vcnb.sochungtu)).ToList();
+            if (tsxs.Count > 0)
+            {
+                var uniqueCodes = tsxs
+                    .SelectMany(s => s.phieulayhttp.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    .Select(p => p.Trim())
+                    .Distinct()
+                    .ToList();
+                sctPVC = string.Join(",", uniqueCodes);
+                layTonTP = true;
+            }
+            else
+            {
+                tsxs = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht.Contains(vcnb.sochungtu)).ToList();
+                if (tsxs.Count > 0)
+                {
+                    var uniqueCodes = tsxs
+                    .SelectMany(s => s.phieulayht.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    .Select(p => p.Trim())
+                    .Distinct()
+                    .ToList();
+                    sctPVC = string.Join(",", uniqueCodes);
+                    layTonBTP = true;
+                }
+            }
+
+            var arr = sctPVC.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).OrderBy(s => s).ToList();
+            var pvcDaHLsServer = db.md_vanchuyennoibo.Where(s => arr.Contains(s.sochungtu) & s.md_trangthai_id == Helper.HIEULUC).ToList();
+            var pvcDaHLs = db.md_vanchuyennoibo.Local.Where(s => arr.Contains(s.sochungtu) & s.md_trangthai_id == Helper.HIEULUC).ToList();
+
+            if (arr.Count == pvcDaHLs.Count)
+            {
+                if (layTonTP)
+                {
+                    khdh.trangthai = Helper.DaXLTTP;
+                    dsdh.md_trangthai_id = khdh.trangthai;
+                }
+                else
+                {
+                    khdh.trangthai = Helper.DaXLTBTP;
+                    khdh.ngaybatdausx = DateTime.Now;
+                    dsdh.md_trangthai_id = khdh.trangthai;
+                }
+            }
+        }
+    }
+
     public string HieuLucPhieuVanChuyen(
         EntityContext db,
         User_TK userTK,
@@ -1362,13 +1516,13 @@ public class Public
             var giaoHang = vcnb.loaichuyen == "VANCNBCTKGH";
             var layTonTPhoacBTP = vcnb.loaichuyen == "VANCNBTC" & !string.IsNullOrWhiteSpace(vcnb.c_doichieuhangton_id);
             bool layTonTP = false, layTonBTP = false;
-            
+
             c_kehoachdathang khdh = null;
             c_danhsachdathang dsdh = null;
             if (layTonTPhoacBTP)
             {
                 khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == vcnb.c_doichieuhangton_id).FirstOrDefault();
-                if(khdh == null)
+                if (khdh == null)
                 {
                     msg = "Không tìm thấy kế hoạch đặt hàng";
                     goto EndEventHandler;
@@ -1404,7 +1558,7 @@ public class Public
             }
 
             var khoSPDic = new Dictionary<string, decimal>();
-            
+
             foreach (var vcnb_cdvc in vcnb_cdvcs)
             {
                 var spMain = db.md_sanpham.Where(s => s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
@@ -1419,8 +1573,8 @@ public class Public
                         var tsxs = db.md_lenhsanxuat_tosx.Where(s => vcnb_cdvc.tukho.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
                         foreach (var tsx in tsxs)
                         {
-                            layTonTP = tsx.phieulayhttp == vcnb.sochungtu;
-                            layTonBTP = tsx.phieulayht == vcnb.sochungtu;
+                            layTonTP = tsx.phieulayhttp.removeAllSpaceOrTrimText(true).Contains(vcnb.sochungtu);
+                            layTonBTP = tsx.phieulayht.removeAllSpaceOrTrimText(true).Contains(vcnb.sochungtu);
                             if (layTonTP | layTonBTP)
                             {
                                 if (layTonTP)
@@ -1472,18 +1626,6 @@ public class Public
                                     }
                                 }
                             }
-                        }
-
-                        if (layTonTP)
-                        {
-                            khdh.trangthai = Helper.DaXLTTP;
-                            dsdh.md_trangthai_id = khdh.trangthai;
-                        }
-                        else
-                        {
-                            khdh.trangthai = Helper.DaXLTBTP;
-                            khdh.ngaybatdausx = DateTime.Now;
-                            dsdh.md_trangthai_id = khdh.trangthai;
                         }
                     }
 
@@ -1718,7 +1860,7 @@ public class Public
                         dsdh.md_trangthai_id = Helper.ChoDG;
                     }
                 }
-                else if(dsdh.sanxuatton.GetValueOrDefault(false))
+                else if (dsdh.sanxuatton.GetValueOrDefault(false))
                 {
                     var daHT = donghangs.Where(s => s.sl_nhaphang.GetValueOrDefault(0) - s.sl_dathang.GetValueOrDefault(0) - s.sl_giamhanngach.GetValueOrDefault(0) > 0).Count() <= 0;
                     if (daHT & donghangs.Count > 0)
@@ -1734,6 +1876,11 @@ public class Public
                         dsdh.md_trangthai_id = Helper.ChoDG;
                 }
             }
+            else if (layTonTPhoacBTP)
+            {
+                vcnb.md_trangthai_id = Helper.HIEULUC;
+                capNhatTrangThaiDonHangSauKhiLayTon(db, layTonTPhoacBTP, layTonTP, layTonBTP, vcnb, khdh, dsdh);
+            }
 
         EndEventHandler2:;
 
@@ -1742,32 +1889,7 @@ public class Public
                 if (chophepHL0.GetValueOrDefault(false))
                 {
                     msg = "";
-                    if (layTonTPhoacBTP)
-                    {
-                        var tsx = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp == vcnb.sochungtu).FirstOrDefault();
-                        if(tsx != null)
-                        {
-                            layTonTP = true;
-                        }
-                        else
-                        {
-                            tsx = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht == vcnb.sochungtu).FirstOrDefault();
-                            if (tsx != null)
-                                layTonBTP = true;
-                        }
-
-                        if (layTonTP)
-                        {
-                            khdh.trangthai = Helper.DaXLTTP;
-                            dsdh.md_trangthai_id = khdh.trangthai;
-                        }
-                        else
-                        {
-                            khdh.trangthai = Helper.DaXLTBTP;
-                            khdh.ngaybatdausx = DateTime.Now;
-                            dsdh.md_trangthai_id = khdh.trangthai;
-                        }
-                    }
+                    capNhatTrangThaiDonHangSauKhiLayTon(db, layTonTPhoacBTP, layTonTP, layTonBTP, vcnb, khdh, dsdh);
                 }
             }
 

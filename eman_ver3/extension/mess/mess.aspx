@@ -323,6 +323,9 @@
                                 pvct.html(row.noidung);
                                 if (jsonNN.viewTime)
                                     pvct.find('.removeAfter').remove();
+                                else
+                                    pvct.append(`<br><span class='viewMess removeAfter' onclick="viewMess(this, '', '', '', '', '${row.ad_mess_id}')">Đã xem</span>`);
+
                                 row.noidung = pvct.html();
                                 row.displayOrigin = "block";
                                 let ngayTao = moment(new Date(row.ngaytao));

@@ -103,6 +103,12 @@
                         public Decimal? sl_layton { get; set; }
                 
 						
+                        #region md_lenhsanxuat_tosx_dklht_sl_layton_dachot_wintaFN
+                        
+                        #endregion md_lenhsanxuat_tosx_dklht_sl_layton_dachot_wintaFN
+                        public Decimal? sl_layton_dachot { get; set; }
+                
+						
                         #region md_lenhsanxuat_tosx_dklht_sl_layton1_wintaFN
                         
                         #endregion md_lenhsanxuat_tosx_dklht_sl_layton1_wintaFN

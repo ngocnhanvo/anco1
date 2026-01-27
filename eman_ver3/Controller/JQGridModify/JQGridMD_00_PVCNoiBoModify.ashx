@@ -196,36 +196,38 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
         string msg = "";
         string ma_module = context.Request.QueryString["ma_module"];
 
-        using (var transaction = db.Database.BeginTransaction())
+
+        try
         {
-            try
+            var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            foreach (var id_del_ in ids)
             {
-                var ids = context.Request.Form["id"].Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-                foreach (var id_del_ in ids)
+                var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id_del_).Take(1).FirstOrDefault();
+                var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
+                if (object_ == null)
                 {
-                    var object_ = db.md_vanchuyennoibo.Where(p => p.md_vanchuyennoibo_id == id_del_).Take(1).FirstOrDefault();
-                    var dcht = db.c_doichieuhangton.Where(s => s.c_doichieuhangton_id == object_.c_doichieuhangton_id).FirstOrDefault();
-                    if (object_ == null)
+                    msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần trả.", id_del_);
+                }
+                else if (object_.md_trangthai_id == Helper.HIEULUC)
+                {
+                    msg += string.Format(@"<br><b>{0} ({1})</b>: Đã được ""Hiệu Lực"".", object_.sochungtu, object_.donhang_thamchieu);
+                }
+                else
+                {
+                    var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp.Contains(object_.sochungtu)).ToList();
+                    var tsxThos = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht.Contains(object_.sochungtu)).ToList();
+                    if(tsxs.Count <= 0 & tsxThos.Count <= 0)
                     {
-                        msg += string.Format(@"<br><b>{0}</b>: Không tìm thấy đối tượng cần trả.", id_del_);
-                    }
-                    else if (object_.md_trangthai_id == "HIEULUC")
-                    {
-                        msg += string.Format(@"<br><b>{0} ({1})</b>: Đã được ""Hiệu Lực"".", object_.sochungtu, object_.donhang_thamchieu);
+                        object_.md_trangthai_id = Helper.SOANTHAO;
                     }
                     else
                     {
-                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => s.phieulayhttp == object_.sochungtu).ToList();
-                        var tsxThos = db.md_lenhsanxuat_tosx.Where(s => s.phieulayht == object_.sochungtu).ToList();
-                        if(tsxs.Count <= 0 & tsxThos.Count <= 0)
+                        foreach (var tsx in tsxs)
                         {
-                            object_.md_trangthai_id = Helper.SOANTHAO;
-                        }
-                        else
-                        {
-                            foreach (var tsx in tsxs)
+                            var arr = tsx.phieulayhttp.Split(',').Where(s => s != object_.sochungtu & !string.IsNullOrWhiteSpace(s)).OrderBy(s => s).ToList();
+                            tsx.phieulayhttp = string.Join(",", arr);
+                            if (string.IsNullOrWhiteSpace(tsx.phieulayhttp))
                             {
-                                tsx.phieulayhttp = "";
                                 var khdhid = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s => s.c_kehoachdathang_id).FirstOrDefault();
                                 var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdhid).FirstOrDefault();
                                 if (khdh != null)
@@ -233,10 +235,14 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     khdh.trangthai = Helper.SOANTHAO;
                                 }
                             }
+                        }
 
-                            foreach (var tsx in tsxThos)
+                        foreach (var tsx in tsxThos)
+                        {
+                            var arr = tsx.phieulayht.Split(',').Where(s => s != object_.sochungtu & !string.IsNullOrWhiteSpace(s)).OrderBy(s => s).ToList();
+                            tsx.phieulayht = string.Join(",", arr);
+                            if (string.IsNullOrWhiteSpace(tsx.phieulayht))
                             {
-                                tsx.phieulayht = "";
                                 var khdhid = db.md_lenhsanxuat.Where(s => s.md_lenhsanxuat_id == tsx.md_lenhsanxuat_id).Select(s => s.c_kehoachdathang_id).FirstOrDefault();
                                 var khdh = db.c_kehoachdathang.Where(s => s.c_kehoachdathang_id == khdhid).FirstOrDefault();
                                 if (khdh != null)
@@ -244,29 +250,29 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                                     khdh.trangthai = Helper.DaXLTTP;
                                 }
                             }
-                            db.md_vanchuyennoibo.Remove(object_);
                         }
-                        VNN_Function.Write_log(context, ma_module, null, oper, "PVCNB:" + object_.sochungtu + " DHTC:" + object_.donhang_thamchieu , db);
-                        db.SaveChanges();
+                        db.md_vanchuyennoibo.Remove(object_);
                     }
+                    VNN_Function.Write_log(context, ma_module, null, oper, "PVCNB:" + object_.sochungtu + " DHTC:" + object_.donhang_thamchieu , db);
                 }
-            }
-            catch (Exception ex)
-            {
-                msg = ex.Message;
             }
 
             if (msg.Length <= 0)
-            {
-                msg = string.Format(@"true#Trả phiếu đã chọn về ""Soạn Thảo"" thành công");
-                transaction.Commit();
-                VNN_Function.loaddulieu_Auto(db, ma_module);
-            }
-            else
-            {
-                msg = string.Format(@"false#{0}", msg.Substring(4));
-                transaction.Rollback();
-            }
+                db.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            msg = ex.Message;
+        }
+
+        if (msg.Length <= 0)
+        {
+            msg = string.Format(@"true#Trả phiếu đã chọn về ""Soạn Thảo"" thành công");
+            VNN_Function.loaddulieu_Auto(db, ma_module);
+        }
+        else
+        {
+            msg = string.Format(@"false#{0}", msg.Substring(4));
         }
         context.Response.Write(msg);
     }
