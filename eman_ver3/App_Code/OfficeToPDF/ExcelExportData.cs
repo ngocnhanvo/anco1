@@ -199,7 +199,7 @@ namespace OfficeToPDF
                         }
                     }
                 }
-
+                
                 for (var i = 0; i <= s1.LastRowNum; i++)
                 {
                     string comment = "";
@@ -358,6 +358,7 @@ namespace OfficeToPDF
                         break;
                 }
 
+
                 var rowDTCP = createIrowICell(s1, infoExcel.detail.GetValueOrDefault(0), maxColumn, cellRangeAddressAll);
 
                 var rowFTCP = createIrowICell(s1, infoExcel.rptFooter.GetValueOrDefault(0), maxColumn, cellRangeAddressAll);
@@ -390,9 +391,10 @@ namespace OfficeToPDF
                 int rowAddGHeader = 0, totalRow = 0;
                 var countDT = dt.Rows.Count;
                 var countGroup = 0;
-                for (var iR = 0; iR < countDT; iR++)
+
+                if (rptGroupHeader != null)
                 {
-                    if (rptGroupHeader != null)
+                    for (var iR = 0; iR < countDT; iR++)
                     {
                         var keyStr = "";
                         foreach (var item in rptGroupHeader.arrAva)
@@ -422,7 +424,7 @@ namespace OfficeToPDF
                 totalRow += countDT - 1;
 
                 var lstFMLNotNull = lstFormula.Where(s => !string.IsNullOrEmpty(s.formula)).ToList();
-
+                
                 if (infoExcel.detail != null)
                 {
                     var imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
@@ -454,7 +456,7 @@ namespace OfficeToPDF
                             keyStr += dt.Rows[iR][item].ToString();
                         }
 
-                        
+
                         if (rptGroupHeader.key != keyStr)
                         {
                             rptGroupHeader.moreVal += rptGroupHeader.key == "" ? 0 : rowAddGHeader;
@@ -494,7 +496,7 @@ namespace OfficeToPDF
                         {
                             lastG++;
                             var grpN = groupsReport.OrderByDescending(s => s.rowF).FirstOrDefault();
-                            if(grpN != null)
+                            if (grpN != null)
                             {
                                 grpN.rowL = lastG;
                             }
@@ -561,7 +563,7 @@ namespace OfficeToPDF
                         setMaxHeight(rowDT, maxHeight);
                     }
                 }
-
+                
                 var grps = groupsReport.OrderBy(s => s.rowF).ToList();
                 foreach (var g in grps)
                 {
@@ -577,7 +579,7 @@ namespace OfficeToPDF
                                     var str = cell.StringCellValue.Replace("[lastG]", (cell.RowIndex + 2 + g.rowL).ToString());
                                     str = str.Replace("[0]", (cell.RowIndex + 2).ToString());
                                     str = str.Replace("{!!", "").Replace("}", "");
-                                    
+
                                     try
                                     {
                                         cell.SetCellFormula(str);
@@ -599,7 +601,7 @@ namespace OfficeToPDF
                         }
                     }
                 }
-
+                
                 //rowAddGHeader = rowAddGHeader > 0 ? rowAddGHeader + 1 : 0;
                 if (infoExcel.rptFooter != null)
                 {
@@ -627,7 +629,7 @@ namespace OfficeToPDF
                         }
                     }
                 }
-
+                
                 foreach (var rmComment in lstRemoveComment)
                 {
                     rmComment.RemoveCellComment();
@@ -638,25 +640,30 @@ namespace OfficeToPDF
                 var filename = Guid.NewGuid().ToString();
                 filename = System.Text.RegularExpressions.Regex.Replace(filename, @"[^0-9a-zA-Z]+", "-");
                 var urlExcel = ExcuteSignalRStatic.mapPathSignalR(string.Format("~/FileUpload/{0}.xls", filename));
-                var xfile = new FileStream(urlExcel, FileMode.Create, FileAccess.ReadWrite);
-                hssfwb.Write(xfile);
-                xfile.Close();
-                xfile.Dispose();
+                using (var xfile = new FileStream(urlExcel, FileMode.Create, FileAccess.ReadWrite))
+                {
+                    hssfwb.Write(xfile);
+                    xfile.Close();
+                    xfile.Dispose();
+                }
 
                 var urlPDF = urlExcel.Substring(0, urlExcel.LastIndexOf(".") + 1) + "pdf";
-                var excelConvert = new ExcelConverter();
-                excelConvert.lstText = null;
-                excelConvert.lstImage = lstImage;
-                excelConvert.lstTextReplace = lstTextReplace;
+                string msg = "", urlFN = "";
+                using (var excelConvert = new ExcelConverter())
+                {
+                    excelConvert.lstText = null;
+                    excelConvert.lstImage = lstImage;
+                    excelConvert.lstTextReplace = lstTextReplace;
 
-                lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
-                excelConvert.lstFormula = lstFormula;
-                excelConvert.lstAutoSizeColumn = lstAutoSizeColumn;
+                    lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
+                    excelConvert.lstFormula = lstFormula;
+                    excelConvert.lstAutoSizeColumn = lstAutoSizeColumn;
 
-                excelConvert.endRow = infoExcel.rptFooter;
-                excelConvert.endColumn = maxColumn;
-                string urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
-                var msg = excelConvert.ConvertInterop(urlExcel, urlFN, null);
+                    excelConvert.endRow = infoExcel.rptFooter;
+                    excelConvert.endColumn = maxColumn;
+                    urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
+                    msg = excelConvert.ConvertInterop(urlExcel, urlFN, null);
+                }
 
                 if (msg.Length <= 0)
                 {
@@ -679,18 +686,27 @@ namespace OfficeToPDF
                         }
                         else
                         {
-                            var xfileRead = new FileStream(urlExcel, FileMode.Open, FileAccess.ReadWrite);
-                            var memoryStream = new MemoryStream();
-                            xfileRead.CopyTo(memoryStream);
-                            xfileRead.Close();
-                            xfileRead.Dispose();
-                            File.Delete(urlExcel);
-
-                            context.Response.ContentType = "application/vnd.ms-excel";
-                            context.Response.AddHeader("Content-Disposition", string.Format("attachment;filename={0}.xls", DisplayName));
                             context.Response.Clear();
-                            context.Response.BinaryWrite(memoryStream.ToArray());
-                            context.Response.End();
+                            context.Response.ContentType = "application/vnd.ms-excel";
+                            context.Response.AddHeader("Content-Disposition", $"attachment;filename={DisplayName}.xls");
+
+                            using (var memoryStream = new MemoryStream())
+                            {
+                                // Đọc file từ disk vào memory
+                                using (var fileStream = new FileStream(urlExcel, FileMode.Open, FileAccess.Read))
+                                {
+                                    fileStream.CopyTo(memoryStream);
+                                }
+
+                                // Xóa file tạm ngay sau khi đã đọc vào RAM
+                                File.Delete(urlExcel);
+
+                                // Ghi trực tiếp vào Output stream để tiết kiệm RAM
+                                memoryStream.WriteTo(context.Response.OutputStream);
+                            }
+
+                            context.Response.Flush();
+                            context.ApplicationInstance.CompleteRequest();
                         }
                     }
                 }
@@ -752,7 +768,7 @@ namespace OfficeToPDF
             {
                 var fmt = columnT.CellStyle.GetDataFormatString().Replace("\\{", "").Replace("\\}", "").Replace("m", "M").Replace("p", "m");
                 var date = dt.Rows[iRow][nameColumnData];
-                if(date != null & date != DBNull.Value)
+                if (date != null & date != DBNull.Value)
                     columnT.SetCellValue(((DateTime?)date).Value.ToString(fmt));
             }
             else if (isNumber)
@@ -780,7 +796,7 @@ namespace OfficeToPDF
                     }
                 }
             }
-            else if(isFomulaG)
+            else if (isFomulaG)
             {
                 columnT.SetCellValue(StringCellValue);
             }
@@ -868,14 +884,14 @@ namespace OfficeToPDF
             {
                 var strTxt = dt.Rows[iRow][nameColumnData].ToString();
                 columnT.SetCellValue(strTxt);
-                if (columnT.CellStyle.WrapText & !cell.IsMergedCell)
-                {
-                    var font = columnT.CellStyle.GetFont(hssfwb);
-                    var widthColumn = s1.GetColumnWidth(columnT.ColumnIndex);
-                    var widthOfVal = caculateWidthColumnOfValue(s1, columnT);
-                    if (widthOfVal > widthColumn)
-                        maxHeight = -1;
-                }
+                //if (columnT.CellStyle.WrapText & !cell.IsMergedCell)
+                //{
+                //    var font = columnT.CellStyle.GetFont(hssfwb);
+                //    var widthColumn = s1.GetColumnWidth(columnT.ColumnIndex);
+                //    var widthOfVal = caculateWidthColumnOfValue(s1, columnT);
+                //    if (widthOfVal > widthColumn)
+                //        maxHeight = -1;
+                //}
                 columnT.SetCellType(CellType.String);
             }
             else

@@ -1,22 +1,4 @@
-﻿/**
- *  OfficeToPDF command line PDF conversion for Office 2007/2010/2013/2016
- *  Copyright (C) 2011-2018 Cognidox Ltd
- *  https://www.cognidox.com/opensource/
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
- 
+﻿
 using System;
 using System.Collections;
 using System.IO;
@@ -24,8 +6,8 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using Microsoft.Office.Interop.Excel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
+using System.Threading.Tasks;
+//using PuppeteerSharp;
 
 namespace OfficeToPDF
 {
@@ -34,8 +16,40 @@ namespace OfficeToPDF
     /// </summary>
     /// 
 
-    public class ExcelConverter : Converter
+    public class ExcelConverter : Converter, IDisposable
     {
+        public void Dispose()
+        {
+            
+        }
+
+        //public async Task ConvertHtmlToPdf(string htmlPath, string pdfPath)
+        //{
+        //    // 1. Tải Browser (Bản 1.2.0 dùng cơ chế cũ)
+        //    //var browserFetcher = new BrowserFetcher();
+        //    //await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+
+        //    // 2. Khởi động
+        //    var options = new LaunchOptions
+        //    {
+        //        Headless = true,
+        //        ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
+        //    };
+
+        //    using (var browser = await Puppeteer.LaunchAsync(options))
+        //    using (var page = await browser.NewPageAsync())
+        //    {
+        //        await page.GoToAsync("file:///" + Path.GetFullPath(htmlPath).Replace("\\", "/"));
+
+        //        // ĐỪNG dùng WaitForNetworkIdle nếu file HTML chỉ có text/table cục bộ
+        //        // Nó sẽ đợi mòn mỏi các link ngoài nếu có.
+
+        //        await page.PdfAsync(pdfPath, new PdfOptions {
+        //            Format = PuppeteerSharp.Media.PaperFormat.A4,
+        //            PrintBackground = true
+        //        });
+        //    }
+        //}
         public List<AvariablePrj.lstImage> lstImage { get; set; }
         public List<AvariablePrj.lstText> lstText { get; set; }
         public List<AvariablePrj.lstTextReplace> lstTextReplace { get; set; }
@@ -177,23 +191,6 @@ namespace OfficeToPDF
             var source = new CancellationTokenSource();
             var token = source.Token;
 
-            var ps = System.Management.Automation.PowerShell.Create();
-
-            var pathScript = ExcuteSignalRStatic.mapPathSignalR("~/App_Data/SetDefaultPrinter.ps1");
-
-            var settings = new System.Drawing.Printing.PrinterSettings();
-
-            if (settings.PrinterName.ToLower() != "Microsoft XPS Document Writer".ToLower())
-            {
-                var process = new Process();
-                var startInfo = new ProcessStartInfo("powershell.exe", "-File " + pathScript + " -PrinterName \"Microsoft XPS Document Writer\"");
-                startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                startInfo.UseShellExecute = false;
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit();
-            }
-
             Microsoft.Office.Interop.Excel.Application app = null;
             Microsoft.Office.Interop.Excel.Workbooks workbooks = null;
             Microsoft.Office.Interop.Excel.Workbook workbook = null;
@@ -238,6 +235,7 @@ namespace OfficeToPDF
                     {
                         ReleaseCOMObject(app);
                         msg = Enum.GetName(typeof(ExitCode), ExitCode.ApplicationError);
+                        source.Cancel();
                         throw new ArgumentException(msg);
                     }
 
@@ -270,8 +268,8 @@ namespace OfficeToPDF
                     int sheetForConversionIdx = 0;
                     activeWindow = app.ActiveWindow;
                     Sheets allSheets = null;
-                    XlFileFormat fmt = XlFileFormat.xlOpenXMLWorkbook;
-                    XlFixedFormatQuality quality = XlFixedFormatQuality.xlQualityStandard;
+                    var fmt = XlFileFormat.xlOpenXMLWorkbook;
+                    var quality = XlFixedFormatQuality.xlQualityMinimum;
                     if (isHidden)
                     {
                         // Try and at least minimise it
@@ -298,6 +296,7 @@ namespace OfficeToPDF
                     {
                         Console.WriteLine("Unable to open password protected file");
                         msg = Enum.GetName(typeof(ExitCode), ExitCode.PasswordFailure);
+                        source.Cancel();
                         throw new ArgumentException(msg);
                     }
 
@@ -305,6 +304,7 @@ namespace OfficeToPDF
                     workbooks = app.Workbooks;
                     // If we have no write password and we're attempting to open for writing, we might be
                     // caught out by an unexpected write password
+                    var timeStart = DateTime.Now;
                     if (writePassword == "" && !nowrite)
                     {
                         oWritePass = (Object)"FAKEPASSWORD";
@@ -322,6 +322,7 @@ namespace OfficeToPDF
                     {
                         workbook = workbooks.Open(inputFile, updateLinks, nowrite, oMissing, oReadPass, oWritePass, true, oMissing, oMissing, oMissing, oMissing, oMissing, false, oMissing, oMissing);
                     }
+                    
                     // Add in a delay to let Excel sort itself out
                     AddCOMDelay(options);
 
@@ -607,7 +608,7 @@ namespace OfficeToPDF
                             string msg1 = ex.Message;
                         }
                     }
-
+                    
                     // Try and avoid xls files raising a dialog
                     var temporaryStorageDir = Path.GetTempFileName();
                     File.Delete(temporaryStorageDir);
@@ -868,115 +869,29 @@ namespace OfficeToPDF
 
                     if (mimeTypeOutput == "pdf")
                     {
-                        workbook.SaveAs(tmpFile, fmt, Type.Missing, Type.Missing, Type.Missing, false, XlSaveAsAccessMode.xlNoChange, Type.Missing, false, Type.Missing, Type.Missing, Type.Missing);
+                        app.ScreenUpdating = false;
+                        app.Calculation = XlCalculation.xlCalculationManual;
+                        app.EnableEvents = false;
 
-                        if (onlyActiveSheet)
-                        {
-                            // Set up a delegate function for times we want to print
-                            PrintDocument printFunc = delegate (string destination, string printer)
-                            {
-                                ((Worksheet)activeSheet).PrintOut(ActivePrinter: printer, PrintToFile: true, PrToFileName: destination);
-                            };
+                        /*string htmlPath = Path.ChangeExtension(outputFile, ".html");
+                        workbook.PublishObjects.Add(
+                            XlSourceType.xlSourceSheet,
+                            htmlPath,
+                            worksheet.Name,
+                            Type.Missing,
+                            XlHtmlType.xlHtmlStatic, // Dùng Static để loại bỏ thanh Tab sheet
+                            "ID_Export",
+                            Type.Missing).Publish(true);                        
+                        ConvertHtmlToPdf(htmlPath, outputFile).GetAwaiter().GetResult();*/
+                        workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
+                            outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
 
-                            if (sheetForConversionIdx > 0)
-                            {
-                                activeSheet = allSheets.Item[sheetForConversionIdx];
-                            }
-                            if (activeSheet is _Worksheet)
-                            {
-                                var wps = ((_Worksheet)activeSheet).PageSetup;
-                                SetPageSetupProperties(templatePageSetup, wps);
-                                if (String.IsNullOrEmpty(printerO))
-                                {
-                                    try
-                                    {
-                                        ((Worksheet)activeSheet).ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
-                                        outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
-                                    }
-                                    catch (Exception)
-                                    {
-                                        if (!String.IsNullOrEmpty(fallback_printer))
-                                        {
-                                            PrintToGhostscript(fallback_printer, outputFile, printFunc);
-                                        }
-                                        else
-                                        {
-                                            throw;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    PrintToGhostscript(printerO, outputFile, printFunc);
-                                }
-                                ReleaseCOMObject(wps);
-                            }
-                            else if (activeSheet is _Chart)
-                            {
-                                var wps = ((_Chart)activeSheet).PageSetup;
-                                SetPageSetupProperties(templatePageSetup, wps);
-                                ((Microsoft.Office.Interop.Excel.Chart)activeSheet).ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
-                                    outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
-                                ReleaseCOMObject(wps);
-                            }
-                            else
-                            {
-                                msg = Enum.GetName(typeof(ExitCode), ExitCode.UnknownError);
-                                throw new ArgumentException(msg);
-                            }
-                            AddCOMDelay(options);
-                        }
-                        else
-                        {
-                            //app.DisplayDocumentActionTaskPane = false;
-                            //app.EnableEvents = false;
-                            PrintDocument printFunc = delegate (string destination, string printer)
-                            {
-                                workbook.PrintOutEx(ActivePrinter: printer, PrintToFile: true, PrToFileName: destination);
-                            };
-                            if (HasTemplateOption(options))
-                            {
-                                // Set up the template page setup options on all the worksheets
-                                // in the workbook
-                                var worksheets = workbook.Worksheets;
-                                for (int wsIdx = 1; wsIdx <= worksheets.Count; wsIdx++)
-                                {
-                                    var ws = worksheets[wsIdx];
-                                    var wps = (ws is _Worksheet) ? ((_Worksheet)ws).PageSetup : ((_Chart)ws).PageSetup;
-                                    SetPageSetupProperties(templatePageSetup, wps);
-                                    ReleaseCOMObject(wps);
-                                    ReleaseCOMObject(ws);
-                                }
-                                ReleaseCOMObject(worksheets);
-                            }
-                            if (String.IsNullOrEmpty(printerO))
-                            {
-                                try
-                                {
-                                    workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
-                                    outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
-                                }
-                                catch (Exception)
-                                {
-                                    if (!String.IsNullOrEmpty(fallback_printer))
-                                    {
-                                        PrintToGhostscript(fallback_printer, outputFile, printFunc);
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
-                                }
-                            }
-                            //else
-                            //{
-                            //    PrintToGhostscript((string)options["printer"], outputFile, printFunc);
-                            //}
-                        }
-
-                        ReleaseCOMObject(allSheets);
                         ReleaseCOMObject(fmt);
                         ReleaseCOMObject(quality);
+
+                        //var timeEnd = DateTime.Now;
+                        //var totalsc = (timeEnd - timeStart).TotalSeconds;
+                        //throw new Exception($"time:{(totalsc)}");
                     }
                     else
                     {
@@ -986,10 +901,12 @@ namespace OfficeToPDF
                 }
                 catch (COMException ce)
                 {
+                    source.Cancel();
                     msg = "COMException: " + ce;
                 }
                 catch (Exception e)
                 {
+                    source.Cancel();
                     msg = "Exception: " + e;
                 }
                 finally
@@ -1034,9 +951,14 @@ namespace OfficeToPDF
                         Directory.Delete(Path.GetDirectoryName(tmpFile));
                     }
 
-                    while (!File.Exists(outputFile))
+                    if (msg.Length > 0)
+                        throw new Exception(msg);
+                    else
                     {
-                        Thread.Sleep(5000);
+                        while (!File.Exists(outputFile))
+                        {
+                            Thread.Sleep(1000);
+                        }
                     }
                 }
             }, token);
@@ -1045,7 +967,15 @@ namespace OfficeToPDF
             var timeWait = 120000;
             int seconds = timeWait / 1000;
             task.Start();
-            task.Wait(timeWait);
+            try
+            {
+                task.Wait(timeWait);
+            }
+            catch(Exception ex)
+            {
+                task.Dispose();
+                msg = ex.ToString();
+            }
 
             try
             {
