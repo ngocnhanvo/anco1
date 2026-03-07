@@ -365,6 +365,14 @@ modelBuilder.Entity<c_dongdsdh>().HasKey<string>(p => p.c_dongdsdh_id);
                             .HasColumnName("nguoitao")
                             .HasColumnType("varchar");
                             modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.phi)
+                            .HasColumnName("phi")
+                            .HasColumnType("numeric").HasPrecision(18, 2);
+                            modelBuilder.Entity<c_dongdsdh>()
+                            .Property(p => p.phidg)
+                            .HasColumnName("phidg")
+                            .HasColumnType("numeric").HasPrecision(18, 2);
+                            modelBuilder.Entity<c_dongdsdh>()
                             .Property(p => p.sl_conlai)
                             .HasColumnName("sl_conlai")
                             .HasColumnType("decimal").HasPrecision(18, 5);

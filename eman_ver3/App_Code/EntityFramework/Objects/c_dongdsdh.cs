@@ -205,6 +205,18 @@
                         public string nguoitao { get; set; }
                 
 						
+                        #region c_dongdsdh_phi_wintaFN
+                        
+                        #endregion c_dongdsdh_phi_wintaFN
+                        public Decimal? phi { get; set; }
+                
+						
+                        #region c_dongdsdh_phidg_wintaFN
+                        
+                        #endregion c_dongdsdh_phidg_wintaFN
+                        public Decimal? phidg { get; set; }
+                
+						
                         #region c_dongdsdh_sl_conlai_wintaFN
                         
                         #endregion c_dongdsdh_sl_conlai_wintaFN

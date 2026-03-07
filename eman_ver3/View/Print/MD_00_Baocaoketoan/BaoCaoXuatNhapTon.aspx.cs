@@ -55,7 +55,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTon : Sys
         if (!string.IsNullOrWhiteSpace(masp))
             masp = $@"and sp.ma_sanpham = N'{masp}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @dauky datetime = convert(datetime, N'01/'+ cast(Month(@tu) as nvarchar(2)) +'/'+ cast(year(@tu) as nvarchar(4)) +' 00:00:00', 103)
