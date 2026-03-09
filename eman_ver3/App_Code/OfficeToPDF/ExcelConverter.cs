@@ -357,19 +357,19 @@ namespace OfficeToPDF
                         //excelCellrange.Font.Size = 13.5;
                     }
 
-                    foreach (var formula in lstFormula)
-                    {
-                        try
-                        {
-                            var RangeFm = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[formula.row, formula.col];
-                            if (!string.IsNullOrEmpty(formula.formula))
-                                RangeFm.Formula = string.Format("=" + formula.formula);
-                        }
-                        catch (Exception ex)
-                        {
-                            string msg1 = ex.Message;
-                        }
-                    }
+                    //foreach (var formula in lstFormula)
+                    //{
+                    //    try
+                    //    {
+                    //        var RangeFm = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[formula.row, formula.col];
+                    //        if (!string.IsNullOrEmpty(formula.formula))
+                    //            RangeFm.Formula = string.Format("=" + formula.formula);
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        string msg1 = ex.Message;
+                    //    }
+                    //}
 
                     foreach (var image in lstImage)
                     {
@@ -531,7 +531,7 @@ namespace OfficeToPDF
                     {
                         try
                         {
-                            var oRange = worksheet.Cells.Find(What: textReplace.oldT, LookIn: XlFindLookIn.xlValues, SearchDirection: XlSearchDirection.xlNext, LookAt: XlLookAt.xlPart);
+                            var oRange = (Range)worksheet.Cells[textReplace.row.Value + 1, textReplace.column.Value + 1];
 
                             int phStart = oRange.Value.ToString().LastIndexOf(textReplace.oldT);
                             int phEnd = textReplace.oldT.Length;
@@ -540,12 +540,6 @@ namespace OfficeToPDF
                                 textReplace.newT = worksheet.PageSetup.Pages.Count.ToString();
                             if (phStart > -1 & phEnd > -1)
                             {
-                                //var fontBK = oRange.Characters[phStart + 1, phEnd].Font;
-                                //var background = fontBK.Background;
-                                //var bold = fontBK.Bold;
-                                //var size = fontBK.Size;
-                                //oRange.Characters[phStart + 1, phEnd].Delete();
-
                                 if (textReplace.wrap_Mer.GetValueOrDefault(false))
                                 {
                                     oRange.Value = textReplace.newT;
@@ -560,10 +554,15 @@ namespace OfficeToPDF
                                     oRangeWrap.ColumnWidth = columnWidth;
 									oRangeWrap.Font.Name = oRange.Font.Name;
 									oRangeWrap.Font.Size = oRange.Font.Size;
+                                    oRangeWrap.Orientation = oRange.Orientation;
+                                    oRangeWrap.VerticalAlignment = oRange.VerticalAlignment;
+                                    oRangeWrap.Font.Bold = oRange.Font.Bold;
+                                    oRangeWrap.Font.Italic = oRange.Font.Italic;
+                                    oRangeWrap.WrapText = oRange.WrapText;
                                     oRange.Copy(oRangeWrap);
                                     oRange.Rows.AutoFit();
                                     var heightATF = double.Parse(oRange.Rows.Height.ToString());
-                                    oRange.RowHeight = heightATF + (heightATF * 5 / 100);
+                                    oRange.RowHeight = Math.Ceiling(heightATF * 1.05);
                                     oRangeWrap.Delete(XlDeleteShiftDirection.xlShiftUp);
                                 }
                                 else
@@ -577,19 +576,10 @@ namespace OfficeToPDF
                                         oRange.Characters[phStart + 1, phEnd].Insert(ex.Message);
                                     }
                                 }
-                                //var characterNews = oRange.Characters[phStart + phEnd, textReplace.newT.Length];
-                                //characterNews.Font.Background = background;
-                                //characterNews.Font.Bold = bold;
-                                //characterNews.Font.Size = size;
                             }
 
                             if (textReplace.oldT.StartsWith("{#"))
                             {
-                                //var number = decimal.Parse(textReplace.newT);
-                                //var fmtNumberIndex = textReplace.newT.LastIndexOf(".");
-                                //var numberAfterDot = fmtNumberIndex > -1 ? textReplace.newT.Length - fmtNumberIndex : 0;
-                                //var fmtNumber = "0" + (fmtNumberIndex > -1 ? "." : "") + (numberAfterDot > 0 ? VNN_Config.load_number("0", numberAfterDot) : "");
-                                //oRange.NumberFormat = fmtNumber;
                                 oRange.Value = textReplace.newT;
                             }
                         }
@@ -883,6 +873,25 @@ namespace OfficeToPDF
                             "ID_Export",
                             Type.Missing).Publish(true);                        
                         ConvertHtmlToPdf(htmlPath, outputFile).GetAwaiter().GetResult();*/
+                        // Tìm dòng cuối cùng thực sự có chứa giá trị ở cột A (hoặc cột chính của bạn)
+                        int lastRow = ((Range)worksheet.Cells[worksheet.Rows.Count, 1]).End[XlDirection.xlUp].Row;
+
+                        // Nếu muốn chắc chắn hơn cho toàn bộ các cột:
+                        Range usedRange = worksheet.UsedRange;
+                        int lastRowUsed = usedRange.Row + usedRange.Rows.Count - 1;
+
+                        if (lastRowUsed < worksheet.Rows.Count)
+                        {
+                            // Chỉ chọn từ dòng ngay sau dòng có dữ liệu cuối cùng
+                            Range startCell = (Range)worksheet.Cells[lastRowUsed + 1, 1];
+                            Range endCell = (Range)worksheet.Cells[worksheet.Rows.Count, worksheet.Columns.Count];
+
+                            Range emptyRange = worksheet.get_Range(startCell, endCell);
+                            emptyRange.ClearFormats();
+                            emptyRange.ClearContents();
+                            emptyRange.Delete();
+                        }
+
                         workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
                             outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
 
@@ -957,7 +966,7 @@ namespace OfficeToPDF
                     {
                         while (!File.Exists(outputFile))
                         {
-                            Thread.Sleep(1000);
+                            Thread.Sleep(2000);
                         }
                     }
                 }

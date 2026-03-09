@@ -274,8 +274,10 @@ namespace OfficeToPDF
                                         }
                                     }
 
-                                    if (cell.StringCellValue.LastIndexOf("{!") > -1 &
-                                        !new string[] { "{!SUMGROUP}", "{!SUMREPORT}" }.Contains(cell.StringCellValue)
+                                    if (
+                                        cell.StringCellValue.LastIndexOf("{!") > -1 
+                                        & cell.StringCellValue.LastIndexOf("{!!") <= -1 
+                                        & !new string[] { "{!SUMGROUP}", "{!SUMREPORT}" }.Contains(cell.StringCellValue)
                                         )
                                     {
                                         string cellFormula = cell.StringCellValue.Replace("{!", "").Replace("}", "");
@@ -304,15 +306,32 @@ namespace OfficeToPDF
                                             });
                                         }
                                     }
+
+                                    var itemReps = lstTextReplace.Where(s => cell.StringCellValue.Contains(s.oldT)).ToList();
+                                    foreach(var itemRep in itemReps)
+                                    {
+                                        if(itemRep.row == null)
+                                        {
+                                            itemRep.row = i;
+                                            itemRep.column = col;
+                                        }
+                                        else
+                                        {
+                                            var cp = itemRep.Clone();
+                                            cp.row = i;
+                                            cp.column = col;
+                                            lstTextReplace.Add(cp);
+                                        }
+                                    }
                                 }
                                 else if (cell.CellType == CellType.Formula)
                                 {
-                                    lstFormula.Add(new AvariablePrj.lstFormula()
-                                    {
-                                        row = i + 1,
-                                        col = col + 1,
-                                        levelFML = 0
-                                    });
+                                    //lstFormula.Add(new AvariablePrj.lstFormula()
+                                    //{
+                                    //    row = i + 1,
+                                    //    col = col + 1,
+                                    //    levelFML = 0
+                                    //});
                                 }
                             }
                         }
@@ -441,6 +460,9 @@ namespace OfficeToPDF
                         fmlContainsLastRow.formula = fmlContainsLastRow.formula.Replace("[lastRow]", dtFN.ToString());
                     }
 
+                    var lstRPLNotNull = lstTextReplace.Where(s => s.row.GetValueOrDefault(0) > infoExcel.detail).ToList();
+                    foreach (var rpl in lstRPLNotNull)
+                        rpl.row = rpl.row.GetValueOrDefault(0) + totalRow;
                     s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow);
                 }
 
@@ -634,6 +656,23 @@ namespace OfficeToPDF
                 {
                     rmComment.RemoveCellComment();
                 }
+                
+                lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
+                foreach(var fml in lstFormula)
+                {
+                    var cell = s1.GetRow(fml.row - 1).GetCell(fml.col - 1);
+                    if (cell != null)
+                    {
+                        cell.SetCellFormula(fml.formula);
+                        cell.SetCellType(CellType.Formula);
+                    }
+                }
+                HSSFFormulaEvaluator.EvaluateAllFormulaCells(hssfwb);
+
+                lstTextReplace = lstTextReplace.Where(s => s.row != null & s.column != null).ToList();
+
+                //var nPOIM = new NPOIM(hssfwb, s1);
+                //nPOIM.InsertImages(lstImage);
 
                 printCf.hssfworkbook = hssfwb;
                 //s1 = printCf.PrintExcel((HSSFSheet)s1, type);

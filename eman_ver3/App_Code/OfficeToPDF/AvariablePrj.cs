@@ -36,8 +36,8 @@ public class AvariablePrj
     {
         public string oldT { get; set; }
         public string newT { get; set; }
-        public int row { get; set; }
-        public int column { get; set; }
+        public int? row { get; set; }
+        public int? column { get; set; }
         public bool? wrap_Mer { get; set; }
         public int? column_Mer { get; set; }
     }
