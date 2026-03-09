@@ -883,7 +883,7 @@ namespace OfficeToPDF
             {
                 var linkIMG_ = dt.Rows[iRow][nameColumnData].ToString();
                 if (linkIMG_.StartsWith("http"))
-                    linkIMG_ = null;
+                    linkIMG_ = "";
                 else if(!linkIMG_.StartsWith("https"))
                     linkIMG_ = ExcuteSignalRStatic.mapPathSignalR("~/" + linkIMG_);
 
@@ -902,7 +902,7 @@ namespace OfficeToPDF
                     lstRemoveComment.Add(cell);
                 }
 
-                if (File.Exists(linkIMG_) | linkIMG_.StartsWith("http"))
+                if (File.Exists(linkIMG_) | linkIMG_.StartsWith("https"))
                 {
                     lstImage.Add(new AvariablePrj.lstImage()
                     {
