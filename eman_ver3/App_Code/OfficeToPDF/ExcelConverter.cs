@@ -23,33 +23,17 @@ namespace OfficeToPDF
             
         }
 
-        //public async Task ConvertHtmlToPdf(string htmlPath, string pdfPath)
-        //{
-        //    // 1. Tải Browser (Bản 1.2.0 dùng cơ chế cũ)
-        //    //var browserFetcher = new BrowserFetcher();
-        //    //await browserFetcher.DownloadAsync(BrowserFetcher.DefaultRevision);
+        public class WebClientWithTimeout : System.Net.WebClient
+        {
+            public int Timeout { get; set; } = 5000; // mặc định 5 giây
+            protected override System.Net.WebRequest GetWebRequest(Uri uri)
+            {
+                var request = base.GetWebRequest(uri);
+                request.Timeout = Timeout;
+                return request;
+            }
+        }
 
-        //    // 2. Khởi động
-        //    var options = new LaunchOptions
-        //    {
-        //        Headless = true,
-        //        ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
-        //    };
-
-        //    using (var browser = await Puppeteer.LaunchAsync(options))
-        //    using (var page = await browser.NewPageAsync())
-        //    {
-        //        await page.GoToAsync("file:///" + Path.GetFullPath(htmlPath).Replace("\\", "/"));
-
-        //        // ĐỪNG dùng WaitForNetworkIdle nếu file HTML chỉ có text/table cục bộ
-        //        // Nó sẽ đợi mòn mỏi các link ngoài nếu có.
-
-        //        await page.PdfAsync(pdfPath, new PdfOptions {
-        //            Format = PuppeteerSharp.Media.PaperFormat.A4,
-        //            PrintBackground = true
-        //        });
-        //    }
-        //}
         public List<AvariablePrj.lstImage> lstImage { get; set; }
         public List<AvariablePrj.lstText> lstText { get; set; }
         public List<AvariablePrj.lstTextReplace> lstTextReplace { get; set; }
@@ -377,10 +361,14 @@ namespace OfficeToPDF
                         System.Drawing.Image pictureR = null;
                         if (image.link.StartsWith("https://"))
                         {
-                            var wc = new System.Net.WebClient();
-                            byte[] bytes = wc.DownloadData(image.link);
-                            var ms = new MemoryStream(bytes);
-                            pictureR = System.Drawing.Image.FromStream(ms);
+                            using (var wc = new WebClientWithTimeout { Timeout = 5000 })
+                            {
+                                byte[] bytes = wc.DownloadData(image.link);
+                                using (var ms = new MemoryStream(bytes))
+                                {
+                                    pictureR = System.Drawing.Image.FromStream(ms);
+                                }
+                            }
                         }
                         else
                         {
