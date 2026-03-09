@@ -670,7 +670,7 @@ namespace OfficeToPDF
                 HSSFFormulaEvaluator.EvaluateAllFormulaCells(hssfwb);
 
                 lstTextReplace = lstTextReplace.Where(s => s.row != null & s.column != null).ToList();
-
+                lstImage = lstImage.Where(s => !string.IsNullOrWhiteSpace(s.link)).ToList();
                 //var nPOIM = new NPOIM(hssfwb, s1);
                 //nPOIM.InsertImages(lstImage);
 
@@ -882,12 +882,13 @@ namespace OfficeToPDF
             else if (isImage)
             {
                 var linkIMG_ = dt.Rows[iRow][nameColumnData].ToString();
-                if (linkIMG_.StartsWith("http"))
+
+                if (linkIMG_.StartsWith("http://"))
                 {
                     cell.SetCellValue(linkIMG_);
                     linkIMG_ = "";
                 }
-                else if (!linkIMG_.StartsWith("https"))
+                else if (!linkIMG_.StartsWith("https://"))
                     linkIMG_ = ExcuteSignalRStatic.mapPathSignalR("~/" + linkIMG_);
 
                 float? top = null, left = null, width = null, height = null;

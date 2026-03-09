@@ -375,7 +375,7 @@ namespace OfficeToPDF
                     {
                         var oRange = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, image.column + 1];
                         System.Drawing.Image pictureR = null;
-                        if (image.link.StartsWith("http"))
+                        if (image.link.StartsWith("https://"))
                         {
                             var wc = new System.Net.WebClient();
                             byte[] bytes = wc.DownloadData(image.link);
