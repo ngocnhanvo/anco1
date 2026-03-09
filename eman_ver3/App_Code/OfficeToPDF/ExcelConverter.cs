@@ -361,9 +361,26 @@ namespace OfficeToPDF
                         System.Drawing.Image pictureR = null;
                         if (image.link.StartsWith("https://"))
                         {
-                            using (var wc = new WebClientWithTimeout { Timeout = 5000 })
+                            var taskIMG = Task.Factory.StartNew(() =>
                             {
-                                byte[] bytes = wc.DownloadData(image.link);
+                                using (var wc = new WebClientWithTimeout { Timeout = 5000 })
+                                    return wc.DownloadData(image.link);
+                            });
+
+                            byte[] bytes = null;
+                            try
+                            {
+                                // Chờ tối đa 5 giây, nếu không xong thì bỏ qua
+                                if (taskIMG.Wait(5000))
+                                    bytes = taskIMG.Result;
+                            }
+                            catch(Exception ex)
+                            {
+                                oRange.Value = ex.ToString();
+                            }
+
+                            if (bytes != null)
+                            {
                                 using (var ms = new MemoryStream(bytes))
                                 {
                                     pictureR = System.Drawing.Image.FromStream(ms);
