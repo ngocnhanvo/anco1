@@ -615,7 +615,7 @@ namespace OfficeToPDF
 
                                 tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
                                 File.WriteAllBytes(tempFile, bytes);
-                                var pic = worksheet.Shapes.AddPicture(image.link, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
+                                var pic = worksheet.Shapes.AddPicture(tempFile, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
                             }
                         }
                         catch (Exception ex)
