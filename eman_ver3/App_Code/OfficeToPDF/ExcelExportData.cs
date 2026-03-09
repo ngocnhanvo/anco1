@@ -882,7 +882,9 @@ namespace OfficeToPDF
             else if (isImage)
             {
                 var linkIMG_ = dt.Rows[iRow][nameColumnData].ToString();
-                if (!linkIMG_.StartsWith("http"))
+                if (linkIMG_.StartsWith("http"))
+                    linkIMG_ = null;
+                else if(!linkIMG_.StartsWith("https"))
                     linkIMG_ = ExcuteSignalRStatic.mapPathSignalR("~/" + linkIMG_);
 
                 float? top = null, left = null, width = null, height = null;
