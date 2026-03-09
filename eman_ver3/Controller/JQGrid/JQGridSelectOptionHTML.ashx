@@ -53,6 +53,8 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
         str += context.Request.QueryString["firstnull"] == "true" ? string.Format(@"<option value=""""></option>") : "";
         foreach (var cn in db.md_kho.Where(s => s.hoatdong == true).ToList().OrderBy(s=> int.Parse(Regex.Replace(s.ma_kho, "[^0-9]", ""))))
         {
+            var ktts = Helper.KHOTONTHO.Split(',');
+            var kttps = Helper.KHOTONTP.Split(',');
             str += string.Format(@"<option value=""{0}"" pxId=""{2}"" toId=""{3}"" pbId=""{4}"" loaikho=""{5}"">{1}</option>",
                 cn.md_kho_id,
                 cn.ten_kho,
@@ -63,8 +65,8 @@ public class JQGridSelectOptionHTML : IHttpHandler, System.Web.SessionState.IReq
                     cn.ma_kho == Helper.KhoThoChoHoanThien ? "KSX1" :
                         cn.ma_kho == Helper.KhoHangSauHoanThien ? "KSX2" :
                             cn.ma_kho == Helper.KHOTRON ? "KHH" :
-                                cn.ma_kho == Helper.KHOTONTHO ? "KTSX" :
-                                    cn.ma_kho == Helper.KHOTONTP ? "KTTP" :
+                                ktts.Contains(cn.ma_kho) ? "KTSX" :
+                                    kttps.Contains(cn.ma_kho) ? "KTTP" :
                                         cn.ma_kho == Helper.KHODG ? "KDG" : "KTP"
             );
         }
