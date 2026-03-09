@@ -283,13 +283,16 @@ namespace OfficeToPDF
                                         )
                                     {
                                         string cellFormula = cell.StringCellValue.Replace("{!", "").Replace("}", "");
-                                        lstFormula.Add(new AvariablePrj.lstFormula()
+                                        if (!cellFormula.Contains("[0]"))
                                         {
-                                            row = i + 1,
-                                            col = col + 1,
-                                            levelFML = 0,
-                                            formula = cellFormula
-                                        });
+                                            lstFormula.Add(new AvariablePrj.lstFormula()
+                                            {
+                                                row = i + 1,
+                                                col = col + 1,
+                                                levelFML = 0,
+                                                formula = cellFormula
+                                            });
+                                        }
                                     }
                                     else if (cell.StringCellValue.StartsWith("{picture_"))
                                     {
