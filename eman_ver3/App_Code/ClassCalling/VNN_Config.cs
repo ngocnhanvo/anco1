@@ -48,52 +48,59 @@ public static class VNN_Config
 
     //Neu ket qua la DateTime.MinValue (NGay` bi bo trong)
     //Neu ket qua la kq = DateTime.MinValue.AddDays(1) (NGay` bi bo trong)
-    public static DateTime setDateTime(string date)
+    public static DateTime setDateTime(string date, string fmt = "")
     {
         DateTime kq = DateTime.MinValue.AddDays(1);
         IFormatProvider culture = new System.Globalization.CultureInfo("en-US", true);
-        ADmin_JSON json = new ADmin_JSON();
-        var items = json.ad_systemconfigJSON();
-        var ttc = items.FirstOrDefault();
-        if (ttc != null)
+        if (fmt == "")
         {
-            if (ttc.format_ngay != null)
+            var json = new ADmin_JSON();
+            var items = json.ad_systemconfigJSON();
+            var ttc = items.FirstOrDefault();
+            if (ttc != null)
             {
-                string format = ttc.format_ngay;
+                if (ttc.format_ngay != null)
+                {
+                    string format = ttc.format_ngay;
 
-                if (!ttc.format_ngay.Contains("tt") & !ttc.format_ngay.Contains("TT"))
-                {
-                    format = ttc.format_ngay.Replace("hh", "HH");
-                }
-                else
-                {
-                    format = ttc.format_ngay.Replace("HH", "hh");
-                }
-
-                if (date.Length == 10)
-                    format = format.Split(' ')[0];
-
-                if (VNN_Validate.check_number(date, "int"))
-                {
-                    kq = DateTime.Now.AddDays(int.Parse(date));
-                }
-                else if (date != null & date != "")
-                {
-                    try
+                    if (!ttc.format_ngay.Contains("tt") & !ttc.format_ngay.Contains("TT"))
                     {
-                        kq = DateTime.ParseExact(date, format, culture);
+                        format = ttc.format_ngay.Replace("hh", "HH");
                     }
-                    catch
+                    else
                     {
-                        try { kq = DateTime.ParseExact(date.Replace(" ", "").ToString(), format, null); }
-                        catch { kq = DateTime.MinValue.AddDays(1); }
+                        format = ttc.format_ngay.Replace("HH", "hh");
                     }
-                }
-                else
-                {
-                    kq = DateTime.MinValue;
+
+                    if (date.Length == 10)
+                        format = format.Split(' ')[0];
+
+                    if (VNN_Validate.check_number(date, "int"))
+                    {
+                        kq = DateTime.Now.AddDays(int.Parse(date));
+                    }
+                    else if (date != null & date != "")
+                    {
+                        try
+                        {
+                            kq = DateTime.ParseExact(date, format, culture);
+                        }
+                        catch
+                        {
+                            try { kq = DateTime.ParseExact(date.Replace(" ", "").ToString(), format, null); }
+                            catch { kq = DateTime.MinValue.AddDays(1); }
+                        }
+                    }
+                    else
+                    {
+                        kq = DateTime.MinValue;
+                    }
                 }
             }
+        }
+        else
+        {
+            kq = DateTime.ParseExact(date, fmt, culture);
         }
         return kq;
     }

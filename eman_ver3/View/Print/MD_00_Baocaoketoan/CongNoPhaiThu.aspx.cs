@@ -46,46 +46,77 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiThu : System.
         if (!string.IsNullOrWhiteSpace(dtkd))
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
 
             select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
-	            ncc.sochungtu as sct,
-	            format(ncc.ngaychuyen, '{fmtDate}') as ngaynk,
-	            dmh.so_po as donhang,
-	            dtkd.ma_dtkd as maDTKD,
-                dtkd.ten_dtkd as tenDTKD,
-	            sp.ma_sanpham as maVTHH,
-	            sp.mota_tiengviet as tenVTHH,
-	            dvtsp.ten_dvt as dvt,
-	            dmhDH.sl_dathang as sldh,
-	            dh.sl_xuat as slnk,
-	            dmhDH.gianhap as dongia,
-	            thue.giatri/100 as vat,
-	            FLOOR(dmhDH.gianhap * dh.sl_xuat) as thanhtien,
-	            FLOOR(FLOOR(dmhDH.gianhap * dh.sl_xuat) + FLOOR(dmhDH.gianhap * dh.sl_xuat) * thue.giatri / 100) as thanhtienThue
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
+
+                ncc.sochungtu sct,
+                format(ncc.ngaychuyen, '{fmtDate}') ngaynk,
+                dmh.so_po donhang,
+
+                dtkd.ma_dtkd maDTKD,
+                dtkd.ten_dtkd tenDTKD,
+
+                sp.ma_sanpham maVTHH,
+                sp.mota_tiengviet tenVTHH,
+                dvtsp.ten_dvt dvt,
+
+                dmhDH.sl_dathang sldh,
+                dh.sl_xuat slnk,
+
+                dmhDH.gianhap dongia,
+                thue.giatri/100 vat,
+
+                T.thanhtien,
+                FLOOR(T.thanhtien + T.thanhtien * thue.giatri / 100) thanhtienThue
+
             from md_xuatban ncc
-	            left join c_danhsachdathang dmh on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
-	            left join c_dongdsdh dmhDH on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
-	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-	            left join md_xuatban_cdh dh on dh.md_xuatban_id = ncc.md_xuatban_id
-	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
-	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = isnull(dmhDH.thue, sp.md_thue_sanpham_id)
+
+            left join c_danhsachdathang dmh
+                on dmh.c_danhsachdathang_id = ncc.c_danhsachdathang_id
+
+            left join c_dongdsdh dmhDH
+                on dmhDH.c_danhsachdathang_id = ncc.c_danhsachdathang_id
+
+            left join md_xuatban_cdh dh
+                on dh.md_xuatban_id = ncc.md_xuatban_id
+                and dh.md_sanpham_id = dmhDH.md_sanpham_id
+
+            left join md_doitackinhdoanh dtkd
+                on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
+
+            left join md_sanpham sp
+                on sp.md_sanpham_id = dh.md_sanpham_id
+
+            left join md_donvitinhsanpham dvtsp
+                on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+
+            left join md_thue_sanpham thue
+                on thue.md_thue_sanpham_id = isnull(dmhDH.thue, sp.md_thue_sanpham_id)
+
+            cross apply (
+                select FLOOR(dmhDH.gianhap * dh.sl_xuat) thanhtien
+            ) T
+
             where
-	            dmhDH.md_sanpham_id = dh.md_sanpham_id
-	            and ncc.trangthai in ('{Helper.HIEULUC}')
-	            and ncc.ngaychuyen between @tu and @den
-	            --and dmh.banHHVT = 1
+                ncc.trangthai in ('{Helper.HIEULUC}')
+                and ncc.ngaychuyen >= @tu
+                and ncc.ngaychuyen <= @den
                 and dh.sl_xuat > 0
                 {dtkd}
+
             order by
-	            ncc.ngaychuyen, sp.ma_sanpham
+                ncc.ngaychuyen,
+                sp.ma_sanpham
 		";
 
         return sql;

@@ -64,78 +64,116 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKhoGiaTri : S
         if (!string.IsNullOrWhiteSpace(masp))
             masp = $@"and sp.ma_sanpham = N'{masp}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
-		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
-            declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-            declare @pbSel nvarchar(MAX) = (select ten_phongban from ad_department where md_phongban_id = '{boPhanSel}')            
-            
-            declare @tbl table (
-	            maVTHH nvarchar(MAX),
-	            dg decimal(18,4),
-	            rank_no int
+		    DECLARE @tu DATETIME = CONVERT(DATETIME, N'{tu} 00:00:00', 103)
+            DECLARE @den DATETIME = CONVERT(DATETIME, N'{den} 23:59:59', 103)
+
+            DECLARE @pbSel NVARCHAR(MAX) =
+            (
+                SELECT ten_phongban
+                FROM ad_department
+                WHERE md_phongban_id = '{boPhanSel}'
             )
 
-            insert into @tbl
-            select
-	            sp.ma_sanpham,
-	            isnull(cdh.dongiamua, 0) as dg,
-	            RANK () OVER (partition by sp.ma_sanpham ORDER BY (case when isnull(cdh.dongiamua, 0) > 0 then 0 else 1 end), ngaychuyen desc) AS Rank_no
-            from md_kho_giaodich kgd
-	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-	            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
-	            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
-            where 1=1
-                and kgd.kieuchuyen = N'{Helper.NhapKho}'
-	            and kgd.ngaychuyen <= @den
-	            and kgd.soluong_dichchuyen > 0
-	            and isnull(kgd.dongnhapxuat, '') like N'PNKNCC%' 
-                {masp}
+            ;WITH gia AS
+            (
+                SELECT
+                    sp.ma_sanpham,
+                    ISNULL(cdh.dongiamua,0) AS dg,
+                    ROW_NUMBER() OVER
+                    (
+                        PARTITION BY sp.ma_sanpham
+                        ORDER BY
+                            CASE WHEN ISNULL(cdh.dongiamua,0) > 0 THEN 0 ELSE 1 END,
+                            kgd.ngaychuyen DESC
+                    ) AS rn
+                FROM md_kho_giaodich kgd
+                    LEFT JOIN md_sanpham sp
+                        ON sp.md_sanpham_id = kgd.md_sanpham_id
+                    LEFT JOIN c_donmuahang dmh
+                        ON dmh.sochungtu = kgd.mota
+                    LEFT JOIN c_donmuahang_cdmh cdh
+                        ON cdh.c_donmuahang_id = dmh.c_donmuahang_id
+                        AND cdh.md_sanpham_id = kgd.md_sanpham_id
+                WHERE
+                    kgd.kieuchuyen = N'{Helper.NhapKho}'
+                    AND kgd.ngaychuyen <= @den
+                    AND kgd.soluong_dichchuyen > 0
+                    AND ISNULL(kgd.dongnhapxuat,'') LIKE N'PNKNCC%'
+                    {masp}
+            ),
 
-            select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
-	            kgd.dongnhapxuat as sct,
-	            format(kgd.ngaychuyen, '{fmtDate}') as nxk,
-                kh.ten_kho as kho,
-                @pbSel as bophan,
-                pb.ten_phongban as bophan2,
-	            sp.ma_sanpham as maVTHH,
-	            sp.mota_tiengviet as tenVTHH,
-	            dvtsp.ten_dvt as dvt,
-	            kgd.soluong_dichchuyen as soluong,
-                dmh.dg as dongia,
-                isnull(pb.ten_phongban, dtkd.ma_dtkd) as xuatden
-            from md_kho_giaodich kgd
-                left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
-	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-                cross apply (
-		            select xnb.xuatden, '' as c_danhsachdathang_id
-		            from md_xuatkhonb xnb 
-		            where xnb.sochungtu = kgd.dongnhapxuat
-		            --union
-		            --select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id), xnb.c_danhsachdathang_id 
-		            --from md_xuatban xnb
-		            --left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
-		            --where xnb.sochungtu = kgd.dongnhapxuat
-	            ) xnb
-                left join ad_department pb on pb.md_phongban_id = xnb.xuatden
-                left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
-	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
-                left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.xuatden
-                outer apply (select dg from @tbl where rank_no = 1 and maVTHH = sp.ma_sanpham) dmh
-            where
-	            1=1
-                and kgd.kieuchuyen = N'{Helper.XuatKho}'
-	            and kgd.ngaychuyen between @tu and @den
-                and kgd.soluong_dichchuyen > 0
-                and kgd.dongnhapxuat not like 'PVC%'
-                and kgd.dongnhapxuat not like 'PXKXB%'
-                {kho} {boPhan} {masp}
-            order by
-	            kgd.ngaychuyen, sp.ma_sanpham
+            gia1 AS
+            (
+                SELECT ma_sanpham, dg
+                FROM gia
+                WHERE rn = 1
+            ),
+
+            data AS
+            (
+                SELECT
+                    kgd.dongnhapxuat,
+                    kgd.ngaychuyen,
+                    kh.ten_kho,
+                    pb.ten_phongban AS bophan2,
+                    sp.ma_sanpham,
+                    sp.mota_tiengviet,
+                    dvtsp.ten_dvt,
+                    kgd.soluong_dichchuyen,
+                    g.dg AS dongia,
+                    ISNULL(pb.ten_phongban, dtkd.ma_dtkd) AS xuatden
+                FROM md_kho_giaodich kgd
+                    LEFT JOIN md_kho kh
+                        ON kh.md_kho_id = kgd.md_kho_id
+                    LEFT JOIN md_sanpham sp
+                        ON sp.md_sanpham_id = kgd.md_sanpham_id
+                    LEFT JOIN md_donvitinhsanpham dvtsp
+                        ON dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                    LEFT JOIN md_xuatkhonb xnb
+                        ON xnb.sochungtu = kgd.dongnhapxuat
+                    LEFT JOIN ad_department pb
+                        ON pb.md_phongban_id = xnb.xuatden
+                    LEFT JOIN ad_department pbCha1
+                        ON pbCha1.md_phongban_id = pb.phongbanChaId
+                    LEFT JOIN ad_department pbCha2
+                        ON pbCha2.md_phongban_id = pbCha1.phongbanChaId
+                    LEFT JOIN md_doitackinhdoanh dtkd
+                        ON dtkd.md_doitackinhdoanh_id = xnb.xuatden
+                    LEFT JOIN gia1 g
+                        ON g.ma_sanpham = sp.ma_sanpham
+                WHERE
+                    kgd.kieuchuyen = N'{Helper.XuatKho}'
+                    AND kgd.ngaychuyen BETWEEN @tu AND @den
+                    AND kgd.soluong_dichchuyen > 0
+                    AND kgd.dongnhapxuat NOT LIKE 'PVC%'
+                    AND kgd.dongnhapxuat NOT LIKE 'PXKXB%'
+                    {kho} {boPhan} {masp}
+            )
+
+            SELECT
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
+                dongnhapxuat AS sct,
+                FORMAT(ngaychuyen, '{fmtDate}') AS nxk,
+                ten_kho AS kho,
+                @pbSel AS bophan,
+                bophan2,
+                ma_sanpham AS maVTHH,
+                mota_tiengviet AS tenVTHH,
+                ten_dvt AS dvt,
+                soluong_dichchuyen AS soluong,
+                dongia,
+                xuatden
+            FROM data
+            ORDER BY
+                ngaychuyen,
+                ma_sanpham
 		";
 
         //throw new Exception(sql);

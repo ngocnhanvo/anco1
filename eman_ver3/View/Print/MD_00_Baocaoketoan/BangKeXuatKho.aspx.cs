@@ -66,52 +66,75 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BangKeXuatKho : System.
         if (!string.IsNullOrWhiteSpace(masp))
             masp = $@"and sp.ma_sanpham = N'{masp}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
-		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
-            declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-            declare @pbSel nvarchar(MAX) = (select ten_phongban from ad_department where md_phongban_id = '{boPhanSel}')            
+		    DECLARE @tu DATETIME = CONVERT(DATETIME, N'{tu} 00:00:00', 103)
+            DECLARE @den DATETIME = CONVERT(DATETIME, N'{den} 23:59:59', 103)
 
-            select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
-	            kgd.dongnhapxuat as sct,
-	            format(kgd.ngaychuyen, '{fmtDate}') as nxk,
-                kh.ten_kho as kho,
-                @pbSel as bophan,
-                pb.ten_phongban as bophan2,
-	            sp.ma_sanpham as maVTHH,
-	            sp.mota_tiengviet as tenVTHH,
-	            dvtsp.ten_dvt as dvt,
-	            kgd.soluong_dichchuyen as soluong,
-                isnull(pb.ten_phongban, dtkd.ma_dtkd) as xuatden
-            from md_kho_giaodich kgd
-                left join md_kho kh on kh.md_kho_id = kgd.md_kho_id
-	            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-                outer apply (
-		            select xnb.xuatden from md_xuatkhonb xnb where xnb.sochungtu = kgd.dongnhapxuat
-		            --union
-		            --select isnull(pbXB.md_phongban_id, xnb.md_doitackinhdoanh_id) 
-		            --from md_xuatban xnb
-		            --left join ad_department pbXB on pbXB.md_doitackinhdoanh_id = xnb.md_doitackinhdoanh_id
-		            --where xnb.sochungtu = kgd.dongnhapxuat
-	            ) xnb
-                left join ad_department pb on pb.md_phongban_id = xnb.xuatden
-                left join ad_department pbCha1 on pbCha1.md_phongban_id = pb.phongbanChaId
-	            left join ad_department pbCha2 on pbCha2.md_phongban_id = pbCha1.phongbanChaId
-                left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = xnb.xuatden
-            where
-	            1=1
-                and kgd.kieuchuyen = N'{Helper.XuatKho}'
-	            and kgd.ngaychuyen between @tu and @den
-                and kgd.soluong_dichchuyen > 0
-                and isnull(kgd.mota,'') not like N'%,%'
-                and isnull(kgd.mota,'') not in ('{donhanghuy}')
-                {kho} {boPhan} {masp}
-            order by
-	            kgd.ngaychuyen, sp.ma_sanpham
+            DECLARE @pbSel NVARCHAR(MAX) = (
+                SELECT ten_phongban 
+                FROM ad_department 
+                WHERE md_phongban_id = '{boPhanSel}'
+            )
+
+            ;WITH data AS (
+                SELECT
+                    kgd.dongnhapxuat,
+                    kgd.ngaychuyen,
+                    kh.ten_kho,
+                    pb.ten_phongban AS bophan2,
+                    sp.ma_sanpham,
+                    sp.mota_tiengviet,
+                    dvtsp.ten_dvt,
+                    kgd.soluong_dichchuyen,
+                    ISNULL(pb.ten_phongban, dtkd.ma_dtkd) AS xuatden
+                FROM md_kho_giaodich kgd
+                    LEFT JOIN md_kho kh 
+                        ON kh.md_kho_id = kgd.md_kho_id
+                    LEFT JOIN md_sanpham sp 
+                        ON sp.md_sanpham_id = kgd.md_sanpham_id
+                    LEFT JOIN md_donvitinhsanpham dvtsp 
+                        ON dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                    LEFT JOIN md_xuatkhonb xnb 
+                        ON xnb.sochungtu = kgd.dongnhapxuat
+                    LEFT JOIN ad_department pb 
+                        ON pb.md_phongban_id = xnb.xuatden
+                    LEFT JOIN ad_department pbCha1 
+                        ON pbCha1.md_phongban_id = pb.phongbanChaId
+                    LEFT JOIN ad_department pbCha2 
+                        ON pbCha2.md_phongban_id = pbCha1.phongbanChaId
+                    LEFT JOIN md_doitackinhdoanh dtkd 
+                        ON dtkd.md_doitackinhdoanh_id = xnb.xuatden
+                WHERE
+                    kgd.kieuchuyen = N'{Helper.XuatKho}'
+                    AND kgd.ngaychuyen BETWEEN @tu AND @den
+                    AND kgd.soluong_dichchuyen > 0
+                    AND ISNULL(kgd.mota,'') NOT LIKE N'%,%'
+                    AND ISNULL(kgd.mota,'') NOT IN ('{donhanghuy}')
+                    {kho} {boPhan} {masp}
+            )
+
+            SELECT
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
+                dongnhapxuat AS sct,
+                FORMAT(ngaychuyen, '{fmtDate}') AS nxk,
+                ten_kho AS kho,
+                @pbSel AS bophan,
+                bophan2,
+                ma_sanpham AS maVTHH,
+                mota_tiengviet AS tenVTHH,
+                ten_dvt AS dvt,
+                soluong_dichchuyen AS soluong,
+                xuatden
+            FROM data
+            ORDER BY
+                ngaychuyen,
+                ma_sanpham
 		";
 
         //throw new Exception(sql);

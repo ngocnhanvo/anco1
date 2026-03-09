@@ -46,48 +46,80 @@ public partial class PrintControllers_MD_00_Baocaoketoan_CongNoPhaiTraNhom : Sys
         if (!string.IsNullOrWhiteSpace(dtkd))
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
-		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
-            declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
+		    DECLARE @tu DATETIME = CONVERT(DATETIME, N'{tu} 00:00:00', 103)
+            DECLARE @den DATETIME = CONVERT(DATETIME, N'{den} 23:59:59', 103)
 
-            select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
-	            ncc.sochungtu as sct,
-	            format(ncc.ngaychuyen, '{fmtDate}') as ngaynk,
-	            dmh.so_donmuahang as donhang,
-                dmh.donhang_thamchieu as so_po,
-	            dtkd.ma_dtkd as maDTKD,
-                dtkd.ten_dtkd as tenDTKD,
-	            sp.ma_sanpham as maVTHH,
-	            sp.mota_tiengviet as tenVTHH,
-	            dvtsp.ten_dvt as dvt,
-	            dmhDH.sl_dadat as sldh,
-	            dh.sl_nhap as slnk,
-	            dmhDH.dongiamua as dongia,
-	            thue.giatri/100 as vat,
-	            FLOOR(dmhDH.dongiamua * dh.sl_nhap) as thanhtien,
-	            FLOOR(FLOOR(dmhDH.dongiamua * dh.sl_nhap) + FLOOR(dmhDH.dongiamua * dh.sl_nhap) * thue.giatri / 100) as thanhtienThue,
-                ROW_NUMBER() OVER (PARTITION BY dtkd.ma_dtkd ORDER BY dtkd.ma_dtkd ASC) AS cr
-            from md_nhapkho_ncc ncc
-	            left join md_nhapkho_ncc_dh dh on dh.md_nhapkho_ncc_id = ncc.md_nhapkho_ncc_id
-	            left join c_donmuahang dmh on dmh.sochungtu = dh.so_dmh
-	            left join c_donmuahang_cdmh dmhDH on dmhDH.c_donmuahang_id = dmh.c_donmuahang_id
-	            left join c_kehoachdathang kh on kh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
-	            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-	            left join md_sanpham sp on sp.md_sanpham_id = dh.md_sanpham_id
-	            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            left join md_thue_sanpham thue on thue.md_thue_sanpham_id = dmhDH.thue
-            where
-	            dmhDH.md_sanpham_id = dh.md_sanpham_id
-	            and ncc.trangthai in ('{Helper.HIEULUC}')
-	            and ncc.ngaychuyen between @tu and @den
-                and dh.sl_nhap > 0
-                {dtkd}
-            order by
-	            dtkd.ma_dtkd, ncc.ngaychuyen, sp.ma_sanpham
+            ;WITH data AS (
+                SELECT
+                    ncc.sochungtu,
+                    ncc.ngaychuyen,
+                    dmh.so_donmuahang,
+                    dmh.donhang_thamchieu,
+                    dtkd.ma_dtkd,
+                    dtkd.ten_dtkd,
+                    sp.ma_sanpham,
+                    sp.mota_tiengviet,
+                    dvtsp.ten_dvt,
+                    dmhDH.sl_dadat,
+                    dh.sl_nhap,
+                    dmhDH.dongiamua,
+                    thue.giatri,
+                    FLOOR(dmhDH.dongiamua * dh.sl_nhap) AS thanhtien
+                FROM md_nhapkho_ncc ncc
+                    LEFT JOIN md_nhapkho_ncc_dh dh 
+                        ON dh.md_nhapkho_ncc_id = ncc.md_nhapkho_ncc_id
+                    LEFT JOIN c_donmuahang dmh 
+                        ON dmh.sochungtu = dh.so_dmh
+                    LEFT JOIN c_donmuahang_cdmh dmhDH 
+                        ON dmhDH.c_donmuahang_id = dmh.c_donmuahang_id
+                    LEFT JOIN c_kehoachdathang kh 
+                        ON kh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
+                    LEFT JOIN md_doitackinhdoanh dtkd 
+                        ON dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
+                    LEFT JOIN md_sanpham sp 
+                        ON sp.md_sanpham_id = dh.md_sanpham_id
+                    LEFT JOIN md_donvitinhsanpham dvtsp 
+                        ON dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                    LEFT JOIN md_thue_sanpham thue 
+                        ON thue.md_thue_sanpham_id = dmhDH.thue
+                WHERE
+                    dmhDH.md_sanpham_id = dh.md_sanpham_id
+                    AND ncc.trangthai IN ('{Helper.HIEULUC}')
+                    AND ncc.ngaychuyen BETWEEN @tu AND @den
+                    AND dh.sl_nhap > 0
+                    {dtkd}
+            )
+
+            SELECT
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
+                sochungtu AS sct,
+                FORMAT(ngaychuyen, '{fmtDate}') AS ngaynk,
+                so_donmuahang AS donhang,
+                donhang_thamchieu AS so_po,
+                ma_dtkd AS maDTKD,
+                ten_dtkd AS tenDTKD,
+                ma_sanpham AS maVTHH,
+                mota_tiengviet AS tenVTHH,
+                ten_dvt AS dvt,
+                sl_dadat AS sldh,
+                sl_nhap AS slnk,
+                dongiamua AS dongia,
+                giatri / 100 AS vat,
+                thanhtien,
+                FLOOR(thanhtien + thanhtien * giatri / 100) AS thanhtienThue,
+                ROW_NUMBER() OVER (PARTITION BY ma_dtkd ORDER BY ma_dtkd ASC) AS cr
+            FROM data
+            ORDER BY
+                ma_dtkd,
+                ngaychuyen,
+                ma_sanpham
 		";
         return sql;
     }

@@ -55,104 +55,120 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
         if (!string.IsNullOrWhiteSpace(masp))
             masp = $@"and sp.ma_sanpham = N'{masp}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
-            declare @dauky datetime = convert(datetime, N'01/'+ cast(Month(@tu) as nvarchar(2)) +'/'+ cast(year(@tu) as nvarchar(4)) +' 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-            declare @tenkho nvarchar(MAX) = (select ten_kho from md_kho where md_kho_id = '{khoId}')
 
-            declare @tbl table (
-	            ngaychuyen datetime,
-	            maVTHH nvarchar(MAX),
-	            tenVTHH nvarchar(MAX),
-	            dvt nvarchar(MAX),
-	            dg decimal(18,4),
-	            sldk decimal(18,4),
-	            slntk decimal(18,4),
-	            slxtk decimal(18,4),
-	            rank_no int
+            declare @dauky datetime =
+            datefromparts(year(@tu), month(@tu), 1)
+
+            declare @tenkho nvarchar(MAX) =
+            (select ten_kho from md_kho where md_kho_id = '{khoId}')
+
+            ;with data as
+            (
+                select
+                    kgd.ngaychuyen,
+                    sp.ma_sanpham maVTHH,
+                    sp.mota_tiengviet tenVTHH,
+                    dvtsp.ten_dvt dvt,
+                    isnull(cdh.dongiamua,0) dg,
+
+                    case
+                        when kgd.ngaychuyen < @dauky
+                            then case when kgd.kieuchuyen = N'Xuất kho'
+                                      then -kgd.soluong_dichchuyen
+                                      else  kgd.soluong_dichchuyen end
+                        else 0
+                    end sldk,
+
+                    case
+                        when kgd.ngaychuyen between @tu and @den
+                             and kgd.kieuchuyen <> N'Xuất kho'
+                        then kgd.soluong_dichchuyen
+                        else 0
+                    end slntk,
+
+                    case
+                        when kgd.ngaychuyen between @tu and @den
+                             and kgd.kieuchuyen = N'Xuất kho'
+                        then kgd.soluong_dichchuyen
+                        else 0
+                    end slxtk
+
+                from md_kho_giaodich kgd
+
+                left join md_sanpham sp
+                    on sp.md_sanpham_id = kgd.md_sanpham_id
+
+                left join md_donvitinhsanpham dvtsp
+                    on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+
+                left join c_donmuahang dmh
+                    on dmh.sochungtu = kgd.mota
+
+                left join c_donmuahang_cdmh cdh
+                    on cdh.c_donmuahang_id = dmh.c_donmuahang_id
+                    and cdh.md_sanpham_id = kgd.md_sanpham_id
+
+                where
+                    kgd.soluong_dichchuyen > 0
+                    and isnull(kgd.donhang,'') not like N'%,%'
+                    and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
+                    and kgd.ngaychuyen <= @den
+                    {masp} {kho}
+            ),
+
+            dg_last as
+            (
+                select *
+                from
+                (
+                    select
+                        maVTHH,
+                        dg,
+                        row_number() over
+                        (
+                            partition by maVTHH
+                            order by
+                            case when dg > 0 then 0 else 1 end,
+                            ngaychuyen desc
+                        ) rn
+                    from data
+                )A
+                where rn = 1
             )
 
-            insert into @tbl
-            select 
-	            A.*,
-	            RANK () OVER (partition by A.maVTHH ORDER BY (case when dg > 0 then 0 else 1 end), ngaychuyen desc) AS Rank_no 
-            from (
-	            select distinct
-		            kgd.ngaychuyen,
-		            sp.ma_sanpham as maVTHH,
-		            sp.mota_tiengviet as tenVTHH,
-		            dvtsp.ten_dvt as dvt,
-		            isnull(cdh.dongiamua, 0) as dg,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 - kgd.soluong_dichchuyen else kgd.soluong_dichchuyen end) as sldk,
-		            0 as slntk,
-		            0 as slxtk
-	            from md_kho_giaodich kgd
-		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
-		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
-	            where
-		            1=1
-		            and kgd.ngaychuyen < @dauky
-		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.donhang,'') not like N'%,%'
-                    and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
-                    {masp} {kho}
-
-	            union all
-
-	            select distinct
-		            kgd.ngaychuyen,
-		            sp.ma_sanpham as maVTHH,
-		            sp.mota_tiengviet as tenVTHH,
-		            dvtsp.ten_dvt as dvt,
-		            isnull(cdh.dongiamua, 0) as dg,
-		            0 as sldk,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then 0 else kgd.soluong_dichchuyen end) as slntk,
-		            (case when kgd.kieuchuyen = N'{Helper.XuatKho}' then kgd.soluong_dichchuyen else 0 end) as slxtk
-	            from md_kho_giaodich kgd
-		            left join md_sanpham sp on sp.md_sanpham_id = kgd.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-		            left join c_donmuahang dmh on dmh.sochungtu = kgd.mota
-		            left join c_donmuahang_cdmh cdh on cdh.c_donmuahang_id = dmh.c_donmuahang_id and cdh.md_sanpham_id = kgd.md_sanpham_id
-	            where
-		            1=1
-		            and kgd.ngaychuyen between @tu and @den
-		            and kgd.soluong_dichchuyen > 0
-                    and isnull(kgd.donhang,'') not like N'%,%'
-                    and isnull(kgd.donhang,'') not in (N'{donhanghuy}')
-                    {masp} {kho}
-            )A
-
             select
-                format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
                 A.maVTHH,
-	            A.tenVTHH,
-	            A.dvt,
-	            A.dg,
-                sum(A.sldk) as tonDK,
-	            sum(A.slntk) as nhapTK,
-	            sum(A.slxtk) as xuatTK,
-                @tenkho as kho,
-                null as po
-            from (
-                select distinct
-	                A.maVTHH,
-	                A.tenVTHH,
-	                A.dvt,
-	                B.dg,
-                    A.sldk,
-                    A.slntk,
-                    A.slxtk
-                from @tbl A
-                outer apply (select dg from @tbl where rank_no = 1 and maVTHH = A.maVTHH)B
-            )A
-            group by A.maVTHH, A.tenVTHH, A.dvt, A.dg
-            order by A.maVTHH
+                max(A.tenVTHH) tenVTHH,
+                max(A.dvt) dvt,
+                B.dg,
+
+                sum(A.sldk) tonDK,
+                sum(A.slntk) nhapTK,
+                sum(A.slxtk) xuatTK,
+
+                @tenkho kho,
+                null po
+
+            from data A
+            left join dg_last B
+                on A.maVTHH = B.maVTHH
+
+            group by
+                A.maVTHH,
+                B.dg
+
+            order by
+                A.maVTHH
 		";
 
         //throw new Exception(sql);

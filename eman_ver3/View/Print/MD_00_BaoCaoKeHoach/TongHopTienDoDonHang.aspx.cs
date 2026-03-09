@@ -44,68 +44,99 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopTienDoDonHang :
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
 
         var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
-		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
-            declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-            declare @fmtD nvarchar(10) = '{fmtDate}';
+		    DECLARE @tu DATETIME = CONVERT(DATETIME, N'{tu} 00:00:00', 103)
+            DECLARE @den DATETIME = CONVERT(DATETIME, N'{den} 23:59:59', 103)
 
-            select
-                format(getdate(), @fmtD) as ngayin,
-                format(@tu, @fmtD) as tungay,
-                format(@den, @fmtD) as denngay,
-	            A.*,
-	            isnull(A.sltp0 - A.sltp - A.tontp, 0) as sltp2,
-	            isnull(tho.tontho, 0) as tontho,
-	            isnull(tho.sltho, 0) as sltho,
-	            isnull(tho.sltho0 - tho.sltho, 0) as sltho2
-            from (
-	            select
-		            dmh.so_po as donhang,
+            ;WITH A AS
+            (
+                SELECT
+                    dmh.so_po AS donhang,
                     dmh.hangiaohang_po,
-		            sp.ma_sanpham as maVTHH,
-		            sp.mota_tiengviet as tenVTHH,
-		            dvtsp.ten_dvt as dvt,
-		            sum(cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)) as sldh,
-		            sum(isnull(cdh.sl_nhapkho, 0)) as tontp,
-		            sum(case when isnull(cdh.sl_datncc, 0) > 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_danhapkho, 0) end) as sltp,
-		            sum(cdh.sl_dat - isnull(cdh.sl_giamhanngach, 0)) as sltp0
-	            from c_danhsachdathang dmh
-		            left join md_doitackinhdoanh dtkd on dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
-		            left join md_lenhsanxuat lsx on lsx.donhang_thamchieu = dmh.so_po
-		            left join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id and cdh.stt = 9999
-		            left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
-		            left join md_donvitinhsanpham dvtsp on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
-	            where
-		            1=1
-		            and dmh.hangiaohang_po between @tu and @den
-		            and dmh.anco_check = 1
+                    sp.ma_sanpham AS maVTHH,
+                    sp.mota_tiengviet AS tenVTHH,
+                    dvtsp.ten_dvt AS dvt,
+                    SUM(cdh.sl_dat - ISNULL(cdh.sl_giamhanngach,0)) AS sldh,
+                    SUM(ISNULL(cdh.sl_nhapkho,0)) AS tontp,
+                    SUM(
+                        CASE 
+                            WHEN ISNULL(cdh.sl_datncc,0) > 0 
+                            THEN ISNULL(cdh.sl_dahoanthanh,0) 
+                            ELSE ISNULL(cdh.sl_danhapkho,0) 
+                        END
+                    ) AS sltp,
+                    SUM(cdh.sl_dat - ISNULL(cdh.sl_giamhanngach,0)) AS sltp0
+                FROM c_danhsachdathang dmh
+                    LEFT JOIN md_doitackinhdoanh dtkd
+                        ON dtkd.md_doitackinhdoanh_id = dmh.md_doitackinhdoanh_id
+                    LEFT JOIN md_lenhsanxuat lsx
+                        ON lsx.donhang_thamchieu = dmh.so_po
+                    LEFT JOIN md_lenhsanxuat_tosx_cdh cdh
+                        ON cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                        AND cdh.stt = 9999
+                    LEFT JOIN md_sanpham sp
+                        ON sp.md_sanpham_id = cdh.md_sanpham_id
+                    LEFT JOIN md_donvitinhsanpham dvtsp
+                        ON dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+                WHERE
+                    dmh.hangiaohang_po BETWEEN @tu AND @den
+                    AND dmh.anco_check = 1
                     {dtkd}
-	            group by
-		            cdh.md_sanpham_id, 
-		            dmh.so_po,
+                GROUP BY
+                    cdh.md_sanpham_id,
+                    dmh.so_po,
                     dmh.hangiaohang_po,
-		            sp.ma_sanpham, 
-		            sp.mota_tiengviet, 
-		            dvtsp.ten_dvt
-            )A
-            outer apply (
-	            select 
-		            sum(isnull(cdh.sl_nhapkho, 0)) as tontho, 
-		            sum(case when isnull(cdh.sl_datncc, 0) > 0 then isnull(cdh.sl_dahoanthanh, 0) else isnull(cdh.sl_danhapkho, 0) end) as sltho,
-		            sum(isnull(cdh.sl_chiato, 0)) as sltho0
-	            from md_lenhsanxuat lsx
-	            inner join md_lenhsanxuat_tosx_cdh cdh on cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
-                inner join md_sanpham spc on spc.md_sanpham_id = cdh.md_sanpham_id
-	            where
-		            lsx.donhang_thamchieu = A.donhang
-		            and cdh.stt = 9998
-		            and cdh.macuoi = A.maVTHH
-                    and spc.vattu = 0
-	            group by
-		            cdh.macuoi
-            ) tho
-            order by
-                A.donhang, A.maVTHH
+                    sp.ma_sanpham,
+                    sp.mota_tiengviet,
+                    dvtsp.ten_dvt
+            ),
+
+            THO AS
+            (
+                SELECT
+                    lsx.donhang_thamchieu AS donhang,
+                    cdh.macuoi,
+                    SUM(ISNULL(cdh.sl_nhapkho,0)) AS tontho,
+                    SUM(
+                        CASE 
+                            WHEN ISNULL(cdh.sl_datncc,0) > 0 
+                            THEN ISNULL(cdh.sl_dahoanthanh,0) 
+                            ELSE ISNULL(cdh.sl_danhapkho,0) 
+                        END
+                    ) AS sltho,
+                    SUM(ISNULL(cdh.sl_chiato,0)) AS sltho0
+                FROM md_lenhsanxuat lsx
+                    INNER JOIN md_lenhsanxuat_tosx_cdh cdh
+                        ON cdh.md_lenhsanxuat_id = lsx.md_lenhsanxuat_id
+                    INNER JOIN md_sanpham spc
+                        ON spc.md_sanpham_id = cdh.md_sanpham_id
+                WHERE
+                    cdh.stt = 9998
+                    AND spc.vattu = 0
+                GROUP BY
+                    lsx.donhang_thamchieu,
+                    cdh.macuoi
+            )
+
+            SELECT
+                N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
+                A.*,
+                ISNULL(A.sltp0 - A.sltp - A.tontp,0) AS sltp2,
+                ISNULL(T.tontho,0) AS tontho,
+                ISNULL(T.sltho,0) AS sltho,
+                ISNULL(T.sltho0 - T.sltho,0) AS sltho2
+            FROM A
+            LEFT JOIN THO T
+                ON T.donhang = A.donhang
+                AND T.macuoi = A.maVTHH
+            ORDER BY
+                A.donhang,
+                A.maVTHH
 		";
 
         return sql;

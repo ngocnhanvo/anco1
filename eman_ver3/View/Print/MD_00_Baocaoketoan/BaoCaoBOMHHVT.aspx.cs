@@ -42,37 +42,41 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT : System.
         if (!string.IsNullOrWhiteSpace(masp))
             masp = $@"and sp.ma_sanpham = N'{masp}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
         string sql = $@"          
             select 
-                format(getdate(), '{fmtDate}') as ngayin,
-	            A.maHH,
-	            A.phienban,
-	            bvtsp.ma_sanpham as maVT,
-	            bvt.soluong as sl
-            from (
-	            select A.*
-	            from (
-		            select
-			            sp.ma_sanpham as maHH,
-			            bom.ten_phienban as phienban,
-			            bom.md_sanpham_bom_id,
-			            RANK () OVER (partition by sp.ma_sanpham ORDER BY bom.ngay_hieuluc desc) AS Rank_no
-		            from md_sanpham sp
-			            left join md_sanpham_bom bom on bom.md_sanpham_id = sp.md_sanpham_id
-		            where
-			            1=1
-			            and (sp.sanpham = 1 or sp.ban_thanhpham = 1)
-                        {kho} {masp}
-	            )A
-	            where A.Rank_no = 1 and isnull(A.phienban,'') != ''
-            )A 
-	            left join md_sanpham_bom_vattu bvt on bvt.md_sanpham_bom_id = A.md_sanpham_bom_id
-	            left join md_sanpham bvtsp on bvtsp.md_sanpham_id = bvt.md_sanpham_id
+                N'{ngayin}' as ngayin,
+                sp.ma_sanpham as maHH,
+                bom.ten_phienban as phienban,
+                bvtsp.ma_sanpham as maVT,
+                bvt.soluong as sl
+            from md_sanpham sp
+
+            outer apply (
+                select top (1)
+                    bom.md_sanpham_bom_id,
+                    bom.ten_phienban
+                from md_sanpham_bom bom
+                where bom.md_sanpham_id = sp.md_sanpham_id
+                    and isnull(bom.ten_phienban,'') <> ''
+                order by bom.ngay_hieuluc desc
+            ) bom
+
+            left join md_sanpham_bom_vattu bvt
+                on bvt.md_sanpham_bom_id = bom.md_sanpham_bom_id
+
+            left join md_sanpham bvtsp
+                on bvtsp.md_sanpham_id = bvt.md_sanpham_id
+
             where
-	            1=1
+                (sp.sanpham = 1 or sp.ban_thanhpham = 1)
+                {kho} {masp}
+
             order by
-	            A.maHH, A.phienban, bvtsp.ma_sanpham
+                sp.ma_sanpham,
+                bom.ten_phienban,
+                bvtsp.ma_sanpham
 		";
 
         return sql;

@@ -436,7 +436,7 @@ public static class Extension
             return null;
     }
 
-    public static DateTime? ToNullableDateTime(this string s)
+    public static DateTime? ToNullableDateTime(this string s, string fmt = "")
     {
         if (string.IsNullOrWhiteSpace(s))
         {
@@ -444,7 +444,7 @@ public static class Extension
         }
         else
         {
-            var date = VNN_Config.setDateTime(s);
+            var date = VNN_Config.setDateTime(s, fmt);
             if (date.IsDate())
                 return date;
             else

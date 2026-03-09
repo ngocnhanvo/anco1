@@ -44,15 +44,18 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopDonHangBan : Sy
         if (!string.IsNullOrWhiteSpace(dtkd))
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
 
-        var fmtDate = "dd/MM/yyyy";
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
 
             select
-	            format(getdate(), '{fmtDate}') as ngayin,
-	            format(@tu, '{fmtDate}') as tungay,
-	            format(@den, '{fmtDate}') as denngay,
+	            N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
 	            dtkd.ma_dtkd as maNCC,
 	            dhb.so_po as dhb,
 	            sp.ma_sanpham as maVTHH,

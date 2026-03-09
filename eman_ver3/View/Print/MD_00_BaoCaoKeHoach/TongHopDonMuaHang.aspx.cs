@@ -42,16 +42,19 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopDonMuaHang : Sy
         string dtkd = context.Request.QueryString["dtkd"].removeAllSpaceOrTrimText(true).Replace("'", "''");
         if (!string.IsNullOrWhiteSpace(dtkd))
             dtkd = $@"and dtkd.ma_dtkd = N'{dtkd}'";
-        
+
+        var fmtDate = Helper.fmtDate;
+        var ngayin = DateTime.Now.ToString(fmtDate);
+        var tuStr = tu.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
+        var denStr = den.ToNullableDateTime(fmtDate).Value.ToString(fmtDate);
         string sql = $@"
 		    declare @tu datetime = convert(datetime, N'{tu} 00:00:00', 103)
             declare @den datetime = convert(datetime, N'{den} 23:59:59', 103)
-            declare @fmtD nvarchar(MAX) = '{Helper.fmtDate}';
 
             select
-	            format(getdate(), @fmtD) as ngayin,
-	            format(@tu, @fmtD) as tungay,
-	            format(@den, @fmtD) as denngay,
+	            N'{ngayin}' ngayin,
+                N'{tuStr}' tungay,
+                N'{denStr}' denngay,
 	            dtkd.ma_dtkd as maNCC,
                 khdh.donhang_thamchieu as donhang,
 	            khdh.hangiaohangPO,

@@ -468,7 +468,7 @@ namespace OfficeToPDF
                     var lstRPLNotNull = lstTextReplace.Where(s => s.row.GetValueOrDefault(0) > infoExcel.detail).ToList();
                     foreach (var rpl in lstRPLNotNull)
                         rpl.row = rpl.row.GetValueOrDefault(0) + totalRow;
-                    s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow);
+                    s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow, true, false);
                 }
 
                 int lastG = 0;
