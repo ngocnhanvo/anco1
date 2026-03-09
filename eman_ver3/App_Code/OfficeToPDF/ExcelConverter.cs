@@ -253,7 +253,7 @@ namespace OfficeToPDF
                     activeWindow = app.ActiveWindow;
                     Sheets allSheets = null;
                     var fmt = XlFileFormat.xlOpenXMLWorkbook;
-                    var quality = XlFixedFormatQuality.xlQualityMinimum;
+                    var quality = XlFixedFormatQuality.xlQualityStandard;
                     if (isHidden)
                     {
                         // Try and at least minimise it
@@ -354,99 +354,7 @@ namespace OfficeToPDF
                     //        string msg1 = ex.Message;
                     //    }
                     //}
-
-                    foreach (var image in lstImage)
-                    {
-                        try
-                        {
-                            var oRange = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, image.column + 1];
-                            System.Drawing.Image pictureR = null;
-                            if (image.link.StartsWith("https://"))
-                            {
-                                var taskIMG = Task.Factory.StartNew(() =>
-                                {
-                                    using (var wc = new WebClientWithTimeout { Timeout = 5000 })
-                                        return wc.DownloadData(image.link);
-                                });
-
-                                byte[] bytes = null;
-                                try
-                                {
-                                    // Chờ tối đa 5 giây, nếu không xong thì bỏ qua
-                                    if (taskIMG.Wait(5000))
-                                        bytes = taskIMG.Result;
-                                }
-                                catch (Exception ex)
-                                {
-                                    oRange.Value = ex.ToString();
-                                }
-
-                                if (bytes != null)
-                                {
-                                    using (var ms = new MemoryStream(bytes))
-                                    {
-                                        pictureR = System.Drawing.Image.FromStream(ms);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (File.Exists(image.link))
-                                    pictureR = System.Drawing.Image.FromFile(image.link);
-                            }
-                            float width = (float)((double)oRange.Width);
-                            float height = (float)((double)oRange.RowHeight);
-
-                            for (var iRan = image.column + 1; iRan <= image.columnLast; iRan++)
-                            {
-                                var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, iRan + 1];
-                                width += (float)((double)oRangeBS.Width);
-                            }
-
-                            for (var iRan = image.row + 1; iRan <= image.rowLast; iRan++)
-                            {
-                                var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[iRan + 1, image.column + 1];
-                                height += (float)((double)oRangeBS.RowHeight);
-                            }
-
-                            float widthR = pictureR.Width;
-                            float heightR = pictureR.Height;
-                            float percent = height / heightR;
-
-                            var widthImg = (int)(widthR * percent);
-                            var heightImg = (int)(heightR * percent - 3.5);
-                            widthImg = widthImg > width ? (int)(width - 1) : widthImg;
-                            var rateColumnAndPicture = (width - widthImg) / 2;
-                            rateColumnAndPicture = rateColumnAndPicture <= 0 ? 0 : rateColumnAndPicture;
-
-                            var rateRowAndPicture = (height - heightImg) / 2;
-                            rateRowAndPicture = rateRowAndPicture <= 0 ? 2 : rateRowAndPicture;
-
-                            var Left = (float)((double)oRange.Left + rateColumnAndPicture);
-                            var Top = (float)((double)oRange.Top + rateRowAndPicture);
-
-                            if (image.leftIMG != null)
-                                Left = (float)((double)oRange.Left) + image.leftIMG.GetValueOrDefault(0);
-
-                            if (image.topIMG != null)
-                                Top = (float)((double)oRange.Top) + image.topIMG.GetValueOrDefault(0);
-
-                            if (image.widthIMG != null)
-                                widthImg = (int)image.widthIMG.GetValueOrDefault(0);
-
-                            if (image.heightIMG != null)
-                                heightImg = (int)image.heightIMG.GetValueOrDefault(0);
-
-                            var pic = worksheet.Shapes.AddPicture(image.link, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
-
-                            pictureR.Dispose();
-                        }
-                        catch(Exception ex)
-                        {
-                            throw new Exception(ex.ToString());
-                        }
-                    }
-
+                    
                     float widthBackUp = -1;
                     foreach (var textInLine in lstText)
                     {
@@ -603,7 +511,7 @@ namespace OfficeToPDF
                     {
                         try
                         {
-                            var RangeFm = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[1, col + 1];
+                            var RangeFm = (Range)worksheet.Cells[1, col + 1];
                             RangeFm.EntireColumn.AutoFit();
                         }
                         catch (Exception ex)
@@ -611,7 +519,118 @@ namespace OfficeToPDF
                             string msg1 = ex.Message;
                         }
                     }
-                    
+
+                    foreach (var image in lstImage)
+                    {
+                        System.Drawing.Image pictureR = null;
+                        byte[] bytes = null;
+                        string tempFile = "";
+                        try
+                        {
+                            var oRange = (Range)worksheet.Cells[image.row + 1, image.column + 1];
+                            if (image.link.StartsWith("https://"))
+                            {
+                                try
+                                {
+                                    var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(image.link);
+                                    request.Timeout = 5000;
+                                    request.ReadWriteTimeout = 5000;
+                                    request.UserAgent = "Mozilla/5.0";
+
+                                    using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                                    using (var stream = response.GetResponseStream())
+                                    using (var ms = new MemoryStream())
+                                    {
+                                        stream.CopyTo(ms);
+                                        bytes = ms.ToArray();
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    oRange.Value = "IMG ERR: " + ex.Message;
+                                }
+
+                                if (bytes != null)
+                                {
+                                    using (var ms = new MemoryStream(bytes))
+                                    {
+                                        pictureR = System.Drawing.Image.FromStream(ms);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                bytes = File.ReadAllBytes(image.link);
+                                using (var ms = new MemoryStream(bytes))
+                                {
+                                    pictureR = System.Drawing.Image.FromStream(ms);
+                                }
+                            }
+
+                            if (pictureR != null)
+                            {
+                                float width = (float)((double)oRange.Width);
+                                float height = (float)((double)oRange.RowHeight);
+
+                                for (var iRan = image.column + 1; iRan <= image.columnLast; iRan++)
+                                {
+                                    var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, iRan + 1];
+                                    width += (float)((double)oRangeBS.Width);
+                                }
+
+                                for (var iRan = image.row + 1; iRan <= image.rowLast; iRan++)
+                                {
+                                    var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[iRan + 1, image.column + 1];
+                                    height += (float)((double)oRangeBS.RowHeight);
+                                }
+
+                                float widthR = pictureR.Width;
+                                float heightR = pictureR.Height;
+                                float scale = 0.9f;
+                                float percent = Math.Min(width / widthR, height / heightR) * scale;
+
+                                var widthImg = (int)(widthR * percent);
+                                var heightImg = (int)(heightR * percent - 3.5);
+                                widthImg = widthImg > width ? (int)(width - 1) : widthImg;
+                                var rateColumnAndPicture = (width - widthImg) / 2;
+                                rateColumnAndPicture = rateColumnAndPicture <= 0 ? 0 : rateColumnAndPicture;
+
+                                var rateRowAndPicture = (height - heightImg) / 2;
+                                rateRowAndPicture = rateRowAndPicture <= 0 ? 2 : rateRowAndPicture;
+
+                                var Left = (float)((double)oRange.Left + rateColumnAndPicture);
+                                var Top = (float)((double)oRange.Top + rateRowAndPicture);
+
+                                if (image.leftIMG != null)
+                                    Left = (float)((double)oRange.Left) + image.leftIMG.GetValueOrDefault(0);
+
+                                if (image.topIMG != null)
+                                    Top = (float)((double)oRange.Top) + image.topIMG.GetValueOrDefault(0);
+
+                                if (image.widthIMG != null)
+                                    widthImg = (int)image.widthIMG.GetValueOrDefault(0);
+
+                                if (image.heightIMG != null)
+                                    heightImg = (int)image.heightIMG.GetValueOrDefault(0);
+
+                                tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
+                                File.WriteAllBytes(tempFile, bytes);
+                                var pic = worksheet.Shapes.AddPicture(image.link, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.ToString());
+                        }
+                        finally
+                        {
+                            if (File.Exists(tempFile))
+                                File.Delete(tempFile);
+                            if (pictureR != null)
+                                pictureR.Dispose();
+                        }
+                    }
+
                     // Try and avoid xls files raising a dialog
                     var temporaryStorageDir = Path.GetTempFileName();
                     File.Delete(temporaryStorageDir);

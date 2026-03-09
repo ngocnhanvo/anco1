@@ -97,6 +97,8 @@ namespace OfficeToPDF
                 }
 
                 var s1 = hssfwb.GetSheetAt(0);
+                var nPOIM = new NPOIM(hssfwb, s1);
+
                 var cellRangeAddressAll = new List<CellRangeAddress>();
                 for (int m = 0; m < s1.NumMergedRegions; m++)
                 {
@@ -496,13 +498,14 @@ namespace OfficeToPDF
                                     var columnT = rowGHT.CreateCell(cell.ColumnIndex);
                                     columnT.CellStyle = cell.CellStyle;
                                     var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowGHT, printCf, maxHeight3, hssfwb, iR, sothapphan, maxColumn, rowGHMau.mergeCells);
-                                    maxHeight3 = float.Parse(colObj["maxHeight"].ToString());
                                 }
 
                                 if (rowGHMau.row.ZeroHeight)
                                     rowGHT.ZeroHeight = true;
                                 else
-                                    setMaxHeight(rowGHT, maxHeight3);
+                                {
+                                    rowGHT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGHT.RowNum, maxHeight3);
+                                }
                             }
 
                             lastG = 0;
@@ -532,10 +535,8 @@ namespace OfficeToPDF
                             var columnT = rowDT.CreateCell(cell.ColumnIndex);
                             columnT.CellStyle = cell.CellStyle;
                             var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowDT, printCf, maxHeight, hssfwb, iR, sothapphan, maxColumn, rowDTCP.mergeCells);
-                            maxHeight = float.Parse(colObj["maxHeight"].ToString());
                         }
-
-                        setMaxHeight(rowDT, maxHeight);
+                        rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
 
                         if (rowGFTCP != null)
                         {
@@ -564,9 +565,8 @@ namespace OfficeToPDF
                                     var columnT = rowGFT.CreateCell(cell.ColumnIndex);
                                     columnT.CellStyle = cell.CellStyle;
                                     var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowGFT, printCf, maxHeight3, hssfwb, iR, sothapphan, maxColumn, rowGFTCP.mergeCells);
-                                    maxHeight3 = float.Parse(colObj["maxHeight"].ToString());
                                 }
-                                setMaxHeight(rowGFT, maxHeight3);
+                                rowGFT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGFT.RowNum, maxHeight3);
                             }
                         }
                     }
@@ -580,9 +580,8 @@ namespace OfficeToPDF
                             var columnT = rowDT.CreateCell(cell.ColumnIndex);
                             columnT.CellStyle = cell.CellStyle;
                             var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowDT, printCf, maxHeight, hssfwb, iR, sothapphan, maxColumn, rowDTCP.mergeCells);
-                            maxHeight = float.Parse(colObj["maxHeight"].ToString());
                         }
-                        setMaxHeight(rowDT, maxHeight);
+                        rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
                     }
                 }
                 
@@ -635,9 +634,8 @@ namespace OfficeToPDF
                         var columnT = rowRptFooter.GetCell(cell.ColumnIndex);
                         var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowRptFooter, printCf, maxHeight2, hssfwb, 0, sothapphan, maxColumn, rowFTCP.mergeCells);
                         columnT = colObj["cell"] as ICell;
-                        maxHeight2 = float.Parse(colObj["maxHeight"].ToString());
                     }
-                    setMaxHeight(rowRptFooter, maxHeight2);
+                    rowRptFooter.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowRptFooter.RowNum, maxHeight2);
 
                     var atFooter = infoExcel.rptFooter.GetValueOrDefault(0);
                     var roWsAboveAt = rowsAboveFooter.Count + atFooter;
@@ -671,7 +669,7 @@ namespace OfficeToPDF
 
                 lstTextReplace = lstTextReplace.Where(s => s.row != null & s.column != null).ToList();
                 lstImage = lstImage.Where(s => !string.IsNullOrWhiteSpace(s.link)).ToList();
-                //var nPOIM = new NPOIM(hssfwb, s1);
+                
                 //nPOIM.InsertImages(lstImage);
 
                 printCf.hssfworkbook = hssfwb;

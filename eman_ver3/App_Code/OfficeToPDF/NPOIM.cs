@@ -277,4 +277,91 @@ public class NPOIM
         int columnWidth = _sheet.GetColumnWidth(colIndex); // đơn vị: 1/256 char
         return columnWidth / 2048.0 * 64.0 + 5;
     }
+
+    public float CalculateRowHeight(ISheet sheet, int rowIndex, float templateHeight)
+    {
+        IRow row = sheet.GetRow(rowIndex);
+        if (row == null) return templateHeight;
+
+        float maxHeightNeeded = 0;
+
+        foreach (ICell cell in row)
+        {
+            ICellStyle style = cell.CellStyle;
+            if (!style.WrapText) continue;
+
+            string content = cell.ToString();
+            if (string.IsNullOrEmpty(content)) continue;
+
+            IFont font = sheet.Workbook.GetFontAt(style.FontIndex);
+            float fontSizePt = font.FontHeightInPoints;
+
+            double colWidthPx = sheet.GetColumnWidth(cell.ColumnIndex) / 256.0 * 7.0;
+            double colWidthPt = colWidthPx * 72.0 / 96.0;
+
+            // Tính số dòng cho từng đoạn (split theo \n)
+            int totalLines = 0;
+            foreach (string line in content.Split('\n'))
+            {
+                double charWidthFactor = GetCharWidthFactor(line);
+                double charsPerLine = colWidthPt / (fontSizePt * charWidthFactor);
+                charsPerLine = charsPerLine < 1 ? 1 : charsPerLine;
+
+                int linesForSegment = (int)Math.Ceiling(line.Length / charsPerLine);
+                totalLines += linesForSegment < 1 ? 1 : linesForSegment;
+            }
+            totalLines = totalLines < 1 ? 1 : totalLines;
+
+            float heightNeeded = totalLines * fontSizePt * 1.2f;
+            if (heightNeeded > maxHeightNeeded)
+                maxHeightNeeded = heightNeeded;
+        }
+
+        float finalHeight = Math.Max(templateHeight, maxHeightNeeded);
+        return Math.Max(finalHeight, 20);
+    }
+
+    /// <summary>
+    /// Tính hệ số width trung bình của ký tự dựa trên ngôn ngữ trong chuỗi.
+    /// Tiếng Việt/CJK: ký tự rộng hơn tiếng Anh.
+    /// </summary>
+    private double GetCharWidthFactor(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return 0.6;
+
+        int total = text.Length;
+        int vietnamese = 0;
+        int english = 0;
+
+        foreach (char c in text)
+        {
+            if (IsVietnamese(c))
+                vietnamese++;
+            else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+                english++;
+        }
+
+        double vietRatio = (double)vietnamese / total;
+        double englishRatio = (double)english / total;
+
+        // Tiếng Việt: ký tự có dấu rộng hơn ~0.55
+        // Tiếng Anh: ký tự hẹp hơn ~0.5
+        // Mix hoặc số/ký tự đặc biệt: ~0.6
+        if (vietRatio > 0.3)
+            return 0.55;
+        if (englishRatio > 0.5)
+            return 0.50;
+        return 0.60;
+    }
+
+    /// <summary>
+    /// Kiểm tra ký tự có phải tiếng Việt có dấu không
+    /// </summary>
+    private bool IsVietnamese(char c)
+    {
+        // Unicode ranges cho tiếng Việt có dấu
+        string viet = "àáâãèéêìíòóôõùúýăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ"
+                    + "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĂĐƠƯẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴỶỸ";
+        return viet.IndexOf(c) >= 0;
+    }
 }
