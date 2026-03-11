@@ -1823,3 +1823,6 @@ D:\ESC\Git Anco1\GenerateModels\obj\Debug\GenerateModels.csproj.CoreCompileInput
 D:\ESC\Git Anco1\GenerateModels\obj\Debug\GenerateModels.csproj.CopyComplete
 D:\ESC\Git Anco1\GenerateModels\obj\Debug\GenerateModels.dll
 D:\ESC\Git Anco1\GenerateModels\obj\Debug\GenerateModels.pdb
+D:\ESC\Git Anco1\GenerateModels\bin\DocumentFormat.OpenXml.dll
+D:\ESC\Git Anco1\GenerateModels\bin\Ghostscript.NET.dll
+D:\ESC\Git Anco1\GenerateModels\bin\OpenMcdf.dll
