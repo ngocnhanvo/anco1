@@ -201,7 +201,7 @@ namespace OfficeToPDF
                         }
                     }
                 }
-                
+
                 for (var i = 0; i <= s1.LastRowNum; i++)
                 {
                     string comment = "";
@@ -277,8 +277,8 @@ namespace OfficeToPDF
                                     }
 
                                     if (
-                                        cell.StringCellValue.LastIndexOf("{!") > -1 
-                                        & cell.StringCellValue.LastIndexOf("{!!") <= -1 
+                                        cell.StringCellValue.LastIndexOf("{!") > -1
+                                        & cell.StringCellValue.LastIndexOf("{!!") <= -1
                                         & !new string[] { "{!SUMGROUP}", "{!SUMREPORT}" }.Contains(cell.StringCellValue)
                                         )
                                     {
@@ -313,9 +313,9 @@ namespace OfficeToPDF
                                     }
 
                                     var itemReps = lstTextReplace.Where(s => cell.StringCellValue.Contains(s.oldT)).ToList();
-                                    foreach(var itemRep in itemReps)
+                                    foreach (var itemRep in itemReps)
                                     {
-                                        if(itemRep.row == null)
+                                        if (itemRep.row == null)
                                         {
                                             itemRep.row = i;
                                             itemRep.column = col;
@@ -448,7 +448,7 @@ namespace OfficeToPDF
                 totalRow += countDT - 1;
 
                 var lstFMLNotNull = lstFormula.Where(s => !string.IsNullOrEmpty(s.formula)).ToList();
-                
+
                 if (infoExcel.detail != null)
                 {
                     var imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
@@ -507,7 +507,7 @@ namespace OfficeToPDF
                                     rowGHT.ZeroHeight = true;
                                 else
                                 {
-                                    rowGHT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGHT.RowNum, maxHeight3);
+                                    //rowGHT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGHT.RowNum, maxHeight3);
                                 }
                             }
 
@@ -539,7 +539,7 @@ namespace OfficeToPDF
                             columnT.CellStyle = cell.CellStyle;
                             var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowDT, printCf, maxHeight, hssfwb, iR, sothapphan, maxColumn, rowDTCP.mergeCells);
                         }
-                        rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
+                        //rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
 
                         if (rowGFTCP != null)
                         {
@@ -569,7 +569,7 @@ namespace OfficeToPDF
                                     columnT.CellStyle = cell.CellStyle;
                                     var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowGFT, printCf, maxHeight3, hssfwb, iR, sothapphan, maxColumn, rowGFTCP.mergeCells);
                                 }
-                                rowGFT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGFT.RowNum, maxHeight3);
+                                //rowGFT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowGFT.RowNum, maxHeight3);
                             }
                         }
                     }
@@ -584,10 +584,10 @@ namespace OfficeToPDF
                             columnT.CellStyle = cell.CellStyle;
                             var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowDT, printCf, maxHeight, hssfwb, iR, sothapphan, maxColumn, rowDTCP.mergeCells);
                         }
-                        rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
+                        //rowDT.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowDT.RowNum, maxHeight);
                     }
                 }
-                
+
                 var grps = groupsReport.OrderBy(s => s.rowF).ToList();
                 foreach (var g in grps)
                 {
@@ -625,7 +625,7 @@ namespace OfficeToPDF
                         }
                     }
                 }
-                
+
                 //rowAddGHeader = rowAddGHeader > 0 ? rowAddGHeader + 1 : 0;
                 if (infoExcel.rptFooter != null)
                 {
@@ -638,7 +638,7 @@ namespace OfficeToPDF
                         var colObj = setCell(columnT, cell, infoExcel, s1, dt, rowRptFooter, printCf, maxHeight2, hssfwb, 0, sothapphan, maxColumn, rowFTCP.mergeCells);
                         columnT = colObj["cell"] as ICell;
                     }
-                    rowRptFooter.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowRptFooter.RowNum, maxHeight2);
+                    //rowRptFooter.HeightInPoints = nPOIM.CalculateRowHeight(s1, rowRptFooter.RowNum, maxHeight2);
 
                     var atFooter = infoExcel.rptFooter.GetValueOrDefault(0);
                     var roWsAboveAt = rowsAboveFooter.Count + atFooter;
@@ -652,14 +652,14 @@ namespace OfficeToPDF
                         }
                     }
                 }
-                
+
                 foreach (var rmComment in lstRemoveComment)
                 {
                     rmComment.RemoveCellComment();
                 }
-                
+
                 lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
-                foreach(var fml in lstFormula)
+                foreach (var fml in lstFormula)
                 {
                     var cell = s1.GetRow(fml.row - 1).GetCell(fml.col - 1);
                     if (cell != null)
@@ -672,7 +672,7 @@ namespace OfficeToPDF
 
                 lstTextReplace = lstTextReplace.Where(s => s.row != null & s.column != null).ToList();
                 lstImage = lstImage.Where(s => !string.IsNullOrWhiteSpace(s.link)).ToList();
-                
+
                 //nPOIM.InsertImages(lstImage);
 
                 printCf.hssfworkbook = hssfwb;
@@ -689,20 +689,57 @@ namespace OfficeToPDF
 
                 var urlPDF = urlExcel.Substring(0, urlExcel.LastIndexOf(".") + 1) + "pdf";
                 string msg = "", urlFN = "";
-                using (var excelConvert = new ExcelConverter())
+                //using (var excelConvert = new ExcelConverter())
+                //{
+                //    excelConvert.lstText = null;
+                //    excelConvert.lstImage = lstImage;
+                //    excelConvert.lstTextReplace = lstTextReplace;
+
+                //    lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
+                //    excelConvert.lstFormula = lstFormula;
+                //    excelConvert.lstAutoSizeColumn = lstAutoSizeColumn;
+
+                //    excelConvert.endRow = infoExcel.rptFooter;
+                //    excelConvert.endColumn = maxColumn;
+                //    urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
+                //    msg = excelConvert.ConvertInterop(urlExcel, urlFN, null);
+                //}
+                urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
+                var req = new AvariablePrj.ExportRequest {
+                    urlExcel = urlExcel,
+                    urlFN = urlFN,
+                    lstImage = lstImage,
+                    lstTextReplace = lstTextReplace,
+                    lstAutoSizeColumn = lstAutoSizeColumn,
+                    endrow = infoExcel.rptFooter.GetValueOrDefault(0),
+                    endColumn = maxColumn
+                };
+                string urlInterop = Helper.urlReportExcel;
+                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(urlInterop);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                request.Timeout = 120000;
+                request.ReadWriteTimeout = 120000;
+
+                // Convert object -> JSON
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+                request.ContentLength = bytes.Length;
+
+                // Write body
+                using (var stream = request.GetRequestStream())
                 {
-                    excelConvert.lstText = null;
-                    excelConvert.lstImage = lstImage;
-                    excelConvert.lstTextReplace = lstTextReplace;
+                    stream.Write(bytes, 0, bytes.Length);
+                }
 
-                    lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
-                    excelConvert.lstFormula = lstFormula;
-                    excelConvert.lstAutoSizeColumn = lstAutoSizeColumn;
-
-                    excelConvert.endRow = infoExcel.rptFooter;
-                    excelConvert.endColumn = maxColumn;
-                    urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
-                    msg = excelConvert.ConvertInterop(urlExcel, urlFN, null);
+                // Read response
+                using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    string result = reader.ReadToEnd();
+                    msg = result;
                 }
 
                 if (msg.Length <= 0)

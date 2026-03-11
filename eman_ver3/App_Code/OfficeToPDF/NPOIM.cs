@@ -216,19 +216,19 @@ public class NPOIM
     }
 
     /// <summary>Tổng width (pixels) từ colStart đến colEnd (inclusive)</summary>
-    private double GetAreaWidth(int colStart, int colEnd)
+    private double GetAreaWidth(int? colStart, int? colEnd)
     {
         double width = 0;
-        for (int i = colStart; i <= colEnd; i++)
+        for (int i = colStart.GetValueOrDefault(0); i <= colEnd; i++)
             width += GetColumnWidthInPixels(i);
         return width;
     }
 
     /// <summary>Tổng height (pixels) từ rowStart đến rowEnd (inclusive)</summary>
-    private double GetAreaHeight(int rowStart, int rowEnd)
+    private double GetAreaHeight(int? rowStart, int? rowEnd)
     {
         double height = 0;
-        for (int i = rowStart; i <= rowEnd; i++)
+        for (int i = rowStart.GetValueOrDefault(0); i <= rowEnd; i++)
         {
             IRow r = _sheet.GetRow(i);
             double rowHeightPt = r != null ? r.HeightInPoints : 15;
@@ -287,10 +287,13 @@ public class NPOIM
 
         foreach (ICell cell in row)
         {
+            if (cell.CellType != CellType.String)
+                continue;
+
             ICellStyle style = cell.CellStyle;
             if (!style.WrapText) continue;
 
-            string content = cell.ToString();
+            string content = cell.StringCellValue;
             if (string.IsNullOrEmpty(content)) continue;
 
             IFont font = sheet.Workbook.GetFontAt(style.FontIndex);
@@ -301,18 +304,18 @@ public class NPOIM
 
             // Tính số dòng cho từng đoạn (split theo \n)
             int totalLines = 0;
-            foreach (string line in content.Split('\n'))
+            foreach (string line in content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
             {
                 double charWidthFactor = GetCharWidthFactor(line);
                 double charsPerLine = colWidthPt / (fontSizePt * charWidthFactor);
                 charsPerLine = charsPerLine < 1 ? 1 : charsPerLine;
 
-                int linesForSegment = (int)Math.Ceiling(line.Length / charsPerLine);
+                int linesForSegment = (int)Math.Ceiling((line.Length * 1.15) / charsPerLine);
                 totalLines += linesForSegment < 1 ? 1 : linesForSegment;
             }
             totalLines = totalLines < 1 ? 1 : totalLines;
 
-            float heightNeeded = totalLines * fontSizePt * 1.2f;
+            float heightNeeded = totalLines * fontSizePt * 1.3f;
             if (heightNeeded > maxHeightNeeded)
                 maxHeightNeeded = heightNeeded;
         }
