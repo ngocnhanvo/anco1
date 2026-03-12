@@ -707,7 +707,8 @@ namespace OfficeToPDF
                     lstAutoSizeColumn = lstAutoSizeColumn,
                     lstBlankRow = lstBlankRow,
                     endrow = s1.LastRowNum,
-                    endColumn = maxColumn
+                    endColumn = maxColumn,
+                    nameApp = "anco1"
                 };
                 string urlInterop = Helper.urlReportExcel;
                 var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(urlInterop);

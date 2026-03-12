@@ -3,6 +3,7 @@ public class AvariablePrj
 {
     public partial class ExportRequest
     {
+        public string nameApp { get; set; }
         public string urlExcel { get; set; }
         public string urlFN { get; set; }
         public List<AvariablePrj.lstImage> lstImage { get; set; }

@@ -1889,6 +1889,7 @@ public class Public
                 if (chophepHL0.GetValueOrDefault(false))
                 {
                     msg = "";
+                    vcnb.md_trangthai_id = Helper.HIEULUC;
                     capNhatTrangThaiDonHangSauKhiLayTon(db, layTonTPhoacBTP, layTonTP, layTonBTP, vcnb, khdh, dsdh);
                 }
             }
