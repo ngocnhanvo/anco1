@@ -37,6 +37,7 @@ namespace OfficeToPDF
         public List<AvariablePrj.lstFontSize> lstFontSize = new List<AvariablePrj.lstFontSize>();
         public List<ICell> lstRemoveComment = new List<ICell>();
         public List<int> lstAutoSizeColumn = new List<int>();
+        public List<int> lstBlankRow = new List<int>();
 
         public ExcelExportData()
         {
@@ -206,6 +207,9 @@ namespace OfficeToPDF
                 {
                     string comment = "";
                     var rowI = s1.GetRow(i);
+                    if (nPOIM.IsRowBlank(rowI))
+                        lstBlankRow.Add(i + 1);
+
                     if (rowI != null)
                     {
                         var cellI0 = rowI.GetCell(0);
@@ -448,26 +452,31 @@ namespace OfficeToPDF
                 totalRow += countDT - 1;
 
                 var lstFMLNotNull = lstFormula.Where(s => !string.IsNullOrEmpty(s.formula)).ToList();
+                List<AvariablePrj.lstFormula> fmlContainsLastRows = null;
+                List<AvariablePrj.lstTextReplace> lstRPLNotNull = null;
+                List<AvariablePrj.lstImage> imageAfterDetails = null;
 
                 if (infoExcel.detail != null)
                 {
-                    var imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
+                    imageAfterDetails = lstImage.Where(s => s.row > infoExcel.detail.Value).ToList();
                     foreach (var imageAfterDetail in imageAfterDetails)
                     {
                         imageAfterDetail.row = imageAfterDetail.row + totalRow;
                         imageAfterDetail.rowLast = imageAfterDetail.rowLast + totalRow;
                     }
 
-                    var fmlContainsLastRows = lstFMLNotNull.Where(s => s.formula.Contains("[lastRow]")).ToList();
+                    fmlContainsLastRows = lstFMLNotNull.Where(s => s.formula.Contains("[lastRow]")).ToList();
                     var dtFN = totalRow + infoExcel.detail.GetValueOrDefault(0) + 1;
                     foreach (var fmlContainsLastRow in fmlContainsLastRows)
                     {
                         fmlContainsLastRow.formula = fmlContainsLastRow.formula.Replace("[lastRow]", dtFN.ToString());
                     }
 
-                    var lstRPLNotNull = lstTextReplace.Where(s => s.row.GetValueOrDefault(0) > infoExcel.detail).ToList();
+                    lstRPLNotNull = lstTextReplace.Where(s => s.row.GetValueOrDefault(0) > infoExcel.detail).ToList();
                     foreach (var rpl in lstRPLNotNull)
                         rpl.row = rpl.row.GetValueOrDefault(0) + totalRow;
+
+                    lstBlankRow = lstBlankRow.Select(r => (r - 1 > infoExcel.detail) ? r + totalRow : r).ToList();
                     s1.ShiftRows(infoExcel.detail.GetValueOrDefault(0), s1.LastRowNum, totalRow, true, false);
                 }
 
@@ -689,21 +698,6 @@ namespace OfficeToPDF
 
                 var urlPDF = urlExcel.Substring(0, urlExcel.LastIndexOf(".") + 1) + "pdf";
                 string msg = "", urlFN = "";
-                //using (var excelConvert = new ExcelConverter())
-                //{
-                //    excelConvert.lstText = null;
-                //    excelConvert.lstImage = lstImage;
-                //    excelConvert.lstTextReplace = lstTextReplace;
-
-                //    lstFormula = lstFormula.OrderByDescending(s => s.levelFML).ToList();
-                //    excelConvert.lstFormula = lstFormula;
-                //    excelConvert.lstAutoSizeColumn = lstAutoSizeColumn;
-
-                //    excelConvert.endRow = infoExcel.rptFooter;
-                //    excelConvert.endColumn = maxColumn;
-                //    urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
-                //    msg = excelConvert.ConvertInterop(urlExcel, urlFN, null);
-                //}
                 urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
                 var req = new AvariablePrj.ExportRequest {
                     urlExcel = urlExcel,
@@ -711,7 +705,8 @@ namespace OfficeToPDF
                     lstImage = lstImage,
                     lstTextReplace = lstTextReplace,
                     lstAutoSizeColumn = lstAutoSizeColumn,
-                    endrow = infoExcel.rptFooter.GetValueOrDefault(0),
+                    lstBlankRow = lstBlankRow,
+                    endrow = s1.LastRowNum,
                     endColumn = maxColumn
                 };
                 string urlInterop = Helper.urlReportExcel;

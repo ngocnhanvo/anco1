@@ -23,6 +23,22 @@ public class NPOIM
         _sheet = sheet;
     }
 
+    public bool IsRowBlank(IRow row)
+    {
+        if (row == null) return true;
+
+        for (int i = row.FirstCellNum; i < row.LastCellNum; i++)
+        {
+            var cell = row.GetCell(i);
+            if (cell == null) continue;
+
+            if (!string.IsNullOrWhiteSpace(cell.ToString()))
+                return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Gọi hàm này 1 lần trước khi InsertImages nếu có nhiều ảnh,
     /// tránh tính lại rowTopCache cho từng ảnh.

@@ -8,6 +8,7 @@ public class AvariablePrj
         public List<AvariablePrj.lstImage> lstImage { get; set; }
         public List<AvariablePrj.lstTextReplace> lstTextReplace { get; set; }
         public List<int> lstAutoSizeColumn { get; set; }
+        public List<int> lstBlankRow { get; set; }
         public int endrow { get; set; }
         public int endColumn { get; set; }
     }
