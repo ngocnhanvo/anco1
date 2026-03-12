@@ -27,10 +27,11 @@ namespace GenerateModels.Controllers
             {
                 using (var excelConvert = new OfficeToPDF.ExcelConverter())
                 {
-                    excelConvert.lstText = null;
+                    excelConvert.lstText = req.lstText;
                     excelConvert.lstImage = req.lstImage;
                     excelConvert.lstTextReplace = req.lstTextReplace;
                     excelConvert.lstAutoSizeColumn = req.lstAutoSizeColumn;
+                    excelConvert.lstBlankRow = req.lstBlankRow;
 
                     excelConvert.endRow = req.endrow;
                     excelConvert.endColumn = req.endColumn;
