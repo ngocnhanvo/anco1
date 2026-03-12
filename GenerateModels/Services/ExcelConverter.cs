@@ -42,8 +42,8 @@ namespace OfficeToPDF
         public int? endRow { get; set; }
         public int? endColumn { get; set; }
         public float? sizeAddPDF { get; set; }
-
         public bool? landScape { get; set; }
+        public string nameApp { get; set; }
         public ExcelConverter()
         {
 
@@ -80,6 +80,7 @@ namespace OfficeToPDF
             {
                 object oMissing = System.Reflection.Missing.Value;
                 app = new Microsoft.Office.Interop.Excel.Application();
+                app.Caption = nameApp;
                 app.DisplayAlerts = false;
                 app.AskToUpdateLinks = false;
                 app.AlertBeforeOverwriting = false;
@@ -182,17 +183,17 @@ namespace OfficeToPDF
             var source = new CancellationTokenSource();
             var token = source.Token;
 
-            Microsoft.Office.Interop.Excel.Application app = null;
-            Microsoft.Office.Interop.Excel.Workbooks workbooks = null;
-            Microsoft.Office.Interop.Excel.Workbook workbook = null;
+            Application app = null;
+            Workbooks workbooks = null;
+            Workbook workbook = null;
 
             var task = new System.Threading.Tasks.Task(() =>
             {
                 options = PDFBookmark.createOptions();
                 Boolean running = false;
-                System.Object activeSheet = null;
-                Microsoft.Office.Interop.Excel.Window activeWindow = null;
-                Microsoft.Office.Interop.Excel.Windows wbWin = null;
+                Object activeSheet = null;
+                Window activeWindow = null;
+                Windows wbWin = null;
                 Hashtable templatePageSetup = new Hashtable();
 
                 String tmpFile = null;
@@ -203,8 +204,8 @@ namespace OfficeToPDF
                     // Excel can be very slow to start up, so try to get the COM
                     // object a few times
                     int tries = 10;
-                    app = new Microsoft.Office.Interop.Excel.Application();
-
+                    app = new Application();
+                    app.Caption = nameApp;
                     while (tries > 0)
                     {
                         try
@@ -303,7 +304,7 @@ namespace OfficeToPDF
                         {
                             workbook = workbooks.Open(inputFile, updateLinks, nowrite, oMissing, oReadPass, oWritePass, true, oMissing, oMissing, oMissing, oMissing, oMissing, false, oMissing, oMissing);
                         }
-                        catch (System.Runtime.InteropServices.COMException)
+                        catch (COMException)
                         {
                             // Attempt to open it in read-only mode
                             workbook = workbooks.Open(inputFile, updateLinks, true, oMissing, oReadPass, oWritePass, true, oMissing, oMissing, oMissing, oMissing, oMissing, false, oMissing, oMissing);
@@ -463,7 +464,7 @@ namespace OfficeToPDF
                             string fontNamePrev = "Arial";
                             for (var iCl = textInLine.columnFPrev; iCl <= textInLine.columnTPrev; iCl++)
                             {
-                                var oRange = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
+                                var oRange = (Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
                                 widthTextPrev += (float)((double)oRange.Width);
 
                                 if (iCl == textInLine.columnFPrev)
@@ -510,7 +511,7 @@ namespace OfficeToPDF
                         string fontName = "Arial";
                         for (var iCl = textInLine.columnF; iCl <= textInLine.columnT; iCl++)
                         {
-                            var oRange = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
+                            var oRange = (Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
                             widthText += (float)((double)oRange.Width);
 
                             if (iCl == textInLine.columnF)

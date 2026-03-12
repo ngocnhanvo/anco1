@@ -7,6 +7,7 @@ namespace GenerateModels.Models
 {
     public class ExportRequest
     {
+        public string nameApp { get; set; }
         public string urlExcel { get; set; }
         public string urlFN { get; set; }
         public List<AvariablePrj.lstText> lstText { get; set; }

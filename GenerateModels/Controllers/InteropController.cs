@@ -32,6 +32,7 @@ namespace GenerateModels.Controllers
                     excelConvert.lstTextReplace = req.lstTextReplace;
                     excelConvert.lstAutoSizeColumn = req.lstAutoSizeColumn;
                     excelConvert.lstBlankRow = req.lstBlankRow;
+                    excelConvert.nameApp = req.nameApp;
 
                     excelConvert.endRow = req.endrow;
                     excelConvert.endColumn = req.endColumn;
