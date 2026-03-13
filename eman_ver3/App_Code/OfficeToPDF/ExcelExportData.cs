@@ -207,8 +207,8 @@ namespace OfficeToPDF
                 {
                     string comment = "";
                     var rowI = s1.GetRow(i);
-                    if (nPOIM.IsRowBlank(rowI))
-                        lstBlankRow.Add(i + 1);
+                    //if (nPOIM.IsRowBlank(rowI))
+                    //    lstBlankRow.Add(i + 1);
 
                     if (rowI != null)
                     {
@@ -387,9 +387,9 @@ namespace OfficeToPDF
                 }
 
 
-                var rowDTCP = createIrowICell(s1, infoExcel.detail.GetValueOrDefault(0), maxColumn, cellRangeAddressAll);
+                var rowDTCP = createIrowICell(s1, infoExcel.detail.GetValueOrDefault(0), maxColumn + 1, cellRangeAddressAll);
 
-                var rowFTCP = createIrowICell(s1, infoExcel.rptFooter.GetValueOrDefault(0), maxColumn, cellRangeAddressAll);
+                var rowFTCP = createIrowICell(s1, infoExcel.rptFooter.GetValueOrDefault(0), maxColumn + 1, cellRangeAddressAll);
 
                 var rptGroupHeader = infoExcel.rptGroupHeader;
                 if (rptGroupHeader != null)
@@ -403,7 +403,7 @@ namespace OfficeToPDF
                     }
                 }
 
-                var rowGFTCP = rptGroupHeader != null ? createIrowICell(s1, infoExcel.rptGroupFooter.GetValueOrDefault(0), maxColumn, cellRangeAddressAll) : null;
+                var rowGFTCP = rptGroupHeader != null ? createIrowICell(s1, infoExcel.rptGroupFooter.GetValueOrDefault(0), maxColumn + 1, cellRangeAddressAll) : null;
 
                 if (infoExcel.rptGroupFooter == null)
                     rowGFTCP = null;
@@ -586,7 +586,7 @@ namespace OfficeToPDF
                     {
                         var rowDT = s1.CreateRow(iR + infoExcel.detail.GetValueOrDefault(0));
                         var maxHeight = rowDTCP.defaultHeight.GetValueOrDefault(0);
-                        rowDT.HeightInPoints = maxHeight;
+                        //rowDT.HeightInPoints = maxHeight;
                         foreach (var cell in rowDTCP.cells)
                         {
                             var columnT = rowDT.CreateCell(cell.ColumnIndex);
@@ -705,7 +705,7 @@ namespace OfficeToPDF
                     lstImage = lstImage,
                     lstTextReplace = lstTextReplace,
                     lstAutoSizeColumn = lstAutoSizeColumn,
-                    lstBlankRow = lstBlankRow,
+                    //lstBlankRow = lstBlankRow,
                     endrow = s1.LastRowNum,
                     endColumn = maxColumn,
                     nameApp = "anco1"
