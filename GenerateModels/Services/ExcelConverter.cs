@@ -19,7 +19,9 @@ namespace OfficeToPDF
     {
         public void Dispose()
         {
-
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.SuppressFinalize(this);
         }
 
         public class WebClientWithTimeout : System.Net.WebClient
@@ -68,18 +70,24 @@ namespace OfficeToPDF
             "ScaleWithDocHeaderFooter", "TopMargin", "Zoom"
         };
 
-        public string setSizePDF(String inputFile)
+        public string setSizePDF(string inputFile)
         {
             string msg = "";
-            Microsoft.Office.Interop.Excel.Application app = null;
-            Microsoft.Office.Interop.Excel.Workbooks workbooks = null;
-            Microsoft.Office.Interop.Excel.Workbook workbook = null;
-            Microsoft.Office.Interop.Excel._Worksheet worksheet = null;
+
+            Application app = null;
+            Workbooks workbooks = null;
+            Workbook workbook = null;
+            _Worksheet worksheet = null;
+
+            Range excelCellrange = null;
+            Characters chars = null;
+            Font font = null;
 
             try
             {
                 object oMissing = System.Reflection.Missing.Value;
-                app = new Microsoft.Office.Interop.Excel.Application();
+
+                app = new Application();
                 app.Caption = nameApp;
                 app.DisplayAlerts = false;
                 app.AskToUpdateLinks = false;
@@ -89,31 +97,64 @@ namespace OfficeToPDF
                 app.FeatureInstall = Microsoft.Office.Core.MsoFeatureInstall.msoFeatureInstallNone;
                 app.WindowState = XlWindowState.xlMinimized;
                 app.Visible = false;
+
                 workbooks = app.Workbooks;
 
-                workbook = workbooks.Open(inputFile, oMissing, false, oMissing, oMissing, oMissing, true, oMissing, oMissing, oMissing, oMissing, oMissing, false, oMissing, oMissing);
+                workbook = workbooks.Open(
+                    inputFile,
+                    oMissing, false, oMissing, oMissing, oMissing,
+                    true, oMissing, oMissing, oMissing, oMissing,
+                    oMissing, false, oMissing, oMissing);
 
-                worksheet = (Microsoft.Office.Interop.Excel._Worksheet)workbook.ActiveSheet;
+                worksheet = (_Worksheet)workbook.ActiveSheet;
+
                 resetEndRowAndClumn();
-                for (var i = 1; i <= endRow; i++)
-                {
-                    for (var j = 1; j <= endColumn; j++)
-                    {
-                        var excelCellrange = (Range)worksheet.Cells[i, j];
-                        var text = excelCellrange.Text.ToString();
-                        var lengthText = text.Length;
 
-                        for (var k = 0; k < lengthText; k++)
+                for (int i = 1; i <= endRow; i++)
+                {
+                    for (int j = 1; j <= endColumn; j++)
+                    {
+                        try
                         {
-                            string size = excelCellrange.Characters[k, 1].Font.Size.ToString();
-                            if (!string.IsNullOrEmpty(size))
-                                excelCellrange.Characters[k, 1].Font.Size = float.Parse(size) + sizeAddPDF;
+                            excelCellrange = (Range)worksheet.Cells[i, j];
+
+                            string text = excelCellrange.Text?.ToString() ?? "";
+                            int lengthText = text.Length;
+
+                            for (int k = 1; k <= lengthText; k++)
+                            {
+                                try
+                                {
+                                    chars = excelCellrange.Characters[k, 1];
+                                    font = chars.Font;
+
+                                    float size = (float)font.Size;
+                                    font.Size = size + sizeAddPDF;
+                                }
+                                finally
+                                {
+                                    ReleaseCOMObject(font);
+                                    ReleaseCOMObject(chars);
+                                    font = null;
+                                    chars = null;
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            ReleaseCOMObject(excelCellrange);
+                            excelCellrange = null;
                         }
                     }
                 }
 
-                workbook.SaveAs(inputFile, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, XlSaveAsAccessMode.xlNoChange, Type.Missing, Type.Missing, Type.Missing,
-                        Type.Missing, Type.Missing);
+                workbook.SaveAs(
+                    inputFile,
+                    Type.Missing, Type.Missing, Type.Missing,
+                    Type.Missing, Type.Missing,
+                    XlSaveAsAccessMode.xlNoChange,
+                    Type.Missing, Type.Missing, Type.Missing,
+                    Type.Missing, Type.Missing);
             }
             catch (COMException ce)
             {
@@ -125,35 +166,37 @@ namespace OfficeToPDF
             }
             finally
             {
-                if (workbook != null)
+                try
                 {
+                    if (workbook != null)
+                    {
+                        workbook.Saved = true;
+                        CloseExcelWorkbook(workbook);
+                        ReleaseCOMObject(workbook);
+                        workbook = null;
+                    }
+
+                    if (workbooks != null)
+                        workbooks.Close();
+
+                    if (app != null)
+                        app.Quit();
+                }
+                finally
+                {
+                    ReleaseCOMObject(font);
+                    ReleaseCOMObject(chars);
+                    ReleaseCOMObject(excelCellrange);
+
                     ReleaseCOMObject(worksheet);
-                    ReleaseCOMObject(app.ActiveWindow);
-                    ReleaseCOMObject(workbook.Windows);
+                    ReleaseCOMObject(workbook);
+                    ReleaseCOMObject(workbooks);
+                    ReleaseCOMObject(app);
+
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-                    // Excel sometimes needs a bit of a delay before we close in order to
-                    // let things get cleaned up
-                    workbook.Saved = true;
-                    CloseExcelWorkbook(workbook);
+                    GC.Collect();
                 }
-
-                if (workbooks != null)
-                {
-                    workbooks.Close();
-                }
-
-                if (app != null)
-                {
-                    app.Quit();
-                }
-
-                // Clean all the COM leftovers
-                ReleaseCOMObject(workbook);
-                ReleaseCOMObject(workbooks);
-                ReleaseCOMObject(app);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
 
             return msg;
@@ -186,14 +229,16 @@ namespace OfficeToPDF
             Application app = null;
             Workbooks workbooks = null;
             Workbook workbook = null;
-
+            _Worksheet worksheet = null;
+            Sheets allSheets = null;
+            Window activeWindow = null;
+            Windows wbWin = null;
+            Object activeSheet = null;
             var task = new System.Threading.Tasks.Task(() =>
             {
                 options = PDFBookmark.createOptions();
                 Boolean running = false;
-                Object activeSheet = null;
-                Window activeWindow = null;
-                Windows wbWin = null;
+
                 Hashtable templatePageSetup = new Hashtable();
 
                 String tmpFile = null;
@@ -205,6 +250,7 @@ namespace OfficeToPDF
                     // object a few times
                     int tries = 10;
                     app = new Application();
+
                     app.Caption = nameApp;
                     while (tries > 0)
                     {
@@ -259,7 +305,7 @@ namespace OfficeToPDF
                     int worksheetNum = 0;
                     int sheetForConversionIdx = 0;
                     activeWindow = app.ActiveWindow;
-                    Sheets allSheets = null;
+
                     var fmt = XlFileFormat.xlOpenXMLWorkbook;
                     var quality = XlFixedFormatQuality.xlQualityStandard;
                     if (isHidden)
@@ -335,324 +381,553 @@ namespace OfficeToPDF
 
                     // Get the sheets
                     allSheets = workbook.Sheets;
-                    var worksheet = (Microsoft.Office.Interop.Excel._Worksheet)workbook.ActiveSheet;
-                    worksheet.PageSetup.CenterHorizontally = true;
+                    worksheet = (Microsoft.Office.Interop.Excel._Worksheet)workbook.ActiveSheet;
 
-                    if (landScape.GetValueOrDefault(false))
-                        worksheet.PageSetup.Orientation = XlPageOrientation.xlLandscape;
-                    
                     int countRPL = 50;
                     var lstColumnDels = new List<int>();
-                    foreach (var textReplace in lstTextReplace)
+                    PageSetup ps = null;
+                    Pages psP = null;
+                    string psCount = "";
+                    try
                     {
-                        var oRange = (Range)worksheet.Cells[textReplace.row.Value + 1, textReplace.column.Value + 1];
+                        ps = worksheet.PageSetup;
+                        psP = ps.Pages;
+                        psCount = psP.Count.ToString();
+                        ps.CenterHorizontally = true;
+                        if (landScape.GetValueOrDefault(false))
+                            ps.Orientation = XlPageOrientation.xlLandscape;
+                    }
+                    finally
+                    {
+                        ReleaseCOMObject(ps);
+                        ReleaseCOMObject(psP);
+                    }
+
+                    if (lstTextReplace.Count > 0)
+                    {
+                        var cellsRep = worksheet.Cells;
                         try
                         {
-                            int phStart = oRange.Value.ToString().LastIndexOf(textReplace.oldT);
-                            int phEnd = textReplace.oldT.Length;
-
-                            if (textReplace.newT == "{totalPage}")
-                                textReplace.newT = worksheet.PageSetup.Pages.Count.ToString();
-                            if (phStart > -1 & phEnd > -1)
+                            foreach (var textReplace in lstTextReplace)
                             {
-                                if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                Range oRange = null;
+                                Range oRangeWrap = null;
+                                Range colRangeR = null;
+                                Characters chars = null;
+                                Range rows = null;
+                                Font font = null;
+                                try
                                 {
-                                    oRange.Value = textReplace.newT;
-                                    int cld = oRange.Column + countRPL;
-                                    lstColumnDels.Add(cld);
-                                    var oRangeWrap = (Range)worksheet.Cells[oRange.Row, cld];
-                                    double columnWidth = 0;
-                                    //for (var i = oRange.Column; i < textReplace.column_Mer + oRange.Column; i++)
-                                    //{
-                                    //    var oRangeWrap2 = (Range)worksheet.Cells[oRange.Row, i];
-                                    //    columnWidth += double.Parse(oRangeWrap2.ColumnWidth.ToString());
-                                    //}
+                                    oRange = (Range)cellsRep[textReplace.row.Value + 1, textReplace.column.Value + 1];
+                                    rows = oRange.Rows;
+                                    font = oRange.Font;
+                                    var cellValue = oRange.Value?.ToString() ?? "";
+                                    int phStart = cellValue.LastIndexOf(textReplace.oldT);
+                                    int phEnd = textReplace.oldT.Length;
 
-                                    for (int i = oRange.Column; i < oRange.Column + textReplace.column_Mer; i++)
+                                    if (textReplace.newT == "{totalPage}")
+                                        textReplace.newT = psCount;
+
+                                    if (phStart > -1 & phEnd > -1)
                                     {
-                                        columnWidth += ((Range)worksheet.Columns[i]).ColumnWidth;
+                                        if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                        {
+                                            oRange.Value = textReplace.newT;
+
+                                            int cld = oRange.Column + countRPL;
+                                            lstColumnDels.Add(cld);
+
+                                            oRangeWrap = (Range)cellsRep[oRange.Row, cld];
+
+                                            double columnWidth = 0;
+
+                                            for (int i = oRange.Column; i < oRange.Column + textReplace.column_Mer; i++)
+                                            {
+                                                colRangeR = (Range)worksheet.Columns[i];
+                                                columnWidth += (double)colRangeR.ColumnWidth;
+                                                ReleaseCOMObject(colRangeR);
+                                                colRangeR = null;
+                                            }
+
+                                            oRangeWrap.ColumnWidth = columnWidth;
+
+                                            oRangeWrap.Font.Name = font.Name;
+                                            oRangeWrap.Font.Size = font.Size;
+                                            oRangeWrap.Orientation = oRange.Orientation;
+                                            oRangeWrap.VerticalAlignment = oRange.VerticalAlignment;
+                                            oRangeWrap.Font.Bold = font.Bold;
+                                            oRangeWrap.Font.Italic = font.Italic;
+                                            oRangeWrap.WrapText = oRange.WrapText;
+
+                                            oRange.Copy(oRangeWrap);
+
+                                            countRPL++;
+
+                                            rows.AutoFit();
+                                            var heightATF = rows.Height;
+                                            oRange.RowHeight = Math.Ceiling(heightATF * 1.05);
+                                        }
+                                        else
+                                        {
+                                            try
+                                            {
+                                                chars = oRange.Characters[phStart + 1, phEnd];
+                                                chars.Insert(textReplace.newT);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                chars = oRange.Characters[phStart + 1, phEnd];
+                                                chars.Insert(ex.Message);
+                                            }
+                                        }
                                     }
 
-                                    oRangeWrap.ColumnWidth = columnWidth;
-                                    oRangeWrap.Font.Name = oRange.Font.Name;
-                                    oRangeWrap.Font.Size = oRange.Font.Size;
-                                    oRangeWrap.Orientation = oRange.Orientation;
-                                    oRangeWrap.VerticalAlignment = oRange.VerticalAlignment;
-                                    oRangeWrap.Font.Bold = oRange.Font.Bold;
-                                    oRangeWrap.Font.Italic = oRange.Font.Italic;
-                                    oRangeWrap.WrapText = oRange.WrapText;
-                                    oRange.Copy(oRangeWrap);
-                                    countRPL++;
-                                    oRange.Rows.AutoFit();
-                                    var heightATF = oRange.Rows.Height;
-                                    oRange.RowHeight = Math.Ceiling(heightATF * 1.05);
-                                    //oRangeWrap.Delete(XlDeleteShiftDirection.xlShiftUp);
+                                    if (textReplace.oldT.StartsWith("{#"))
+                                    {
+                                        oRange.Value = textReplace.newT;
+                                    }
                                 }
-                                else
+                                catch
                                 {
-                                    try
-                                    {
-                                        oRange.Characters[phStart + 1, phEnd].Insert(textReplace.newT);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        oRange.Characters[phStart + 1, phEnd].Insert(ex.Message);
-                                    }
                                 }
-                            }
-
-                            if (textReplace.oldT.StartsWith("{#"))
-                            {
-                                oRange.Value = textReplace.newT;
+                                finally
+                                {
+                                    if (chars != null) ReleaseCOMObject(chars);
+                                    if (oRangeWrap != null) ReleaseCOMObject(oRangeWrap);
+                                    if (oRange != null) ReleaseCOMObject(oRange);
+                                    if (rows != null) ReleaseCOMObject(rows);
+                                    if (font != null) ReleaseCOMObject(font);
+                                }
                             }
                         }
-                        catch(Exception ex)
+                        finally
                         {
-                            //oRange.Value = ex.ToString();
+                            ReleaseCOMObject(cellsRep);
                         }
                     }
 
+                    Range rangeFm = null;
+                    Range colRange = null;
                     foreach (var col in lstAutoSizeColumn)
                     {
                         try
                         {
-                            var RangeFm = (Range)worksheet.Cells[1, col + 1];
-                            RangeFm.EntireColumn.AutoFit();
+                            rangeFm = (Range)worksheet.Cells[1, col + 1];
+                            colRange = rangeFm.EntireColumn;
+
+                            colRange.AutoFit();
                         }
                         catch (Exception ex)
                         {
                             string msg1 = ex.Message;
                         }
-                    }
-
-                    var originalHeights = new Dictionary<int, double>();
-                    for (int i = 1; i <= endRow; i++)
-                    {
-                        originalHeights[i] = worksheet.Rows[i].RowHeight;
-                    }
-
-                    worksheet.Rows["1:" + endRow].AutoFit();
-
-                    for (int i = 1; i <= endRow; i++)
-                    {
-                        if (lstBlankRow.Contains(i))
+                        finally
                         {
-                            worksheet.Rows[i].RowHeight = originalHeights[i];
-                            continue;
-                        }
+                            if (colRange != null)
+                            {
+                                ReleaseCOMObject(colRange);
+                                colRange = null;
+                            }
 
-                        double newHeight = worksheet.Rows[i].RowHeight;
-                        if (newHeight < originalHeights[i])
-                            worksheet.Rows[i].RowHeight = originalHeights[i];
+                            if (rangeFm != null)
+                            {
+                                ReleaseCOMObject(rangeFm);
+                                rangeFm = null;
+                            }
+                        }
                     }
 
+                    //Range rowsATH = worksheet.Rows;
+                    //Range rowRange = null;
+                    //Range autoFitRange = null;
+
+                    //var originalHeights = new Dictionary<int, double>();
+
+                    //try
+                    //{
+                    //    // lưu height ban đầu
+                    //    for (int i = 1; i <= endRow; i++)
+                    //    {
+                    //        rowRange = rowsATH[i];
+                    //        originalHeights[i] = (double)rowRange.RowHeight;
+                    //    }
+
+                    //    // autofit
+                    //    autoFitRange = rowsATH["1:" + endRow];
+                    //    autoFitRange.AutoFit();
+
+                    //    // kiểm tra height sau autofit
+                    //    for (int i = 1; i <= endRow; i++)
+                    //    {
+                    //        rowRange = rowsATH[i];
+
+                    //        if (lstBlankRow.Contains(i))
+                    //        {
+                    //            rowRange.RowHeight = originalHeights[i];
+                    //        }
+                    //        else
+                    //        {
+                    //            double newHeight = (double)rowRange.RowHeight;
+
+                    //            if (newHeight < originalHeights[i])
+                    //                rowRange.RowHeight = originalHeights[i];
+                    //        }
+                    //    }
+                    //}
+                    //finally
+                    //{
+                    //    if (autoFitRange != null) Marshal.ReleaseComObject(autoFitRange);
+                    //    if (rowRange != null) Marshal.ReleaseComObject(rowRange);
+                    //    Marshal.ReleaseComObject(rowsATH);
+                    //}
+
+                    colRange = null;
                     for (int i = lstColumnDels.Count - 1; i >= 0; i--)
                     {
-                        var col = lstColumnDels[i];
-                        worksheet.Columns[col].Delete();
-                    }
-
-                    float widthBackUp = -1;
-                    foreach (var textInLine in lstText)
-                    {
-                        float leftTextPrev = -1, topTextPrev = 0, widthTextPrev = -1, heightTextPrev = 0;
-                        if (textInLine.columnFPrev != null & textInLine.columnTPrev != null)
-                        {
-                            string textRangePrev = "";
-                            var hasBoldPrev = false;
-                            double fontSizePrev = 12;
-                            string fontNamePrev = "Arial";
-                            for (var iCl = textInLine.columnFPrev; iCl <= textInLine.columnTPrev; iCl++)
-                            {
-                                var oRange = (Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
-                                widthTextPrev += (float)((double)oRange.Width);
-
-                                if (iCl == textInLine.columnFPrev)
-                                {
-                                    leftTextPrev = (float)((double)oRange.Left);
-                                    topTextPrev = (float)((double)oRange.Top - textInLine.top);
-                                    heightTextPrev = (float)((double)oRange.Height);
-                                    textRangePrev = (string)oRange.Value2;
-                                    oRange.Value2 = "";
-                                    hasBoldPrev = (bool)oRange.Font.Bold;
-                                    fontSizePrev = (double)oRange.Font.Size;
-                                    fontNamePrev = (string)oRange.Font.Name;
-                                }
-                            }
-
-                            var textBoxPrev = worksheet.Shapes.AddTextbox(Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal, leftTextPrev, topTextPrev, widthTextPrev, heightTextPrev);
-                            textBoxPrev.TextFrame.VerticalAlignment = XlVAlign.xlVAlignCenter;
-                            textBoxPrev.TextFrame.MarginLeft = 3;
-                            textBoxPrev.TextFrame.MarginRight = 2;
-                            if (string.IsNullOrEmpty(textRangePrev))
-                                textBoxPrev.Width = widthBackUp;
-                            else
-                                textBoxPrev.TextFrame.AutoSize = true;
-                            textBoxPrev.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                            textBoxPrev.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                            var stringTextBoxPrev = textBoxPrev.TextFrame.Characters(Type.Missing, Type.Missing);
-                            stringTextBoxPrev.Text = textRangePrev;
-                            stringTextBoxPrev.Font.Name = fontNamePrev;
-                            stringTextBoxPrev.Font.Bold = hasBoldPrev;
-                            stringTextBoxPrev.Font.Size = fontSizePrev;
-
-                            if (textBoxPrev.Width < textInLine.minWidth)
-                                textBoxPrev.Width = (float)textInLine.minWidth;
-
-                            leftTextPrev = textBoxPrev.Left;
-                            widthTextPrev = textBoxPrev.Width;
-                            widthBackUp = widthTextPrev;
-                        }
-
-                        float leftText = 0, topText = 0, widthText = 0, heightText = 0;
-                        string textRange = "";
-                        var hasBold = false;
-                        double fontSize = 12;
-                        string fontName = "Arial";
-                        for (var iCl = textInLine.columnF; iCl <= textInLine.columnT; iCl++)
-                        {
-                            var oRange = (Range)worksheet.Cells[textInLine.row + 1, iCl + 1];
-                            widthText += (float)((double)oRange.Width);
-
-                            if (iCl == textInLine.columnF)
-                            {
-                                leftText = (float)((double)oRange.Left - textInLine.left);
-                                topText = (float)((double)oRange.Top - textInLine.top);
-                                heightText = (float)((double)oRange.RowHeight);
-                                textRange = (string)oRange.Text;
-                                oRange.Value2 = "";
-                                hasBold = (bool)oRange.Font.Bold;
-                                fontSize = (double)oRange.Font.Size;
-                                fontName = (string)oRange.Font.Name;
-                            }
-                        }
-
-                        leftText = leftTextPrev <= -1 ? leftText : leftTextPrev + widthTextPrev;
-                        var textBox = worksheet.Shapes.AddTextbox(Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal, leftText, topText, widthText, heightText);
-                        textBox.TextFrame.MarginLeft = 2;
-                        textBox.TextFrame.MarginRight = 2;
-                        textBox.TextFrame.MarginTop = 0;
-                        textBox.TextFrame.MarginBottom = 0;
-                        textBox.Height = heightText;
-                        textBox.TextFrame.VerticalAlignment = XlVAlign.xlVAlignCenter;
-                        textBox.TextFrame2.WordWrap = Microsoft.Office.Core.MsoTriState.msoCTrue;
-                        textBox.Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                        textBox.Fill.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
-                        var stringTextBox = textBox.TextFrame.Characters(Type.Missing, Type.Missing);
-                        stringTextBox.Text = textRange;
-                        stringTextBox.Font.Name = fontName;
-                        stringTextBox.Font.Bold = hasBold;
-                        stringTextBox.Font.Size = fontSize;
-                    }
-
-                    foreach (var image in lstImage)
-                    {
-                        System.Drawing.Image pictureR = null;
-                        byte[] bytes = null;
-                        string tempFile = "";
                         try
                         {
-                            var oRange = (Range)worksheet.Cells[image.row + 1, image.column + 1];
-                            if (image.link.StartsWith("https://"))
+                            var col = lstColumnDels[i];
+                            colRange = (Range)worksheet.Columns[col];
+                            colRange.Delete();
+                        }
+                        finally
+                        {
+                            if (colRange != null)
                             {
+                                ReleaseCOMObject(colRange);
+                                colRange = null;
+                            }
+                        }
+                    }
+
+                    if (lstText.Count > 0)
+                    {
+                        float widthBackUp = -1;
+                        Shapes shapesRPL = worksheet.Shapes;
+                        Range cellsRPL = worksheet.Cells;
+                        try
+                        {
+                            foreach (var textInLine in lstText)
+                            {
+                                float leftTextPrev = -1, topTextPrev = 0, widthTextPrev = -1, heightTextPrev = 0;
+
+                                if (textInLine.columnFPrev != null & textInLine.columnTPrev != null)
+                                {
+                                    string textRangePrev = "";
+                                    var hasBoldPrev = false;
+                                    double fontSizePrev = 12;
+                                    string fontNamePrev = "Arial";
+
+                                    for (var iCl = textInLine.columnFPrev; iCl <= textInLine.columnTPrev; iCl++)
+                                    {
+                                        Range oRange = null;
+                                        Font font = null;
+
+                                        try
+                                        {
+                                            oRange = (Range)cellsRPL[textInLine.row + 1, iCl + 1];
+
+                                            widthTextPrev += (float)((double)oRange.Width);
+
+                                            if (iCl == textInLine.columnFPrev)
+                                            {
+                                                leftTextPrev = (float)((double)oRange.Left);
+                                                topTextPrev = (float)((double)oRange.Top - textInLine.top);
+                                                heightTextPrev = (float)((double)oRange.Height);
+                                                textRangePrev = (string)oRange.Value2;
+
+                                                oRange.Value2 = "";
+
+                                                font = oRange.Font;
+                                                hasBoldPrev = (bool)font.Bold;
+                                                fontSizePrev = (double)font.Size;
+                                                fontNamePrev = (string)font.Name;
+                                            }
+                                        }
+                                        finally
+                                        {
+                                            if (font != null) ReleaseCOMObject(font);
+                                            if (oRange != null) ReleaseCOMObject(oRange);
+                                        }
+                                    }
+
+                                    Shape textBoxPrev = null;
+                                    Characters stringTextBoxPrev = null;
+                                    TextFrame txtFrame = null;
+                                    LineFormat txtLine = null;
+                                    FillFormat txtFill = null;
+                                    Font txtFont = null;
+                                    try
+                                    {
+                                        textBoxPrev = shapesRPL.AddTextbox(
+                                            Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
+                                            leftTextPrev, topTextPrev, widthTextPrev, heightTextPrev);
+
+                                        txtFrame = textBoxPrev.TextFrame;
+                                        txtLine = textBoxPrev.Line;
+                                        txtFill = textBoxPrev.Fill;
+
+                                        txtFrame.VerticalAlignment = XlVAlign.xlVAlignCenter;
+                                        txtFrame.MarginLeft = 3;
+                                        txtFrame.MarginRight = 2;
+
+                                        if (string.IsNullOrEmpty(textRangePrev))
+                                            textBoxPrev.Width = widthBackUp;
+                                        else
+                                            txtFrame.AutoSize = true;
+
+                                        txtLine.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                                        txtFill.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+
+                                        stringTextBoxPrev = txtFrame.Characters(Type.Missing, Type.Missing);
+                                        txtFont = stringTextBoxPrev.Font;
+                                        stringTextBoxPrev.Text = textRangePrev;
+                                        txtFont.Name = fontNamePrev;
+                                        txtFont.Bold = hasBoldPrev;
+                                        txtFont.Size = fontSizePrev;
+
+                                        if (textBoxPrev.Width < textInLine.minWidth)
+                                            textBoxPrev.Width = (float)textInLine.minWidth;
+
+                                        leftTextPrev = textBoxPrev.Left;
+                                        widthTextPrev = textBoxPrev.Width;
+                                        widthBackUp = widthTextPrev;
+                                    }
+                                    finally
+                                    {
+                                        ReleaseCOMObject(txtFont);
+                                        ReleaseCOMObject(stringTextBoxPrev);
+                                        ReleaseCOMObject(txtFrame);
+                                        ReleaseCOMObject(txtLine);
+                                        ReleaseCOMObject(txtFill);
+                                        ReleaseCOMObject(textBoxPrev);
+                                    }
+                                }
+
+                                float leftText = 0, topText = 0, widthText = 0, heightText = 0;
+                                string textRange = "";
+                                var hasBold = false;
+                                double fontSize = 12;
+                                string fontName = "Arial";
+
+                                for (var iCl = textInLine.columnF; iCl <= textInLine.columnT; iCl++)
+                                {
+                                    Range oRange = null;
+                                    Font font = null;
+
+                                    try
+                                    {
+                                        oRange = (Range)cellsRPL[textInLine.row + 1, iCl + 1];
+
+                                        widthText += (float)((double)oRange.Width);
+
+                                        if (iCl == textInLine.columnF)
+                                        {
+                                            leftText = (float)((double)oRange.Left - textInLine.left);
+                                            topText = (float)((double)oRange.Top - textInLine.top);
+                                            heightText = (float)((double)oRange.RowHeight);
+
+                                            textRange = (string)oRange.Text;
+
+                                            oRange.Value2 = "";
+
+                                            font = oRange.Font;
+                                            hasBold = (bool)font.Bold;
+                                            fontSize = (double)font.Size;
+                                            fontName = (string)font.Name;
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        //if (font != null) ReleaseCOMObject(font);
+                                        //if (oRange != null) ReleaseCOMObject(oRange);
+                                    }
+                                }
+
+                                leftText = leftTextPrev <= -1 ? leftText : leftTextPrev + widthTextPrev;
+
+                                Shape textBox = null;
+                                Characters stringTextBox = null;
+                                TextFrame TextFrame = null;
+                                TextFrame2 TextFrame2 = null;
+                                LineFormat Line = null;
+                                FillFormat Fill = null;
                                 try
                                 {
-                                    var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(image.link);
-                                    request.Timeout = 5000;
-                                    request.ReadWriteTimeout = 5000;
-                                    request.UserAgent = "Mozilla/5.0";
+                                    textBox = shapesRPL.AddTextbox(
+                                        Microsoft.Office.Core.MsoTextOrientation.msoTextOrientationHorizontal,
+                                        leftText, topText, widthText, heightText);
+                                    TextFrame = textBox.TextFrame;
+                                    TextFrame2 = textBox.TextFrame2;
+                                    Line = textBox.Line;
+                                    Fill = textBox.Fill;
 
-                                    using (var response = (System.Net.HttpWebResponse)request.GetResponse())
-                                    using (var stream = response.GetResponseStream())
-                                    using (var ms = new MemoryStream())
+                                    TextFrame.MarginLeft = 2;
+                                    TextFrame.MarginRight = 2;
+                                    TextFrame.MarginTop = 0;
+                                    TextFrame.MarginBottom = 0;
+                                    textBox.Height = heightText;
+
+                                    TextFrame.VerticalAlignment = XlVAlign.xlVAlignCenter;
+                                    TextFrame2.WordWrap = Microsoft.Office.Core.MsoTriState.msoCTrue;
+                                    Line.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+                                    Fill.Visible = Microsoft.Office.Core.MsoTriState.msoFalse;
+
+                                    stringTextBox = TextFrame.Characters(Type.Missing, Type.Missing);
+
+                                    stringTextBox.Text = textRange;
+                                    stringTextBox.Font.Name = fontName;
+                                    stringTextBox.Font.Bold = hasBold;
+                                    stringTextBox.Font.Size = fontSize;
+                                }
+                                finally
+                                {
+                                    ReleaseCOMObject(stringTextBox);
+                                    ReleaseCOMObject(textBox);
+                                    ReleaseCOMObject(TextFrame);
+                                    ReleaseCOMObject(TextFrame2);
+                                    ReleaseCOMObject(Line);
+                                    ReleaseCOMObject(Fill);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            ReleaseCOMObject(shapesRPL);
+                            ReleaseCOMObject(cellsRPL);
+                        }
+                    }
+
+                    if (lstImage.Count > 0)
+                    {
+                        Shapes shapes = worksheet.Shapes;
+                        Range cells = worksheet.Cells;
+                        try
+                        {
+                            foreach (var image in lstImage)
+                            {
+                                System.Drawing.Image pictureR = null;
+                                byte[] bytes = null;
+                                string tempFile = "";
+
+                                Shape pic = null;
+                                Range oRange = null;
+                                try
+                                {
+                                    oRange = (Range)cells[image.row + 1, image.column + 1];
+                                    if (image.link.StartsWith("https://"))
                                     {
-                                        stream.CopyTo(ms);
-                                        bytes = ms.ToArray();
+                                        try
+                                        {
+                                            var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(image.link);
+                                            request.Timeout = 5000;
+                                            request.ReadWriteTimeout = 5000;
+                                            request.UserAgent = "Mozilla/5.0";
+
+                                            using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                                            using (var stream = response.GetResponseStream())
+                                            using (var ms = new MemoryStream())
+                                            {
+                                                stream.CopyTo(ms);
+                                                bytes = ms.ToArray();
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            oRange.Value = "IMG ERR: " + ex.Message;
+                                        }
+
+                                        if (bytes != null)
+                                        {
+                                            using (var ms = new MemoryStream(bytes))
+                                            {
+                                                pictureR = System.Drawing.Image.FromStream(ms);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        bytes = File.ReadAllBytes(image.link);
+                                        using (var ms = new MemoryStream(bytes))
+                                        {
+                                            pictureR = System.Drawing.Image.FromStream(ms);
+                                        }
+                                    }
+
+                                    if (pictureR != null)
+                                    {
+                                        float width = (float)((double)oRange.Width);
+                                        float height = (float)((double)oRange.RowHeight);
+
+                                        for (var iRan = image.column + 1; iRan <= image.columnLast; iRan++)
+                                        {
+                                            var oRangeBS = (Range)cells[image.row + 1, iRan + 1];
+                                            width += (float)((double)oRangeBS.Width);
+                                            ReleaseCOMObject(oRangeBS);
+                                        }
+
+                                        for (var iRan = image.row + 1; iRan <= image.rowLast; iRan++)
+                                        {
+                                            var oRangeBS = (Range)cells[iRan + 1, image.column + 1];
+                                            height += (float)((double)oRangeBS.RowHeight);
+                                            ReleaseCOMObject(oRangeBS);
+                                        }
+
+                                        float widthR = pictureR.Width;
+                                        float heightR = pictureR.Height;
+                                        float scale = 0.9f;
+                                        float percent = Math.Min(width / widthR, height / heightR) * scale;
+
+                                        var widthImg = (int)(widthR * percent);
+                                        var heightImg = (int)(heightR * percent - 3.5);
+                                        widthImg = widthImg > width ? (int)(width - 1) : widthImg;
+                                        var rateColumnAndPicture = (width - widthImg) / 2;
+                                        rateColumnAndPicture = rateColumnAndPicture <= 0 ? 0 : rateColumnAndPicture;
+
+                                        var rateRowAndPicture = (height - heightImg) / 2;
+                                        rateRowAndPicture = rateRowAndPicture <= 0 ? 2 : rateRowAndPicture;
+
+                                        var Left = (float)((double)oRange.Left + rateColumnAndPicture);
+                                        var Top = (float)((double)oRange.Top + rateRowAndPicture);
+
+                                        if (image.leftIMG != null)
+                                            Left = (float)((double)oRange.Left) + image.leftIMG.GetValueOrDefault(0);
+
+                                        if (image.topIMG != null)
+                                            Top = (float)((double)oRange.Top) + image.topIMG.GetValueOrDefault(0);
+
+                                        if (image.widthIMG != null)
+                                            widthImg = (int)image.widthIMG.GetValueOrDefault(0);
+
+                                        if (image.heightIMG != null)
+                                            heightImg = (int)image.heightIMG.GetValueOrDefault(0);
+
+                                        tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
+                                        File.WriteAllBytes(tempFile, bytes);
+                                        pic = shapes.AddPicture(tempFile, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    oRange.Value = "IMG ERR: " + ex.Message;
+                                    throw new Exception(ex.ToString());
                                 }
-
-                                if (bytes != null)
+                                finally
                                 {
-                                    using (var ms = new MemoryStream(bytes))
-                                    {
-                                        pictureR = System.Drawing.Image.FromStream(ms);
-                                    }
+                                    if (File.Exists(tempFile))
+                                        File.Delete(tempFile);
+
+                                    if (pictureR != null)
+                                        pictureR.Dispose();
+
+                                    ReleaseCOMObject(pic);
+                                    ReleaseCOMObject(oRange);
                                 }
                             }
-                            else
-                            {
-                                bytes = File.ReadAllBytes(image.link);
-                                using (var ms = new MemoryStream(bytes))
-                                {
-                                    pictureR = System.Drawing.Image.FromStream(ms);
-                                }
-                            }
-
-                            if (pictureR != null)
-                            {
-                                float width = (float)((double)oRange.Width);
-                                float height = (float)((double)oRange.RowHeight);
-
-                                for (var iRan = image.column + 1; iRan <= image.columnLast; iRan++)
-                                {
-                                    var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[image.row + 1, iRan + 1];
-                                    width += (float)((double)oRangeBS.Width);
-                                }
-
-                                for (var iRan = image.row + 1; iRan <= image.rowLast; iRan++)
-                                {
-                                    var oRangeBS = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[iRan + 1, image.column + 1];
-                                    height += (float)((double)oRangeBS.RowHeight);
-                                }
-
-                                float widthR = pictureR.Width;
-                                float heightR = pictureR.Height;
-                                float scale = 0.9f;
-                                float percent = Math.Min(width / widthR, height / heightR) * scale;
-
-                                var widthImg = (int)(widthR * percent);
-                                var heightImg = (int)(heightR * percent - 3.5);
-                                widthImg = widthImg > width ? (int)(width - 1) : widthImg;
-                                var rateColumnAndPicture = (width - widthImg) / 2;
-                                rateColumnAndPicture = rateColumnAndPicture <= 0 ? 0 : rateColumnAndPicture;
-
-                                var rateRowAndPicture = (height - heightImg) / 2;
-                                rateRowAndPicture = rateRowAndPicture <= 0 ? 2 : rateRowAndPicture;
-
-                                var Left = (float)((double)oRange.Left + rateColumnAndPicture);
-                                var Top = (float)((double)oRange.Top + rateRowAndPicture);
-
-                                if (image.leftIMG != null)
-                                    Left = (float)((double)oRange.Left) + image.leftIMG.GetValueOrDefault(0);
-
-                                if (image.topIMG != null)
-                                    Top = (float)((double)oRange.Top) + image.topIMG.GetValueOrDefault(0);
-
-                                if (image.widthIMG != null)
-                                    widthImg = (int)image.widthIMG.GetValueOrDefault(0);
-
-                                if (image.heightIMG != null)
-                                    heightImg = (int)image.heightIMG.GetValueOrDefault(0);
-
-                                tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".jpg");
-                                File.WriteAllBytes(tempFile, bytes);
-                                var pic = worksheet.Shapes.AddPicture(tempFile, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, Left, Top, widthImg, heightImg);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception(ex.ToString());
                         }
                         finally
                         {
-                            if (File.Exists(tempFile))
-                                File.Delete(tempFile);
-                            if (pictureR != null)
-                                pictureR.Dispose();
+                            ReleaseCOMObject(shapes);
+                            ReleaseCOMObject(cells);
                         }
                     }
 
@@ -731,9 +1006,9 @@ namespace OfficeToPDF
 
                     // Keep track of the active sheet
                     int activeSheetIdx = 1;
-                    if (workbook.ActiveSheet != null)
+                    activeSheet = workbook.ActiveSheet;
+                    if (activeSheet != null)
                     {
-                        activeSheet = workbook.ActiveSheet;
                         if (activeSheet is _Worksheet)
                         {
                             activeSheetIdx = ((Worksheet)activeSheet).Index;
@@ -846,10 +1121,10 @@ namespace OfficeToPDF
                                         var rows = range.Rows;
                                         if (rows != null && rows.Count > maxRows)
                                         {
-                                            var cells = range.Cells;
-                                            if (cells != null)
+                                            var cells2 = range.Cells;
+                                            if (cells2 != null)
                                             {
-                                                var cellSearch = cells.Find("*", oMissing, oMissing, oMissing, oMissing, Microsoft.Office.Interop.Excel.XlSearchDirection.xlPrevious, false, oMissing, oMissing);
+                                                var cellSearch = cells2.Find("*", oMissing, oMissing, oMissing, oMissing, Microsoft.Office.Interop.Excel.XlSearchDirection.xlPrevious, false, oMissing, oMissing);
                                                 // Make sure we actually get some results, since the worksheet may be totally blank
                                                 if (cellSearch != null)
                                                 {
@@ -858,7 +1133,7 @@ namespace OfficeToPDF
                                                 }
                                                 ReleaseCOMObject(cellSearch);
                                             }
-                                            ReleaseCOMObject(cells);
+                                            ReleaseCOMObject(cells2);
                                         }
                                         ReleaseCOMObject(rows);
                                     }
@@ -870,7 +1145,7 @@ namespace OfficeToPDF
                                         row_count_check_ok = false;
                                         rowCountOK[wsIdx] = false;
                                         found_rows = row_count;
-                                        Converter.ReleaseCOMObject(ws);
+                                        ReleaseCOMObject(ws);
                                         if (activeSheetOnMaxRows)
                                         {
                                             // Keep checking
@@ -880,7 +1155,7 @@ namespace OfficeToPDF
                                     }
                                 }
                             } // End of row check
-                            Converter.ReleaseCOMObject(ws);
+                            ReleaseCOMObject(ws);
                         }
 
                         // Make sure we are not converting a document with too many rows
@@ -920,40 +1195,53 @@ namespace OfficeToPDF
                         app.Calculation = XlCalculation.xlCalculationManual;
                         app.EnableEvents = false;
 
-                        /*string htmlPath = Path.ChangeExtension(outputFile, ".html");
-                        workbook.PublishObjects.Add(
-                            XlSourceType.xlSourceSheet,
-                            htmlPath,
-                            worksheet.Name,
-                            Type.Missing,
-                            XlHtmlType.xlHtmlStatic, // Dùng Static để loại bỏ thanh Tab sheet
-                            "ID_Export",
-                            Type.Missing).Publish(true);                        
-                        ConvertHtmlToPdf(htmlPath, outputFile).GetAwaiter().GetResult();*/
-                        // Tìm dòng cuối cùng thực sự có chứa giá trị ở cột A (hoặc cột chính của bạn)
-                        int lastRow = ((Range)worksheet.Cells[worksheet.Rows.Count, 1]).End[XlDirection.xlUp].Row;
+                        Range cell = null;
+                        Range endUp = null;
+                        Range usedRange = null;
+                        Range usedRows = null;
+                        Range startCell = null;
+                        Range endCell = null;
+                        Range emptyRange = null;
 
-                        // Nếu muốn chắc chắn hơn cho toàn bộ các cột:
-                        Range usedRange = worksheet.UsedRange;
-                        int lastRowUsed = usedRange.Row + usedRange.Rows.Count - 1;
-
-                        if (lastRowUsed < worksheet.Rows.Count)
+                        try
                         {
-                            // Chỉ chọn từ dòng ngay sau dòng có dữ liệu cuối cùng
-                            Range startCell = (Range)worksheet.Cells[lastRowUsed + 1, 1];
-                            Range endCell = (Range)worksheet.Cells[worksheet.Rows.Count, worksheet.Columns.Count];
+                            int maxRow = worksheet.Rows.Count;
+                            int maxCol = worksheet.Columns.Count;
+                            // lastRow
+                            cell = (Range)worksheet.Cells[maxRow, 1];
+                            endUp = cell.End[XlDirection.xlUp];
+                            int lastRow = endUp.Row;
 
-                            Range emptyRange = worksheet.get_Range(startCell, endCell);
-                            emptyRange.ClearFormats();
-                            emptyRange.ClearContents();
-                            emptyRange.Delete();
+                            // UsedRange
+                            usedRange = worksheet.UsedRange;
+                            usedRows = usedRange.Rows;
+                            int lastRowUsed = usedRange.Row + usedRows.Count - 1;
+
+                            if (lastRowUsed < maxRow)
+                            {
+                                startCell = (Range)worksheet.Cells[lastRowUsed + 1, 1];
+                                endCell = (Range)worksheet.Cells[maxRow, maxCol];
+
+                                emptyRange = worksheet.get_Range(startCell, endCell);
+
+                                emptyRange.ClearFormats();
+                                emptyRange.ClearContents();
+                                emptyRange.Delete();
+                            }
+                        }
+                        finally
+                        {
+                            ReleaseCOMObject(emptyRange);
+                            ReleaseCOMObject(endCell);
+                            ReleaseCOMObject(startCell);
+                            ReleaseCOMObject(usedRows);
+                            ReleaseCOMObject(usedRange);
+                            ReleaseCOMObject(endUp);
+                            ReleaseCOMObject(cell);
                         }
 
                         workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
                             outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
-
-                        ReleaseCOMObject(fmt);
-                        ReleaseCOMObject(quality);
 
                         //var timeEnd = DateTime.Now;
                         //var totalsc = (timeEnd - timeStart).TotalSeconds;
@@ -1052,27 +1340,36 @@ namespace OfficeToPDF
             if ((DateTime.Now - timeFist).TotalSeconds >= seconds)
             {
                 msg = string.Format(@"Timeout, limit to print is {0} seconds.", seconds);
-                try
+                if (worksheet != null)
                 {
-                    if (workbooks != null)
-                    {
-                        workbooks.Close();
-                    }
+                    Marshal.ReleaseComObject(worksheet);
+                    worksheet = null;
                 }
-                catch { }
 
-                try
+                if (workbook != null)
                 {
-                    if (app != null)
-                    {
-                        ((Microsoft.Office.Interop.Excel._Application)app).Quit();
-                    }
+                    workbook.Saved = true;
+                    workbook.Close(false);
+                    Marshal.ReleaseComObject(workbook);
+                    workbook = null;
                 }
-                catch { }
 
-                ReleaseCOMObject(workbook);
-                ReleaseCOMObject(workbooks);
-                ReleaseCOMObject(app);
+                if (workbooks != null)
+                {
+                    Marshal.ReleaseComObject(workbooks);
+                    workbooks = null;
+                }
+
+                if (app != null)
+                {
+                    app.Quit();
+                    Marshal.ReleaseComObject(app);
+                    app = null;
+                }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
             }
 
             return msg;
@@ -1092,63 +1389,83 @@ namespace OfficeToPDF
 
         // Read the first worksheet from a template document and extract and store
         // the page settings for later use
-        protected static void SetPageOptionsFromTemplate(Application app, Workbooks workbooks, Hashtable options, ref Hashtable templatePageSetup)
+        protected static void SetPageOptionsFromTemplate(
+    Application app,
+    Workbooks workbooks,
+    Hashtable options,
+    ref Hashtable templatePageSetup)
         {
             if (!HasTemplateOption(options))
-            {
                 return;
-            }
+
+            Workbook template = null;
+            Sheets templateSheets = null;
+            object firstItem = null;
+            PageSetup tps = null;
 
             try
             {
-                var template = workbooks.Open((string)options["template"]);
+                template = workbooks.Open((string)options["template"]);
                 AddCOMDelay(options);
-                if (template != null)
+
+                if (template == null)
+                    return;
+
+                // chạy macro nếu có
+                if ((bool)options["excel_template_macros"])
                 {
-                    // Run macros from template if the /excel_template_macros option is given
-                    if ((bool)options["excel_template_macros"])
+                    var eventsEnabled = app.EnableEvents;
+                    app.EnableEvents = true;
+
+                    template.RunAutoMacros(XlRunAutoMacro.xlAutoOpen);
+
+                    app.EnableEvents = eventsEnabled;
+                }
+
+                templateSheets = template.Worksheets;
+
+                if (templateSheets != null && templateSheets.Count > 0)
+                {
+                    firstItem = templateSheets[1];
+
+                    if (firstItem is _Worksheet ws)
                     {
-                        var eventsEnabled = app.EnableEvents;
-                        app.EnableEvents = true;
-                        template.RunAutoMacros(XlRunAutoMacro.xlAutoOpen);
-                        app.EnableEvents = eventsEnabled;
+                        tps = ws.PageSetup;
+                    }
+                    else if (firstItem is _Chart chart)
+                    {
+                        tps = chart.PageSetup;
                     }
 
-                    var templateSheets = template.Worksheets;
-                    if (templateSheets != null)
+                    if (tps != null)
                     {
-                        // Copy the page setup details from the first sheet or chart in the template
-                        if (templateSheets.Count > 0)
+                        var tpsType = tps.GetType();
+
+                        for (int i = 0; i < templateProperties.Length; i++)
                         {
-                            PageSetup tps = null;
-                            var firstItem = templateSheets[1];
-                            if (firstItem is _Worksheet)
+                            var prop = tpsType.InvokeMember(
+                                templateProperties[i],
+                                System.Reflection.BindingFlags.GetProperty,
+                                null,
+                                tps,
+                                null);
+
+                            if (prop != null)
                             {
-                                tps = ((_Worksheet)firstItem).PageSetup;
+                                templatePageSetup[templateProperties[i]] = prop;
                             }
-                            else if (firstItem is _Chart)
-                            {
-                                tps = ((_Chart)firstItem).PageSetup;
-                            }
-                            var tpsType = tps.GetType();
-                            for (int i = 0; i < templateProperties.Length; i++)
-                            {
-                                var prop = tpsType.InvokeMember(templateProperties[i], System.Reflection.BindingFlags.GetProperty, null, tps, null);
-                                if (prop != null)
-                                {
-                                    templatePageSetup[templateProperties[i]] = prop;
-                                }
-                            }
-                            //Converter.ReleaseCOMObject(firstItem);
                         }
-                        //ReleaseCOMObject(templateSheets);
                     }
-                    CloseExcelWorkbook(template);
                 }
-                //ReleaseCOMObject(template);
+
+                CloseExcelWorkbook(template);
             }
             finally
             {
+                ReleaseCOMObject(tps);
+                ReleaseCOMObject(firstItem);
+                ReleaseCOMObject(templateSheets);
+                ReleaseCOMObject(template);
             }
         }
 

@@ -114,17 +114,17 @@ namespace OfficeToPDF
         /// </remarks>
         protected static void ReleaseCOMObject(object obj)
         {
+            if (obj == null) return;
+
             try
             {
-                if (null != obj && System.Runtime.InteropServices.Marshal.IsComObject(obj))
+                if (System.Runtime.InteropServices.Marshal.IsComObject(obj))
                 {
-                    System.Runtime.InteropServices.Marshal.FinalReleaseComObject(obj);
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
                 }
             }
-            catch { }
-            finally
+            catch
             {
-                obj = null;
             }
         }
 
