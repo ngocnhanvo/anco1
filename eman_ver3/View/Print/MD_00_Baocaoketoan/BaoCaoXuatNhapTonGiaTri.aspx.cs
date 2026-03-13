@@ -73,10 +73,10 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
             (
                 select
                     kgd.ngaychuyen,
+                    kgd.md_sanpham_id,
                     sp.ma_sanpham maVTHH,
                     sp.mota_tiengviet tenVTHH,
                     dvtsp.ten_dvt dvt,
-                    isnull(cdh.dongiamua,0) dg,
 
                     case
                         when kgd.ngaychuyen < @dauky
@@ -108,13 +108,6 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
                 left join md_donvitinhsanpham dvtsp
                     on dvtsp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
 
-                left join c_donmuahang dmh
-                    on dmh.sochungtu = kgd.mota
-
-                left join c_donmuahang_cdmh cdh
-                    on cdh.c_donmuahang_id = dmh.c_donmuahang_id
-                    and cdh.md_sanpham_id = kgd.md_sanpham_id
-
                 where
                     kgd.soluong_dichchuyen > 0
                     and isnull(kgd.donhang,'') not like N'%,%'
@@ -123,52 +116,64 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoXuatNhapTonGiaTri
                     {masp} {kho}
             ),
 
-            dg_last as
+            tonghop as
             (
-                select *
-                from
-                (
-                    select
-                        maVTHH,
-                        dg,
-                        row_number() over
-                        (
-                            partition by maVTHH
-                            order by
-                            case when dg > 0 then 0 else 1 end,
-                            ngaychuyen desc
-                        ) rn
-                    from data
-                )A
-                where rn = 1
+                select
+                    md_sanpham_id,
+                    maVTHH,
+                    max(tenVTHH) tenVTHH,
+                    max(dvt) dvt,
+                    sum(sldk) tonDK,
+                    sum(slntk) nhapTK,
+                    sum(slxtk) xuatTK
+                from data
+                group by
+                    md_sanpham_id,
+                    maVTHH
             )
 
             select
                 N'{ngayin}' ngayin,
                 N'{tuStr}' tungay,
                 N'{denStr}' denngay,
-                A.maVTHH,
-                max(A.tenVTHH) tenVTHH,
-                max(A.dvt) dvt,
-                B.dg,
 
-                sum(A.sldk) tonDK,
-                sum(A.slntk) nhapTK,
-                sum(A.slxtk) xuatTK,
+                A.maVTHH,
+                A.tenVTHH,
+                A.dvt,
+
+                isnull(P.dg,0) dg,
+
+                A.tonDK,
+                A.nhapTK,
+                A.xuatTK,
 
                 @tenkho kho,
                 null po
 
-            from data A
-            left join dg_last B
-                on A.maVTHH = B.maVTHH
+            from tonghop A
 
-            group by
-                A.maVTHH,
-                B.dg
+            outer apply
+            (
+                select top 1
+                    cdh.dongiamua dg
+                from md_kho_giaodich kgd2
 
-            order by
-                A.maVTHH
+                join c_donmuahang dmh2
+                    on dmh2.sochungtu = kgd2.mota
+
+                join c_donmuahang_cdmh cdh
+                    on cdh.c_donmuahang_id = dmh2.c_donmuahang_id
+                    and cdh.md_sanpham_id = kgd2.md_sanpham_id
+
+                where
+                    kgd2.md_sanpham_id = A.md_sanpham_id
+                    and kgd2.ngaychuyen <= @den
+                    and cdh.dongiamua > 0
+
+                order by kgd2.ngaychuyen desc
+            ) P
+
+            order by A.maVTHH
 		";
 
         //throw new Exception(sql);
