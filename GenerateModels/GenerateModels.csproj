@@ -4308,7 +4308,7 @@
           <IISUrl>http://localhost:61888/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>True</UseCustomServer>
-          <CustomServerUrl>http://localhost:61888/</CustomServerUrl>
+          <CustomServerUrl>http://localhost:61893/</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

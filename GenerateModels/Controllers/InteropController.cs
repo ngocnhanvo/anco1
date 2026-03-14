@@ -19,24 +19,36 @@ namespace GenerateModels.Controllers
             return View();
         }
 
+        [ValidateInput(false)]
         [HttpPost]
-        public string excel(Models.ExportRequest req)
+        public string excel()
         {
             string msg = "";
+            Models.ExportRequest req = null;
             try
             {
-                using (var excelConvert = new OfficeToPDF.ExcelConverter())
+                Request.InputStream.Position = 0;
+                string body;
+                using (var reader = new StreamReader(Request.InputStream, Encoding.UTF8))
                 {
-                    excelConvert.lstText = req.lstText;
-                    excelConvert.lstImage = req.lstImage;
-                    excelConvert.lstTextReplace = req.lstTextReplace;
-                    excelConvert.lstAutoSizeColumn = req.lstAutoSizeColumn;
-                    excelConvert.lstBlankRow = req.lstBlankRow;
-                    excelConvert.nameApp = req.nameApp;
+                    body = reader.ReadToEnd();
+                    req = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.ExportRequest>(body);
+                    if (req == null)
+                        throw new Exception("Invalid JSON body");
 
-                    excelConvert.endRow = req.endrow;
-                    excelConvert.endColumn = req.endColumn;
-                    msg = excelConvert.ConvertInterop(req.urlExcel, req.urlFN, null);
+                    using (var excelConvert = new OfficeToPDF.ExcelConverter())
+                    {
+                        excelConvert.lstText = req.lstText;
+                        excelConvert.lstImage = req.lstImage;
+                        excelConvert.lstTextReplace = req.lstTextReplace;
+                        excelConvert.lstAutoSizeColumn = req.lstAutoSizeColumn;
+                        excelConvert.lstBlankRow = req.lstBlankRow;
+                        excelConvert.nameApp = req.nameApp;
+
+                        excelConvert.endRow = req.endrow;
+                        excelConvert.endColumn = req.endColumn;
+                        msg = excelConvert.ConvertInterop(req.urlExcel, req.urlFN, null);
+                    }
                 }
             }
             catch(Exception ex)

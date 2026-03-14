@@ -8,6 +8,7 @@ public class AvariablePrj
         public int rowLast { get; set; }
         public int column { get; set; }
         public int columnLast { get; set; }
+        [System.Web.Mvc.AllowHtml]
         public string link { get; set; }
         public float heightCell { get; set; }
         public float widthCell { get; set; }
