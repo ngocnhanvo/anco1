@@ -546,7 +546,7 @@ public class JQGridMD_00_DSDHJQGSModify : IHttpHandler, System.Web.SessionState.
             }
             else
             {
-                var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+                var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dsdh.md_doitackinhdoanh_id || s.md_doitackinhdoanh_id == dsdh.md_doitackinhdoanh_id).FirstOrDefault();
                 if (dtkd == null)
                 {
                     msgDetail += $@"<div style='color:red'>Lỗi: Dòng ""{dsdh.sochungtu}"" không tìm thấy khách hàng có mã ""{dsdh.md_doitackinhdoanh_id}"".</div>";

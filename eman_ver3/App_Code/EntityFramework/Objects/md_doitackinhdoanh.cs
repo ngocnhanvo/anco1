@@ -49,16 +49,34 @@
                         public string diachi { get; set; }
                 
 						
+                        #region md_doitackinhdoanh_diachi_TA_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_diachi_TA_wintaFN
+                        public string diachi_TA { get; set; }
+                
+						
                         #region md_doitackinhdoanh_email_wintaFN
                         
                         #endregion md_doitackinhdoanh_email_wintaFN
                         public string email { get; set; }
                 
 						
+                        #region md_doitackinhdoanh_email_bosung_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_email_bosung_wintaFN
+                        public string email_bosung { get; set; }
+                
+						
                         #region md_doitackinhdoanh_fax_wintaFN
                         
                         #endregion md_doitackinhdoanh_fax_wintaFN
                         public string fax { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_hinhanh_link_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_hinhanh_link_wintaFN
+                        public string hinhanh_link { get; set; }
                 
 						
                         #region md_doitackinhdoanh_hoatdong_wintaFN
@@ -175,10 +193,22 @@
                         public string tel { get; set; }
                 
 						
+                        #region md_doitackinhdoanh_tel_bosung_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_tel_bosung_wintaFN
+                        public string tel_bosung { get; set; }
+                
+						
                         #region md_doitackinhdoanh_ten_dtkd_wintaFN
                         
                         #endregion md_doitackinhdoanh_ten_dtkd_wintaFN
                         public string ten_dtkd { get; set; }
+                
+						
+                        #region md_doitackinhdoanh_ten_dtkd_TA_wintaFN
+                        
+                        #endregion md_doitackinhdoanh_ten_dtkd_TA_wintaFN
+                        public string ten_dtkd_TA { get; set; }
                 
 						
                         #region md_doitackinhdoanh_tong_congno_wintaFN

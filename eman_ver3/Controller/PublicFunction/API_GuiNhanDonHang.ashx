@@ -169,7 +169,7 @@ public class API_GuiNhanDonHang : IHttpHandler
             msgEx = ex.ToString();
         }
 
-    EndEventHandler:;
+        EndEventHandler:;
 
         if(msg.Length > 0)
         {
@@ -238,7 +238,7 @@ public class API_GuiNhanDonHang : IHttpHandler
             msgEx = ex.ToString();
         }
 
-    EndEventHandler:;
+        EndEventHandler:;
 
         if(msg.Length > 0)
         {
@@ -288,157 +288,160 @@ public class API_GuiNhanDonHang : IHttpHandler
     public void NhanDonHang(HttpContext context)
     {
         string msg = "";
-        using (var transaction = db.Database.BeginTransaction())
+        string strdata = context.Request.Form["data"];
+        try
         {
-            string strdata = context.Request.Form["data"];
-            try
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            var result = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data["result"] + "");
+            foreach (var a in result)
             {
-                var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
-                var result = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(data["result"] + "");
-                foreach (var a in result)
+                var item = JsonConvert.DeserializeObject<Dictionary<string, object>>(a["c_danhsachdathang"] + "");
+                var lstItem = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_dongdsdh"] + "");
+                var lstItem2 = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_phidathang"] + "");
+                string c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
+                var exist = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == c_danhsachdathang_id).FirstOrDefault();
+                if (exist == null)
                 {
-                    var item = JsonConvert.DeserializeObject<Dictionary<string, object>>(a["c_danhsachdathang"] + "");
-                    var lstItem = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_dongdsdh"] + "");
-                    var lstItem2 = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(a["c_phidathang"] + "");
-                    string c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
-                    var exist = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == c_danhsachdathang_id).FirstOrDefault();
-                    if (exist == null)
+                    var sopo = item["so_po"] + "";
+                    var c_dsdh = new c_danhsachdathang();
+                    if (c_dsdh.md_doitackinhdoanh_id == "ANCOTRADING")
+                        c_dsdh.md_doitackinhdoanh_id = "ANCO TRADING";
+
+                    var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == c_dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+                    if(dtkd == null)
                     {
-                        var c_dsdh = new c_danhsachdathang();
-                        c_dsdh.anco_check = true;
-                        c_dsdh.check_nangluc = false;
-                        c_dsdh.reportKCS = "-";
-                        c_dsdh.trangthaiHDLH = Helper.CHUAGUI;
-                        c_dsdh.c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
-                        c_dsdh.c_donhang_id = item["c_donhang_id"] + "";
-                        c_dsdh.dg_nangluc = false;
-                        c_dsdh.diachigiaohang = item["diachigiaohang"] + "";
-                        c_dsdh.discount = Convert.ToDecimal(item["discount"]);
-                        c_dsdh.grandtotal = Convert.ToDecimal(item["grandtotal"]);
-                        c_dsdh.hangiaohang_po = Convert.ToDateTime(item["hangiaohang_po"]);
-                        c_dsdh.hoatdong = true;
-                        c_dsdh.huongdanlamhang = item["huongdanlamhang"] + "";
-                        c_dsdh.huongdanlamhangchung = item["huongdanlamhangchung"] + "";
-                        c_dsdh.isgui_hdlh = Convert.ToBoolean(item["isgui_hdlh"]);
-                        //c_dsdh.khachhang = item["khachhang"] + "";
-                        c_dsdh.md_doitackinhdoanh_id = item["md_doitackinhdoanh_id"] + "";
+                        msg = $"{sopo}: Không tìm thấy mã khách hàng {c_dsdh.md_doitackinhdoanh_id} trong dữ liệu gốc";
+                        goto EndEventHandler;
+                    }
+                    c_dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id;
+                    c_dsdh.anco_check = true;
+                    c_dsdh.check_nangluc = false;
+                    c_dsdh.reportKCS = "-";
+                    c_dsdh.trangthaiHDLH = Helper.CHUAGUI;
+                    c_dsdh.c_danhsachdathang_id = item["c_danhsachdathang_id"] + "";
+                    c_dsdh.c_donhang_id = item["c_donhang_id"] + "";
+                    c_dsdh.dg_nangluc = false;
+                    c_dsdh.diachigiaohang = item["diachigiaohang"] + "";
+                    c_dsdh.discount = Convert.ToDecimal(item["discount"]);
+                    c_dsdh.grandtotal = Convert.ToDecimal(item["grandtotal"]);
+                    c_dsdh.hangiaohang_po = Convert.ToDateTime(item["hangiaohang_po"]);
+                    c_dsdh.hoatdong = true;
+                    c_dsdh.huongdanlamhang = item["huongdanlamhang"] + "";
+                    c_dsdh.huongdanlamhangchung = item["huongdanlamhangchung"] + "";
+                    c_dsdh.isgui_hdlh = Convert.ToBoolean(item["isgui_hdlh"]);
+                    //c_dsdh.khachhang = item["khachhang"] + "";
+                    c_dsdh.md_doitackinhdoanh_id = item["md_doitackinhdoanh_id"] + "";
 
-                        if (c_dsdh.md_doitackinhdoanh_id == "ANCOTRADING")
-                            c_dsdh.md_doitackinhdoanh_id = "ANCO TRADING";
-
-                        c_dsdh.md_trangthai_id = item["md_trangthai_id"] + "";
-                        c_dsdh.mota = item["mota"] + "";
-                        //c_dsdh.ngaycapnhat = item["ngaycapnhat"].ToDateTime();
-                        c_dsdh.ngaylap = Convert.ToDateTime(item["ngaylap"]);
-                        c_dsdh.ngaytao = DateTime.Now;
-                        c_dsdh.ngay_tigia = null;
-                        c_dsdh.nguoicapnhat = item["nguoicapnhat"] + "";
-                        c_dsdh.nguoitao = item["nguoitao"] + "";
-                        c_dsdh.nguoi_dathang = item["nguoi_dathang"] + "";
-                        c_dsdh.nguoi_phutrach = item["nguoi_phutrach"] + "";
-                        c_dsdh.sochungtu = item["sochungtu"] + "";
-                        c_dsdh.so_po = item["so_po"] + "";
-                        c_dsdh.total = Convert.ToDecimal(item["total"]);
-                        c_dsdh.trangthai = item["trangthai"] + "";
-                        if (item.ContainsKey("cont20"))
-                        {
-                            c_dsdh.cont20 = Convert.ToDecimal(item["cont20"] == null ? "0" : item["cont20"]);
-                        }
-                        if (item.ContainsKey("cont40"))
-                        {
-                            c_dsdh.cont40 = Convert.ToDecimal(item["cont40"] == null ? "0" : item["cont40"]);
-                        }
-                        if (item.ContainsKey("cont40hc"))
-                        {
-                            c_dsdh.cont40hc = Convert.ToDecimal(item["cont40hc"] == null ? "0" : item["cont40hc"]);
-                        }
-
-                        decimal cbmAll = 0;
-                        var chungloais = new List<string>();
-                        foreach (var b in lstItem)
-                        {
-                            string ma_sanpham = b["md_sanpham_id"] + "";
-                            chungloais.Add(ma_sanpham.Substring(0, 2));
-                            var c_dongdsdh = new c_dongdsdh();
-                            c_dongdsdh.w2 = Convert.ToDecimal(b["w2"] == null ? "0" : b["w2"]);
-                            c_dongdsdh.w1 = Convert.ToDecimal(b["w1"] == null ? "0" : b["w1"]);
-                            c_dongdsdh.vn = Convert.ToDecimal(b["vn"] == null ? "0" : b["vn"]);
-                            c_dongdsdh.vl = Convert.ToDecimal(b["vl"] == null ? "0" : b["vl"]);
-                            c_dongdsdh.vd = Convert.ToDecimal(b["vd"] == null ? "0" : b["vd"]);
-                            c_dongdsdh.v2 = Convert.ToDecimal(b["v2"] == null ? "0" : b["v2"]);
-                            cbmAll += c_dongdsdh.v2.GetValueOrDefault(0);
-                            c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"] == null ? "0" : b["sl_huy"]);
-                            c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
-                            c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
-                            c_dongdsdh.sl_outer = Convert.ToDecimal(b["sl_outer"]);
-                            c_dongdsdh.dvt_outer = b["dvt_outer"] + "";
-                            c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
-                            c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
-
-                            c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
-                            c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
-                            c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
-                            c_dongdsdh.sl_conlai = Convert.ToDecimal(b["sl_conlai"]);
-                            c_dongdsdh.mota = b["mota"] + "";
-                            c_dongdsdh.md_sanpham_id = ma_sanpham + "";
-                            c_dongdsdh.md_donggoi_id = b["md_donggoi_id"] + "";
-                            c_dongdsdh.md_doitackinhdoanh_id = b["md_doitackinhdoanh_id"] + "";
-                            c_dongdsdh.ma_sanpham_khach = b["ma_sanpham_khach"] + "";
-                            c_dongdsdh.l2 = Convert.ToDecimal(b["l2"]);
-                            c_dongdsdh.l1 = Convert.ToDecimal(b["l1"]);
-                            c_dongdsdh.huongdan_dathang = b["huongdan_dathang"] + "";
-                            c_dongdsdh.hoatdong = true;
-                            c_dongdsdh.h2 = Convert.ToDecimal(b["h2"]);
-                            c_dongdsdh.h1 = Convert.ToDecimal(b["h1"]);
-                            c_dongdsdh.gianhap = Convert.ToDecimal(b["gianhap"]);
-                            c_dongdsdh.giachuan = Convert.ToDecimal(b["giachuan"] == null ? "0" : b["giachuan"]);
-                            c_dongdsdh.phi = Convert.ToDecimal(b["phi"] == null ? "0" : b["phi"]);
-                            c_dongdsdh.phidg = Convert.ToDecimal(b["phidg"] == null ? "0" : b["phidg"]);
-                            c_dongdsdh.ghichu_vachngan = b["ghichu_vachngan"] + "";
-                            c_dongdsdh.c_dongdsdh_id = b["c_dongdsdh_id"] + "";
-                            c_dongdsdh.c_dongdonhang_id = b["c_dongdonhang_id"] + "";
-                            c_dongdsdh.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
-                            c_dongdsdh.anco_check = true;
-                            db.c_dongdsdh.Add(c_dongdsdh);
-                        }
-                        c_dsdh.chungloai = string.Join(",", chungloais.OrderBy(s => s).Distinct());
-                        db.c_danhsachdathang.Add(c_dsdh);
-                        //c_dsdh.discount = cbmAll;
-                        c_dsdh.cbm = cbmAll;
-                        db.SaveChanges();
+                    c_dsdh.md_trangthai_id = item["md_trangthai_id"] + "";
+                    c_dsdh.mota = item["mota"] + "";
+                    //c_dsdh.ngaycapnhat = item["ngaycapnhat"].ToDateTime();
+                    c_dsdh.ngaylap = Convert.ToDateTime(item["ngaylap"]);
+                    c_dsdh.ngaytao = DateTime.Now;
+                    c_dsdh.ngay_tigia = null;
+                    c_dsdh.nguoicapnhat = item["nguoicapnhat"] + "";
+                    c_dsdh.nguoitao = item["nguoitao"] + "";
+                    c_dsdh.nguoi_dathang = item["nguoi_dathang"] + "";
+                    c_dsdh.nguoi_phutrach = item["nguoi_phutrach"] + "";
+                    c_dsdh.sochungtu = item["sochungtu"] + "";
+                    c_dsdh.so_po = sopo;
+                    c_dsdh.total = Convert.ToDecimal(item["total"]);
+                    c_dsdh.trangthai = item["trangthai"] + "";
+                    if (item.ContainsKey("cont20"))
+                    {
+                        c_dsdh.cont20 = Convert.ToDecimal(item["cont20"] == null ? "0" : item["cont20"]);
+                    }
+                    if (item.ContainsKey("cont40"))
+                    {
+                        c_dsdh.cont40 = Convert.ToDecimal(item["cont40"] == null ? "0" : item["cont40"]);
+                    }
+                    if (item.ContainsKey("cont40hc"))
+                    {
+                        c_dsdh.cont40hc = Convert.ToDecimal(item["cont40hc"] == null ? "0" : item["cont40hc"]);
                     }
 
-                    foreach (var b in lstItem2)
+                    decimal cbmAll = 0;
+                    var chungloais = new List<string>();
+                    foreach (var b in lstItem)
                     {
-                        var c_phidathang = new c_phidathang();
-                        c_phidathang.c_phidathang_id = b["c_phidathang_id"] + "";
-                        c_phidathang.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
-                        c_phidathang.hoatdong = true;
-                        c_phidathang.isphicong = Convert.ToBoolean(b["isphicong"] + "");
-                        c_phidathang.mota = b["mota"] + "";
-                        c_phidathang.ngaytao = DateTime.Now;
-                        c_phidathang.ngaycapnhat = DateTime.Now;
-                        c_phidathang.sotien = Convert.ToDecimal(b["sotien"] + "");
-                        c_phidathang.anco_check = true;
-                        db.c_phidathang.Add(c_phidathang);
-                        db.SaveChanges();
+                        string ma_sanpham = b["md_sanpham_id"] + "";
+                        chungloais.Add(ma_sanpham.Substring(0, 2));
+                        var c_dongdsdh = new c_dongdsdh();
+                        c_dongdsdh.w2 = Convert.ToDecimal(b["w2"] == null ? "0" : b["w2"]);
+                        c_dongdsdh.w1 = Convert.ToDecimal(b["w1"] == null ? "0" : b["w1"]);
+                        c_dongdsdh.vn = Convert.ToDecimal(b["vn"] == null ? "0" : b["vn"]);
+                        c_dongdsdh.vl = Convert.ToDecimal(b["vl"] == null ? "0" : b["vl"]);
+                        c_dongdsdh.vd = Convert.ToDecimal(b["vd"] == null ? "0" : b["vd"]);
+                        c_dongdsdh.v2 = Convert.ToDecimal(b["v2"] == null ? "0" : b["v2"]);
+                        cbmAll += c_dongdsdh.v2.GetValueOrDefault(0);
+                        c_dongdsdh.sl_huy = Convert.ToDecimal(b["sl_huy"] == null ? "0" : b["sl_huy"]);
+                        c_dongdsdh.tem_dan = b["tem_dan"] + ""; ;
+                        c_dongdsdh.sothutu = Convert.ToInt32(b["sothutu"]);
+                        c_dongdsdh.sl_outer = Convert.ToDecimal(b["sl_outer"]);
+                        c_dongdsdh.dvt_outer = b["dvt_outer"] + "";
+                        c_dongdsdh.sl_inner = Convert.ToDecimal(b["sl_inner"]);
+                        c_dongdsdh.dvt_inner = b["dvt_inner"] + "";
+
+                        c_dongdsdh.sl_dathang = Convert.ToDecimal(b["sl_dathang"]);
+                        c_dongdsdh.sl_dagiao = Convert.ToDecimal(b["sl_dagiao"]);
+                        c_dongdsdh.sl_cont = Convert.ToDecimal(b["sl_cont"]);
+                        c_dongdsdh.sl_conlai = Convert.ToDecimal(b["sl_conlai"]);
+                        c_dongdsdh.mota = b["mota"] + "";
+                        c_dongdsdh.md_sanpham_id = ma_sanpham + "";
+                        c_dongdsdh.md_donggoi_id = b["md_donggoi_id"] + "";
+                        c_dongdsdh.md_doitackinhdoanh_id = b["md_doitackinhdoanh_id"] + "";
+                        c_dongdsdh.ma_sanpham_khach = b["ma_sanpham_khach"] + "";
+                        c_dongdsdh.l2 = Convert.ToDecimal(b["l2"]);
+                        c_dongdsdh.l1 = Convert.ToDecimal(b["l1"]);
+                        c_dongdsdh.huongdan_dathang = b["huongdan_dathang"] + "";
+                        c_dongdsdh.hoatdong = true;
+                        c_dongdsdh.h2 = Convert.ToDecimal(b["h2"]);
+                        c_dongdsdh.h1 = Convert.ToDecimal(b["h1"]);
+                        c_dongdsdh.gianhap = Convert.ToDecimal(b["gianhap"]);
+                        c_dongdsdh.giachuan = Convert.ToDecimal(b["giachuan"] == null ? "0" : b["giachuan"]);
+                        c_dongdsdh.phi = Convert.ToDecimal(b["phi"] == null ? "0" : b["phi"]);
+                        c_dongdsdh.phidg = Convert.ToDecimal(b["phidg"] == null ? "0" : b["phidg"]);
+                        c_dongdsdh.ghichu_vachngan = b["ghichu_vachngan"] + "";
+                        c_dongdsdh.c_dongdsdh_id = b["c_dongdsdh_id"] + "";
+                        c_dongdsdh.c_dongdonhang_id = b["c_dongdonhang_id"] + "";
+                        c_dongdsdh.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
+                        c_dongdsdh.anco_check = true;
+                        db.c_dongdsdh.Add(c_dongdsdh);
                     }
+                    c_dsdh.chungloai = string.Join(",", chungloais.OrderBy(s => s).Distinct());
+                    db.c_danhsachdathang.Add(c_dsdh);
+                    //c_dsdh.discount = cbmAll;
+                    c_dsdh.cbm = cbmAll;
                 }
-            }
-            catch (Exception ex)
-            {
-                msg += string.Format(@"
-                    <div style='color:red'>Có lỗi xảy ra: {0}</div>
-                    <div style='display:none'>{1}</div>
-					<div style='display:none'>{2}</div>
-                    ", ex.Message, strdata, ex + "");
+
+                foreach (var b in lstItem2)
+                {
+                    var c_phidathang = new c_phidathang();
+                    c_phidathang.c_phidathang_id = b["c_phidathang_id"] + "";
+                    c_phidathang.c_danhsachdathang_id = b["c_danhsachdathang_id"] + "";
+                    c_phidathang.hoatdong = true;
+                    c_phidathang.isphicong = Convert.ToBoolean(b["isphicong"] + "");
+                    c_phidathang.mota = b["mota"] + "";
+                    c_phidathang.ngaytao = DateTime.Now;
+                    c_phidathang.ngaycapnhat = DateTime.Now;
+                    c_phidathang.sotien = Convert.ToDecimal(b["sotien"] + "");
+                    c_phidathang.anco_check = true;
+                    db.c_phidathang.Add(c_phidathang);
+                }
             }
 
             if (msg.Length <= 0)
-                transaction.Commit();
-            else
-                transaction.Rollback();
+                db.SaveChanges();
         }
+        catch (Exception ex)
+        {
+            msg += string.Format(@"
+                <div style='color:red'>Có lỗi xảy ra: {0}</div>
+                <div style='display:none'>{1}</div>
+				<div style='display:none'>{2}</div>
+                ", ex.Message, strdata, ex + "");
+        }
+
+        EndEventHandler:;
         context.Response.Write(msg);
     }
 
