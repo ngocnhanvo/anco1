@@ -330,7 +330,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                     c_dsdh.huongdanlamhangchung = item["huongdanlamhangchung"] + "";
                     c_dsdh.isgui_hdlh = Convert.ToBoolean(item["isgui_hdlh"]);
                     //c_dsdh.khachhang = item["khachhang"] + "";
-                    c_dsdh.md_doitackinhdoanh_id = item["md_doitackinhdoanh_id"] + "";
+                    //c_dsdh.md_doitackinhdoanh_id = item["md_doitackinhdoanh_id"] + "";
 
                     c_dsdh.md_trangthai_id = item["md_trangthai_id"] + "";
                     c_dsdh.mota = item["mota"] + "";
