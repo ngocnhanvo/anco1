@@ -303,11 +303,12 @@ public class API_GuiNhanDonHang : IHttpHandler
                 if (exist == null)
                 {
                     var sopo = item["so_po"] + "";
+                    var dtkdID = item["md_doitackinhdoanh_id"] + "";
                     var c_dsdh = new c_danhsachdathang();
-                    if (c_danhsachdathang_id == "ANCOTRADING")
-                        c_danhsachdathang_id = "ANCO TRADING";
+                    if (dtkdID == "ANCOTRADING")
+                        dtkdID = "ANCO TRADING";
 
-                    var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == c_danhsachdathang_id).FirstOrDefault();
+                    var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dtkdID).FirstOrDefault();
                     if(dtkd == null)
                     {
                         msg = $"{sopo}: Không tìm thấy mã khách hàng {c_dsdh.md_doitackinhdoanh_id} trong dữ liệu gốc";
