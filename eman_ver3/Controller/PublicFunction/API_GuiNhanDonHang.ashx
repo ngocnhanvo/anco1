@@ -304,10 +304,10 @@ public class API_GuiNhanDonHang : IHttpHandler
                 {
                     var sopo = item["so_po"] + "";
                     var c_dsdh = new c_danhsachdathang();
-                    if (c_dsdh.md_doitackinhdoanh_id == "ANCOTRADING")
-                        c_dsdh.md_doitackinhdoanh_id = "ANCO TRADING";
+                    if (c_danhsachdathang_id == "ANCOTRADING")
+                        c_danhsachdathang_id = "ANCO TRADING";
 
-                    var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == c_dsdh.md_doitackinhdoanh_id).FirstOrDefault();
+                    var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == c_danhsachdathang_id).FirstOrDefault();
                     if(dtkd == null)
                     {
                         msg = $"{sopo}: Không tìm thấy mã khách hàng {c_dsdh.md_doitackinhdoanh_id} trong dữ liệu gốc";
