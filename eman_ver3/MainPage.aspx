@@ -139,9 +139,25 @@
                 display: none;
             }
         }
+
+         #status-banner {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgb(255 0 4 / 93%);
+            color: white;
+            text-align: center;
+            font-size: 120% !important;
+            font-weight: bold;
+            padding: 6px;
+            z-index: 9999;
+        }
+        .hidden { display: none; }
+        .online { background-color: #52c41a !important; }
     </style>
 </head>
 <body class="main_body" id="main_body">
+    <div id="status-banner" class="hidden">Bạn đang ngoại tuyến. Vui lòng kiểm tra kết nối!</div>
     <div style="display:none" id="divRoteMobile">Hãy xoay điện thoại theo hướng dọc</div>
     <div style="display:none" id="divScript">Đang tải..</div>
     <div style="display:none" id="divVirtual"></div>
@@ -1148,6 +1164,31 @@
                 }
             }
         });
+
+        const bannerMainPage = document.getElementById('status-banner');
+        function updateStatusMainPage() {
+            if (navigator.onLine) {
+            // Khi có mạng lại
+            bannerMainPage.innerText = "Đã khôi phục kết nối!";
+            bannerMainPage.classList.add('online');
+    
+            // Ẩn thông báo sau 3 giây
+            setTimeout(() => {
+                bannerMainPage.classList.add('hidden');
+            }, 3000);
+            } else {
+            // Khi mất mạng
+            bannerMainPage.innerText = "Mất kết nối Internet!";
+            bannerMainPage.classList.remove('online', 'hidden');
+            }
+        }
+
+        // Lắng nghe sự kiện
+        window.addEventListener('online', updateStatusMainPage);
+        window.addEventListener('offline', updateStatusMainPage);
+
+        // Kiểm tra trạng thái lúc vừa load trang
+        if (!navigator.onLine) updateStatus();
     </script>
 </body>
 </html>

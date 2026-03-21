@@ -75,6 +75,14 @@
                 $('#a_' + menu).click();
                 $('#tr_' + menu).parent().parent().prev().click();
             }
+            else {
+                // Kiểm tra nếu trên URL đã có sẵn hash (ví dụ: #tabs_MD_00_PVCNoiBo)
+                let menu = window.location.hash.replace('#', '');
+                if (menu) {
+                    $('#a_' + menu).click();
+                    $('#tr_' + menu).parent().parent().prev().click();
+                }
+            }
         }
     });
 
@@ -134,15 +142,7 @@
         // gán giá trị cho sự kiện trở về trang trước
         $('#input_trovetrangtruoc').val($('#input_trovetrangtruoc').val() + '/' + 'td_' + e);
         document.title = "eMan-" + c;
-        //let searchParams = new URLSearchParams(window.location.search);
-
-        //if (searchParams.has('menu')) {
-        //    let uri = window.location.toString();
-        //    if (uri.indexOf("?") > 0) {
-        //        var clean_uri = uri.substring(0, uri.indexOf("?"));
-        //        window.history.replaceState({}, document.title, clean_uri);
-        //    }
-        //}
+        window.location.hash = e;
 
         if (btnDongMenuTuDong) {
             $('div.displayMenuConfig').click();

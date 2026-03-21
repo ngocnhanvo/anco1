@@ -733,16 +733,23 @@ function format_image(e) { var t = null; $(e).click(function (e) { t = e }), $(e
 function loadPage(t) {
     $('.noidung > .cl_table_noidung').remove();
     $(".noidung").html('<table class="cl_table_noidung" valign="top" style="height: ' + (height_menu_noidung - 10) + ';"><tr><td valign="top" style="padding:20px"><div class="nhan_loading0">&nbsp;</div></td></tr></table>');
-    try { xhr_menu.abort(); xhr_content.abort(); } catch (n) { }
-    //xhr_menu = $(".noidung").load(, function () { enable_timer = !0 })
-
+    try { xhr_menu.abort(); xhr_content.abort(); } catch (n) { console.log(n); }
     xhr_menu = $.ajax({
         type: "GET",
         url: "View/" + t,
-        success: function (msg) {
+        timeout: 10000
+    })
+        .done(function (msg) {
+            // Tương đương success
             $(".noidung").html(msg);
-        }
-    });
+        })
+        .fail(function (xhr, status, error) {
+            let style = `color: red; text-align: center; margin-top: 15px; font-size: 130% !important; user-select: none;`;
+            $(".noidung").html(`<div style='${style}'>Có lỗi xảy ra khi tải nội dung</div>`);
+        })
+        .always(function () {
+            
+        });
 }
 
 function loading_grid(t) {
