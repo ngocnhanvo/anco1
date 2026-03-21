@@ -392,4 +392,59 @@ public static class Security
             return false;
         }
     }
+
+    public static bool IsValidParentheses(string input)
+    {
+        if (input.removeAllSpaceOrTrimText(true).Length <= 0)
+            return true;
+
+        int roundBracketCount = 0;
+        bool inString = false;
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            char c = input[i];
+
+            // 1. Xử lý chuỗi để tránh bắt nhầm ngoặc trong '...'
+            if (c == '\'')
+            {
+                // Xử lý escape nháy đơn '' trong SQL
+                if (inString && i + 1 < input.Length && input[i + 1] == '\'')
+                {
+                    i++;
+                    continue;
+                }
+                inString = !inString;
+                continue;
+            }
+
+            // Nếu đang trong chuỗi thì không đếm ngoặc
+            if (inString) continue;
+
+            // 2. Chỉ đếm ngoặc tròn ngoài chuỗi
+            if (c == '(')
+            {
+                roundBracketCount++;
+            }
+            else if (c == ')')
+            {
+                roundBracketCount--;
+
+                // Nếu đóng nhiều hơn mở -> Phá cấu trúc -> Bắt lỗi ngay
+                if (roundBracketCount < 0) return false;
+            }
+        }
+
+        // Trả về true nếu các cặp ngoặc cân bằng và chuỗi nháy đơn đã đóng
+        return roundBracketCount == 0 && !inString;
+    }
+
+    public static string test_InjectionSQL(string filter, string where_ex, string where_module_select)
+    {
+        if (!IsValidParentheses(filter))
+            return "and 1=2";
+        if (!IsValidParentheses(where_ex))
+            return "and 1=2";
+        return $"and (((1=1 {filter} {where_ex})))";
+    }
 } 

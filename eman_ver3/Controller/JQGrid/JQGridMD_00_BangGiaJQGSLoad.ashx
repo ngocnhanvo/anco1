@@ -84,10 +84,8 @@ public class JQGridMD_00_BangGiaJQGSLoad : IHttpHandler, System.Web.SessionState
                         {mod_.from_sql}
                    WHeRe 1=1 
                         {mod_.where_sql} 
-                        {filter} 
-                        {where_ex} 
                         {where_vaitro} 
-                        {where_module_select}
+                        {Security.test_InjectionSQL(filter, where_ex, where_module_select)}
                    {groupby}
                 ) P 
                 WHeRe 

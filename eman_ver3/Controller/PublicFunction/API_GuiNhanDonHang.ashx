@@ -311,7 +311,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                     var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dtkdID).FirstOrDefault();
                     if(dtkd == null)
                     {
-                        msg = $"{sopo}: Không tìm thấy mã khách hàng {c_dsdh.md_doitackinhdoanh_id} trong dữ liệu gốc";
+                        msg = $@"{sopo}: Không tìm thấy mã khách hàng ""{dtkdID}"" trong dữ liệu gốc";
                         goto EndEventHandler;
                     }
                     c_dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id;
