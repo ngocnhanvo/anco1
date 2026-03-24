@@ -102,21 +102,11 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHKhongCoGiaTri : System
 		    declare @id nvarchar(32) = '{c_danhsachdathang_id}'
 
             select 
-                (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoName}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxName}' 
-                    else isnull(dtkd.ten_dtkd, '') 
-                end) as tenCT,
-                (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoAddress}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxAddress}' 
-                    else isnull(dtkd.diachi, '') 
-                end) as diachiCT,
-	            (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoTelFaxEmail}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxTelFaxEmail}' 
-                    else isnull(dtkd.tel, '') 
-                end) as sdtCT,
+                dtkd.ten_dtkd_TA as tenCT,
+                dtkd.diachi_TA as diachiCT,
+	            (case when isnull(dtkd.tel, '') = '' then '' else N'Tel.: ' + dtkd.tel end) as sdtCT,
+                (case when isnull(dtkd.fax, '') = '' then '' else N'   Fax: ' + dtkd.fax end) as faxCT,
+                (case when isnull(dtkd.email, '') = '' then '' else N'   Email: ' + dtkd.email end) as emailCT,
                 dh.sochungtu,
 	            dh.so_po,
 	            format(dh.ngaylap, 'dd/MM/yyyy') as ngaylap,
@@ -130,6 +120,7 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHKhongCoGiaTri : System
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
                 isnull(ddh.gianhap, 0) - isnull(ddh.giachuan, 0) as phi,
+                isnull(ddh.phidg, 0) as phidg,
 	            ddh.giadoichieu as gia,
 	            ddh.giadoichieu * ddh.sl_dathang as thanhtien,
 	            (cast(ddh.sl_inner as nvarchar) + ' ' + ddh.dvt_inner) as dginner,

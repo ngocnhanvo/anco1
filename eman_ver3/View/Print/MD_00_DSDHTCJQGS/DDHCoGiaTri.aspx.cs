@@ -92,31 +92,15 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHCoGiaTri : System.Web.
     public String CreateSql(HttpContext context)
     {
         c_danhsachdathang_id = context.Request.QueryString["id"];
-        var ancoName = "ANCO COMPANY LIMITED";
-        var ancoAddress = "3B/2, 1B Hamlet, An Phu Ward, Thuan An Dist., Binh Duong Province, Vietnam";
-        var ancoTelFaxEmail = "Tel.: (84-274) 3740 973   Fax:  (84-274) 3740 621  Email: anco@ancopottery.com";
-        var nexxName = "NEXX DECOR COMPANY LIMITED";
-        var nexxAddress = "3B/2, 1B Hamlet, An Phu Ward, Thuan An Dist., Binh Duong Province, Vietnam";
-        var nexxTelFaxEmail = "Tel: +84 (0)961 802 325/+84 (0)903 342 885  Email: hoangbui@nexxdecor.vn / sales@nexxdecor.vn";
         string sql = $@"
 		    declare @id nvarchar(32) = '{c_danhsachdathang_id}'
 
             select 
-                (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoName}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxName}' 
-                    else isnull(dtkd.ten_dtkd, '') 
-                end) as tenCT,
-                (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoAddress}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxAddress}' 
-                    else isnull(dtkd.diachi, '') 
-                end) as diachiCT,
-	            (case 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'ANCO TRADING' then N'{ancoTelFaxEmail}' 
-                    when isnull(dtkd.ma_dtkd, dh.md_doitackinhdoanh_id) = 'NEXXDECOR' then N'{nexxTelFaxEmail}' 
-                    else isnull(dtkd.tel, '') 
-                end) as sdtCT,
+                dtkd.ten_dtkd_TA as tenCT,
+                dtkd.diachi_TA as diachiCT,
+	            (case when isnull(dtkd.tel, '') = '' then '' else N'Tel.: ' + dtkd.tel end) as sdtCT,
+                (case when isnull(dtkd.fax, '') = '' then '' else N'   Fax: ' + dtkd.fax end) as faxCT,
+                (case when isnull(dtkd.email, '') = '' then '' else N'   Email: ' + dtkd.email end) as emailCT,
                 dh.sochungtu,
 	            dh.so_po,
 	            format(dh.ngaylap, 'dd/MM/yyyy') as ngaylap,
@@ -130,6 +114,7 @@ public partial class PrintControllers_MD_00_DSDHTCJQGS_DDHCoGiaTri : System.Web.
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
                 isnull(ddh.gianhap, 0) - isnull(ddh.giachuan, 0) as phi,
+                isnull(ddh.phidg, 0) as phidg,
 	            ddh.gianhap as gia,
 	            ddh.gianhap * ddh.sl_dathang as thanhtien,
 	            (cast(ddh.sl_inner as nvarchar) + ' ' + ddh.dvt_inner) as dginner,
