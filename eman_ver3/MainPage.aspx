@@ -51,6 +51,7 @@
     <script src="js/Public_script/moment.js"></script> 
     <script src="extension/mess/tableToExcel.js"></script>
     <script lang="javascript" src="js/Public_script/xlsx.full.min.js"></script>
+    <script lang="javascript" src="js/Public_script/lz-string.min.js"></script>
     <!--/ layout -->
     
     <!--Script Module-->
@@ -290,6 +291,24 @@
         var height_menu_noidung = heightBody - (heightHeader + heightFooter) * ratePercentTransform;
         var searchParams = new URLSearchParams(window.location.search);
         var isLinkTransfer = searchParams.has('menu');
+        var menuSav = '', module0Sav = '', module1Sav = '', module2Sav = '';
+        var dataToShareScreen = {
+            mn: '',
+            md0: '',
+            md1: '',
+            md2: '',
+            id0: '',
+            id1: '',
+            id2: '',
+            ft0: '',
+            ft1: '',
+            ft2: ''
+        };
+        var update_dataToShareScreen = () => {
+            let compressed = LZString.compressToEncodedURIComponent(JSON.stringify(dataToShareScreen));
+            window.location.hash = compressed;
+        };
+
         var googleMapLoaded = false;
         var input_focus_public;
         var formVisible_addEdit, formVisible_Del, formVisible_addEdit_id, formVisible_Del_id;
@@ -313,11 +332,29 @@
             $('.nhan_header').css('visibility', 'hidden');
         }
         else {
-            $.getScript( "https://polyfill.io/v3/polyfill.min.js?features=default", function( data, textStatus, jqxhr ) {
-                $.getScript( "https://maps.googleapis.com/maps/api/js?key=<%=ttc.url_lichtuan%>&libraries=places", function( data, textStatus, jqxhr ) {
-                    googleMapLoaded = true;
-                });
-            });
+            const hashData = window.location.hash.substring(1);
+            const decompressed = LZString.decompressFromEncodedURIComponent(hashData);
+            const originalData = JSON.parse(decompressed);
+            if (originalData) {
+                menuSav = originalData.mn;
+                if (menuSav) {
+                    module0Sav = originalData.md0;
+                    if (module0Sav) {
+                        window[`id_${module0Sav}`] = originalData.id0;
+                        window[`filter_${module0Sav}`] = originalData.ft0;
+                        module1Sav = originalData.md1;
+                        if (module1Sav) {
+                            window[`id_${module1Sav}`] = originalData.id1;
+                            window[`filter_${module1Sav}`] = originalData.ft1;
+                            module2Sav = originalData.md2;
+                            if (module2Sav) {
+                                window[`id_${module2Sav}`] = originalData.id2;
+                                window[`filter_${module2Sav}`] = originalData.ft2;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         $('.menu').height(height_menu_noidung);

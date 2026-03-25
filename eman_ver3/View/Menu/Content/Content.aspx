@@ -72,7 +72,7 @@
         }
     });
 
-    function loadnoidung(page) {
+    function loadnoidung(page, e) {
         if ($("#input_nhanback").val() == 'false') { 
             $('.div_noidung_menu').css('height', '50px');
             $('.div_noidung_menu').addClass('loading');
@@ -88,6 +88,11 @@
                     hideModules: searchParams.get('hideModules')
                 },
                 success: function (msg) {
+                    dataToShareScreen.md0 = e;
+                    dataToShareScreen.md1 = '';
+                    dataToShareScreen.md2 = '';
+                    update_dataToShareScreen();
+
                     $('.div_noidung_menu').removeClass('loading');
                     $('.div_noidung_menu').html(msg);
                     $('.div_noidung_menu').css('height', 'auto');
@@ -249,7 +254,8 @@
 
         }
 
-        loadnoidung(d);
+        loadnoidung(d, e);
+
 		$('.span_' + e).addClass('module_spanselect');
     }
 

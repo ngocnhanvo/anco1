@@ -71,16 +71,15 @@
             dem_Records_menu();
 
             if (isLinkTransfer) {
-                let menu = searchParams.get('menu');
+                const menu = searchParams.get('menu');
                 $('#a_' + menu).click();
                 $('#tr_' + menu).parent().parent().prev().click();
             }
             else {
-                // Kiểm tra nếu trên URL đã có sẵn hash (ví dụ: #tabs_MD_00_PVCNoiBo)
-                let menu = window.location.hash.replace('#', '');
-                if (menu) {
-                    $('#a_' + menu).click();
-                    $('#tr_' + menu).parent().parent().prev().click();
+                if (menuSav) {
+                    $('#a_' + menuSav).click();
+                    $('#tr_' + menuSav).parent().parent().prev().click();
+                    menuSav = '';
                 }
             }
         }
@@ -141,8 +140,9 @@
         $('#input_tenmodule2').val("");
         // gán giá trị cho sự kiện trở về trang trước
         $('#input_trovetrangtruoc').val($('#input_trovetrangtruoc').val() + '/' + 'td_' + e);
-        document.title = "eMan-" + c;
-        window.location.hash = e;
+        document.title = c;
+        dataToShareScreen.mn = e;
+        update_dataToShareScreen();
 
         if (btnDongMenuTuDong) {
             $('div.displayMenuConfig').click();

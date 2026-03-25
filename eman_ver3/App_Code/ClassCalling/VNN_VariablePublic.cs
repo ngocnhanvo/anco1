@@ -72,11 +72,11 @@ public class VNN_VariablePublic
                     kq[3] += string.Format(@"loadScriptUrl('{0}','{1}');{2}", src_link, src_text, Environment.NewLine);
 
                     kq[1] += "<input type='hidden' id=\"org_grid" + mod.ma_module + "\"/>";
-                    kq[2] += $@"let id_{mod.ma_module} = 0;";
-                    kq[2] += $@"let filter_{mod.ma_module} = null, filterVal_{mod.ma_module} = null;";
-                    kq[2] += $@"let page_{mod.ma_module} = null;";
-                    kq[2] += $@"let sidx_{mod.ma_module} = null;";
-                    kq[2] += $@"let sord_{mod.ma_module} = null;";
+                    kq[2] += $@"var id_{mod.ma_module} = 0;";
+                    kq[2] += $@"var filter_{mod.ma_module} = null, filterVal_{mod.ma_module} = null;";
+                    kq[2] += $@"var page_{mod.ma_module} = null;";
+                    kq[2] += $@"var sidx_{mod.ma_module} = null;";
+                    kq[2] += $@"var sord_{mod.ma_module} = null;";
                     kq[2] += $@"let header_{mod.ma_module} = null;";
                 }
             }
