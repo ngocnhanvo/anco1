@@ -80,19 +80,7 @@
                 $('#' + tengrid).jqGrid('getGridParam', 'postData').id_sel = id_<%=ma_module %>;
             $('#' + tengrid).jqGrid('getGridParam', 'postData').module_select = 1;
             
-            if(load_grid == 0){
-                $('#' + tengrid).jqGrid('getGridParam', 'postData').filters = filter_<%=ma_module %>;
-                $('#' + tengrid).jqGrid('getGridParam', 'postData').page = page_<%=ma_module %>;
-                $('#' + tengrid).jqGrid('getGridParam', 'postData').sord = sord_<%=ma_module %>;
-                $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx = sidx_<%=ma_module %>;
-            }
-            else
-            {
-                filter_<%=ma_module %> = $('#' + tengrid).jqGrid('getGridParam', 'postData').filters;
-                page_<%=ma_module %> = $('#' + tengrid).jqGrid('getGridParam', 'postData').page;
-                sord_<%=ma_module %> = $('#' + tengrid).jqGrid('getGridParam', 'postData').sord;
-                sidx_<%=ma_module %> = $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx;
-            }
+            set_Filter(load_grid, tengrid, '<%=ma_module %>');
         },
         gridComplete: function () {
             $(this).jqGrid('setGridWidth', $(this).parent().parent().parent().parent().parent().width());

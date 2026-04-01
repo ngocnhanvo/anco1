@@ -409,8 +409,63 @@ function Close_Form(object, close) {
         $(object).dialog("destroy").remove();
 }
 
+function set_Filter(load_grid, tengrid, maMD) {
+    if (load_grid == 0) {
+        $('#' + tengrid).jqGrid('getGridParam', 'postData').filters = window[`filter_${maMD}`];
+        $('#' + tengrid).jqGrid('getGridParam', 'postData').page = window[`page_${maMD}`];
+        $('#' + tengrid).jqGrid('getGridParam', 'postData').sord = window[`sord_${maMD}`] ?? '';
+        $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx = window[`sidx_${maMD}`] ?? '';
+    }
+    else {
+        window[`filter_${maMD}`] = $('#' + tengrid).jqGrid('getGridParam', 'postData').filters;
+        window[`page_${maMD}`] = $('#' + tengrid).jqGrid('getGridParam', 'postData').page;
+        window[`sord_${maMD}`] = $('#' + tengrid).jqGrid('getGridParam', 'postData').sord;
+        window[`sidx_${maMD}`] = $('#' + tengrid).jqGrid('getGridParam', 'postData').sidx;
+    }
+
+    if (tengrid.startsWith('gridMD_00')) {
+        dataToShareScreen.f0 = window[`filter_${maMD}`];
+        dataToShareScreen.p0 = window[`page_${maMD}`];
+        dataToShareScreen.sd0 = window[`sord_${maMD}`];
+        dataToShareScreen.sx0 = window[`sidx_${maMD}`];
+        update_dataToShareScreen();
+    }
+    else if (tengrid.startsWith('gridMD_01')) {
+        dataToShareScreen.f1 = window[`filter_${maMD}`];
+        dataToShareScreen.p1 = window[`page_${maMD}`];
+        dataToShareScreen.sd1 = window[`sord_${maMD}`];
+        dataToShareScreen.sx1 = window[`sidx_${maMD}`];
+        update_dataToShareScreen();
+    }
+    else if (tengrid.startsWith('gridMD_02')) {
+        dataToShareScreen.f2 = window[`filter_${maMD}`];
+        dataToShareScreen.p2 = window[`page_${maMD}`];
+        dataToShareScreen.sd2 = window[`sord_${maMD}`];
+        dataToShareScreen.sx2 = window[`sidx_${maMD}`];
+        update_dataToShareScreen();
+    }
+}
+
+function set_ValueFilter2(tengrid, filter) {
+    if (!filter)
+        return '';
+    filter = JSON.parse(filter);
+    console.log(filter);
+    if (!filter.rules)
+        return '';
+
+    filter.rules.forEach(rule => {
+        const element = $(`.tbl_vnn_${tengrid} .ui-search-table .ui-search-input [name="${rule.field}"]`);
+        if (element) {
+            element.val(rule.data);
+        }
+    });
+}
+
 function set_ValueFilter(tengrid, ValueFilter, sord, sidx) {
-    try {
+    const filter = $(`#${tengrid}`).jqGrid('getGridParam', 'postData').filters;
+    set_ValueFilter2(tengrid, filter);
+    /*try {
         ValueFilter = ValueFilter.split(')##(');
     } catch (r) {
         ValueFilter = '';
@@ -427,7 +482,7 @@ function set_ValueFilter(tengrid, ValueFilter, sord, sidx) {
                 }
             });
         } catch (r) { }
-    }
+    }*/
 
     if (sord != null & sidx != null) {
         let daucham = sidx.lastIndexOf('.');
@@ -452,7 +507,7 @@ function set_ValueFilter(tengrid, ValueFilter, sord, sidx) {
 
 function get_ValueFilter(tengrid) {
     var val_final = '';
-    var s = '#gbox_' + tengrid + ' tr th div table tr td input';
+    /*var s = '#gbox_' + tengrid + ' tr th div table tr td input';
     $(s).each(function (index, val) {
         val_final += $(this).attr('id') + '(##)' + val.value + ')##(';
     });
@@ -460,20 +515,7 @@ function get_ValueFilter(tengrid) {
     s = '#gbox_' + tengrid + ' tr th div table tr td select';
     $(s).each(function (index, val) {
         val_final += $(this).attr('id') + '(##)' + val.value + ')##(';
-    });
-
-    if (tengrid.startsWith('gridMD_00')) {
-        dataToShareScreen.ft0 = val_final;
-        update_dataToShareScreen();
-    }
-    else if (tengrid.startsWith('gridMD_01')) {
-        dataToShareScreen.ft1 = val_final;
-        update_dataToShareScreen();
-    }
-    else if (tengrid.startsWith('gridMD_02')) {
-        dataToShareScreen.ft2 = val_final;
-        update_dataToShareScreen();
-    }
+    });*/
     return val_final;
 }
 
@@ -750,7 +792,6 @@ function loadPage(t) {
     xhr_menu = $.ajax({
         type: "GET",
         url: "View/" + t,
-        timeout: 10000
     })
         .done(function (msg) {
             // Tương đương success

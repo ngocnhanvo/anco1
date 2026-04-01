@@ -341,15 +341,29 @@
                     module0Sav = originalData.md0;
                     if (module0Sav) {
                         window[`id_${module0Sav}`] = originalData.id0;
-                        window[`filter_${module0Sav}`] = originalData.ft0;
+                        //window[`filterVal_${module0Sav}`] = originalData.ft0;
+                        window[`filter_${module0Sav}`] = originalData.f0;
+                        window[`page_${module0Sav}`] = originalData.p0;
+                        window[`sord_${module0Sav}`] = originalData.sd0 ?? '';
+                        window[`sidx_${module0Sav}`] = originalData.sx0 ?? '';
+                        
                         module1Sav = originalData.md1;
                         if (module1Sav) {
                             window[`id_${module1Sav}`] = originalData.id1;
-                            window[`filter_${module1Sav}`] = originalData.ft1;
+                            //window[`filterVal_${module1Sav}`] = originalData.ft1;
+                            window[`filter_${module1Sav}`] = originalData.f1;
+                            window[`page_${module1Sav}`] = originalData.p1;
+                            window[`sord_${module1Sav}`] = originalData.sd1 ?? '';
+                            window[`sidx_${module1Sav}`] = originalData.sx1 ?? '';
+                            
                             module2Sav = originalData.md2;
                             if (module2Sav) {
                                 window[`id_${module2Sav}`] = originalData.id2;
-                                window[`filter_${module2Sav}`] = originalData.ft2;
+                                //window[`filterVal_${module2Sav}`] = originalData.ft2;
+                                window[`filter_${module2Sav}`] = originalData.f2;
+                                window[`page_${module2Sav}`] = originalData.p2;
+                                window[`sord_${module2Sav}`] = originalData.sd2 ?? '';
+                                window[`sidx_${module2Sav}`] = originalData.sx2 ?? '';
                             }
                         }
                     }
