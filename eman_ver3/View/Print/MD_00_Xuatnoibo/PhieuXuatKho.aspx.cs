@@ -181,6 +181,7 @@ public partial class PrintControllers_MD_00_Xuatnoibo_PhieuXuatKho : System.Web.
                 , xb.sochungtu as yeucau
                 , nknb_cdh.tenhang as donhang
                 , xb.bosung
+                , null as ghichu
 		    from md_xuatkhonb xb
 		        left join md_xuatkhonb_cdh nknb_cdh on xb.md_xuatkhonb_id = nknb_cdh.md_xuatkhonb_id
                 left join md_sanpham sp on nknb_cdh.md_sanpham_id = sp.md_sanpham_id

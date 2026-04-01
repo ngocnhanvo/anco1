@@ -50,8 +50,8 @@ public partial class PrintControllers_MD_00_Nhapkhoton1_lenhNhapKho : System.Web
 	            null as sldat,
 	            null as slkdat,
                 null as makh,
-                null as ghichu,
-                null as soDMH
+                null as soDMH,
+                cdvc.mota as ghichu
             from md_nhapkhoton vcnb
                 left join md_kho kho on kho.md_kho_id = vcnb.denkho
                 left join md_nhapkhoton_cdh cdvc on cdvc.md_nhapkhoton_id = vcnb.md_nhapkhoton_id

@@ -51,7 +51,8 @@ public partial class PrintControllers_MD_00_KiemKeKho_lenhXuatKho : System.Web.U
                 isnull(cdvc.sl_demduoc, 0) as slct,
 	            null as sldat,
 	            null as slkdat,
-                null as makh
+                null as makh,
+                null as ghichu
             from md_kiemke vcnb
                 left join md_kho kho on kho.md_kho_id = vcnb.md_kho_id
                 left join md_kiemke_cdh cdvc on cdvc.md_kiemke_id = vcnb.md_kiemke_id
