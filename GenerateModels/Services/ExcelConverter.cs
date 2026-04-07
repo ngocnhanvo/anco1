@@ -1,12 +1,12 @@
 ﻿
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections;
-using System.IO;
-using System.Threading;
-using System.Runtime.InteropServices;
-using Microsoft.Office.Interop.Excel;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace OfficeToPDF
 {
@@ -469,15 +469,30 @@ namespace OfficeToPDF
                                         }
                                         else
                                         {
-                                            try
+                                            string oldText = textReplace.oldT;
+                                            string newText = textReplace.newT;
+                                            string cellText = oRange.Text?.ToString() ?? "";
+                                            int lenGH = cellText.Length - oldText.Length + newText.Length;
+                                            if (lenGH < 255)
                                             {
-                                                chars = oRange.Characters[phStart + 1, phEnd];
-                                                chars.Insert(textReplace.newT);
+                                                try
+                                                {
+                                                    chars = oRange.Characters[phStart + 1, phEnd];
+                                                    chars.Insert(textReplace.newT);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    chars = oRange.Characters[phStart + 1, phEnd];
+                                                    chars.Insert(ex.Message);
+                                                }
                                             }
-                                            catch (Exception ex)
+                                            else
                                             {
-                                                chars = oRange.Characters[phStart + 1, phEnd];
-                                                chars.Insert(ex.Message);
+                                                int startIdx = cellText.IndexOf(oldText);
+                                                int suffixStartIdx = startIdx + oldText.Length;
+                                                string prefixText = cellText.Substring(0, startIdx);
+                                                string suffixText = cellText.Substring(suffixStartIdx);
+                                                oRange.Value2 = prefixText + newText + suffixText;
                                             }
                                         }
                                     }
