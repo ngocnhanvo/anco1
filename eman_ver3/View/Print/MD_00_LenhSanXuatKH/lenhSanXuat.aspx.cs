@@ -47,7 +47,7 @@ public partial class PrintControllers_MD_00_LenhSanXuatKH_lenhSanXuat : System.W
 	            format(lsx2.ngaytao, 'dd/MM/yyyy') as ngaylap,
 	            format(lsx2.ngayhoanthanh, 'dd/MM/yyyy') as ngayhoanthanh,
 	            sp.ma_sanpham as maVTHH,
-                dtkd.hinhanh_link + sp.ma_sanpham as hinhanh,
+                dtkd.hinhanh_link + (case when isnull(sp.ban_thanhpham, 0) = 1 then substring(sp.ma_sanpham, 0, 12) + '-__' else sp.ma_sanpham end) as hinhanh,
                 sp.mota_tiengviet as tenVTHH,
                 sp.ban_thanhpham,
                 dvt.ten_dvt as dvt,
