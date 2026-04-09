@@ -45,14 +45,15 @@ public class API_GuiNhanDonHang : IHttpHandler
             var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
             string dsdhId = data["dsdhId"].ToString();
             var pxbs = db.md_xuatban.Where(s => s.trangthai == Helper.HIEULUC & s.c_danhsachdathang_id == dsdhId).ToList()
-                    .Select(s=> new {
+                    .Select(s => new
+                    {
                         s.md_xuatban_id,
                         s.sochungtu,
                         s.ngaychuyen,
                         s.so_cont,
                         s.so_seal,
-                        loai_cont = db.md_loaicont.Where(t=>t.md_loaicont_id == s.loai_cont).Select(t => t.ten_cont).FirstOrDefault(),
-                        tongsl = db.md_xuatban_cdh.Where(t=>t.md_xuatban_id == s.md_xuatban_id & t.sl_xuat > 0).Sum(t => t.sl_xuat),
+                        loai_cont = db.md_loaicont.Where(t => t.md_loaicont_id == s.loai_cont).Select(t => t.ten_cont).FirstOrDefault(),
+                        tongsl = db.md_xuatban_cdh.Where(t => t.md_xuatban_id == s.md_xuatban_id & t.sl_xuat > 0).Sum(t => t.sl_xuat),
                         s.tare,
                         s.mg
                     })
@@ -91,9 +92,9 @@ public class API_GuiNhanDonHang : IHttpHandler
                             sl_nhapthucte = s.sl_xuat,
                             sl_conlai = 0,
                             s.sl_inner,
-                            dvt_inner = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t=>t.dvt_inner).FirstOrDefault(),
+                            dvt_inner = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t => t.dvt_inner).FirstOrDefault(),
                             s.sl_outer,
-                            dvt_outer = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t=>t.dvt_outer).FirstOrDefault(),
+                            dvt_outer = db.c_dongdsdh.Where(t => t.c_danhsachdathang_id == xb.c_danhsachdathang_id & t.md_sanpham_id == s.md_sanpham_id).Select(t => t.dvt_outer).FirstOrDefault(),
                             s.tenkien,
                             s.sokien,
                             s.tldg,
@@ -125,13 +126,13 @@ public class API_GuiNhanDonHang : IHttpHandler
             var hdlh = (data["hdlh"] + "");
             var chdk = (data["chdk"] + "");
 
-            if(result.Count <= 0)
+            if (result.Count <= 0)
             {
                 msg = "Không có hướng dẫn làm hàng chi tiết.";
                 goto EndEventHandler;
             }
 
-            if(string.IsNullOrWhiteSpace(hdlh) & string.IsNullOrWhiteSpace(chdk))
+            if (string.IsNullOrWhiteSpace(hdlh) & string.IsNullOrWhiteSpace(chdk))
             {
                 msg = "Không có hướng dẫn làm hàng tổng thể";
                 goto EndEventHandler;
@@ -139,7 +140,7 @@ public class API_GuiNhanDonHang : IHttpHandler
 
             var dhid = result.Select(s => s.lienket).Distinct().FirstOrDefault();
             var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == dhid).FirstOrDefault();
-            if(dsdh == null)
+            if (dsdh == null)
             {
                 msg = "Không tìm thấy đơn hàng.";
                 goto EndEventHandler;
@@ -169,9 +170,9 @@ public class API_GuiNhanDonHang : IHttpHandler
             msgEx = ex.ToString();
         }
 
-        EndEventHandler:;
+    EndEventHandler:;
 
-        if(msg.Length > 0)
+        if (msg.Length > 0)
         {
             msg = $@"
                 <div style='color:red'>Có lỗi xảy ra: {msg}</div>
@@ -192,7 +193,7 @@ public class API_GuiNhanDonHang : IHttpHandler
             var taptins = new List<md_taptin>();
             var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
             var result = JsonConvert.DeserializeObject<List<md_taptin>>(data["result"] + "");
-            if(result.Count <= 0)
+            if (result.Count <= 0)
             {
                 msg = "Không tìm thấy tập tin.";
                 goto EndEventHandler;
@@ -200,7 +201,7 @@ public class API_GuiNhanDonHang : IHttpHandler
 
             var dhid = result.Select(s => s.lienket).Distinct().FirstOrDefault();
             var dsdh = db.c_danhsachdathang.Where(s => s.c_danhsachdathang_id == dhid).FirstOrDefault();
-            if(dsdh == null)
+            if (dsdh == null)
             {
                 msg = "Không tìm thấy đơn hàng.";
                 goto EndEventHandler;
@@ -212,7 +213,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                 var ttServer = db.md_taptin.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
                 var tt = db.md_taptin.Local.Where(s => s.tentaptin == a.tentaptin & s.lienket == a.lienket).FirstOrDefault();
                 var add = tt == null;
-                if(add)
+                if (add)
                 {
                     tt = new md_taptin();
                     a.CopyPropertiesTo(tt);
@@ -238,9 +239,9 @@ public class API_GuiNhanDonHang : IHttpHandler
             msgEx = ex.ToString();
         }
 
-        EndEventHandler:;
+    EndEventHandler:;
 
-        if(msg.Length > 0)
+        if (msg.Length > 0)
         {
             msg = $@"
                 <div style='color:red'>Có lỗi xảy ra: {msg}</div>
@@ -303,17 +304,31 @@ public class API_GuiNhanDonHang : IHttpHandler
                 if (exist == null)
                 {
                     var sopo = item["so_po"] + "";
+                    var sochungtu = item["sochungtu"] + "";
                     var dtkdID = item["md_doitackinhdoanh_id"] + "";
                     var c_dsdh = new c_danhsachdathang();
                     if (dtkdID == "ANCOTRADING")
                         dtkdID = "ANCO TRADING";
 
                     var dtkd = db.md_doitackinhdoanh.Where(s => s.ma_dtkd == dtkdID).FirstOrDefault();
-                    if(dtkd == null)
+                    if (dtkd == null)
                     {
                         msg = $@"{sopo}: Không tìm thấy mã khách hàng ""{dtkdID}"" trong dữ liệu gốc";
                         goto EndEventHandler;
                     }
+                    var dsdh = db.c_danhsachdathang.Where(s => s.so_po == sopo).FirstOrDefault();
+                    if (dsdh != null)
+                    {
+                        msg = $@"Đã tồn tại đơn hàng có số PO ""{sopo}"" trong hệ thống";
+                        goto EndEventHandler;
+                    }
+                    dsdh = db.c_danhsachdathang.Where(s => s.sochungtu == sochungtu).FirstOrDefault();
+                    if (dsdh != null)
+                    {
+                        msg = $@"{sopo}: Đã tồn tại đơn hàng có số chứng từ ""{sochungtu}"" trong hệ thống";
+                        goto EndEventHandler;
+                    }
+
                     c_dsdh.md_doitackinhdoanh_id = dtkd.md_doitackinhdoanh_id;
                     c_dsdh.anco_check = true;
                     c_dsdh.check_nangluc = false;
@@ -343,7 +358,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                     c_dsdh.nguoitao = item["nguoitao"] + "";
                     c_dsdh.nguoi_dathang = item["nguoi_dathang"] + "";
                     c_dsdh.nguoi_phutrach = item["nguoi_phutrach"] + "";
-                    c_dsdh.sochungtu = item["sochungtu"] + "";
+                    c_dsdh.sochungtu = sochungtu;
                     c_dsdh.so_po = sopo;
                     c_dsdh.total = Convert.ToDecimal(item["total"]);
                     c_dsdh.trangthai = item["trangthai"] + "";
@@ -442,7 +457,7 @@ public class API_GuiNhanDonHang : IHttpHandler
                 ", ex.Message, strdata, ex + "");
         }
 
-        EndEventHandler:;
+    EndEventHandler:;
         context.Response.Write(msg);
     }
 
