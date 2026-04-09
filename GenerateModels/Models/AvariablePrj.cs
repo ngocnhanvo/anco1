@@ -10,8 +10,8 @@ public class AvariablePrj
         public int columnLast { get; set; }
         [System.Web.Mvc.AllowHtml]
         public string link { get; set; }
-        public float heightCell { get; set; }
-        public float widthCell { get; set; }
+        public float? heightCell { get; set; }
+        public float? widthCell { get; set; }
         public float? topIMG { get; set; }
         public float? leftIMG { get; set; }
         public float? widthIMG { get; set; }
