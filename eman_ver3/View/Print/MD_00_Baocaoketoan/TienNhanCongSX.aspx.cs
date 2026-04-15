@@ -13,8 +13,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
         var context = HttpContext.Current;
         sothapphan = PrintAnco2.GetDecimal(context.Request.QueryString["stp"], 1);
         inPDF = context.Request.QueryString["inPDF"];
-        string nameTemp = "[KT] CÔNG NỢ PHẢI TRẢ (Nhóm KHNCC).repx";
-        string nameRpt = "CÔNG NỢ PHẢI TRẢ {ngayin}";
+        string nameTemp = "[KT] Tiền nhân công sản xuất.repx";
+        string nameRpt = "Tiền nhân công sản xuất {ngayin}";
         string sql = CreateSql(context);
 
         var task = new System.Threading.Tasks.Task(() =>
@@ -30,11 +30,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
         var tbl = ((DataSet)ReportViewer1.Report.DataSource).Tables[0];
         if (tbl.Rows.Count > 0)
         {
-            var tendtkds = tbl.AsEnumerable().Select(s => s.Field<string>("tenDTKD")).Distinct().ToList();
-            if (tendtkds.Count > 1)
-            {
-                tbl.Rows[0]["tenDTKD"] = "";
-            }
+
         }
     }
 
