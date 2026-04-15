@@ -116,7 +116,7 @@ public partial class PrintControllers_MD_00_DSDHJQGS_DDHCoGiaTri : System.Web.UI
 	            isnull(sp.ma_sanpham, ddh.md_sanpham_id) as maVTHH,
 	            ddh.ma_sanpham_khach as makhach,
 	            isnull(sp.mota_tiengviet, ddh.mota_tiengviet) as tenVTHH,
-                dtkd.hinhanh_link + sp.ma_sanpham as hinhanh,
+                dtkd.hinhanh_link + (case when isnull(sp.ban_thanhpham, 0) = 1 then substring(sp.ma_sanpham, 0, 12) + '-__' else sp.ma_sanpham end) as hinhanh,
 	            isnull(dvtsp.ten_dvt, '') as dvt,
 	            ddh.sl_dathang as sl,
 	            isnull(ddh.phi, 0) as phi,

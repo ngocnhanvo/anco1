@@ -95,7 +95,7 @@
                 <div class="list">
                     <ul id="myUL" style="list-style-type: none;">
                         <li>
-                            <img class="avatarRpt" src="${avatar}" onerror="this.src='report_image_userMale.png'" alt="">
+                            <img class="avatarRpt" src="report_image_userMale.png" data-src="${avatar}" onerror="this.src='report_image_userMale.png'" alt="">
                             <div class="noidung">
                                 <div class="fa fa-caret-left"></div>
                                 <div class="contentA" style="${newReport}">
@@ -352,6 +352,11 @@
                                 contentSystem += '<span style="color:red">Bạn chưa có tin nhắn tại thời điểm này</span>, mọi thắc mắc xin liên hệ quản trị để được tư vấn.';
                                 formatRow = replaceAvariableToValue('noidung', contentSystem, formatRow);
                                 myUL.append(formatRow);
+                            }
+                            else {
+                                $('.avatarRpt').each(() => {
+                                    $(this).attr('src', $(this).attr('data-src'));
+                                });
                             }
                         },
                         fail: function (rs) {
