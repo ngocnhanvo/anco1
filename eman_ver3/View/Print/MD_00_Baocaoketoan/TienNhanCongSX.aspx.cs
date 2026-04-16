@@ -76,7 +76,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
 	                pb.ten_phongban as px
                 from 
 	                md_nhapkhonb nk
-	                left join md_nhapkhonb_cdh cdh on cdh.md_nhapkhonb_id = nk.md_nhapkhonb_id
+	                left join md_nhapkhonb_cdh cdh on cdh.md_nhapkhonb_id = nk.md_nhapkhonb_id AND isnull(cdh.sl_nhap, 0) > 0
 	                left join md_sanpham sp on sp.md_sanpham_id = cdh.md_sanpham_id
 	                left join md_lenhsanxuat2 lsx on lsx.sochungtu = nk.chungtu_lenhsx
 	                left join ad_department pb on pb.md_phongban_id = lsx.xuongPhu
