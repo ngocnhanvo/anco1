@@ -84,13 +84,14 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
                     LEFT JOIN ad_department pbCha2 ON pbCha2.md_phongban_id = pbCha1.phongbanChaId
 	                left join md_banggia bg on bg.lienket_bg = pb.ma_phongban and bg.tuychon = 'NHANCONG'
 	                OUTER APPLY (
-                        SELECT TOP 1 pbi.md_phienbangia_id
-                        FROM md_phienbangia pbi
-                        WHERE pbi.md_banggia_id = bg.md_banggia_id
-                          AND pbi.ngay_hieuluc <= GETDATE()
-                        ORDER BY pbi.ngay_hieuluc DESC
-                    ) pbg_top
-	                left join md_giasanpham gsp on gsp.md_phienbangia_id = pbg_top.md_phienbangia_id
+                        SELECT TOP 1 gsp_i.gia
+                        FROM md_giasanpham gsp_i
+                        JOIN md_phienbangia pbg_i ON gsp_i.md_phienbangia_id = pbg_i.md_phienbangia_id
+                        WHERE pbg_i.md_banggia_id = bg.md_banggia_id
+                          AND gsp_i.md_sanpham_id = sp.md_sanpham_id
+                          AND pbg_i.ngay_hieuluc <= nk.ngayhieuluc
+                        ORDER BY pbg_i.ngay_hieuluc DESC, pbg_i.ngaytao DESC
+                    ) gsp
                 where
 	                nk.trangthai = N'{Helper.HIEULUC}'
                     AND nk.ngayhieuluc BETWEEN @tu AND @den {boPhan} {masp}
