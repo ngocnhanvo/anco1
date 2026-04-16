@@ -68,7 +68,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
             ;WITH data AS (
                 select
 	                nk.sochungtu,
-	                nk.ngayhieuluc,
+	                nk.ngaychuyen as ngayhieuluc,
 	                nk.donhang_thamchieu,
 	                sp.ma_sanpham,
 	                cdh.sl_nhap,
@@ -89,7 +89,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
                         JOIN md_phienbangia pbg_i ON gsp_i.md_phienbangia_id = pbg_i.md_phienbangia_id
                         WHERE pbg_i.md_banggia_id = bg.md_banggia_id
                           AND gsp_i.md_sanpham_id = sp.md_sanpham_id
-                          AND pbg_i.ngay_hieuluc <= nk.ngayhieuluc
+                          AND pbg_i.ngay_hieuluc <= nk.ngaychuyen
                         ORDER BY pbg_i.ngay_hieuluc DESC, pbg_i.ngaytao DESC
                     ) gsp
                 where
