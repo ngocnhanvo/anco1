@@ -94,7 +94,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
                     ) gsp
                 where
 	                nk.trangthai = N'{Helper.HIEULUC}'
-                    AND nk.ngayhieuluc BETWEEN @tu AND @den {boPhan} {masp}
+                    AND nk.ngaychuyen BETWEEN @tu AND @den {boPhan} {masp}
             )
 
             SELECT
