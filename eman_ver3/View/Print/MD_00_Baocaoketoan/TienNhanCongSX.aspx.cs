@@ -82,7 +82,7 @@ public partial class PrintControllers_MD_00_Baocaoketoan_TienNhanCongSX : System
 	                left join ad_department pb on pb.md_phongban_id = lsx.xuongPhu
                     LEFT JOIN ad_department pbCha1 ON pbCha1.md_phongban_id = pb.phongbanChaId
                     LEFT JOIN ad_department pbCha2 ON pbCha2.md_phongban_id = pbCha1.phongbanChaId
-	                left join md_banggia bg on bg.lienket_bg = pb.ma_phongban and bg.tuychon = 'NHANCONG'
+	                left join md_banggia bg on bg.lienket_bg = pb.ma_phongban2 and bg.tuychon = 'NHANCONG'
 	                OUTER APPLY (
                         SELECT TOP 1 gsp_i.gia
                         FROM md_giasanpham gsp_i
