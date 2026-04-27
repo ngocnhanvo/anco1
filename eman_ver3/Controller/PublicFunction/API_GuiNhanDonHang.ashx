@@ -33,7 +33,80 @@ public class API_GuiNhanDonHang : IHttpHandler
             case "getPhieuXKsCDH":
                 this.getPhieuXKsCDH(context);
                 break;
+            case "guiphieu":
+                this.guiphieu(context);
+                break;
+            case "kiemtraTT":
+                this.kiemtraTT(context);
+                break;
         }
+    }
+
+    public void kiemtraTT(HttpContext context)
+    {
+        string msg = "";
+        bool ok = false;
+        try
+        {
+            string strdata = context.Request.Form["data"];
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            dynamic lst = data["lst"];
+            string[] ids = lst.Split(',');
+
+            var pycs = db.md_phieuthongtinsanpham_ancotrading.Where(s => ids.Contains(s.md_phieuthongtinsanpham_id)).ToList();
+            msg = JsonConvert.SerializeObject(pycs);
+            ok = true;
+        }
+        catch (Exception ex)
+        {
+            msg = ex.ToString();
+        }
+
+        var rs = new { ok, msg };
+        context.Response.Write(JsonConvert.SerializeObject(rs));
+    }
+
+    public void guiphieu(HttpContext context)
+    {
+        string msg = "";
+        bool ok = false;
+        try
+        {
+            string strdata = context.Request.Form["data"];
+            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(strdata);
+            dynamic pyc = data["pyc"];
+            pyc.md_phieuthongtinsanpham_ancotrading_id = Helper.getNewId();
+            pyc.ngaygui = DateTime.Now;
+            pyc.trangthai1 = Helper.DAGUI;
+            var pycM = JsonConvert.DeserializeObject<md_phieuthongtinsanpham_ancotrading>(JsonConvert.SerializeObject(pyc));
+            db.md_phieuthongtinsanpham_ancotrading.Add(pycM);
+
+            dynamic dhs = data["dhs"];
+            var dhMs = JsonConvert.DeserializeObject<List<md_phieuthongtinsanpham_sanpham_ancotrading>>(JsonConvert.SerializeObject(dhs));
+            foreach (var dhM in dhMs)
+            {
+                dhM.md_phieuthongtinsanpham_sanpham_ancotrading_id = Helper.getNewId();
+            }
+            db.md_phieuthongtinsanpham_sanpham_ancotrading.AddRange(dhMs);
+
+            dynamic logs = data["logs"];
+            var logMs = JsonConvert.DeserializeObject<List<md_phieuthongtinsanpham_log_ancotrading>>(JsonConvert.SerializeObject(logs));
+            foreach (var logM in logMs)
+            {
+                logM.md_phieuthongtinsanpham_log_ancotrading_id = Helper.getNewId();
+            }
+            db.md_phieuthongtinsanpham_log_ancotrading.AddRange(logMs);
+
+            db.SaveChanges();
+            ok = true;
+        }
+        catch (Exception ex)
+        {
+            msg = ex.ToString();
+        }
+
+        var rs = new { ok, msg };
+        context.Response.Write(JsonConvert.SerializeObject(rs));
     }
 
     public void getPhieuXKs(HttpContext context)

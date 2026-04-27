@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Web;
 
 public class VNN_VariablePublic
 {
@@ -246,16 +247,17 @@ public class VNN_VariablePublic
         return result;
     }
 
-    public static string GetModule(string link, string formData)
+    public static string GetModule(string link, string formData, HttpContext context = null)
     {
-        var context = System.Web.HttpContext.Current;
+        if(context == null)
+            context = System.Web.HttpContext.Current;
+
         var url = context.Request.Url;
         if (!link.Contains("http"))
         {
             link = url.GetLeftPart(UriPartial.Authority) + Security.UrlBase() + link;
         }
         var myUri = new Uri(link);
-        string jsonString = JsonConvert.SerializeObject(formData);
         var request = (HttpWebRequest)WebRequest.Create(myUri);
         request.ContentType = "application/x-www-form-urlencoded";
         request.Method = "POST";
@@ -269,7 +271,8 @@ public class VNN_VariablePublic
 
         request.CookieContainer = new CookieContainer();
         var authCookie = context.Request.Cookies[System.Web.Security.FormsAuthentication.FormsCookieName];
-        request.CookieContainer.Add(new System.Net.Cookie(authCookie.Name, authCookie.Value, authCookie.Path, url.Host));
+        if(authCookie != null)
+            request.CookieContainer.Add(new System.Net.Cookie(authCookie.Name, authCookie.Value, authCookie.Path, url.Host));
         string postData = formData;
         Stream reqStream = request.GetRequestStream();
         byte[] postArray = Encoding.UTF8.GetBytes(postData);

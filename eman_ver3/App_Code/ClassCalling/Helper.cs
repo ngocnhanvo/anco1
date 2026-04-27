@@ -63,6 +63,7 @@ public static class Helper
     public static string hinhAnhSP_ANCO = System.Web.Configuration.WebConfigurationManager.AppSettings["hinhAnhSP_ANCO"];
     public static string hinhAnhSP_NEXX = System.Web.Configuration.WebConfigurationManager.AppSettings["hinhAnhSP_NEXX"];
     public static string urlReportExcel = System.Web.Configuration.WebConfigurationManager.AppSettings["urlReportExcel"];
+    public static string urlSync_ANCO = System.Web.Configuration.WebConfigurationManager.AppSettings["urlSync_ANCO"];
     public static string[] arrLoaiCT_LNK = {
         "Nhập kho kết quả sản xuất",
         "Nhập kho điều chuyển nội bộ",

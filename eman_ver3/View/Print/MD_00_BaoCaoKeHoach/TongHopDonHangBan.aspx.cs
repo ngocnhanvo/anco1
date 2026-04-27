@@ -61,7 +61,7 @@ public partial class PrintControllers_MD_00_BaoCaoKeHoach_TongHopDonHangBan : Sy
 	            sp.ma_sanpham as maVTHH,
 	            sp.mota_tiengviet as tenVTHH,
 	            dvtsp.ten_dvt as dvt,
-	            cdh.giadoichieu as dongia,
+	            cdh.gianhap as dongia,
 	            cdh.sl_dathang - isnull(cdh.sl_giamhanngach, 0) as slDMH,
 	            cdh.sl_hanngach as slDG
             from c_danhsachdathang dhb
