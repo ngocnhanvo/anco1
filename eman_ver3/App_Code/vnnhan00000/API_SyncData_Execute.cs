@@ -90,7 +90,7 @@ namespace vnnhan00000
                     {
                         rs.md_sanpham_id = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
                         rs.md_donvitinhsanpham_id = db.md_donvitinhsanpham.Where(s=>s.ten_dvt == tendvt).Select(s => s.md_donvitinhsanpham_id).FirstOrDefault();
-                        rs.md_nhomnangluc_ancotrading_id = rs.md_nhomnangluc_id;
+                        rs.md_nhomnangluc_id2 = rs.md_nhomnangluc_id;
                         var jObj = rs as Newtonsoft.Json.Linq.JObject;
                         if (jObj != null)
                         {
@@ -106,6 +106,7 @@ namespace vnnhan00000
                             {
                                 jObj.Remove("sanpham");
                                 jObj.Remove("mota");
+                                jObj.Remove("ghichu");
                             }
                         }
                     }
@@ -133,7 +134,6 @@ namespace vnnhan00000
                 {
                     prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
                     db.Set(entityType).Add(entity);
-                    db.md_phieuthongtinsanpham_log_ancotrading.Remove(log);
                     updated = true;
                 }
                 else
@@ -141,8 +141,6 @@ namespace vnnhan00000
                     var sourceProp = entityType.GetProperty(sourceKeyName);
                     if (sourceProp == null)
                     {
-                        db.md_phieuthongtinsanpham_log_ancotrading.Remove(log);
-                        updated = true;
                         continue;
                     }
 
@@ -168,7 +166,6 @@ namespace vnnhan00000
                             prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
                             db.Set(entityType).Add(entity);
                         }
-                        db.md_phieuthongtinsanpham_log_ancotrading.Remove(log);
                         updated = true;
                     }
                     else
@@ -178,6 +175,15 @@ namespace vnnhan00000
                         switch (log.hanhdong)
                         {
                             case "edit":
+                                // 1. Tận dụng destProp và actualId để tìm trong Local Cache
+                                var localEntity = Enumerable.Cast<object>(db.Set(entityType).Local)
+                                    .FirstOrDefault(x => destProp.GetValue(x).Equals(actualId));
+
+                                if (localEntity != null)
+                                {
+                                    // "Đuổi" thực thể cũ ra nếu trùng ID
+                                    db.Entry(localEntity).State = EntityState.Detached;
+                                }
                                 // 1. Attach entity vào context nếu nó chưa được track
                                 db.Set(entityType).Attach(entity);
                                 // 2. Ép kiểu rs về JObject để lấy danh sách các property đang có
@@ -197,7 +203,6 @@ namespace vnnhan00000
                                         }
                                     }
                                 }
-                                db.md_phieuthongtinsanpham_log_ancotrading.Remove(log);
                                 updated = true;
                                 break;
                             case "del":
@@ -207,7 +212,6 @@ namespace vnnhan00000
                                     db.Set(entityType).Attach(entity);
                                 }
                                 db.Set(entityType).Remove(entity);
-                                db.md_phieuthongtinsanpham_log_ancotrading.Remove(log);
                                 updated = true;
                                 break;
                             default:
@@ -219,7 +223,7 @@ namespace vnnhan00000
 
             if (updated)
             {
-                db.md_phieuthongtinsanpham_log_ancotrading.RemoveRange(logs);
+                //db.md_phieuthongtinsanpham_log_ancotrading.RemoveRange(logs);
                 if (chophepcapnhatDB.GetValueOrDefault(false))
                     db.SaveChanges();
             }
