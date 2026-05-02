@@ -148,7 +148,11 @@ namespace vnnhan00000
                     {
                         sourceProp.SetValue(entity, Convert.ChangeType(log.id_lienket, sourceProp.PropertyType));
                     }
+
                     var sourceIdValue = sourceProp?.GetValue(entity);
+                    if (!string.IsNullOrWhiteSpace(sourceIdValue))
+                        continue;
+
                     string sql = $"SELECT {primaryKeyName} FROM {classTB} WHERE {sourceKeyName} = @p0";
                     // Sử dụng IEnumerable (không dùng dynamic) để C# nhận diện được LINQ
                     var result = db.Database.SqlQuery(prop.PropertyType, sql, sourceIdValue);
