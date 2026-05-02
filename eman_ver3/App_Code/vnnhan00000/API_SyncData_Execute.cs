@@ -150,7 +150,7 @@ namespace vnnhan00000
                     }
 
                     var sourceIdValue = sourceProp?.GetValue(entity);
-                    if (!string.IsNullOrWhiteSpace(sourceIdValue))
+                    if (string.IsNullOrWhiteSpace(sourceIdValue))
                         continue;
 
                     string sql = $"SELECT {primaryKeyName} FROM {classTB} WHERE {sourceKeyName} = @p0";
