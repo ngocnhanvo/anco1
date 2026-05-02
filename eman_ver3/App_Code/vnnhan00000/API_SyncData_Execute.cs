@@ -63,6 +63,7 @@ namespace vnnhan00000
             if (logs == null)
                 logs = db.md_phieuthongtinsanpham_log_ancotrading.Where(s => s.md_phieuthongtinsanpham_id == md_phieuthongtinsanpham_id).OrderBy(s => s.ngaytao).ToList();
 
+            var spsLocal = new List<md_sanpham>();
             foreach (var log in logs)
             {
                 var laTableSP = log.table == typeof(md_sanpham).Name;
@@ -89,7 +90,7 @@ namespace vnnhan00000
                     if (laTableSP)
                     {
                         rs.md_sanpham_id = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
-                        rs.md_donvitinhsanpham_id = db.md_donvitinhsanpham.Where(s=>s.ten_dvt == tendvt).Select(s => s.md_donvitinhsanpham_id).FirstOrDefault();
+                        rs.md_donvitinhsanpham_id = db.md_donvitinhsanpham.Where(s => s.ten_dvt == tendvt).Select(s => s.md_donvitinhsanpham_id).FirstOrDefault();
                         rs.md_nhomnangluc_id2 = rs.md_nhomnangluc_id;
                         var jObj = rs as Newtonsoft.Json.Linq.JObject;
                         if (jObj != null)
@@ -110,13 +111,19 @@ namespace vnnhan00000
                             }
                         }
                     }
-                    else if(laDongGoiSP)
+                    else if (laDongGoiSP)
                     {
-                        rs.md_sanpham_id = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        string spid = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        if (string.IsNullOrWhiteSpace(spid))
+                            spid = spsLocal.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        rs.md_sanpham_id = spid;
                     }
                     else if (laGiaSP)
                     {
-                        rs.md_sanpham_id = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        string spid = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        if (string.IsNullOrWhiteSpace(spid))
+                            spid = spsLocal.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
+                        rs.md_sanpham_id = spid;
                     }
                 }
 
@@ -133,6 +140,10 @@ namespace vnnhan00000
                 if (log.hanhdong == "add")
                 {
                     prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
+                    if (laTableSP)
+                    {
+                        spsLocal.Add(entity);
+                    }
                     db.Set(entityType).Add(entity);
                     updated = true;
                 }
@@ -165,12 +176,12 @@ namespace vnnhan00000
 
                     if (actualId == null)
                     {
-                        if (log.hanhdong == "edit")
+                        if (log.hanhdong == "edit" & laTableSP)
                         {
                             prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
                             db.Set(entityType).Add(entity);
+                            updated = true;
                         }
-                        updated = true;
                     }
                     else
                     {
