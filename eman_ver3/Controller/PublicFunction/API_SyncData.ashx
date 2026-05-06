@@ -44,14 +44,14 @@ public class API_SyncData : IHttpHandler
                         foreach (var log in json.result)
                         {
                             log.ad_log_ancotrading_id = Helper.getNewId();
-                            dball.ad_log_ancotrading.Add(log);
+                            //dball.ad_log_ancotrading.Add(log);
                         }
 
 
-                        if (dball.ad_log_ancotrading.Local.Count > 0)
-                            dball.SaveChanges();
-                        else
-                            msg = "Không có log nào phát sinh";
+                        //if (dball.ad_log_ancotrading.Local.Count > 0)
+                        //    dball.SaveChanges();
+                        //else
+                        //    msg = "Không có log nào phát sinh";
                     }
                 }
                 else

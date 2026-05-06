@@ -43,6 +43,12 @@
                         public string ma_iso { get; set; }
                 
 						
+                        #region md_dongtien_md_dongtien_ancotrading_id_wintaFN
+                        
+                        #endregion md_dongtien_md_dongtien_ancotrading_id_wintaFN
+                        public string md_dongtien_ancotrading_id { get; set; }
+                
+						
                         #region md_dongtien_mota_wintaFN
                         
                         #endregion md_dongtien_mota_wintaFN

@@ -37,6 +37,12 @@
                         public string ma_edi { get; set; }
                 
 						
+                        #region md_donvitinhsanpham_md_donvitinhsanpham_ancotrading_id_wintaFN
+                        
+                        #endregion md_donvitinhsanpham_md_donvitinhsanpham_ancotrading_id_wintaFN
+                        public string md_donvitinhsanpham_ancotrading_id { get; set; }
+                
+						
                         #region md_donvitinhsanpham_mota_wintaFN
                         
                         #endregion md_donvitinhsanpham_mota_wintaFN
