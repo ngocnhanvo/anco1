@@ -3,10 +3,12 @@ using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Web.Hosting;
 
 namespace OfficeToPDF
 {
@@ -46,6 +48,7 @@ namespace OfficeToPDF
         public float? sizeAddPDF { get; set; }
         public bool? landScape { get; set; }
         public string nameApp { get; set; }
+        public bool? ghostscript { get; set; }
         public ExcelConverter()
         {
 
@@ -306,7 +309,7 @@ namespace OfficeToPDF
                     int sheetForConversionIdx = 0;
                     activeWindow = app.ActiveWindow;
 
-                    var fmt = XlFileFormat.xlOpenXMLWorkbook;
+                    //var fmt = XlFileFormat.xlOpenXMLWorkbook;
                     var quality = XlFixedFormatQuality.xlQualityStandard;
                     if (isHidden)
                     {
@@ -952,7 +955,7 @@ namespace OfficeToPDF
                     Directory.CreateDirectory(temporaryStorageDir);
                     // We will save as xlsb (binary format) since this doesn't raise some errors when processing
                     tmpFile = Path.Combine(temporaryStorageDir, Path.GetFileNameWithoutExtension(inputFile) + ".xlsb");
-                    fmt = XlFileFormat.xlExcel12;
+                    //fmt = XlFileFormat.xlExcel12;
 
                     // Set up the print quality
                     if (screenQuality)
@@ -1255,8 +1258,57 @@ namespace OfficeToPDF
                             ReleaseCOMObject(cell);
                         }
 
-                        workbook.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF,
-                            outputFile, quality, includeProps, false, Type.Missing, Type.Missing, false, Type.Missing);
+                        // 1. Dùng Interop xuất ra file PDF thô
+                        workbook.ExportAsFixedFormat(
+                            Type: XlFixedFormatType.xlTypePDF,
+                            Filename: outputFile, // File PDF ban đầu
+                            Quality: XlFixedFormatQuality.xlQualityStandard,
+                            IncludeDocProperties: true,
+                            IgnorePrintAreas: false,
+                            OpenAfterPublish: false
+                        );
+
+                        if (ghostscript.GetValueOrDefault(false))
+                        {
+                            // 2. Tạo đường dẫn file tạm để Ghostscript xử lý
+                            // Vì Ghostscript không thể đọc và ghi đè vào cùng một file cùng lúc
+                            string tempOutputFile = outputFile.Replace(".pdf", "_temp.pdf");
+
+                            string gsPath = HostingEnvironment.MapPath("~/gs10.07.0/bin/gswin64c.exe");
+
+                            // 3. Cấu hình Ghostscript để gọt lề và giữ nguyên hướng trang
+                            string gsArgs = $"-q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite " +
+                            $"-dPDFSETTINGS=/prepress " +
+                            $"-dEmbedAllFonts=true " +
+                            $"-dSubsetFonts=false " +
+                            $"-dAutoRotatePages=/None " +
+                            $"-dNup=2 " +
+                            // Thêm dòng này để Ghostscript cố gắng tính toán lại vùng nội dung thực
+                            $"-dEPSCrop " +
+                            $"-dUseCropBox " +
+                            $"-sOutputFile=\"{tempOutputFile}\" \"{outputFile}\"";
+
+                            ProcessStartInfo startInfo = new ProcessStartInfo
+                            {
+                                FileName = gsPath,
+                                Arguments = gsArgs,
+                                WindowStyle = ProcessWindowStyle.Hidden,
+                                CreateNoWindow = true,
+                                UseShellExecute = false
+                            };
+
+                            using (Process proc = Process.Start(startInfo))
+                            {
+                                proc.WaitForExit();
+                            }
+
+                            // 4. Ghi đè file đã gọt vào file gốc và xóa file tạm
+                            if (File.Exists(tempOutputFile))
+                            {
+                                File.Copy(tempOutputFile, outputFile, true);
+                                File.Delete(tempOutputFile);
+                            }
+                        }
 
                         //var timeEnd = DateTime.Now;
                         //var totalsc = (timeEnd - timeStart).TotalSeconds;

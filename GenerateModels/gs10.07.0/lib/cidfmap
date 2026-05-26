@@ -1,0 +1,39 @@
+%!
+% cidfmap generated automatically by mkcidfm.ps from fonts found in
+%   C:/Windows/Fonts
+
+% Substitutions
+/KaiTi << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simkai.ttf) /CSI [(GB1) 2] >> ;
+/MingLiU << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/mingliu.ttc) /CSI [(CNS1) 2] >> ;
+/SimHei << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simhei.ttf) /CSI [(GB1) 2] >> ;
+/DFKaiShu-SB-Estd-BF << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/kaiu.ttf) /CSI [(CNS1) 2] >> ;
+/NSimSun << /SubfontID 1 /FileType /TrueType /Path (C:/Windows/Fonts/simsun.ttc) /CSI [(GB1) 2] >> ;
+/PMingLiU << /SubfontID 1 /FileType /TrueType /Path (C:/Windows/Fonts/mingliu.ttc) /CSI [(CNS1) 2] >> ;
+/LiSu << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simli.ttf) /CSI [(GB1) 2] >> ;
+/MalgunGothicRegular << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/malgun.ttf) /CSI [(Korea1) 3] >> ;
+/MS-PGothic << /SubfontID 1 /FileType /TrueType /Path (C:/Windows/Fonts/msgothic.ttc) /CSI [(Japan1) 3] >> ;
+/SimSun << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simsun.ttc) /CSI [(GB1) 2] >> ;
+/YouYuan << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simyou.ttf) /CSI [(GB1) 2] >> ;
+/MalgunGothicBold << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/malgunbd.ttf) /CSI [(Korea1) 3] >> ;
+/MS-Gothic << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/msgothic.ttc) /CSI [(Japan1) 3] >> ;
+/FangSong << /SubfontID 0 /FileType /TrueType /Path (C:/Windows/Fonts/simfang.ttf) /CSI [(GB1) 2] >> ;
+/MS-UI-Gothic << /SubfontID 2 /FileType /TrueType /Path (C:/Windows/Fonts/msgothic.ttc) /CSI [(Japan1) 3] >> ;
+
+% Aliases
+/STSong-Light /SimSun ;
+/MKai-Medium /DFKaiShu-SB-Estd-BF ;
+/AdobeSongStd-Light /SimSun ;
+/HYRGoThic-Medium /MalgunGothicRegular ;
+/STHeiti-Regular /SimHei ;
+/STKaiti-Regular /KaiTi ;
+/STFangsong-Light /FangSong ;
+/MSung-Medium /MingLiU ;
+/GothicBBB-Medium /MS-Gothic ;
+/HYSMyeongJo-Medium /MalgunGothicRegular ;
+/HYGoThic-Medium /MalgunGothicRegular ;
+/HeiseiKakuGo-W5 /MS-Gothic ;
+/MHei-Medium /MingLiU ;
+/AdobeMingStd-Light /MingLiU ;
+/AdobeMyungjoStd-Medium /MalgunGothicRegular ;
+/AdobeHeitiStd-Regular /SimHei ;
+/MSung-Light /MingLiU ;

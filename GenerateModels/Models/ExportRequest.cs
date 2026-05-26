@@ -17,5 +17,6 @@ namespace GenerateModels.Models
         public List<int> lstBlankRow { get; set; }
         public int endrow { get; set; }
         public int endColumn { get; set; }
+        public bool? ghostscript { get; set; }
     }
 }

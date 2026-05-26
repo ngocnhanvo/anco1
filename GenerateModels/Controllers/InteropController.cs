@@ -44,7 +44,7 @@ namespace GenerateModels.Controllers
                         excelConvert.lstAutoSizeColumn = req.lstAutoSizeColumn;
                         excelConvert.lstBlankRow = req.lstBlankRow;
                         excelConvert.nameApp = req.nameApp;
-
+                        excelConvert.ghostscript = req.ghostscript;
                         excelConvert.endRow = req.endrow;
                         excelConvert.endColumn = req.endColumn;
                         msg = excelConvert.ConvertInterop(req.urlExcel, req.urlFN, null);
