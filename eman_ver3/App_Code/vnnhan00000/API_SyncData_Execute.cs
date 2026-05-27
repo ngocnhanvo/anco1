@@ -101,6 +101,7 @@ namespace vnnhan00000
                             jObj.Remove("ban_thanhpham");
                             if (log.hanhdong == "add")
                             {
+                                rs.trangthai = Helper.SOANTHAO;
                                 rs.sanpham = true;
                             }
                             else
@@ -178,6 +179,7 @@ namespace vnnhan00000
                     {
                         if (log.hanhdong == "edit" & laTableSP)
                         {
+                            entity.trangthai = Helper.SOANTHAO;
                             prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
                             db.Set(entityType).Add(entity);
                             updated = true;
@@ -214,7 +216,10 @@ namespace vnnhan00000
                                         if (propInfo != null)
                                         {
                                             // Chỉ đánh dấu cột này là cần update
-                                            db.Entry(entity).Property(propertyName).IsModified = true;
+                                            if(laTableSP & propertyName == "trangthai")
+                                                db.Entry(entity).Property(propertyName).IsModified = false;
+                                            else
+                                                db.Entry(entity).Property(propertyName).IsModified = true;
                                         }
                                     }
                                 }
