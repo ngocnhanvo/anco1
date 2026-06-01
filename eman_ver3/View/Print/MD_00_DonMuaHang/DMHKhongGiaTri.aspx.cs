@@ -77,6 +77,7 @@ public partial class PrintControllers_MD_00_DonMuaHang_DMHKhongGiaTri : System.W
 		        , dtkd.ten_dtkd as tenNCC
                 , dtkd.diachi
 		        , sp.ma_sanpham as maVTHH
+                , anco.hinhanh_link + (case when isnull(sp.ban_thanhpham, 0) = 1 then substring(sp.ma_sanpham, 0, 12) + '-__' else sp.ma_sanpham end) as hinhanh
                 , sp.mota_tiengviet as tenVTHH
                 , sp.quycachdonggoi as quycach
                 , dvt.ten_dvt as dvt
@@ -106,6 +107,9 @@ public partial class PrintControllers_MD_00_DonMuaHang_DMHKhongGiaTri : System.W
 		        left join md_dongtien dt on dt.md_dongtien_id = dmh.md_dongtien_id
 		        left join md_thue_sanpham thue on cdmh.thue = thue.md_thue_sanpham_id
                 left join md_dieukienthanhtoan dktt on dktt.md_dieukienthanhtoan_id = dmh.md_dieukienthanhtoan_id
+                left join c_kehoachdathang khdh on khdh.c_kehoachdathang_id = dmh.c_kehoachdathang_dhncc_id
+                left join c_danhsachdathang dsdh on dsdh.c_danhsachdathang_id = khdh.c_danhsachdathang_id
+                left join md_doitackinhdoanh anco on anco.md_doitackinhdoanh_id = dsdh.md_doitackinhdoanh_id
 		    where dmh.c_donmuahang_id = '{c_donmuahang_id}'
 		    order by sp.ma_sanpham asc
         ";
