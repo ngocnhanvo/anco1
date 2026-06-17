@@ -47,7 +47,8 @@ public partial class PrintControllers_MD_01_KHLayTonTho_phieuYCKiemTraTonKho : S
 	            cdvc.soluong_toida as sldklt,
 	            null as sldat,
 	            null as slkdat,
-	            null as sllt
+	            null as sllt,
+                kho.ten_kho as ghichu
             from c_kehoachdathang kh
             left join md_vanchuyennoibo vcnb on kh.c_kehoachdathang_id = vcnb.c_doichieuhangton_id
             left join md_kho kho on kho.md_kho_id = vcnb.tukho

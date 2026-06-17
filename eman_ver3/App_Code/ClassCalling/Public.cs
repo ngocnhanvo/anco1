@@ -1146,6 +1146,8 @@ public class Public
 
                             if (sltd > 0)
                             {
+                                lht.sl_layton_dachot = lht.sl_layton_dachot.GetValueOrDefault(0) + sltd;
+
                                 var cdvcServer = db.md_vanchuyennoibo_cdvc.Where(s =>
                                     s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id
                                     & s.md_sanpham_id == lht.md_sanpham_id).FirstOrDefault();
