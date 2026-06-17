@@ -1047,13 +1047,13 @@ public class Public
                                 s.md_kho_id == khoton.md_kho_id &
                                 s.md_sanpham_id == lht.md_sanpham_id
                                 ).FirstOrDefault();
-
+                            decimal sltkDK = sltk == null ? 0 : sltk.soluong.GetValueOrDefault(0);
                             decimal sltd = lht.sl_layton.GetValueOrDefault(0) - lht.sl_layton_dachot.GetValueOrDefault(0);
                             if (sltk == null)
                                 sltd = 0;
 
                             if (sltd > 0)
-                                sltd = sltk.soluong.GetValueOrDefault(0) > sltd ? sltd : sltk.soluong.GetValueOrDefault(0);
+                                sltd = sltkDK > sltd ? sltd : sltkDK;
 
                             if (sltd > 0)
                             {
@@ -1065,7 +1065,7 @@ public class Public
                                 cdvc.md_donvitinhsanpham_id = lht.md_donvitinhsanpham_id;
                                 cdvc.lsxId = lht.md_lenhsanxuat_id;
                                 cdvc.tukho = lht.md_lenhsanxuat_tosx_id;
-
+                                cdvc.sl_tonkhoDK = sltkDK;
                                 cdvc.soluong_dachuyen = 0;
                                 cdvc.soluong_toida = sltd;
                                 cdvc.soluong_muonchuyen = sltd;
@@ -1136,13 +1136,13 @@ public class Public
                                 s.md_kho_id == khoton.md_kho_id &
                                 s.md_sanpham_id == lht.md_sanpham_id
                                 ).FirstOrDefault();
-
+                            decimal sltkDK = sltk == null ? 0 : sltk.soluong.GetValueOrDefault(0);
                             decimal sltd = lht.sl_layton.GetValueOrDefault(0) - lht.sl_layton_dachot.GetValueOrDefault(0);
                             if (sltk == null)
                                 sltd = 0;
 
                             if (sltd > 0)
-                                sltd = sltk.soluong.GetValueOrDefault(0) > sltd ? sltd : sltk.soluong.GetValueOrDefault(0);
+                                sltd = sltkDK > sltd ? sltd : sltkDK;
 
                             if (sltd > 0)
                             {
@@ -1167,9 +1167,10 @@ public class Public
                                     cdvc.lsxId = lht.md_lenhsanxuat_id;
                                     cdvc.tukho = lht.md_lenhsanxuat_tosx_id;
                                     cdvc.soluong_dachuyen = 0;
-                                    cdvc.soluong_toida = lht.sl_layton;
-                                    cdvc.soluong_muonchuyen = lht.sl_layton;
-                                    cdvc.soluong_dichchuyen = lht.sl_layton;
+                                    cdvc.sl_tonkhoDK = sltkDK;
+                                    cdvc.soluong_toida = sltd;
+                                    cdvc.soluong_muonchuyen = sltd;
+                                    cdvc.soluong_dichchuyen = sltd;
                                     cdvc.chuyenton = true;
                                     cdvc.hoatdong = true;
                                     cdvc = Helper.setDefaultValueWhenInsertOrUpdate(cdvc, us, false);
@@ -1182,9 +1183,9 @@ public class Public
                                     {
                                         cdvc.tukho += "," + lht.md_lenhsanxuat_tosx_id;
                                     }
-                                    cdvc.soluong_toida = cdvc.soluong_toida.GetValueOrDefault(0) + lht.sl_layton;
-                                    cdvc.soluong_muonchuyen = cdvc.soluong_muonchuyen.GetValueOrDefault(0) + lht.sl_layton;
-                                    cdvc.soluong_dichchuyen = cdvc.soluong_dichchuyen.GetValueOrDefault(0) + lht.sl_layton;
+                                    cdvc.soluong_toida = cdvc.soluong_toida.GetValueOrDefault(0) + sltd;
+                                    cdvc.soluong_muonchuyen = cdvc.soluong_muonchuyen.GetValueOrDefault(0) + sltd;
+                                    cdvc.soluong_dichchuyen = cdvc.soluong_dichchuyen.GetValueOrDefault(0) + sltd;
                                 }
 
                                 var cocapnhatTSX = false;
@@ -1443,19 +1444,48 @@ public class Public
             var arr = sctPVC.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).OrderBy(s => s).ToList();
             var pvcDaHLsServer = db.md_vanchuyennoibo.Where(s => arr.Contains(s.sochungtu) & s.md_trangthai_id == Helper.HIEULUC).ToList();
             var pvcDaHLs = db.md_vanchuyennoibo.Local.Where(s => arr.Contains(s.sochungtu) & s.md_trangthai_id == Helper.HIEULUC).ToList();
-
+            var tsxids = tsxs.Select(s => s.md_lenhsanxuat_tosx_id).ToList();
             if (arr.Count == pvcDaHLs.Count)
             {
                 if (layTonTP)
                 {
                     khdh.trangthai = Helper.DaXLTTP;
                     dsdh.md_trangthai_id = khdh.trangthai;
+                    foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id))
+                    {
+                        var dklhttpServer = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
+                                        tsxids.Contains(s.md_lenhsanxuat_tosx_id)
+                                        & s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                        var dklhttp = db.md_lenhsanxuat_tosx_dklhttp.Local.Where(s =>
+                                        tsxids.Contains(s.md_lenhsanxuat_tosx_id)
+                                        & s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                        if (dklhttp != null)
+                        {
+                            if (dklhttp.sl_layton1 == null)
+                                dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0);
+                        }
+                    }
                 }
                 else
                 {
                     khdh.trangthai = Helper.DaXLTBTP;
                     khdh.ngaybatdausx = DateTime.Now;
                     dsdh.md_trangthai_id = khdh.trangthai;
+
+                    foreach (var cdvc in db.md_vanchuyennoibo_cdvc.Where(s => s.md_vanchuyennoibo_id == vcnb.md_vanchuyennoibo_id))
+                    {
+                        var dklhttpServer = db.md_lenhsanxuat_tosx_dklht.Where(s =>
+                                        tsxids.Contains(s.md_lenhsanxuat_tosx_id)
+                                        & s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                        var dklhttp = db.md_lenhsanxuat_tosx_dklht.Local.Where(s =>
+                                        tsxids.Contains(s.md_lenhsanxuat_tosx_id)
+                                        & s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                        if (dklhttp != null)
+                        {
+                            if (dklhttp.sl_layton1 == null)
+                                dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0);
+                        }
+                    }
                 }
             }
         }
@@ -1586,7 +1616,7 @@ public class Public
                                     & s.md_sanpham_id == vcnb_cdvc.md_sanpham_id).FirstOrDefault();
                                     if (dklhttp != null)
                                     {
-                                        dklhttp.sl_layton1 = vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
+                                        dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
                                         truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
                                     }
                                 }
@@ -1603,7 +1633,7 @@ public class Public
                                             var sllsx = dklhtbtp.sl_layton.GetValueOrDefault(0);
                                             var sldc = sldcSav > sllsx ? sllsx : sldcSav;
                                             sldcSav = sldcSav - sldc;
-                                            dklhtbtp.sl_layton1 = sldc;
+                                            dklhtbtp.sl_layton1 = dklhtbtp.sl_layton1.GetValueOrDefault(0) + sldc;
                                             truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, sldc, spMain.ma_sanpham, dklhtbtp.macuoi, dklhtbtp.macuoi);
 
                                             var cdhBTPServer = db.md_lenhsanxuat_tosx_cdh.Where(s =>

@@ -43,7 +43,7 @@ public partial class PrintControllers_MD_01_KHLayTonTho_phieuYCKiemTraTonKho : S
 	            kh.donhang_thamchieu as donhang,
 	            sp.ma_sanpham as maVTHH,
 	            lttp.sldh,
-	            lttp.sltk,
+	            isnull(cdvc.sl_tonkhoDK, isnull(ksp.soluong, 0)) as sltk,
 	            cdvc.soluong_toida as sldklt,
 	            null as sldat,
 	            null as slkdat,
@@ -54,6 +54,7 @@ public partial class PrintControllers_MD_01_KHLayTonTho_phieuYCKiemTraTonKho : S
             left join md_kho kho on kho.md_kho_id = vcnb.tukho
             left join md_vanchuyennoibo_cdvc cdvc on cdvc.md_vanchuyennoibo_id = vcnb.md_vanchuyennoibo_id
             left join md_sanpham sp on sp.md_sanpham_id = cdvc.md_sanpham_id
+            left join md_kho_sanpham ksp on ksp.md_kho_id = kho.md_kho_id and sp.md_sanpham_id = ksp.md_sanpham_id
             right join (
 	            select 
 		            sum(klhttp.sl_lsx) as sldh,
