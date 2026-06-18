@@ -732,48 +732,52 @@ namespace OfficeToPDF
                     xfile.Close();
                     xfile.Dispose();
                 }
-
+                var skipInter = viewer.Attributes != null ? viewer.Attributes["skipInterop"] == "1" : false;
                 var urlPDF = urlExcel.Substring(0, urlExcel.LastIndexOf(".") + 1) + "pdf";
                 string msg = "", urlFN = "";
                 urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
-                var req = new AvariablePrj.ExportRequest
+
+                if (!skipInter)
                 {
-                    urlExcel = urlExcel,
-                    urlFN = urlFN,
-                    lstImage = lstImage,
-                    lstTextReplace = lstTextReplace,
-                    lstAutoSizeColumn = lstAutoSizeColumn,
-                    //lstBlankRow = lstBlankRow,
-                    endrow = s1.LastRowNum,
-                    endColumn = maxColumn,
-                    nameApp = "anco1"
-                };
-                string urlInterop = Helper.urlReportExcel;
-                var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(urlInterop);
-                request.Method = "POST";
-                request.ContentType = "application/json";
+                    var req = new AvariablePrj.ExportRequest
+                    {
+                        urlExcel = urlExcel,
+                        urlFN = urlFN,
+                        lstImage = lstImage,
+                        lstTextReplace = lstTextReplace,
+                        lstAutoSizeColumn = lstAutoSizeColumn,
+                        //lstBlankRow = lstBlankRow,
+                        endrow = s1.LastRowNum,
+                        endColumn = maxColumn,
+                        nameApp = "anco1"
+                    };
+                    string urlInterop = Helper.urlReportExcel;
+                    var request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(urlInterop);
+                    request.Method = "POST";
+                    request.ContentType = "application/json";
 
-                request.Timeout = 120000;
-                request.ReadWriteTimeout = 120000;
+                    request.Timeout = 120000;
+                    request.ReadWriteTimeout = 120000;
 
-                // Convert object -> JSON
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
-                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
+                    // Convert object -> JSON
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(req);
+                    byte[] bytes = System.Text.Encoding.UTF8.GetBytes(json);
 
-                request.ContentLength = bytes.Length;
+                    request.ContentLength = bytes.Length;
 
-                // Write body
-                using (var stream = request.GetRequestStream())
-                {
-                    stream.Write(bytes, 0, bytes.Length);
-                }
+                    // Write body
+                    using (var stream = request.GetRequestStream())
+                    {
+                        stream.Write(bytes, 0, bytes.Length);
+                    }
 
-                // Read response
-                using (var response = (System.Net.HttpWebResponse)request.GetResponse())
-                using (var reader = new StreamReader(response.GetResponseStream()))
-                {
-                    string result = reader.ReadToEnd();
-                    msg = result;
+                    // Read response
+                    using (var response = (System.Net.HttpWebResponse)request.GetResponse())
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string result = reader.ReadToEnd();
+                        msg = result;
+                    }
                 }
 
                 if (msg.Length <= 0)
