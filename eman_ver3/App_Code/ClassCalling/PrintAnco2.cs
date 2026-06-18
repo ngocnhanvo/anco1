@@ -55,6 +55,7 @@ public class PrintAnco2
         {
             var daDT = new SqlDataAdapter(str, Mbg.Data.SqlClient.SqlHelper.GetConnection);
             var dsDT = new DataSet();
+            daDT.SelectCommand.CommandTimeout = 3600;
             daDT.Fill(dsDT);
             tblsWord.Add(dsDT.Tables[0]);
             das.Add(daDT);

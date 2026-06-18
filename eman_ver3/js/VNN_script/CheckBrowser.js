@@ -342,7 +342,7 @@ function getZoomValues() {
     };
 }
 
-function openPrintDialog(url, name, data) {
+function openPrintDialog(url, name, data, autoClose) {
     let width = window.innerWidth > 1024 ? 1024 : window.innerWidth;
     let height = window.innerHeight > 500 ? 500 : window.innerHeight;
     let left = (window.innerWidth - width) / 2;
@@ -354,26 +354,60 @@ function openPrintDialog(url, name, data) {
     height = height * zoomVal;
     left = left * zoomVal;
     top = top * zoomVal;
-
+    let map = null;
     if (data) {
         let mapForm = document.createElement("form");
         mapForm.target = "Map";
-        mapForm.method = "POST"; // or "post" if appropriate
+        mapForm.method = "POST";
         mapForm.action = url;
 
+        // Input 1: Chứa data của bạn
         var mapInput = document.createElement("input");
-        mapInput.type = "text";
+        mapInput.type = "hidden";
         mapInput.name = "data";
         mapInput.value = data;
         mapForm.appendChild(mapInput);
 
-        document.body.appendChild(mapForm);
+        // --- BƯỚC CHUẨN HÓA TOKEN (Sinh ra 1 lần duy nhất) ---
+        let shouldClose = (autoClose === true || autoClose === "true" || !!autoClose);
+        let downloadToken = "download_" + new Date().getTime();
 
+        if (shouldClose) {
+            // Tạo input chứa token cố định để gửi lên Server C#
+            var tokenInput = document.createElement("input");
+            tokenInput.type = "hidden";
+            tokenInput.name = "downloadToken";
+            tokenInput.value = downloadToken;
+            mapForm.appendChild(tokenInput);
+        }
+
+        document.body.appendChild(mapForm);
         map = window.open("", "Map", `top=${top}, left=${left}, width=${width}, height=${height}`);
 
-        //map = window.open("", name, `top=${top}, left=${left}, width=${width}, height=${height}`);
-
         if (map) {
+            if (shouldClose) {
+                console.log('Đang chờ file từ Server với Token:', downloadToken);
+
+                // Khởi động vòng lặp kiểm tra cookie định kỳ mỗi 500ms
+                let checkDownloadTimer = setInterval(function () {
+                    // Kiểm tra xem cookie từ Server trả về đã có tên token này chưa
+                    if (document.cookie.indexOf(downloadToken + "=complete") >= 0) {
+                        console.log('Server đã xử lý xong và gửi file, tiến hành đóng popup!');
+
+                        clearInterval(checkDownloadTimer); // Dừng vòng lặp
+
+                        // Xóa cookie sau khi dùng xong để sạch máy
+                        document.cookie = downloadToken + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+                        // Tiến hành đóng popup an toàn
+                        if (map && !map.closed) {
+                            map.close();
+                        }
+                    }
+                }, 500);
+            }
+
+            // Thực hiện submit form lên server
             mapForm.submit();
         } else {
             alert('You must allow popups for this map to work.');
@@ -384,4 +418,6 @@ function openPrintDialog(url, name, data) {
     else {
         window.open(url, name, `top=${top}, left=${left}, width=${width}, height=${height}`);
     }
+
+    return map;
 }

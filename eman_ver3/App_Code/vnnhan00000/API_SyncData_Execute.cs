@@ -87,10 +87,11 @@ namespace vnnhan00000
 
                     string masp = rs.ma_sanpham;
                     string tendvt = rs.ten_dvt_tv;
+                    string dvtid = rs.md_donvitinhsanpham_id;
                     if (laTableSP)
                     {
                         rs.md_sanpham_id = db.md_sanpham.Where(s => s.ma_sanpham == masp).Select(s => s.md_sanpham_id).FirstOrDefault();
-                        rs.md_donvitinhsanpham_id = db.md_donvitinhsanpham.Where(s => s.ten_dvt == tendvt).Select(s => s.md_donvitinhsanpham_id).FirstOrDefault();
+                        rs.md_donvitinhsanpham_id = db.md_donvitinhsanpham.Where(s => s.md_donvitinhsanpham_ancotrading_id == dvtid).Select(s => s.md_donvitinhsanpham_id).FirstOrDefault();
                         rs.md_nhomnangluc_id2 = rs.md_nhomnangluc_id;
                         var jObj = rs as Newtonsoft.Json.Linq.JObject;
                         if (jObj != null)

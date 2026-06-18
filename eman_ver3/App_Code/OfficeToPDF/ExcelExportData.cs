@@ -683,7 +683,44 @@ namespace OfficeToPDF
                 lstImage = lstImage.Where(s => !string.IsNullOrWhiteSpace(s.link)).ToList();
 
                 //nPOIM.InsertImages(lstImage);
+                HSSFSheetConditionalFormatting sheetCF = (HSSFSheetConditionalFormatting)s1.SheetConditionalFormatting;
+                int numberOfCF = sheetCF.NumConditionalFormattings;
 
+                // Quét qua toàn bộ các Conditional Formatting đang có trên sheet
+                for (int i = 0; i < numberOfCF; i++)
+                {
+                    HSSFConditionalFormatting cf = (HSSFConditionalFormatting)sheetCF.GetConditionalFormattingAt(i);
+                    CellRangeAddress[] currentRanges = cf.GetFormattingRanges();
+                    for (int r = 0; r < currentRanges.Length; r++)
+                    {
+                        CellRangeAddress range = currentRanges[r];
+                        var dtr = infoExcel.detail.GetValueOrDefault(0);
+                        int targetLastRow = dtr + totalRow;
+
+                        // Chỉ nhắm vào Rule nào đang bao phủ dòng cuối cùng của dữ liệu lặp
+                        if (range.LastRow == targetLastRow)
+                        {
+                            // 1. Lấy ra danh sách các Rule (định dạng màu sắc, font...) đang có ở CF hiện tại
+                            var rules = new List<HSSFConditionalFormattingRule>();
+                            for (int ruleIdx = 0; ruleIdx < cf.NumberOfRules; ruleIdx++)
+                            {
+                                rules.Add((HSSFConditionalFormattingRule)cf.GetRule(ruleIdx));
+                            }
+
+                            // 2. Lặp qua từng dòng từ dòng đầu (dtr) đến dòng cuối (targetLastRow)
+                            for (int rDT = dtr; rDT < range.LastRow; rDT++)
+                            {
+                                // Tạo vùng chọn CHỈ GỒM 1 DÒNG DUY NHẤT (rDT)
+                                var singleRowRegion = new CellRangeAddress[] {
+                                    new CellRangeAddress(rDT, rDT, range.FirstColumn, range.LastColumn)
+                                };
+
+                                // 3. Add một Conditional Formatting mới hoàn toàn cho riêng dòng này
+                                sheetCF.AddConditionalFormatting(singleRowRegion, rules.ToArray());
+                            }
+                        }
+                    }
+                }
                 printCf.hssfworkbook = hssfwb;
                 //s1 = printCf.PrintExcel((HSSFSheet)s1, type);
                 var filename = Guid.NewGuid().ToString();
@@ -699,7 +736,8 @@ namespace OfficeToPDF
                 var urlPDF = urlExcel.Substring(0, urlExcel.LastIndexOf(".") + 1) + "pdf";
                 string msg = "", urlFN = "";
                 urlFN = printCf.isPDF.GetValueOrDefault(false) ? urlPDF : urlExcel;
-                var req = new AvariablePrj.ExportRequest {
+                var req = new AvariablePrj.ExportRequest
+                {
                     urlExcel = urlExcel,
                     urlFN = urlFN,
                     lstImage = lstImage,
