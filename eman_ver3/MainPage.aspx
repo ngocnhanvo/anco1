@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="MainPage.aspx.cs" Inherits="MainPage" EnableSessionState="ReadOnly" %>
 <html>
 <head>
     <link rel="shortcut icon" href="images/logo/anco_logo.ico" />
