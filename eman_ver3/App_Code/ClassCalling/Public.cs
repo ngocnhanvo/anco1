@@ -726,11 +726,13 @@ public class Public
         var ksp = from a in db.md_kho_sanpham
                   join b in db.md_kho on a.md_kho_id equals b.md_kho_id
                   join c in db.md_sanpham on a.md_sanpham_id equals c.md_sanpham_id
-                  where b.hangton == true
-                  select new { a.md_kho_id, b.md_phanxuong_id, b.md_to_id, a.md_sanpham_id, c.ma_sanpham, a.soluong, c.sanpham };
+                  where b.hangton == true & b.hoatdong == true
+                  select new { a.md_kho_id, b.md_phanxuong_id, b.md_to_id, a.md_sanpham_id, c.ma_sanpham, a.soluong, c.sanpham, b.ma_kho };
 
         string msg = "";
         var tinhhangtonTP = false;
+        var kttps = Helper.KHOTONTP.Split(',');
+        var kttts = Helper.KHOTONTHO.Split(',');
         try
         {
             if (tsxs == null)
@@ -755,6 +757,8 @@ public class Public
 
                     if (tinhhangtonTP)
                     {
+                        ksp = ksp.Where(s => kttps.Contains(s.ma_kho));
+                        //webnvn can theo doi vi tsxIds dang get records rat lon, chua ro ly do 
                         var tsxIds = db.md_lenhsanxuat_tosx.
                             Where(s =>
                                 s.xuongChinh == tsx.xuongChinh
@@ -803,6 +807,7 @@ public class Public
                     }
                     else
                     {
+                        ksp = ksp.Where(s => kttts.Contains(s.ma_kho));
                         db.md_lenhsanxuat_tosx_dklht.RemoveRange(db.md_lenhsanxuat_tosx_dklht.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id));
                         db.md_lenhsanxuat_tosx_tonkho.RemoveRange(db.md_lenhsanxuat_tosx_tonkho.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id));
                         foreach (var cdh in db.md_lenhsanxuat_tosx_cdh.Where(s => s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id).ToList())
