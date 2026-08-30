@@ -268,10 +268,10 @@ public class getDataFromACTD : HttpTaskAsyncHandler, System.Web.SessionState.IRe
                             if (item["kt2"] == "xx") item["kt2"] = "";
                             item["madg2"] = dgAC.ma_donggoi;
                             item["slinner2"] = $"{dgAC.sl_inner} {dgAC.inner}";
-                            item["ktdg2"] = $"{dgAC.l1}x{dgAC.w1}x{dgAC.h1}";
+                            item["ktdg2"] = $"{dgAC.l1}";
                             if (item["ktdg2"] == "xx") item["ktdg2"] = "";
                             item["slouter2"] = $"{dgAC.sl_outer} {dgAC.outer}";
-                            item["ktdg_2"] = $"{dgAC.l2_mix}x{dgAC.w2_mix}x{dgAC.h2_mix}";
+                            item["ktdg_2"] = $"{dgAC.l2_mix}";
                             if (item["ktdg_2"] == "xx") item["ktdg_2"] = "";
                             item["cont20_2"] = $"{dgAC.soluonggoi_ctn_20}";
                             item["cont40_2"] = $"{dgAC.soluonggoi_ctn}";
