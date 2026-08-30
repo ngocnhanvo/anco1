@@ -227,9 +227,9 @@ public class getDataFromACTD : HttpTaskAsyncHandler, System.Web.SessionState.IRe
                         item["kt1"] = $"{sp.l_cm.GetValueOrDefault(0).DropTrailingZeros()}x{sp.w_cm.GetValueOrDefault(0).DropTrailingZeros()}x{sp.h_cm.GetValueOrDefault(0).DropTrailingZeros()}";
                         item["madg1"] = dg.ma_donggoi;
                         item["slinner1"] = $"{dg.sl_inner.GetValueOrDefault(0).DropTrailingZeros()} {dvt1.ten_dvt}";
-                        item["ktdg1"] = $"{dg.l1.GetValueOrDefault(0).DropTrailingZeros()}x{dg.w1.GetValueOrDefault(0).DropTrailingZeros()}x{dg.h1.GetValueOrDefault(0).DropTrailingZeros()}";
+                        item["ktdg1"] = $"{dg.l1.GetValueOrDefault(0).DropTrailingZeros()}";
                         item["slouter1"] = $"{dg.sl_outer.GetValueOrDefault(0).DropTrailingZeros()} {dvt2.ten_dvt}";
-                        item["ktdg_1"] = $"{dg.l2_mix.GetValueOrDefault(0).DropTrailingZeros()}x{dg.w2_mix.GetValueOrDefault(0).DropTrailingZeros()}x{dg.h2_mix.GetValueOrDefault(0).DropTrailingZeros()}";
+                        item["ktdg_1"] = $"{dg.l2_mix.GetValueOrDefault(0).DropTrailingZeros()}";
                         item["cont20_1"] = $"{dg.soluonggoi_ctn_20}";
                         item["cont40_1"] = $"{dg.soluonggoi_ctn}";
                         item["cont40hc_1"] = $"{dg.soluonggoi_ctn_40hc}";
