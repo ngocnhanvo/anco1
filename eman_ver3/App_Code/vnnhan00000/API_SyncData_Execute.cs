@@ -144,10 +144,19 @@ namespace vnnhan00000
                     prop.SetValue(entity, Convert.ChangeType(Helper.getNewId(), prop.PropertyType));
                     if (laTableSP)
                     {
-                        spsLocal.Add(entity);
+                        string spid = rs.md_sanpham_id;
+                        if (string.IsNullOrWhiteSpace(spid))
+                        {
+                            spsLocal.Add(entity);
+                            db.Set(entityType).Add(entity);
+                            updated = true;
+                        }
                     }
-                    db.Set(entityType).Add(entity);
-                    updated = true;
+                    else
+                    {
+                        db.Set(entityType).Add(entity);
+                        updated = true;
+                    }
                 }
                 else
                 {
