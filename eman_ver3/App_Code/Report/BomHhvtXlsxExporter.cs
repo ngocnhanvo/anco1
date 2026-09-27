@@ -75,7 +75,7 @@ public static class BomHhvtXlsxExporter
         style.BorderRight = BorderStyle.Thin;
 
         IFont font = workbook.CreateFont();
-        font.IsBold = true;
+        font.Boldweight = (short)FontBoldWeight.Bold;
         style.SetFont(font);
         return style;
     }
