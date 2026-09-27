@@ -65,10 +65,10 @@ public static class BomHhvtXlsxExporter
             npoiBytes = stream.ToArray();
         }
 
-        // NPOI 2.0.6 sinh package XLSX cu co 2 van de:
-        // 1) ZIP64 cho workbook rat nho.
-        // 2) docProps/custom.xml co namespace khong hop le voi Excel hien tai.
-        // Dong goi lai ZIP thuong va bo custom properties do NPOI tu sinh.
+        // NPOI 2.0.6 sinh mot so OOXML cu/khong day du ma Excel hien tai repair:
+        // - ZIP64 cho workbook nho
+        // - custom.xml tu dong
+        // - styles.xml thieu Normal cellStyle va fill thu 2 dung darkGray thay vi gray125
         byte[] xlsxBytes = RewriteLegacyPackage(npoiBytes);
         response.OutputStream.Write(xlsxBytes, 0, xlsxBytes.Length);
         response.Flush();
@@ -89,8 +89,6 @@ public static class BomHhvtXlsxExporter
                 ZipEntry entry;
                 while ((entry = zipInput.GetNextEntry()) != null)
                 {
-                    // NPOI 2.0.6 tu them Generator/Generator Version vao custom.xml,
-                    // nhung XML nay lam Excel bao file-level validation/repair.
                     if (string.Equals(entry.Name, "docProps/custom.xml", StringComparison.OrdinalIgnoreCase))
                         continue;
 
@@ -99,6 +97,8 @@ public static class BomHhvtXlsxExporter
                         entryBytes = RemoveCustomPropertiesRelationship(entryBytes);
                     else if (string.Equals(entry.Name, "[Content_Types].xml", StringComparison.OrdinalIgnoreCase))
                         entryBytes = RemoveCustomPropertiesContentType(entryBytes);
+                    else if (string.Equals(entry.Name, "xl/styles.xml", StringComparison.OrdinalIgnoreCase))
+                        entryBytes = RepairLegacyStyles(entryBytes);
 
                     var newEntry = new ZipEntry(entry.Name);
                     if (entry.DateTime.Year >= 1980)
@@ -125,6 +125,55 @@ public static class BomHhvtXlsxExporter
                 data.Write(buffer, 0, read);
             return data.ToArray();
         }
+    }
+
+    private static byte[] RepairLegacyStyles(byte[] xmlBytes)
+    {
+        var doc = LoadXml(xmlBytes);
+        XmlElement root = doc.DocumentElement;
+        if (root == null) return xmlBytes;
+
+        const string ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var nsmgr = new XmlNamespaceManager(doc.NameTable);
+        nsmgr.AddNamespace("x", ns);
+
+        // Theo OOXML, 2 fill mac dinh dau tien phai la none va gray125.
+        // NPOI 2.0.6 tao fill thu 2 la darkGray, Excel hien tai co the repair styles.xml.
+        XmlNode secondPatternFill = root.SelectSingleNode("x:fills/x:fill[2]/x:patternFill", nsmgr);
+        if (secondPatternFill != null && secondPatternFill.Attributes != null)
+        {
+            XmlAttribute patternType = secondPatternFill.Attributes["patternType"];
+            if (patternType == null)
+            {
+                patternType = doc.CreateAttribute("patternType");
+                secondPatternFill.Attributes.Append(patternType);
+            }
+            patternType.Value = "gray125";
+        }
+
+        // NPOI 2.0.6 khong tao cellStyles/Normal. Them default style de Excel co
+        // style Normal hop le, tham chieu xfId=0 trong cellStyleXfs.
+        XmlNode cellStyles = root.SelectSingleNode("x:cellStyles", nsmgr);
+        if (cellStyles == null)
+        {
+            XmlElement cellStylesElement = doc.CreateElement("cellStyles", ns);
+            cellStylesElement.SetAttribute("count", "1");
+
+            XmlElement normalStyle = doc.CreateElement("cellStyle", ns);
+            normalStyle.SetAttribute("name", "Normal");
+            normalStyle.SetAttribute("xfId", "0");
+            normalStyle.SetAttribute("builtinId", "0");
+            cellStylesElement.AppendChild(normalStyle);
+
+            // cellStyles phai nam sau cellXfs va truoc dxfs/tableStyles/colors.
+            XmlNode cellXfs = root.SelectSingleNode("x:cellXfs", nsmgr);
+            if (cellXfs != null && cellXfs.NextSibling != null)
+                root.InsertBefore(cellStylesElement, cellXfs.NextSibling);
+            else
+                root.AppendChild(cellStylesElement);
+        }
+
+        return SaveXml(doc);
     }
 
     private static byte[] RemoveCustomPropertiesRelationship(byte[] xmlBytes)
