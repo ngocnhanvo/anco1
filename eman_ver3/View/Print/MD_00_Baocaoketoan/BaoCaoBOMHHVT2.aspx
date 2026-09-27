@@ -24,7 +24,7 @@
 <body>
     <form id="form1" runat="server">
         <div class="toolbar">
-            <asp:Button ID="btnExportExcel" runat="server" Text="Xuất Excel dữ liệu (.xls)" CssClass="btn" OnClick="btnExportExcel_Click" />
+            <asp:Button ID="btnExportExcel" runat="server" Text="Xuất Excel dữ liệu (.xlsx)" CssClass="btn" OnClick="btnExportExcel_Click" />
             <asp:Literal ID="litSummary" runat="server" />
         </div>
         <div class="table-wrap">
