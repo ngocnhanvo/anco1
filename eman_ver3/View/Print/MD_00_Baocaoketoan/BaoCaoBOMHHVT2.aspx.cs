@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Web;
 using DevExpress.XtraPrinting;
 using DevExpress.XtraReports.UI;
 using DataAcess;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
 
 public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System.Web.UI.Page
 {
@@ -34,7 +34,14 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         if (ds == null || ds.Tables.Count == 0) return;
 
         var matrix = BuildMatrix(ds.Tables[0]);
-        report.DataSource = matrix;
+
+        // PrintAnco2.exportDataWithType đang ép Report.DataSource về DataSet.
+        // Vì vậy không gán trực tiếp DataTable vào report, nếu không sẽ lỗi InvalidCastException.
+        var matrixDataSet = new DataSet("BOMHHVT2DataSet");
+        matrixDataSet.Tables.Add(matrix);
+        report.DataSource = matrixDataSet;
+        report.DataMember = matrix.TableName;
+
         BuildMatrixLayout(report, matrix);
     }
 
@@ -156,78 +163,72 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
 
     protected void btnExportExcel_Click(object sender, EventArgs e)
     {
-        var matrix = ReportViewer1.Report.DataSource as DataTable;
-        if (matrix == null) throw new Exception("Không tìm thấy dữ liệu ma trận BOM để xuất Excel.");
+        var ds = ReportViewer1.Report.DataSource as DataSet;
+        if (ds == null || ds.Tables.Count == 0)
+            throw new Exception("Không tìm thấy dữ liệu ma trận BOM để xuất Excel.");
 
-        // HSSF là định dạng XLS và giới hạn 256 cột. Cột đầu là MAHH.
-        if (matrix.Columns.Count > 256)
-            throw new Exception("Báo cáo có " + matrix.Columns.Count + " cột, vượt giới hạn 256 cột của định dạng XLS hiện có. Cần dùng XLSX cho bộ dữ liệu này.");
+        ExportMatrixAsHtmlExcel(ds.Tables[0]);
+    }
 
-        var workbook = new HSSFWorkbook();
-        var sheet = workbook.CreateSheet("BOM HHVT");
+    /// <summary>
+    /// Xuất riêng bảng ma trận bằng HTML mà Excel đọc trực tiếp.
+    /// Không dùng template .repx, không dùng DevExpress Excel export và không merge cell.
+    /// Mỗi DataColumn luôn tương ứng đúng một cột Excel.
+    /// </summary>
+    private void ExportMatrixAsHtmlExcel(DataTable matrix)
+    {
+        var html = new StringBuilder();
+        html.Append("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />");
+        html.Append("<style>");
+        html.Append("table{border-collapse:collapse;font-family:Arial;font-size:10pt;} ");
+        html.Append("th,td{border:1px solid #000;padding:4px;white-space:nowrap;} ");
+        html.Append("th{font-weight:bold;text-align:center;background:#eee;} ");
+        html.Append("td.txt{mso-number-format:'\\@';text-align:left;} ");
+        html.Append("td.num{mso-number-format:'0.##########';text-align:right;} ");
+        html.Append("</style></head><body><table>");
 
-        var headerFont = workbook.CreateFont();
-        headerFont.Boldweight = (short)FontBoldWeight.Bold;
-
-        var headerStyle = workbook.CreateCellStyle();
-        headerStyle.SetFont(headerFont);
-        headerStyle.Alignment = HorizontalAlignment.Center;
-        headerStyle.VerticalAlignment = VerticalAlignment.Center;
-        headerStyle.BorderBottom = BorderStyle.Thin;
-        headerStyle.BorderTop = BorderStyle.Thin;
-        headerStyle.BorderLeft = BorderStyle.Thin;
-        headerStyle.BorderRight = BorderStyle.Thin;
-
-        var textStyle = workbook.CreateCellStyle();
-        textStyle.BorderBottom = BorderStyle.Thin;
-        textStyle.BorderTop = BorderStyle.Thin;
-        textStyle.BorderLeft = BorderStyle.Thin;
-        textStyle.BorderRight = BorderStyle.Thin;
-
-        var numberStyle = workbook.CreateCellStyle();
-        numberStyle.Alignment = HorizontalAlignment.Right;
-        numberStyle.BorderBottom = BorderStyle.Thin;
-        numberStyle.BorderTop = BorderStyle.Thin;
-        numberStyle.BorderLeft = BorderStyle.Thin;
-        numberStyle.BorderRight = BorderStyle.Thin;
-        numberStyle.DataFormat = workbook.CreateDataFormat().GetFormat("0.##########");
-
-        var header = sheet.CreateRow(0);
-        for (int c = 0; c < matrix.Columns.Count; c++)
+        html.Append("<tr>");
+        foreach (DataColumn column in matrix.Columns)
         {
-            var cell = header.CreateCell(c);
-            cell.SetCellValue(matrix.Columns[c].ColumnName);
-            cell.CellStyle = headerStyle;
+            html.Append("<th>");
+            html.Append(HttpUtility.HtmlEncode(column.ColumnName));
+            html.Append("</th>");
         }
+        html.Append("</tr>");
 
-        for (int r = 0; r < matrix.Rows.Count; r++)
+        foreach (DataRow row in matrix.Rows)
         {
-            var excelRow = sheet.CreateRow(r + 1);
+            html.Append("<tr>");
             for (int c = 0; c < matrix.Columns.Count; c++)
             {
-                var cell = excelRow.CreateCell(c);
                 if (c == 0)
                 {
-                    cell.SetCellValue(Convert.ToString(matrix.Rows[r][c]));
-                    cell.CellStyle = textStyle;
+                    html.Append("<td class=\"txt\">");
+                    html.Append(HttpUtility.HtmlEncode(Convert.ToString(row[c])));
+                    html.Append("</td>");
                 }
                 else
                 {
-                    cell.SetCellValue(Convert.ToDouble(matrix.Rows[r][c]));
-                    cell.CellStyle = numberStyle;
+                    decimal value = row.IsNull(c) ? 0m : Convert.ToDecimal(row[c]);
+                    html.Append("<td class=\"num\" x:num=\"");
+                    html.Append(value.ToString(CultureInfo.InvariantCulture));
+                    html.Append("\">");
+                    html.Append(value.ToString("0.##########", CultureInfo.InvariantCulture));
+                    html.Append("</td>");
                 }
             }
+            html.Append("</tr>");
         }
 
-        sheet.CreateFreezePane(1, 1);
-        sheet.SetColumnWidth(0, 22 * 256);
-        for (int c = 1; c < matrix.Columns.Count; c++) sheet.SetColumnWidth(c, 14 * 256);
+        html.Append("</table></body></html>");
 
         Response.Clear();
         Response.Buffer = true;
+        Response.Charset = "utf-8";
+        Response.ContentEncoding = Encoding.UTF8;
         Response.ContentType = "application/vnd.ms-excel";
         Response.AddHeader("Content-Disposition", "attachment; filename=BOM_HHVT_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xls");
-        workbook.Write(Response.OutputStream);
+        Response.Write(html.ToString());
         Response.Flush();
         HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
