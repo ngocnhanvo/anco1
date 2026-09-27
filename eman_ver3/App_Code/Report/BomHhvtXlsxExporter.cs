@@ -51,7 +51,7 @@ public static class BomHhvtXlsxExporter
         // NPOI 2.0.6 co loi XSSF: dimension cua worksheet van bi ghi la A1
         // du da tao nhieu dong/cot. Excel se mo file bang che do Repair.
         // Sua dimension thanh vung du lieu thuc te truoc khi workbook.Write().
-        FixLegacyXssfDimension(sheet, matrix.Rows.Count + 1, matrix.Columns.Count);
+        FixLegacyXssfDimension((XSSFSheet)sheet, matrix.Rows.Count + 1, matrix.Columns.Count);
 
         string fileName = "BOM_HHVT_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
         response.Clear();
