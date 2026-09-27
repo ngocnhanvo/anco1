@@ -110,7 +110,9 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         string khoValue = (context.Request.QueryString["kho"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string maspValue = (context.Request.QueryString["masp"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string kho = string.IsNullOrWhiteSpace(khoValue) ? "" : $@"and sp.khomacdinh = N'{khoValue}'";
-        string masp = string.IsNullOrWhiteSpace(maspValue) ? "" : $@"and sp.ma_sanpham = N'{maspValue}'";
+        // masp hỗ trợ wildcard SQL LIKE. Ví dụ URL masp=36-%25 sẽ được decode thành 36-%.
+        // Nếu không có wildcard (ví dụ 36-00105-TC-01), LIKE vẫn tương đương so khớp chính xác.
+        string masp = string.IsNullOrWhiteSpace(maspValue) ? "" : $@"and sp.ma_sanpham LIKE N'{maspValue}'";
         return $@"
 SET NOCOUNT ON;
 DROP TABLE IF EXISTS #HangReport; DROP TABLE IF EXISTS #TPGroup; DROP TABLE IF EXISTS #BTPGroup;
