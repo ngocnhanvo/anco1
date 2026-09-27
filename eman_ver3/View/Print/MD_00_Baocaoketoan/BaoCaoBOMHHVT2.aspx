@@ -1,60 +1,35 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="BaoCaoBOMHHVT2.aspx.cs" Inherits="PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2" %>
 
-<%@ Register assembly="DevExpress.XtraReports.v16.1.Web, Version=16.1.2.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" namespace="DevExpress.XtraReports.Web" tagprefix="dx" %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head id="Head1" runat="server">
-    <link rel="shortcut icon" href="images/logo/favicon.ico"/>
-    <title>[eMan] <%=ReportViewer1.Report.DisplayName %></title>
+<head runat="server">
+    <meta charset="utf-8" />
+    <title>BOM HHVT mới nhất</title>
     <style type="text/css">
-        .reportDEX > .dxmLite.dxm-ltr { display:table; margin-bottom:10px; }
-        .bom-export-bar { margin:0 auto 10px auto; text-align:center; }
-        .bom-export-button { padding:7px 14px; font-weight:bold; cursor:pointer; }
+        body { margin: 0; padding: 16px; font-family: Arial, sans-serif; background: #f5f5f5; color: #222; }
+        .toolbar { position: sticky; top: 0; z-index: 10; padding: 10px; margin-bottom: 12px; background: #fff; border: 1px solid #ddd; }
+        .btn { padding: 8px 16px; font-weight: bold; cursor: pointer; }
+        .summary { margin-left: 14px; color: #666; }
+        .table-wrap { overflow: auto; max-height: calc(100vh - 90px); background: #fff; border: 1px solid #ccc; }
+        table { border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+        th, td { border: 1px solid #bbb; padding: 5px 7px; }
+        th { position: sticky; top: 0; z-index: 2; background: #eee; text-align: center; }
+        th:first-child, td:first-child { position: sticky; left: 0; z-index: 1; background: #fff; }
+        th:first-child { z-index: 3; background: #eee; }
+        td.num { text-align: right; }
+        td.code { font-weight: 600; }
+        .empty { padding: 24px; text-align: center; color: #777; }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div class="reportDEX" align="center">
-        <div class="bom-export-bar">
-            <asp:Button ID="btnExportExcel" runat="server"
-                Text="Xuất Excel dữ liệu (.xls)"
-                CssClass="bom-export-button"
-                OnClick="btnExportExcel_Click" />
+        <div class="toolbar">
+            <asp:Button ID="btnExportExcel" runat="server" Text="Xuất Excel dữ liệu (.xls)" CssClass="btn" OnClick="btnExportExcel_Click" />
+            <asp:Literal ID="litSummary" runat="server" />
         </div>
-
-        <dx:ReportToolbar ID="ReportToolbar1" runat="server"
-            ReportViewerID="ReportViewer1" ShowDefaultButtons="False">
-            <Items>
-                <dx:ReportToolbarButton ItemKind="Search" />
-                <dx:ReportToolbarSeparator />
-                <dx:ReportToolbarButton ItemKind="PrintReport" />
-                <dx:ReportToolbarButton ItemKind="PrintPage" />
-                <dx:ReportToolbarSeparator />
-                <dx:ReportToolbarButton Enabled="False" ItemKind="FirstPage" />
-                <dx:ReportToolbarButton Enabled="False" ItemKind="PreviousPage" />
-                <dx:ReportToolbarLabel ItemKind="PageLabel" />
-                <dx:ReportToolbarComboBox ItemKind="PageNumber" Width="65px" />
-                <dx:ReportToolbarLabel ItemKind="OfLabel" />
-                <dx:ReportToolbarTextBox IsReadOnly="True" ItemKind="PageCount" />
-                <dx:ReportToolbarButton ItemKind="NextPage" />
-                <dx:ReportToolbarButton ItemKind="LastPage" />
-                <dx:ReportToolbarSeparator />
-                <dx:ReportToolbarButton ItemKind="SaveToDisk" />
-                <dx:ReportToolbarButton ItemKind="SaveToWindow" />
-                <dx:ReportToolbarComboBox ItemKind="SaveFormat" Width="70px">
-                    <Elements>
-                        <dx:ListElement Value="csv" />
-                        <dx:ListElement Value="pdf" />
-                        <dx:ListElement Value="html" />
-                    </Elements>
-                </dx:ReportToolbarComboBox>
-            </Items>
-        </dx:ReportToolbar>
-        <dx:ReportViewer ID="ReportViewer1" runat="server" ReportName="XtraReport1" />
-        <br />
-    </div>
+        <div class="table-wrap">
+            <asp:Literal ID="litMatrix" runat="server" />
+        </div>
     </form>
 </body>
 </html>
