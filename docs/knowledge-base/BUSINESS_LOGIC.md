@@ -36,6 +36,38 @@ The application contains inventory and material/product maintenance modules incl
 
 Reporting is implemented across WebForms views/helpers and a separate `Report` project. A report change can involve data selection, server-side formatting, print/export helpers, and dedicated report project code.
 
+### Product / BOM classification and expansion
+
+**Status: Confirmed by project owner and database examples on 2026-09-27**
+
+Product classification used by current BOM work:
+
+- `sanpham = 1`: thành phẩm (TP).
+- `ban_thanhpham = 1` and `vattu = 0` or `NULL`: bán thành phẩm (BTP).
+- `ban_thanhpham = 1` and `vattu = 1`: hỗn hợp trộn.
+- `vattu = 1`: vật tư trực tiếp; a direct material cannot contain another BOM.
+- Legacy flags `khuon`, `son`, `muangoai` are no longer used for this classification.
+
+BOM rules:
+
+- TP, BTP, and hỗn hợp trộn may have BOMs; direct materials do not.
+- A record may have multiple `md_sanpham_bom` versions. The applicable version is the one with the latest `ngay_hieuluc` (with deterministic ID ordering used as a tie-breaker in the report implementation).
+- A TP BOM may contain BTP, hỗn hợp trộn, and direct materials.
+- A BTP BOM may contain hỗn hợp trộn and direct materials.
+- A hỗn hợp trộn BOM may contain another hỗn hợp trộn and direct materials.
+- A hỗn hợp trộn without an applicable BOM is treated as a terminal material even though `ban_thanhpham = 1`.
+
+BOM HHVT matrix report rule:
+
+- The report does not expand BTP through the TP row. Each TP row contains only its own terminal direct/mixed-material requirements.
+- Hỗn hợp trộn is recursively expanded until terminal material; quantities are multiplied along the mixture path and duplicate terminal material paths are summed.
+- TP rows that reference the same BTP are grouped together. That BTP is emitted once as a representative row at the end of the TP group.
+- The representative BTP row is calculated independently for one unit; its quantities are not multiplied by the number of TP rows that reference it.
+- The output matrix places MAHH vertically and the union of material codes horizontally.
+
+Implementation pointer:
+- `eman_ver3/View/Print/MD_00_Baocaoketoan/BaoCaoBOMHHVT2.aspx.cs` (`CreateSql`, `BuildMatrix`, `BuildMatrixLayout`).
+
 ## Previously observed Anco1-specific logic
 
 ### Product price retrieval
@@ -87,7 +119,6 @@ The following areas are intentionally not guessed yet:
 - production-order lifecycle,
 - inventory posting rules,
 - warehouse transfer behavior,
-- report source-of-truth queries,
 - relationships between Anco1 and any AncoTrading-specific entities.
 
 When a future task establishes any of these, add a compact rule with status, implementation pointers, and dependencies rather than copying large code blocks.
