@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Web;
+using System.Xml;
 using ICSharpCode.SharpZipLib.Zip;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -64,16 +65,17 @@ public static class BomHhvtXlsxExporter
             npoiBytes = stream.ToArray();
         }
 
-        // NPOI 2.0.6 dung SharpZipLib cu va ghi ZIP64 cho ca workbook rat nho.
-        // Excel co the mo du lieu nhung bao [Repaired]. Dong goi lai package voi
-        // UseZip64=Off de tao ZIP thuong (extract version 20) dung voi XLSX nho nay.
-        byte[] xlsxBytes = RewritePackageWithoutZip64(npoiBytes);
+        // NPOI 2.0.6 sinh package XLSX cu co 2 van de:
+        // 1) ZIP64 cho workbook rat nho.
+        // 2) docProps/custom.xml co namespace khong hop le voi Excel hien tai.
+        // Dong goi lai ZIP thuong va bo custom properties do NPOI tu sinh.
+        byte[] xlsxBytes = RewriteLegacyPackage(npoiBytes);
         response.OutputStream.Write(xlsxBytes, 0, xlsxBytes.Length);
         response.Flush();
         HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
 
-    private static byte[] RewritePackageWithoutZip64(byte[] source)
+    private static byte[] RewriteLegacyPackage(byte[] source)
     {
         using (var input = new MemoryStream(source))
         using (var zipInput = new ZipInputStream(input))
@@ -85,23 +87,102 @@ public static class BomHhvtXlsxExporter
                 zipOutput.SetLevel(6);
 
                 ZipEntry entry;
-                byte[] buffer = new byte[8192];
                 while ((entry = zipInput.GetNextEntry()) != null)
                 {
+                    // NPOI 2.0.6 tu them Generator/Generator Version vao custom.xml,
+                    // nhung XML nay lam Excel bao file-level validation/repair.
+                    if (string.Equals(entry.Name, "docProps/custom.xml", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    byte[] entryBytes = ReadCurrentZipEntry(zipInput);
+                    if (string.Equals(entry.Name, "_rels/.rels", StringComparison.OrdinalIgnoreCase))
+                        entryBytes = RemoveCustomPropertiesRelationship(entryBytes);
+                    else if (string.Equals(entry.Name, "[Content_Types].xml", StringComparison.OrdinalIgnoreCase))
+                        entryBytes = RemoveCustomPropertiesContentType(entryBytes);
+
                     var newEntry = new ZipEntry(entry.Name);
                     if (entry.DateTime.Year >= 1980)
                         newEntry.DateTime = entry.DateTime;
 
                     zipOutput.PutNextEntry(newEntry);
-                    int read;
-                    while ((read = zipInput.Read(buffer, 0, buffer.Length)) > 0)
-                        zipOutput.Write(buffer, 0, read);
+                    zipOutput.Write(entryBytes, 0, entryBytes.Length);
                     zipOutput.CloseEntry();
                 }
 
                 zipOutput.Finish();
             }
             return output.ToArray();
+        }
+    }
+
+    private static byte[] ReadCurrentZipEntry(ZipInputStream zipInput)
+    {
+        using (var data = new MemoryStream())
+        {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = zipInput.Read(buffer, 0, buffer.Length)) > 0)
+                data.Write(buffer, 0, read);
+            return data.ToArray();
+        }
+    }
+
+    private static byte[] RemoveCustomPropertiesRelationship(byte[] xmlBytes)
+    {
+        var doc = LoadXml(xmlBytes);
+        XmlNode root = doc.DocumentElement;
+        if (root != null)
+        {
+            for (int i = root.ChildNodes.Count - 1; i >= 0; i--)
+            {
+                XmlNode node = root.ChildNodes[i];
+                XmlAttribute type = node.Attributes == null ? null : node.Attributes["Type"];
+                if (type != null && type.Value.EndsWith("/custom-properties", StringComparison.OrdinalIgnoreCase))
+                    root.RemoveChild(node);
+            }
+        }
+        return SaveXml(doc);
+    }
+
+    private static byte[] RemoveCustomPropertiesContentType(byte[] xmlBytes)
+    {
+        var doc = LoadXml(xmlBytes);
+        XmlNode root = doc.DocumentElement;
+        if (root != null)
+        {
+            for (int i = root.ChildNodes.Count - 1; i >= 0; i--)
+            {
+                XmlNode node = root.ChildNodes[i];
+                XmlAttribute partName = node.Attributes == null ? null : node.Attributes["PartName"];
+                if (partName != null && string.Equals(partName.Value, "/docProps/custom.xml", StringComparison.OrdinalIgnoreCase))
+                    root.RemoveChild(node);
+            }
+        }
+        return SaveXml(doc);
+    }
+
+    private static XmlDocument LoadXml(byte[] bytes)
+    {
+        var doc = new XmlDocument();
+        doc.PreserveWhitespace = false;
+        using (var stream = new MemoryStream(bytes))
+            doc.Load(stream);
+        return doc;
+    }
+
+    private static byte[] SaveXml(XmlDocument doc)
+    {
+        using (var stream = new MemoryStream())
+        {
+            var settings = new XmlWriterSettings
+            {
+                Encoding = new System.Text.UTF8Encoding(false),
+                Indent = false,
+                OmitXmlDeclaration = false
+            };
+            using (XmlWriter writer = XmlWriter.Create(stream, settings))
+                doc.Save(writer);
+            return stream.ToArray();
         }
     }
 
