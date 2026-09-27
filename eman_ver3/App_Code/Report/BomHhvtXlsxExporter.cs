@@ -3,6 +3,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Web;
+using ICSharpCode.SharpZipLib.Zip;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -48,9 +49,6 @@ public static class BomHhvtXlsxExporter
         for (int c = 1; c < matrix.Columns.Count; c++)
             sheet.SetColumnWidth(c, 14 * 256);
 
-        // NPOI 2.0.6 co loi XSSF: dimension cua worksheet van bi ghi la A1
-        // du da tao nhieu dong/cot. Excel se mo file bang che do Repair.
-        // Sua dimension thanh vung du lieu thuc te truoc khi workbook.Write().
         FixLegacyXssfDimension((XSSFSheet)sheet, matrix.Rows.Count + 1, matrix.Columns.Count);
 
         string fileName = "BOM_HHVT_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
@@ -59,41 +57,68 @@ public static class BomHhvtXlsxExporter
         response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
         response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
 
+        byte[] npoiBytes;
         using (var stream = new MemoryStream())
         {
             workbook.Write(stream);
-            byte[] bytes = stream.ToArray();
-            response.OutputStream.Write(bytes, 0, bytes.Length);
+            npoiBytes = stream.ToArray();
         }
 
+        // NPOI 2.0.6 dung SharpZipLib cu va ghi ZIP64 cho ca workbook rat nho.
+        // Excel co the mo du lieu nhung bao [Repaired]. Dong goi lai package voi
+        // UseZip64=Off de tao ZIP thuong (extract version 20) dung voi XLSX nho nay.
+        byte[] xlsxBytes = RewritePackageWithoutZip64(npoiBytes);
+        response.OutputStream.Write(xlsxBytes, 0, xlsxBytes.Length);
         response.Flush();
         HttpContext.Current.ApplicationInstance.CompleteRequest();
+    }
+
+    private static byte[] RewritePackageWithoutZip64(byte[] source)
+    {
+        using (var input = new MemoryStream(source))
+        using (var zipInput = new ZipInputStream(input))
+        using (var output = new MemoryStream())
+        {
+            using (var zipOutput = new ZipOutputStream(output))
+            {
+                zipOutput.UseZip64 = UseZip64.Off;
+                zipOutput.SetLevel(6);
+
+                ZipEntry entry;
+                byte[] buffer = new byte[8192];
+                while ((entry = zipInput.GetNextEntry()) != null)
+                {
+                    var newEntry = new ZipEntry(entry.Name);
+                    if (entry.DateTime.Year >= 1980)
+                        newEntry.DateTime = entry.DateTime;
+
+                    zipOutput.PutNextEntry(newEntry);
+                    int read;
+                    while ((read = zipInput.Read(buffer, 0, buffer.Length)) > 0)
+                        zipOutput.Write(buffer, 0, read);
+                    zipOutput.CloseEntry();
+                }
+
+                zipOutput.Finish();
+            }
+            return output.ToArray();
+        }
     }
 
     private static void FixLegacyXssfDimension(XSSFSheet sheet, int rowCount, int columnCount)
     {
         if (rowCount <= 0 || columnCount <= 0) return;
-
         try
         {
-            MethodInfo getCtWorksheet = typeof(XSSFSheet).GetMethod(
-                "GetCTWorksheet",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo getCtWorksheet = typeof(XSSFSheet).GetMethod("GetCTWorksheet", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (getCtWorksheet == null) return;
-
             object worksheet = getCtWorksheet.Invoke(sheet, null);
             if (worksheet == null) return;
-
             object dimension = GetMemberValue(worksheet, "dimension");
             if (dimension == null) return;
-
-            string range = "A1:" + ToExcelColumnName(columnCount) + rowCount;
-            SetMemberValue(dimension, "ref", range);
+            SetMemberValue(dimension, "ref", "A1:" + ToExcelColumnName(columnCount) + rowCount);
         }
-        catch
-        {
-            // Khong chan export neu mot ban NPOI khac khong co CT API nay.
-        }
+        catch { }
     }
 
     private static object GetMemberValue(object target, string name)
@@ -101,7 +126,6 @@ public static class BomHhvtXlsxExporter
         Type type = target.GetType();
         PropertyInfo property = type.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         if (property != null) return property.GetValue(target, null);
-
         FieldInfo field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         return field == null ? null : field.GetValue(target);
     }
@@ -110,12 +134,7 @@ public static class BomHhvtXlsxExporter
     {
         Type type = target.GetType();
         PropertyInfo property = type.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        if (property != null && property.CanWrite)
-        {
-            property.SetValue(target, value, null);
-            return;
-        }
-
+        if (property != null && property.CanWrite) { property.SetValue(target, value, null); return; }
         FieldInfo field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         if (field != null) field.SetValue(target, value);
     }
@@ -124,12 +143,7 @@ public static class BomHhvtXlsxExporter
     {
         int value = columnCount;
         string result = string.Empty;
-        while (value > 0)
-        {
-            value--;
-            result = (char)('A' + (value % 26)) + result;
-            value /= 26;
-        }
+        while (value > 0) { value--; result = (char)('A' + (value % 26)) + result; value /= 26; }
         return result;
     }
 
@@ -138,11 +152,8 @@ public static class BomHhvtXlsxExporter
         ICellStyle style = workbook.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Center;
         style.VerticalAlignment = VerticalAlignment.Center;
-        style.BorderTop = BorderStyle.Thin;
-        style.BorderBottom = BorderStyle.Thin;
-        style.BorderLeft = BorderStyle.Thin;
-        style.BorderRight = BorderStyle.Thin;
-
+        style.BorderTop = BorderStyle.Thin; style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin; style.BorderRight = BorderStyle.Thin;
         IFont font = workbook.CreateFont();
         font.Boldweight = (short)FontBoldWeight.Bold;
         style.SetFont(font);
@@ -154,10 +165,8 @@ public static class BomHhvtXlsxExporter
         ICellStyle style = workbook.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Left;
         style.VerticalAlignment = VerticalAlignment.Center;
-        style.BorderTop = BorderStyle.Thin;
-        style.BorderBottom = BorderStyle.Thin;
-        style.BorderLeft = BorderStyle.Thin;
-        style.BorderRight = BorderStyle.Thin;
+        style.BorderTop = BorderStyle.Thin; style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin; style.BorderRight = BorderStyle.Thin;
         return style;
     }
 
@@ -166,10 +175,8 @@ public static class BomHhvtXlsxExporter
         ICellStyle style = workbook.CreateCellStyle();
         style.Alignment = HorizontalAlignment.Right;
         style.VerticalAlignment = VerticalAlignment.Center;
-        style.BorderTop = BorderStyle.Thin;
-        style.BorderBottom = BorderStyle.Thin;
-        style.BorderLeft = BorderStyle.Thin;
-        style.BorderRight = BorderStyle.Thin;
+        style.BorderTop = BorderStyle.Thin; style.BorderBottom = BorderStyle.Thin;
+        style.BorderLeft = BorderStyle.Thin; style.BorderRight = BorderStyle.Thin;
         style.DataFormat = workbook.CreateDataFormat().GetFormat("0.##########");
         return style;
     }
