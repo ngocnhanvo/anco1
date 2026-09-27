@@ -6,20 +6,25 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
-	<link rel="shortcut icon" href="images/logo/favicon.ico"/>
+    <link rel="shortcut icon" href="images/logo/favicon.ico"/>
     <title>[eMan] <%=ReportViewer1.Report.DisplayName %></title>
     <style type="text/css">
-        .reportDEX > .dxmLite.dxm-ltr{
-            display:table;
-            margin-bottom: 10px;
-        }
+        .reportDEX > .dxmLite.dxm-ltr { display:table; margin-bottom:10px; }
+        .bom-export-bar { margin:0 auto 10px auto; text-align:center; }
+        .bom-export-button { padding:7px 14px; font-weight:bold; cursor:pointer; }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
     <div class="reportDEX" align="center">
-    
-        <dx:ReportToolbar ID="ReportToolbar1" runat="server" 
+        <div class="bom-export-bar">
+            <asp:Button ID="btnExportExcel" runat="server"
+                Text="Xuất Excel dữ liệu (.xls)"
+                CssClass="bom-export-button"
+                OnClick="btnExportExcel_Click" />
+        </div>
+
+        <dx:ReportToolbar ID="ReportToolbar1" runat="server"
             ReportViewerID="ReportViewer1" ShowDefaultButtons="False">
             <Items>
                 <dx:ReportToolbarButton ItemKind="Search" />
@@ -30,8 +35,7 @@
                 <dx:ReportToolbarButton Enabled="False" ItemKind="FirstPage" />
                 <dx:ReportToolbarButton Enabled="False" ItemKind="PreviousPage" />
                 <dx:ReportToolbarLabel ItemKind="PageLabel" />
-                <dx:ReportToolbarComboBox ItemKind="PageNumber" Width="65px">
-                </dx:ReportToolbarComboBox>
+                <dx:ReportToolbarComboBox ItemKind="PageNumber" Width="65px" />
                 <dx:ReportToolbarLabel ItemKind="OfLabel" />
                 <dx:ReportToolbarTextBox IsReadOnly="True" ItemKind="PageCount" />
                 <dx:ReportToolbarButton ItemKind="NextPage" />
@@ -41,20 +45,16 @@
                 <dx:ReportToolbarButton ItemKind="SaveToWindow" />
                 <dx:ReportToolbarComboBox ItemKind="SaveFormat" Width="70px">
                     <Elements>
-                        <dx:ListElement Value="xls" />
-                        <dx:ListElement Value="xlsx" />                        
                         <dx:ListElement Value="csv" />
-						<dx:ListElement Value="pdf" />
-						<dx:ListElement Value="html" />
+                        <dx:ListElement Value="pdf" />
+                        <dx:ListElement Value="html" />
                     </Elements>
                 </dx:ReportToolbarComboBox>
             </Items>
         </dx:ReportToolbar>
-        <dx:ReportViewer ID="ReportViewer1" runat="server" ReportName="XtraReport1">
-        </dx:ReportViewer>
+        <dx:ReportViewer ID="ReportViewer1" runat="server" ReportName="XtraReport1" />
         <br />
     </div>
     </form>
 </body>
 </html>
-
