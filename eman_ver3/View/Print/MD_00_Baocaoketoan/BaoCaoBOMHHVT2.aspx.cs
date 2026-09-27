@@ -78,31 +78,9 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         litMatrix.Text = html.Append("</tbody></table>").ToString();
     }
 
-    protected void btnExportExcel_Click(object sender, EventArgs e) { ExportMatrixAsHtmlExcel(LoadMatrix()); }
-
-    private void ExportMatrixAsHtmlExcel(DataTable matrix)
+    protected void btnExportExcel_Click(object sender, EventArgs e)
     {
-        var html = new StringBuilder("<html xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><style>table{border-collapse:collapse;font-family:Arial;font-size:10pt}th,td{border:1px solid #000;padding:4px;white-space:nowrap}th{font-weight:bold;text-align:center;background:#eee}td.txt{mso-number-format:'\\@';text-align:left}td.num{mso-number-format:'0.##########';text-align:right}</style></head><body><table><tr>");
-        foreach (DataColumn col in matrix.Columns) html.Append("<th>").Append(HttpUtility.HtmlEncode(col.ColumnName)).Append("</th>");
-        html.Append("</tr>");
-        foreach (DataRow row in matrix.Rows)
-        {
-            html.Append("<tr>");
-            for (int c = 0; c < matrix.Columns.Count; c++)
-            {
-                if (c == 0) html.Append("<td class=\"txt\">").Append(HttpUtility.HtmlEncode(Convert.ToString(row[c]))).Append("</td>");
-                else {
-                    string n = (row.IsNull(c) ? 0m : Convert.ToDecimal(row[c])).ToString("0.##########", CultureInfo.InvariantCulture);
-                    html.Append("<td class=\"num\" x:num=\"").Append(n).Append("\">").Append(n).Append("</td>");
-                }
-            }
-            html.Append("</tr>");
-        }
-        html.Append("</table></body></html>");
-        Response.Clear(); Response.Buffer = true; Response.Charset = "utf-8"; Response.ContentEncoding = Encoding.UTF8;
-        Response.ContentType = "application/vnd.ms-excel";
-        Response.AddHeader("Content-Disposition", "attachment; filename=BOM_HHVT_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xls");
-        Response.Write(html.ToString()); Response.Flush(); HttpContext.Current.ApplicationInstance.CompleteRequest();
+        BomHhvtSpreadsheetMlExporter.Export(Response, LoadMatrix());
     }
 
     public string CreateSql(HttpContext context)
