@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -11,16 +11,19 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.Charset = "utf-8";
+
         if (IsPostBack) return;
 
         string masp = (Request.QueryString["masp"] ?? "").Trim();
         if (string.IsNullOrWhiteSpace(masp))
         {
-            litSummary.Text = "<span class=\"summary\">Chế độ toàn bộ dữ liệu</span>";
+            litSummary.Text = "<span class=\"summary\">Ch\u1ebf \u0111\u1ed9 to\u00e0n b\u1ed9 d\u1eef li\u1ec7u</span>";
             litMatrix.Text =
                 "<div class=\"empty\">" +
-                "Dữ liệu toàn bộ quá lớn nên không hiển thị bản xem trước. " +
-                "Vui lòng bấm <b>Xuất Excel dữ liệu (.xlsx)</b> để tải toàn bộ." +
+                "D\u1eef li\u1ec7u to\u00e0n b\u1ed9 qu\u00e1 l\u1edbn n\u00ean kh\u00f4ng hi\u1ec3n th\u1ecb b\u1ea3n xem tr\u01b0\u1edbc. " +
+                "Vui l\u00f2ng b\u1ea5m <b>Xu\u1ea5t Excel d\u1eef li\u1ec7u (.xlsx)</b> \u0111\u1ec3 t\u1ea3i to\u00e0n b\u1ed9." +
                 "</div>";
             return;
         }
@@ -97,8 +100,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
 
     private void RenderMatrix(DataTable matrix)
     {
-        litSummary.Text = "<span class=\"summary\">" + matrix.Rows.Count + " mã hàng · " + Math.Max(0, matrix.Columns.Count - 1) + " vật tư</span>";
-        if (matrix.Rows.Count == 0) { litMatrix.Text = "<div class=\"empty\">Không có dữ liệu</div>"; return; }
+        litSummary.Text = "<span class=\"summary\">" + matrix.Rows.Count + " m\u00e3 h\u00e0ng \u00b7 " + Math.Max(0, matrix.Columns.Count - 1) + " v\u1eadt t\u01b0</span>";
+        if (matrix.Rows.Count == 0) { litMatrix.Text = "<div class=\"empty\">Kh\u00f4ng c\u00f3 d\u1eef li\u1ec7u</div>"; return; }
 
         var html = new StringBuilder("<table><thead><tr>");
         foreach (DataColumn col in matrix.Columns) html.Append("<th>").Append(HttpUtility.HtmlEncode(col.ColumnName)).Append("</th>");
@@ -126,8 +129,6 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         string khoValue = (context.Request.QueryString["kho"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string maspValue = (context.Request.QueryString["masp"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string kho = string.IsNullOrWhiteSpace(khoValue) ? "" : $@"and sp.khomacdinh = N'{khoValue}'";
-        // masp hỗ trợ wildcard SQL LIKE. Ví dụ URL masp=36-%25 sẽ được decode thành 36-%.
-        // Nếu không có wildcard (ví dụ 36-00105-TC-01), LIKE vẫn tương đương so khớp chính xác.
         string masp = string.IsNullOrWhiteSpace(maspValue) ? "" : $@"and sp.ma_sanpham LIKE N'{maspValue}'";
         return $@"
 SET NOCOUNT ON;
