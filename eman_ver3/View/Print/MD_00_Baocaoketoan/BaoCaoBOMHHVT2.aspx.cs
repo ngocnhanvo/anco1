@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -9,6 +8,8 @@ using System.Web;
 
 public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System.Web.UI.Page
 {
+    private const int FixedColumnCount = 4;
+
     protected void Page_Load(object sender, EventArgs e)
     {
         Response.ContentEncoding = Encoding.UTF8;
@@ -45,53 +46,70 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
     private DataTable BuildMatrix(DataTable source)
     {
         var result = new DataTable("BOMHHVT2");
-        result.Columns.Add("MAHH", typeof(string));
+        result.Columns.Add("M\u00c3 HH", typeof(string));
+        result.Columns.Add("T\u00caN TV", typeof(string));
+        result.Columns.Add("\u0110VT", typeof(string));
+        result.Columns.Add("TR\u1eccNG L\u01af\u1ee2NG", typeof(decimal));
+
         if (source == null || source.Rows.Count == 0) return result;
 
-        var vatTus = source.AsEnumerable().Where(r => !r.IsNull("maVT"))
+        var vatTus = source.AsEnumerable()
+            .Where(r => !r.IsNull("maVT"))
             .Select(r => new
             {
                 MaVT = Convert.ToString(r["maVT"]).Trim(),
-                Dvt = r.IsNull("dvt") ? "" : Convert.ToString(r["dvt"]).Trim()
+                TenVT = r.IsNull("tenVT") ? "" : Convert.ToString(r["tenVT"]).Trim(),
+                DvtVT = r.IsNull("dvtVT") ? "" : Convert.ToString(r["dvtVT"]).Trim()
             })
             .Where(x => !string.IsNullOrWhiteSpace(x.MaVT))
             .GroupBy(x => x.MaVT, StringComparer.OrdinalIgnoreCase)
             .Select(g => new
             {
                 MaVT = g.Key,
-                Dvt = g.Select(x => x.Dvt).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? ""
+                TenVT = g.Select(x => x.TenVT).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "",
+                DvtVT = g.Select(x => x.DvtVT).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? ""
             })
             .OrderBy(x => x.MaVT, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var headerByMaVT = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var vatTu in vatTus)
         {
-            string header = string.IsNullOrWhiteSpace(vatTu.Dvt)
-                ? vatTu.MaVT
-                : vatTu.MaVT + " (" + vatTu.Dvt + ")";
-            result.Columns.Add(header, typeof(decimal));
-            headerByMaVT[vatTu.MaVT] = header;
+            DataColumn column = result.Columns.Add(vatTu.MaVT, typeof(decimal));
+            column.ExtendedProperties["MaVT"] = vatTu.MaVT;
+            column.ExtendedProperties["TenVT"] = vatTu.TenVT;
+            column.ExtendedProperties["DvtVT"] = vatTu.DvtVT;
+            column.ExtendedProperties["IsMaterial"] = true;
         }
 
-        var hangHoas = source.AsEnumerable().GroupBy(r => new {
-            MaHH = Convert.ToString(r["maHH"]), GroupOrder = Convert.ToInt32(r["group_order"]),
-            SortType = Convert.ToInt32(r["sort_type"]), SortOrder = Convert.ToInt32(r["sort_order"])
+        var hangHoas = source.AsEnumerable().GroupBy(r => new
+        {
+            MaHH = Convert.ToString(r["maHH"]),
+            TenHH = r.IsNull("tenHH") ? "" : Convert.ToString(r["tenHH"]).Trim(),
+            DvtHH = r.IsNull("dvtHH") ? "" : Convert.ToString(r["dvtHH"]).Trim(),
+            TrongLuong = r.IsNull("trongluongHH") ? (decimal?)null : Convert.ToDecimal(r["trongluongHH"]),
+            GroupOrder = Convert.ToInt32(r["group_order"]),
+            SortType = Convert.ToInt32(r["sort_type"]),
+            SortOrder = Convert.ToInt32(r["sort_order"])
         }).OrderBy(g => g.Key.GroupOrder).ThenBy(g => g.Key.SortType).ThenBy(g => g.Key.SortOrder)
           .ThenBy(g => g.Key.MaHH, StringComparer.OrdinalIgnoreCase);
 
         foreach (var hangHoa in hangHoas)
         {
             DataRow row = result.NewRow();
-            row["MAHH"] = hangHoa.Key.MaHH;
-            foreach (string header in headerByMaVT.Values) row[header] = 0m;
+            row[0] = hangHoa.Key.MaHH;
+            row[1] = hangHoa.Key.TenHH;
+            row[2] = hangHoa.Key.DvtHH;
+            row[3] = hangHoa.Key.TrongLuong.HasValue ? (object)hangHoa.Key.TrongLuong.Value : DBNull.Value;
+
+            for (int c = FixedColumnCount; c < result.Columns.Count; c++)
+                row[c] = 0m;
+
             foreach (DataRow item in hangHoa)
             {
                 if (item.IsNull("maVT") || item.IsNull("sl")) continue;
                 string maVT = Convert.ToString(item["maVT"]).Trim();
-                string header;
-                if (headerByMaVT.TryGetValue(maVT, out header))
-                    row[header] = Convert.ToDecimal(row[header]) + Convert.ToDecimal(item["sl"]);
+                if (result.Columns.Contains(maVT))
+                    row[maVT] = Convert.ToDecimal(row[maVT]) + Convert.ToDecimal(item["sl"]);
             }
             result.Rows.Add(row);
         }
@@ -100,23 +118,58 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
 
     private void RenderMatrix(DataTable matrix)
     {
-        litSummary.Text = "<span class=\"summary\">" + matrix.Rows.Count + " m\u00e3 h\u00e0ng \u00b7 " + Math.Max(0, matrix.Columns.Count - 1) + " v\u1eadt t\u01b0</span>";
-        if (matrix.Rows.Count == 0) { litMatrix.Text = "<div class=\"empty\">Kh\u00f4ng c\u00f3 d\u1eef li\u1ec7u</div>"; return; }
+        litSummary.Text = "<span class=\"summary\">" + matrix.Rows.Count + " m\u00e3 h\u00e0ng \u00b7 " + Math.Max(0, matrix.Columns.Count - FixedColumnCount) + " v\u1eadt t\u01b0</span>";
+        if (matrix.Rows.Count == 0)
+        {
+            litMatrix.Text = "<div class=\"empty\">Kh\u00f4ng c\u00f3 d\u1eef li\u1ec7u</div>";
+            return;
+        }
 
-        var html = new StringBuilder("<table><thead><tr>");
-        foreach (DataColumn col in matrix.Columns) html.Append("<th>").Append(HttpUtility.HtmlEncode(col.ColumnName)).Append("</th>");
+        var html = new StringBuilder("<table><thead>");
+
+        html.Append("<tr><th></th><th></th><th></th><th>M\u00c3 VT</th>");
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+            html.Append("<th>").Append(HttpUtility.HtmlEncode(GetColumnProperty(matrix.Columns[c], "MaVT"))).Append("</th>");
+        html.Append("</tr>");
+
+        html.Append("<tr><th></th><th></th><th></th><th>T\u00caN VT</th>");
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+            html.Append("<th>").Append(HttpUtility.HtmlEncode(GetColumnProperty(matrix.Columns[c], "TenVT"))).Append("</th>");
+        html.Append("</tr>");
+
+        html.Append("<tr><th></th><th></th><th></th><th>\u0110VT</th>");
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+            html.Append("<th>").Append(HttpUtility.HtmlEncode(GetColumnProperty(matrix.Columns[c], "DvtVT"))).Append("</th>");
+        html.Append("</tr>");
+
+        html.Append("<tr>");
+        for (int c = 0; c < FixedColumnCount; c++)
+            html.Append("<th>").Append(HttpUtility.HtmlEncode(matrix.Columns[c].ColumnName)).Append("</th>");
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+            html.Append("<th></th>");
         html.Append("</tr></thead><tbody>");
+
         foreach (DataRow row in matrix.Rows)
         {
             html.Append("<tr>");
-            for (int c = 0; c < matrix.Columns.Count; c++)
-            {
-                if (c == 0) html.Append("<td class=\"code\">").Append(HttpUtility.HtmlEncode(Convert.ToString(row[c]))).Append("</td>");
-                else html.Append("<td class=\"num\">").Append((row.IsNull(c) ? 0m : Convert.ToDecimal(row[c])).ToString("0.##########", CultureInfo.InvariantCulture)).Append("</td>");
-            }
+            html.Append("<td class=\"code\">").Append(HttpUtility.HtmlEncode(Convert.ToString(row[0]))).Append("</td>");
+            html.Append("<td>").Append(HttpUtility.HtmlEncode(Convert.ToString(row[1]))).Append("</td>");
+            html.Append("<td>").Append(HttpUtility.HtmlEncode(Convert.ToString(row[2]))).Append("</td>");
+            html.Append("<td class=\"num\">");
+            if (!row.IsNull(3)) html.Append(Convert.ToDecimal(row[3]).ToString("0.##########", CultureInfo.InvariantCulture));
+            html.Append("</td>");
+
+            for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+                html.Append("<td class=\"num\">").Append((row.IsNull(c) ? 0m : Convert.ToDecimal(row[c])).ToString("0.##########", CultureInfo.InvariantCulture)).Append("</td>");
             html.Append("</tr>");
         }
         litMatrix.Text = html.Append("</tbody></table>").ToString();
+    }
+
+    private static string GetColumnProperty(DataColumn column, string key)
+    {
+        object value = column.ExtendedProperties[key];
+        return value == null ? "" : Convert.ToString(value);
     }
 
     protected void btnExportExcel_Click(object sender, EventArgs e)
@@ -129,6 +182,8 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         string khoValue = (context.Request.QueryString["kho"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string maspValue = (context.Request.QueryString["masp"] ?? "").removeAllSpaceOrTrimText(true).Replace("'", "''");
         string kho = string.IsNullOrWhiteSpace(khoValue) ? "" : $@"and sp.khomacdinh = N'{khoValue}'";
+        // masp h\u1ed7 tr\u1ee3 wildcard SQL LIKE. V\u00ed d\u1ee5 URL masp=36-%25 s\u1ebd \u0111\u01b0\u1ee3c decode th\u00e0nh 36-%.
+        // N\u1ebfu kh\u00f4ng c\u00f3 wildcard (v\u00ed d\u1ee5 36-00105-TC-01), LIKE v\u1eabn t\u01b0\u01a1ng \u0111\u01b0\u01a1ng so kh\u1edbp ch\u00ednh x\u00e1c.
         string masp = string.IsNullOrWhiteSpace(maspValue) ? "" : $@"and sp.ma_sanpham LIKE N'{maspValue}'";
         return $@"
 SET NOCOUNT ON;
@@ -168,10 +223,20 @@ VatTuCuoi AS(SELECT bt.* FROM BomTree bt LEFT JOIN #BomMoiNhat cb ON cb.md_sanph
 WHERE (bt.vattu=1 AND ISNULL(bt.ban_thanhpham,0)=0) OR (bt.ban_thanhpham=1 AND bt.vattu=1 AND cb.md_sanpham_bom_id IS NULL)),
 KetQua AS(SELECT report_id,ma_goc,group_order,sort_type,sort_order,child_id vat_tu_id,ma_con ma_vattu,MAX(mota_tiengviet) ten_vattu,CAST(SUM(sl_tich_luy) AS DECIMAL(38,10)) soluong
 FROM VatTuCuoi GROUP BY report_id,ma_goc,group_order,sort_type,sort_order,child_id,ma_con)
-SELECT kq.ma_goc maHH,kq.ma_vattu maVT,kq.ten_vattu tenVT,dvtsp.ten_dvt dvt,kq.soluong sl,kq.group_order,kq.sort_type,kq.sort_order
+SELECT kq.ma_goc maHH,
+       hh.mota_tiengviet tenHH,
+       dvthh.ten_dvt dvtHH,
+       hh.trongluong trongluongHH,
+       kq.ma_vattu maVT,
+       kq.ten_vattu tenVT,
+       dvtvt.ten_dvt dvtVT,
+       kq.soluong sl,
+       kq.group_order,kq.sort_type,kq.sort_order
 FROM KetQua kq
+LEFT JOIN md_sanpham hh ON hh.md_sanpham_id=kq.report_id
+LEFT JOIN md_donvitinhsanpham dvthh ON dvthh.md_donvitinhsanpham_id=hh.md_donvitinhsanpham_id
 LEFT JOIN md_sanpham vt ON vt.md_sanpham_id=kq.vat_tu_id
-LEFT JOIN md_donvitinhsanpham dvtsp ON dvtsp.md_donvitinhsanpham_id=vt.md_donvitinhsanpham_id
+LEFT JOIN md_donvitinhsanpham dvtvt ON dvtvt.md_donvitinhsanpham_id=vt.md_donvitinhsanpham_id
 ORDER BY kq.group_order,kq.sort_type,kq.sort_order,kq.ma_goc,kq.ma_vattu OPTION(MAXRECURSION 100);";
     }
 }
