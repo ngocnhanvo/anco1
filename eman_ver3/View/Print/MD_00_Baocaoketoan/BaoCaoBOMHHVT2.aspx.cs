@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -45,9 +46,30 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         if (source == null || source.Rows.Count == 0) return result;
 
         var vatTus = source.AsEnumerable().Where(r => !r.IsNull("maVT"))
-            .Select(r => Convert.ToString(r["maVT"]).Trim()).Where(x => !string.IsNullOrWhiteSpace(x))
-            .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList();
-        foreach (string maVT in vatTus) result.Columns.Add(maVT, typeof(decimal));
+            .Select(r => new
+            {
+                MaVT = Convert.ToString(r["maVT"]).Trim(),
+                Dvt = r.IsNull("dvt") ? "" : Convert.ToString(r["dvt"]).Trim()
+            })
+            .Where(x => !string.IsNullOrWhiteSpace(x.MaVT))
+            .GroupBy(x => x.MaVT, StringComparer.OrdinalIgnoreCase)
+            .Select(g => new
+            {
+                MaVT = g.Key,
+                Dvt = g.Select(x => x.Dvt).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? ""
+            })
+            .OrderBy(x => x.MaVT, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var headerByMaVT = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var vatTu in vatTus)
+        {
+            string header = string.IsNullOrWhiteSpace(vatTu.Dvt)
+                ? vatTu.MaVT
+                : vatTu.MaVT + " (" + vatTu.Dvt + ")";
+            result.Columns.Add(header, typeof(decimal));
+            headerByMaVT[vatTu.MaVT] = header;
+        }
 
         var hangHoas = source.AsEnumerable().GroupBy(r => new {
             MaHH = Convert.ToString(r["maHH"]), GroupOrder = Convert.ToInt32(r["group_order"]),
@@ -59,12 +81,14 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
         {
             DataRow row = result.NewRow();
             row["MAHH"] = hangHoa.Key.MaHH;
-            foreach (string maVT in vatTus) row[maVT] = 0m;
+            foreach (string header in headerByMaVT.Values) row[header] = 0m;
             foreach (DataRow item in hangHoa)
             {
                 if (item.IsNull("maVT") || item.IsNull("sl")) continue;
                 string maVT = Convert.ToString(item["maVT"]).Trim();
-                if (result.Columns.Contains(maVT)) row[maVT] = Convert.ToDecimal(row[maVT]) + Convert.ToDecimal(item["sl"]);
+                string header;
+                if (headerByMaVT.TryGetValue(maVT, out header))
+                    row[header] = Convert.ToDecimal(row[header]) + Convert.ToDecimal(item["sl"]);
             }
             result.Rows.Add(row);
         }
@@ -143,7 +167,10 @@ VatTuCuoi AS(SELECT bt.* FROM BomTree bt LEFT JOIN #BomMoiNhat cb ON cb.md_sanph
 WHERE (bt.vattu=1 AND ISNULL(bt.ban_thanhpham,0)=0) OR (bt.ban_thanhpham=1 AND bt.vattu=1 AND cb.md_sanpham_bom_id IS NULL)),
 KetQua AS(SELECT report_id,ma_goc,group_order,sort_type,sort_order,child_id vat_tu_id,ma_con ma_vattu,MAX(mota_tiengviet) ten_vattu,CAST(SUM(sl_tich_luy) AS DECIMAL(38,10)) soluong
 FROM VatTuCuoi GROUP BY report_id,ma_goc,group_order,sort_type,sort_order,child_id,ma_con)
-SELECT ma_goc maHH,ma_vattu maVT,ten_vattu tenVT,soluong sl,group_order,sort_type,sort_order FROM KetQua
-ORDER BY group_order,sort_type,sort_order,ma_goc,ma_vattu OPTION(MAXRECURSION 100);";
+SELECT kq.ma_goc maHH,kq.ma_vattu maVT,kq.ten_vattu tenVT,dvtsp.ten_dvt dvt,kq.soluong sl,kq.group_order,kq.sort_type,kq.sort_order
+FROM KetQua kq
+LEFT JOIN md_sanpham vt ON vt.md_sanpham_id=kq.vat_tu_id
+LEFT JOIN md_donvitinhsanpham dvtsp ON dvtsp.md_donvitinhsanpham_id=vt.md_donvitinhsanpham_id
+ORDER BY kq.group_order,kq.sort_type,kq.sort_order,kq.ma_goc,kq.ma_vattu OPTION(MAXRECURSION 100);";
     }
 }
