@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="BaoCaoBOMHHVT2.aspx.cs" Inherits="PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" EnableViewState="false" ViewStateMode="Disabled" CodeFile="BaoCaoBOMHHVT2.aspx.cs" Inherits="PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
