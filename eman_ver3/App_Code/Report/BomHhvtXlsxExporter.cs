@@ -11,13 +11,15 @@ public static class BomHhvtXlsxExporter
 {
     private const string MainNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private const string RelNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    private const int FixedColumnCount = 4;
+    private const int HeaderRowCount = 4;
 
     public static void Export(HttpResponse response, DataTable matrix)
     {
         if (matrix == null) throw new ArgumentNullException("matrix");
         if (matrix.Columns.Count > 16384)
             throw new InvalidOperationException("Excel XLSX chi ho tro toi da 16,384 cot.");
-        if (matrix.Rows.Count + 1 > 1048576)
+        if (matrix.Rows.Count + HeaderRowCount > 1048576)
             throw new InvalidOperationException("Excel XLSX chi ho tro toi da 1,048,576 dong.");
 
         byte[] xlsxBytes = BuildPackage(matrix);
@@ -145,24 +147,25 @@ public static class BomHhvtXlsxExporter
             writer.WriteStartDocument();
             writer.WriteStartElement("worksheet", MainNs);
 
+            int lastRow = matrix.Rows.Count + HeaderRowCount;
             writer.WriteStartElement("dimension", MainNs);
-            writer.WriteAttributeString("ref", "A1:" + ToExcelColumnName(matrix.Columns.Count) + (matrix.Rows.Count + 1));
+            writer.WriteAttributeString("ref", "A1:" + ToExcelColumnName(matrix.Columns.Count) + lastRow);
             writer.WriteEndElement();
 
             writer.WriteStartElement("sheetViews", MainNs);
             writer.WriteStartElement("sheetView", MainNs);
             writer.WriteAttributeString("workbookViewId", "0");
             writer.WriteStartElement("pane", MainNs);
-            writer.WriteAttributeString("xSplit", "1");
-            writer.WriteAttributeString("ySplit", "1");
-            writer.WriteAttributeString("topLeftCell", "B2");
+            writer.WriteAttributeString("xSplit", FixedColumnCount.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("ySplit", HeaderRowCount.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString("topLeftCell", "E5");
             writer.WriteAttributeString("activePane", "bottomRight");
             writer.WriteAttributeString("state", "frozen");
             writer.WriteEndElement();
             writer.WriteStartElement("selection", MainNs);
             writer.WriteAttributeString("pane", "bottomRight");
-            writer.WriteAttributeString("activeCell", "B2");
-            writer.WriteAttributeString("sqref", "B2");
+            writer.WriteAttributeString("activeCell", "E5");
+            writer.WriteAttributeString("sqref", "E5");
             writer.WriteEndElement();
             writer.WriteEndElement();
             writer.WriteEndElement();
@@ -178,16 +181,19 @@ public static class BomHhvtXlsxExporter
                 string index = (c + 1).ToString(CultureInfo.InvariantCulture);
                 writer.WriteAttributeString("min", index);
                 writer.WriteAttributeString("max", index);
-                writer.WriteAttributeString("width", c == 0 ? "22" : "14");
+                writer.WriteAttributeString("width", GetColumnWidth(c));
                 writer.WriteAttributeString("customWidth", "1");
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
 
             writer.WriteStartElement("sheetData", MainNs);
-            WriteHeaderRow(writer, matrix);
+            WriteMaterialHeaderRow(writer, matrix, 1, "M\u00c3 VT", "MaVT");
+            WriteMaterialHeaderRow(writer, matrix, 2, "T\u00caN VT", "TenVT");
+            WriteMaterialHeaderRow(writer, matrix, 3, "\u0110VT", "DvtVT");
+            WriteItemHeaderRow(writer, matrix);
             for (int r = 0; r < matrix.Rows.Count; r++)
-                WriteDataRow(writer, matrix, matrix.Rows[r], r + 2);
+                WriteDataRow(writer, matrix, matrix.Rows[r], r + HeaderRowCount + 1);
             writer.WriteEndElement();
 
             writer.WriteStartElement("pageMargins", MainNs);
@@ -206,12 +212,42 @@ public static class BomHhvtXlsxExporter
         }
     }
 
-    private static void WriteHeaderRow(XmlWriter writer, DataTable matrix)
+    private static string GetColumnWidth(int columnIndex)
+    {
+        if (columnIndex == 0) return "22";
+        if (columnIndex == 1) return "36";
+        if (columnIndex == 2) return "12";
+        if (columnIndex == 3) return "16";
+        return "14";
+    }
+
+    private static void WriteMaterialHeaderRow(XmlWriter writer, DataTable matrix, int rowNumber, string label, string propertyName)
     {
         writer.WriteStartElement("row", MainNs);
-        writer.WriteAttributeString("r", "1");
-        for (int c = 0; c < matrix.Columns.Count; c++)
-            WriteInlineStringCell(writer, ToExcelColumnName(c + 1) + "1", 1, matrix.Columns[c].ColumnName);
+        writer.WriteAttributeString("r", rowNumber.ToString(CultureInfo.InvariantCulture));
+
+        WriteInlineStringCell(writer, "D" + rowNumber, 1, label);
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+        {
+            string value = GetColumnProperty(matrix.Columns[c], propertyName);
+            WriteInlineStringCell(writer, ToExcelColumnName(c + 1) + rowNumber, 1, value);
+        }
+
+        writer.WriteEndElement();
+    }
+
+    private static void WriteItemHeaderRow(XmlWriter writer, DataTable matrix)
+    {
+        const int rowNumber = 4;
+        writer.WriteStartElement("row", MainNs);
+        writer.WriteAttributeString("r", rowNumber.ToString(CultureInfo.InvariantCulture));
+
+        for (int c = 0; c < FixedColumnCount && c < matrix.Columns.Count; c++)
+            WriteInlineStringCell(writer, ToExcelColumnName(c + 1) + rowNumber, 1, matrix.Columns[c].ColumnName);
+
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
+            WriteBlankCell(writer, ToExcelColumnName(c + 1) + rowNumber, 1);
+
         writer.WriteEndElement();
     }
 
@@ -221,13 +257,27 @@ public static class BomHhvtXlsxExporter
         writer.WriteAttributeString("r", rowNumber.ToString(CultureInfo.InvariantCulture));
 
         WriteInlineStringCell(writer, "A" + rowNumber, 2, Convert.ToString(row[0]));
-        for (int c = 1; c < matrix.Columns.Count; c++)
+        WriteInlineStringCell(writer, "B" + rowNumber, 2, Convert.ToString(row[1]));
+        WriteInlineStringCell(writer, "C" + rowNumber, 2, Convert.ToString(row[2]));
+
+        if (row.IsNull(3))
+            WriteBlankCell(writer, "D" + rowNumber, 3);
+        else
+            WriteNumberCell(writer, "D" + rowNumber, 3, Convert.ToDecimal(row[3]));
+
+        for (int c = FixedColumnCount; c < matrix.Columns.Count; c++)
         {
             decimal value = row.IsNull(c) ? 0m : Convert.ToDecimal(row[c]);
             WriteNumberCell(writer, ToExcelColumnName(c + 1) + rowNumber, 3, value);
         }
 
         writer.WriteEndElement();
+    }
+
+    private static string GetColumnProperty(DataColumn column, string key)
+    {
+        object value = column.ExtendedProperties[key];
+        return value == null ? string.Empty : Convert.ToString(value);
     }
 
     private static void WriteInlineStringCell(XmlWriter writer, string reference, int styleIndex, string value)
@@ -253,6 +303,14 @@ public static class BomHhvtXlsxExporter
         writer.WriteStartElement("v", MainNs);
         writer.WriteString(value.ToString("0.##########", CultureInfo.InvariantCulture));
         writer.WriteEndElement();
+        writer.WriteEndElement();
+    }
+
+    private static void WriteBlankCell(XmlWriter writer, string reference, int styleIndex)
+    {
+        writer.WriteStartElement("c", MainNs);
+        writer.WriteAttributeString("r", reference);
+        writer.WriteAttributeString("s", styleIndex.ToString(CultureInfo.InvariantCulture));
         writer.WriteEndElement();
     }
 
