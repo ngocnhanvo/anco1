@@ -7,6 +7,16 @@ public static class BomHhvtSpreadsheetMlExporter
 {
     public static void Export(HttpResponse response, DataTable matrix)
     {
+        // Cot D hien tai la TRONG LUONG. Neu DB tra NULL thi xuat 0 theo yeu cau report.
+        if (matrix != null && matrix.Columns.Count > 3)
+        {
+            foreach (DataRow row in matrix.Rows)
+            {
+                if (row.IsNull(3))
+                    row[3] = 0m;
+            }
+        }
+
         BomHhvtXlsxExporter.Export(response, matrix);
 
         // CompleteRequest() does not stop the WebForms page from rendering.
