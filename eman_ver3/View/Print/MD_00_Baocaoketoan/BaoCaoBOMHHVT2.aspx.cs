@@ -10,7 +10,21 @@ public partial class PrintControllers_MD_00_Baocaoketoan_BaoCaoBOMHHVT2 : System
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack) RenderMatrix(LoadMatrix());
+        if (IsPostBack) return;
+
+        string masp = (Request.QueryString["masp"] ?? "").Trim();
+        if (string.IsNullOrWhiteSpace(masp))
+        {
+            litSummary.Text = "<span class=\"summary\">Chế độ toàn bộ dữ liệu</span>";
+            litMatrix.Text =
+                "<div class=\"empty\">" +
+                "Dữ liệu toàn bộ quá lớn nên không hiển thị bản xem trước. " +
+                "Vui lòng bấm <b>Xuất Excel dữ liệu (.xlsx)</b> để tải toàn bộ." +
+                "</div>";
+            return;
+        }
+
+        RenderMatrix(LoadMatrix());
     }
 
     private DataTable LoadMatrix()
