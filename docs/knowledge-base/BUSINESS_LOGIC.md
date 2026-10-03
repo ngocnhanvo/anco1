@@ -68,6 +68,33 @@ BOM HHVT matrix report rule:
 Implementation pointer:
 - `eman_ver3/View/Print/MD_00_Baocaoketoan/BaoCaoBOMHHVT2.aspx.cs` (`CreateSql`, `BuildMatrix`, `BuildMatrixLayout`).
 
+### Finished-product stock take and BOM deduction
+
+**Status: Confirmed by project owner and current code on 2026-10-03**
+
+The finished-product stock-take flow after BOM calculation is:
+
+- `MD_01_KHLayTon / CA_01_TinhLayTonThanhPham2KH` calculates available TP stock across configured `KHOTONTP` warehouses for the production-plan TP rows (`md_lenhsanxuat_tosx.stt == 9999`).
+- The user chooses the planned stock-take quantity (`sl_dklt`).
+- `MD_01_KHLayTon / CA_01_LayTonThanhPhamKH2` creates `VANCNBTC` internal-transfer requests. When one TP is distributed across multiple source warehouses, the requested quantity is split into separate `md_vanchuyennoibo` documents per warehouse.
+- `MD_00_PVCNoiBo / CA_01_XuLyVanChuyen` makes each transfer effective, moves the actual quantity from the source warehouse to the destination warehouse, and reduces downstream BOM/production requirements through `Public.HieuLucPhieuVanChuyen` and `Public.truVatTuSauKhiLayTon`.
+
+Critical quantity rule:
+
+- `md_lenhsanxuat_tosx_dklhttp.sl_layton1` is the **cumulative** actual TP quantity already approved/taken from stock.
+- BOM reduction for each effective PVC must use only the **incremental actual quantity on that PVC**, never the cumulative `sl_layton1` value.
+- Example: 32 TP require one unit of BTP `74-11003` each. If 6 TP are taken from stock as two PVCs of 5 and 1, remaining BTP demand is `32 - (5 + 1) = 26`. The second PVC must reduce BOM by 1, not by cumulative 6; otherwise the system incorrectly reduces by `5 + 6 = 11` and leaves only 21.
+- The cumulative `sl_layton1` must still end at 6 after both PVCs are approved.
+
+Current implementation protection:
+
+- `eman_ver3/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx` (`CA_01_XuLyVanChuyen`) preserves the prior cumulative `sl_layton1`, lets the shared effect logic process only the current PVC quantity for BOM deduction, then restores the prior cumulative amount within the same database transaction before commit.
+- `eman_ver3/App_Code/ClassCalling/Public.cs` (`HieuLucPhieuVanChuyen`, `truVatTuSauKhiLayTon`) remains the shared inventory/BOM effect path and must not be changed back to deduct cumulative stock-take quantities.
+
+Status transition:
+
+- For a TP stock-take group spanning multiple PVCs, the production plan/order advances to `DaXLTTP` only after all PVC document numbers referenced by `phieulayhttp` are `HIEULUC`.
+
 ## Previously observed Anco1-specific logic
 
 ### Product price retrieval
@@ -117,8 +144,8 @@ The following areas are intentionally not guessed yet:
 - price version rules,
 - payment/debt synchronization rules,
 - production-order lifecycle,
-- inventory posting rules,
-- warehouse transfer behavior,
+- inventory posting rules beyond the verified TP stock-take flow above,
+- warehouse transfer behavior beyond the verified TP stock-take flow above,
 - relationships between Anco1 and any AncoTrading-specific entities.
 
 When a future task establishes any of these, add a compact rule with status, implementation pointers, and dependencies rather than copying large code blocks.
