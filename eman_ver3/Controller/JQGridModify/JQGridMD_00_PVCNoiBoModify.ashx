@@ -93,8 +93,74 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
             }
         }
 
-        msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs, chkHL0);
-        msgErrs = pub.msgErrsPL.Clone();
+        using (var transaction = db.Database.BeginTransaction())
+        {
+            try
+            {
+                // sl_layton1 la tong luy ke TP da lay. Public.HieuLucPhieuVanChuyen
+                // dang dung chinh gia tri luy ke nay de tru BOM, nen PVC thu 2 tro di
+                // se tru lai phan cua cac PVC truoc. Tam dua luy ke ve 0 de ham shared
+                // chi tru BOM theo SL thuc chuyen cua PVC hien tai, sau do khoi phuc
+                // phan luy ke cu truoc khi commit.
+                var slLayTonTPTruocKhiDuyet = new Dictionary<string, decimal>();
+                var laPhieuLayTon = vcnb.loaichuyen == "VANCNBTC" & !string.IsNullOrWhiteSpace(vcnb.c_doichieuhangton_id);
+                if (laPhieuLayTon)
+                {
+                    foreach (var cdvc in vcnb_cdvcs.Where(s => s.soluong_dichchuyen.GetValueOrDefault(0) > 0))
+                    {
+                        var tsxs = db.md_lenhsanxuat_tosx.Where(s => cdvc.tukho.Contains(s.md_lenhsanxuat_tosx_id)).ToList();
+                        foreach (var tsx in tsxs)
+                        {
+                            var phieuLayTPs = (tsx.phieulayhttp ?? "")
+                                .Split(',')
+                                .Select(s => s.Trim())
+                                .Where(s => !string.IsNullOrWhiteSpace(s))
+                                .ToList();
+                            if (!phieuLayTPs.Contains(vcnb.sochungtu))
+                                continue;
+
+                            var dklhttp = db.md_lenhsanxuat_tosx_dklhttp.Where(s =>
+                                s.md_lenhsanxuat_tosx_id == tsx.md_lenhsanxuat_tosx_id
+                                & s.md_sanpham_id == cdvc.md_sanpham_id).FirstOrDefault();
+                            if (dklhttp != null & !slLayTonTPTruocKhiDuyet.ContainsKey(dklhttp.md_lenhsanxuat_tosx_dklhttp_id))
+                            {
+                                slLayTonTPTruocKhiDuyet.Add(
+                                    dklhttp.md_lenhsanxuat_tosx_dklhttp_id,
+                                    dklhttp.sl_layton1.GetValueOrDefault(0));
+                                dklhttp.sl_layton1 = 0;
+                            }
+                        }
+                    }
+                }
+
+                msg = pub.HieuLucPhieuVanChuyen(db, userTK, ma_module, id, context.Request.Form["koCapnhatDLSX"], vcnb, vcnb_cdvcs, chkHL0);
+                msgErrs = pub.msgErrsPL.Clone();
+
+                if (msg.Length <= 0 & msgErrs.Count <= 0)
+                {
+                    foreach (var item in slLayTonTPTruocKhiDuyet)
+                    {
+                        var dklhttp = db.md_lenhsanxuat_tosx_dklhttp.Local.Where(s =>
+                            s.md_lenhsanxuat_tosx_dklhttp_id == item.Key).FirstOrDefault();
+                        if (dklhttp != null)
+                        {
+                            dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0) + item.Value;
+                        }
+                    }
+                    db.SaveChanges();
+                    transaction.Commit();
+                }
+                else
+                {
+                    transaction.Rollback();
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                msg = ex.ToString();
+            }
+        }
 
         EndEventHandler:;
 
