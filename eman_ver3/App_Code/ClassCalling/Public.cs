@@ -1622,7 +1622,7 @@ public class Public
                                     if (dklhttp != null)
                                     {
                                         dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
+                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
                                     }
                                 }
                                 else if (layTonBTP)
@@ -1733,7 +1733,7 @@ public class Public
                     else
                     {
                         msg += $@"<br>Lỗi: dòng ""{spMain.ma_sanpham}"" có kho sản xuất hoặc kho tồn chưa chính xác.";
-                        msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc()
+                        msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc>()
                         {
                             msp = spMain.ma_sanpham,
                             loi = $"có kho sản xuất hoặc kho tồn chưa chính xác."
@@ -1751,7 +1751,7 @@ public class Public
                 if (ksps.Count <= 0)
                 {
                     msg += $@"<br>Lỗi: dòng ""{spMain.ma_sanpham}"", trong kho không chứa mã hàng nào liên quan đến mã hàng này.";
-                    msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc()
+                    msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc>()
                     {
                         msp = spMain.ma_sanpham,
                         loi = $"Kho không chứa mã hàng nào liên quan đến mã hàng này."
@@ -1776,7 +1776,7 @@ public class Public
                         {
                             msg += $@"<br>Lỗi: dòng ""{sp.ma_sanpham}"" số lượng trong kho chỉ còn : ""{itemSP.Value.DropTrailingZeros()}"".";
 
-                            msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc()
+                            msgErrsPL.Add(new Public.BaoLoiKhiHieuLuc>()
                             {
                                 msp = spMain.ma_sanpham,
                                 loi = $"Số lượng trong kho thiếu: {itemSP.Value.DropTrailingZeros()}"
