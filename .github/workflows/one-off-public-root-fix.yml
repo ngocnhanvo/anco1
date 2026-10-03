@@ -1,0 +1,67 @@
+name: One-off Public.cs root fix
+
+on:
+  push:
+    branches:
+      - fix/pvc-multi-warehouse-public-root
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply byte-safe root fix
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Restore Public.cs from master so the earlier line-ending-only rewrite
+          # cannot leak into the final diff.
+          git checkout origin/master -- eman_ver3/App_Code/ClassCalling/Public.cs
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('eman_ver3/App_Code/ClassCalling/Public.cs')
+          data = path.read_bytes()
+          old = (
+              b'truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, '
+              b'dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, '
+              b'spMain.ma_sanpham, spMain.ma_sanpham);'
+          )
+          new = (
+              b'truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, '
+              b'vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0), spMain.ma_sanpham, '
+              b'spMain.ma_sanpham, spMain.ma_sanpham);'
+          )
+          count = data.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one Public.cs target, found {count}')
+          path.write_bytes(data.replace(old, new, 1))
+          PY
+
+          # Remove the previous handler workaround. Its parent is the exact
+          # pre-workaround version of this file.
+          git checkout 34c391f8117628340773f20a6dec203cda0f9254^ -- eman_ver3/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx
+
+          # This workflow is only a transport mechanism; do not keep it.
+          rm -f .github/workflows/one-off-public-root-fix.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          echo '=== Final diff stat ==='
+          git diff --cached --stat
+          echo '=== Final diff ==='
+          git diff --cached --check
+          git diff --cached -- eman_ver3/App_Code/ClassCalling/Public.cs eman_ver3/Controller/JQGridModify/JQGridMD_00_PVCNoiBoModify.ashx
+
+          git commit -m "Move multi-warehouse BOM fix to Public.cs"
+          git push origin HEAD:fix/pvc-multi-warehouse-public-root
