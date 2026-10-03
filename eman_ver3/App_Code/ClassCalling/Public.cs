@@ -1622,7 +1622,7 @@ public class Public
                                     if (dklhttp != null)
                                     {
                                         dklhttp.sl_layton1 = dklhttp.sl_layton1.GetValueOrDefault(0) + vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0);
-                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, dklhttp.sl_layton1.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
+                                        truVatTuSauKhiLayTon(db, tsx, vcnb_cdvc.md_sanpham_id, vcnb_cdvc.soluong_dachuyen.GetValueOrDefault(0), spMain.ma_sanpham, spMain.ma_sanpham, spMain.ma_sanpham);
                                     }
                                 }
                                 else if (layTonBTP)
