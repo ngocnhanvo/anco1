@@ -448,63 +448,80 @@ namespace OfficeToPDF
                         stringTextBox.Font.Size = fontSize;
                     }
 
-                    foreach (var textReplace in lstTextReplace)
+                    // Use a separate unmerged worksheet to measure wrapped text before setting the source row height.
+                    Microsoft.Office.Interop.Excel.Worksheet wrapMeasureSheet = null;
+                    try
                     {
-                        try
+                        foreach (var textReplace in lstTextReplace)
                         {
-                            var oRange = (Range)worksheet.Cells[textReplace.row.Value + 1, textReplace.column.Value + 1];
-
-                            int phStart = oRange.Value.ToString().LastIndexOf(textReplace.oldT);
-                            int phEnd = textReplace.oldT.Length;
-
-                            if (textReplace.newT == "{totalPage}")
-                                textReplace.newT = worksheet.PageSetup.Pages.Count.ToString();
-                            if (phStart > -1 & phEnd > -1)
+                            try
                             {
-                                if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                var oRange = (Range)worksheet.Cells[textReplace.row.Value + 1, textReplace.column.Value + 1];
+
+                                int phStart = oRange.Value.ToString().LastIndexOf(textReplace.oldT);
+                                int phEnd = textReplace.oldT.Length;
+
+                                if (textReplace.newT == "{totalPage}")
+                                    textReplace.newT = worksheet.PageSetup.Pages.Count.ToString();
+                                if (phStart > -1 & phEnd > -1)
+                                {
+                                    if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                    {
+                                        oRange.Value = textReplace.newT;
+                                        if (wrapMeasureSheet == null)
+                                        {
+                                            var sheets = (Microsoft.Office.Interop.Excel.Sheets)workbook.Worksheets;
+                                            wrapMeasureSheet = (Microsoft.Office.Interop.Excel.Worksheet)sheets.Add(
+                                                Type.Missing, sheets[sheets.Count], Type.Missing, XlSheetType.xlWorksheet);
+                                        }
+
+                                        double heightATF = MeasureWrapHeight(
+                                            wrapMeasureSheet, oRange, textReplace.column_Mer.GetValueOrDefault(0));
+                                        double originalHeight = Convert.ToDouble(oRange.EntireRow.RowHeight);
+                                        oRange.EntireRow.RowHeight = Math.Min(409.5,
+                                            Math.Max(originalHeight, Math.Ceiling(heightATF * 1.05)));
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            oRange.Characters[phStart + 1, phEnd].Insert(textReplace.newT);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            oRange.Characters[phStart + 1, phEnd].Insert(ex.Message);
+                                        }
+                                    }
+                                }
+
+                                if (textReplace.oldT.StartsWith("{#"))
                                 {
                                     oRange.Value = textReplace.newT;
-                                    var oRangeWrap = (Range)worksheet.Cells[oRange.Row, oRange.Column + 50];
-                                    double columnWidth = 0;
-                                    for (var i = oRange.Column; i < textReplace.column_Mer + oRange.Column; i++)
-                                    {
-                                        var oRangeWrap2 = (Range)worksheet.Cells[oRange.Row, i];
-                                        columnWidth += double.Parse(oRangeWrap2.ColumnWidth.ToString());
-                                    }
-
-                                    oRangeWrap.ColumnWidth = columnWidth;
-									oRangeWrap.Font.Name = oRange.Font.Name;
-									oRangeWrap.Font.Size = oRange.Font.Size;
-                                    oRangeWrap.Orientation = oRange.Orientation;
-                                    oRangeWrap.VerticalAlignment = oRange.VerticalAlignment;
-                                    oRangeWrap.Font.Bold = oRange.Font.Bold;
-                                    oRangeWrap.Font.Italic = oRange.Font.Italic;
-                                    oRangeWrap.WrapText = oRange.WrapText;
-                                    oRange.Copy(oRangeWrap);
-                                    oRange.Rows.AutoFit();
-                                    var heightATF = double.Parse(oRange.Rows.Height.ToString());
-                                    oRange.RowHeight = Math.Ceiling(heightATF * 1.05);
-                                    oRangeWrap.Delete(XlDeleteShiftDirection.xlShiftUp);
-                                }
-                                else
-                                {
-                                    try
-                                    {
-                                        oRange.Characters[phStart + 1, phEnd].Insert(textReplace.newT);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        oRange.Characters[phStart + 1, phEnd].Insert(ex.Message);
-                                    }
                                 }
                             }
-
-                            if (textReplace.oldT.StartsWith("{#"))
+                            catch (Exception ex)
                             {
-                                oRange.Value = textReplace.newT;
+                                if (textReplace.wrap_Mer.GetValueOrDefault(false))
+                                    System.Diagnostics.Trace.TraceError(
+                                        "Excel wrap{0} failed at row {1}, column {2}: {3}",
+                                        textReplace.column_Mer, textReplace.row, textReplace.column, ex);
                             }
                         }
-                        catch { }
+                    }
+                    finally
+                    {
+                        if (wrapMeasureSheet != null)
+                        {
+                            try
+                            {
+                                wrapMeasureSheet.Delete();
+                            }
+                            finally
+                            {
+                                try { worksheet.Activate(); }
+                                finally { ReleaseCOMObject(wrapMeasureSheet); }
+                            }
+                        }
                     }
 
                     foreach (var col in lstAutoSizeColumn)
@@ -1125,6 +1142,66 @@ namespace OfficeToPDF
             finally
             {
             }
+        }
+
+        // Excel cannot reliably AutoFit rows containing merged cells. Measure the same text
+        // in a single unmerged cell with the actual combined width, then apply its height.
+        private static double MeasureWrapHeight(Microsoft.Office.Interop.Excel.Worksheet helperSheet,
+            Range sourceCell, int columnCount)
+        {
+            if (columnCount < 1)
+                throw new ArgumentOutOfRangeException("columnCount", "wrap requires at least one column.");
+
+            var sourceSheet = (Microsoft.Office.Interop.Excel.Worksheet)sourceCell.Worksheet;
+            var lastCell = (Range)sourceSheet.Cells[sourceCell.Row, sourceCell.Column + columnCount - 1];
+            var sourceArea = (Range)sourceSheet.Range[sourceCell, lastCell];
+            double targetWidth = Convert.ToDouble(sourceArea.Width); // points, not Excel character units
+            if (targetWidth <= 0)
+                throw new InvalidOperationException("Wrapped source range has no visible width.");
+
+            var measureCell = (Range)helperSheet.Cells[1, 1];
+            measureCell.Value2 = sourceCell.Value2;
+            measureCell.Font.Name = sourceCell.Font.Name;
+            measureCell.Font.Size = sourceCell.Font.Size;
+            measureCell.Font.Bold = sourceCell.Font.Bold;
+            measureCell.Font.Italic = sourceCell.Font.Italic;
+            measureCell.Font.Underline = sourceCell.Font.Underline;
+            measureCell.Font.Strikethrough = sourceCell.Font.Strikethrough;
+            measureCell.HorizontalAlignment = sourceCell.HorizontalAlignment;
+            measureCell.VerticalAlignment = sourceCell.VerticalAlignment;
+            measureCell.Orientation = sourceCell.Orientation;
+            measureCell.IndentLevel = sourceCell.IndentLevel;
+            measureCell.WrapText = true;
+            measureCell.ShrinkToFit = false;
+
+            // ColumnWidth uses character units while Range.Width is measured in points.
+            // Binary-search the helper's actual width so it never exceeds the merged range.
+            measureCell.ColumnWidth = 255.0;
+            if (Convert.ToDouble(measureCell.Width) > targetWidth)
+            {
+                double low = 0.1, high = 255.0;
+                for (int attempt = 0; attempt < 17; attempt++)
+                {
+                    double mid = (low + high) / 2.0;
+                    measureCell.ColumnWidth = mid;
+                    if (Convert.ToDouble(measureCell.Width) <= targetWidth)
+                        low = mid;
+                    else
+                        high = mid;
+                }
+                measureCell.ColumnWidth = low;
+            }
+            else if (Convert.ToDouble(measureCell.Width) < targetWidth)
+            {
+                // A single Excel column cannot exceed 255 characters; use its maximum
+                // width as a conservative fallback for unusually wide merged ranges.
+                System.Diagnostics.Trace.TraceWarning(
+                    "Excel wrap range width {0}pt exceeds the maximum helper column width.", targetWidth);
+            }
+
+            var measureRow = (Range)helperSheet.Rows[1];
+            measureRow.AutoFit();
+            return Convert.ToDouble(measureRow.RowHeight);
         }
 
         // Add in the required millisecond delay
