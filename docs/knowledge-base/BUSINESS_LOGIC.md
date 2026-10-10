@@ -36,6 +36,14 @@ The application contains inventory and material/product maintenance modules incl
 
 Reporting is implemented across WebForms views/helpers and a separate `Report` project. A report change can involve data selection, server-side formatting, print/export helpers, and dedicated report project code.
 
+#### Excel templates: merged-cell wrap comments
+
+**Status: Confirmed from source (2026-10-10); Windows Excel Interop rendering still requires manual verification**
+
+- A template cell comment `wrapN` (e.g. `wrap7`) marks a text placeholder whose printable area spans `N` columns. `ExcelExportData.cs` reads this comment and sets `lstTextReplace.wrap_Mer` / `column_Mer`.
+- `ExcelConverter.cs` handles this only in the Excel Interop path: it measures the combined width in points, applies the replacement text and formatting to a single unmerged cell on a temporary worksheet, calls `AutoFit` there, and assigns the resulting height (never below the original height) to the source row. The temporary worksheet must be deleted before saving/exporting.
+- The production order printing view `View/Print/MD_00_LenhSanXuatKH/lenhSanXuat.aspx.cs` uses this path for `inPDF=2/3` (Excel/PDF from the XLS template); DevExpress viewer routes `inPDF=0/1` do not use the XLS `wrapN` mechanism.
+
 ### Product / BOM classification and expansion
 
 **Status: Confirmed by project owner and database examples on 2026-09-27**
