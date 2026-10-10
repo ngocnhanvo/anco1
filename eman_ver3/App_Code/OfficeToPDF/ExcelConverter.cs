@@ -477,7 +477,7 @@ namespace OfficeToPDF
 
                                         double heightATF = MeasureWrapHeight(
                                             wrapMeasureSheet, oRange, textReplace.column_Mer.GetValueOrDefault(0));
-                                        double originalHeight = Convert.ToDouble(oRange.EntireRow.RowHeight);
+                                        double originalHeight = System.Convert.ToDouble(oRange.EntireRow.RowHeight);
                                         oRange.EntireRow.RowHeight = Math.Min(409.5,
                                             Math.Max(originalHeight, Math.Ceiling(heightATF * 1.05)));
                                     }
@@ -1155,7 +1155,7 @@ namespace OfficeToPDF
             var sourceSheet = (Microsoft.Office.Interop.Excel.Worksheet)sourceCell.Worksheet;
             var lastCell = (Range)sourceSheet.Cells[sourceCell.Row, sourceCell.Column + columnCount - 1];
             var sourceArea = (Range)sourceSheet.Range[sourceCell, lastCell];
-            double targetWidth = Convert.ToDouble(sourceArea.Width); // points, not Excel character units
+            double targetWidth = System.Convert.ToDouble(sourceArea.Width); // points, not Excel character units
             if (targetWidth <= 0)
                 throw new InvalidOperationException("Wrapped source range has no visible width.");
 
@@ -1177,21 +1177,21 @@ namespace OfficeToPDF
             // ColumnWidth uses character units while Range.Width is measured in points.
             // Binary-search the helper's actual width so it never exceeds the merged range.
             measureCell.ColumnWidth = 255.0;
-            if (Convert.ToDouble(measureCell.Width) > targetWidth)
+            if (System.Convert.ToDouble(measureCell.Width) > targetWidth)
             {
                 double low = 0.1, high = 255.0;
                 for (int attempt = 0; attempt < 17; attempt++)
                 {
                     double mid = (low + high) / 2.0;
                     measureCell.ColumnWidth = mid;
-                    if (Convert.ToDouble(measureCell.Width) <= targetWidth)
+                    if (System.Convert.ToDouble(measureCell.Width) <= targetWidth)
                         low = mid;
                     else
                         high = mid;
                 }
                 measureCell.ColumnWidth = low;
             }
-            else if (Convert.ToDouble(measureCell.Width) < targetWidth)
+            else if (System.Convert.ToDouble(measureCell.Width) < targetWidth)
             {
                 // A single Excel column cannot exceed 255 characters; use its maximum
                 // width as a conservative fallback for unusually wide merged ranges.
@@ -1201,7 +1201,7 @@ namespace OfficeToPDF
 
             var measureRow = (Range)helperSheet.Rows[1];
             measureRow.AutoFit();
-            return Convert.ToDouble(measureRow.RowHeight);
+            return System.Convert.ToDouble(measureRow.RowHeight);
         }
 
         // Add in the required millisecond delay
