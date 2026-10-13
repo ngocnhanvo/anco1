@@ -55,6 +55,11 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
     // nhưng lấy ID tất cả các trang; không dùng selrow hoặc selarrrow.
     private List<string> GetFilteredProductIds(HttpContext context, string maModule)
     {
+        var parentId = context.Request.Form["id"] ?? "";
+        // ID ngữ cảnh của jqGrid là mã định danh, không phải câu SQL tự do.
+        if (parentId != "" && parentId != "null" &&
+            !System.Text.RegularExpressions.Regex.IsMatch(parentId, @"^[A-Za-z0-9_-]{1,64}$"))
+            throw new Exception("Bộ lọc hoặc ID ngữ cảnh không hợp lệ.");
         var filterText = context.Request.Form["filters"];
         if (string.IsNullOrWhiteSpace(filterText))
             throw new Exception("Hãy lọc hàng hóa trên jqGrid trước khi chuyển trạng thái.");
