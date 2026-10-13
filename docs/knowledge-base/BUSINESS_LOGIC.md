@@ -157,3 +157,14 @@ The following areas are intentionally not guessed yet:
 - relationships between Anco1 and any AncoTrading-specific entities.
 
 When a future task establishes any of these, add a compact rule with status, implementation pointers, and dependencies rather than copying large code blocks.
+
+
+### Bulk activation of draft products
+
+**Status: Confirmed by project owner (2026-10-13), implemented in current source; requires runtime acceptance testing**
+
+- Module `MD_00_DSHangHoa_SOANTHAO`, case `CA_01_ChuyenTrangThaiST`: users can filter the jqGrid and activate **all matching rows across all pages**, not just checked/current-page rows.
+- Only `md_sanpham` records still in `SOANTHAO` are changed. Activation sets `trangthai = "DHD"` and `hoatdong = true`, and updates standard audit fields.
+- The action requires a nonempty jqGrid filter and case-level permission. The server evaluates the module SQL and role-level restrictions, previews match/eligible counts, rechecks the set before execution, and commits the batch in one database transaction.
+- Records outside the filter and records already in other states are not changed; a stale preview aborts rather than silently applying to a different set.
+- Implementation: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js` and `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx`.
