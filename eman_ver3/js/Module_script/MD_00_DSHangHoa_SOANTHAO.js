@@ -228,7 +228,7 @@ function CA_01_ChuyenTrangThaiST(tengrid, id_parent, ma_case, Form_infor, Model_
         width: 540,
         resizable: false,
         open: function () {
-            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
+            Logo_Center(CLform_infor.logo, CLform_infor.canhgiua, null, 'btn-chuyen-dhd', 'btn-thoat-dhd');
             var $confirm = $dlg.parent().find('.ui-dialog-buttonpane #btn-chuyen-dhd');
             $confirm.button('option', 'disabled', true);
             $.ajax({
@@ -278,7 +278,7 @@ function CA_01_ChuyenTrangThaiST(tengrid, id_parent, ma_case, Form_infor, Model_
                 }
             },
             {
-                text: 'Thoát', click: function () {
+                id: 'btn-thoat-dhd', text: 'Thoát', click: function () {
                     if (!busy) $(this).dialog('close');
                 }
             }
