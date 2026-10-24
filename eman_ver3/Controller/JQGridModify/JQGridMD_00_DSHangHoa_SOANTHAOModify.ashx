@@ -110,6 +110,30 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
         var selectSql = VNN_Config.Select_sql(mod.ma_module, db);
         var firstCol = selectSql.Split(new[] { "as" }, StringSplitOptions.None)[0];
         var orderBy = string.IsNullOrWhiteSpace(mod.orderby_sql) ? firstCol + " asc" : mod.orderby_sql;
+
+        // The exported order follows a safe, configured jqGrid column sort when possible.
+        // Never concatenate an arbitrary browser-supplied ORDER BY expression.
+        if (allowUnfiltered)
+        {
+            var requestedSort = (context.Request.Form["sidx"] ?? "").Trim();
+            var requestedDirection = (context.Request.Form["sord"] ?? "").Trim();
+            if (!string.IsNullOrEmpty(requestedSort))
+            {
+                var configuredColumn = cols.FirstOrDefault(c =>
+                    string.Equals(c.index_cot, requestedSort, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(c.ma_column, requestedSort, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals("P." + c.ma_column, requestedSort, StringComparison.OrdinalIgnoreCase));
+                var configuredSqlField = configuredColumn == null ? "" : (configuredColumn.index_cot ?? "");
+                if (System.Text.RegularExpressions.Regex.IsMatch(configuredSqlField,
+                        @"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$")
+                    && !configuredSqlField.StartsWith("P.", StringComparison.OrdinalIgnoreCase)
+                    && (requestedDirection.Equals("asc", StringComparison.OrdinalIgnoreCase)
+                        || requestedDirection.Equals("desc", StringComparison.OrdinalIgnoreCase)))
+                {
+                    orderBy = configuredSqlField + " " + requestedDirection.ToUpperInvariant();
+                }
+            }
+        }
         var groupBy = string.IsNullOrWhiteSpace(mod.groupby_sql) ? "" : "group by " + mod.groupby_sql;
         var roleId = Security.id_vaitro(context);
         var roleWhere = db.ad_role_where.Where(s => s.ad_role_id == roleId &&
