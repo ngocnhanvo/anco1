@@ -21,8 +21,19 @@
 - Client rejects multiple statements and obvious mutation keywords, limits result rows to 500, and command execution to 45s. **Client-side text filtering is not a SQL security boundary**. Enforce actual SELECT-only rights on the SQL login (prefer access to specific inspection views, not db_owner, db_datawriter or sysadmin).
 - For SQL Server logins, grant only the required database SELECT / metadata permissions. Some schema catalog metadata may need `VIEW DEFINITION` on selected objects; add only if needed.
 - SQL inspection output can contain sensitive data. Keep queries limited to schema/necessary test rows, tightly control GitHub Actions/artifact access, do not log connection strings, and rotate credentials if compromised.
-- Remote access is **not yet verified**. GitHub secrets are not supplied by the assistant and must be configured by the VPS owner. Workflow creation alone cannot prove connectivity.
+- Remote network access **is verified** in run 40075559282; SQL authentication and SELECT remain **unverified** due to TLS certificate validation failure. Secrets exist and were masked in the run logs.
 - If the database should remain internal-only or allowlisting cannot be maintained, the earlier self-hosted arrangement is still the safer operational choice; this document describes the simpler remote-access path the project owner requested.
+
+## Actual smoke-test result (2026-10-24)
+
+- The user configured all four `ANCO1_SQL_*` GitHub Actions secrets.
+- A temporary, narrowly scoped push trigger was used for the initial test and **removed afterward**; the final workflow is manual `workflow_dispatch` only.
+- Run [40075559282](https://github.com/ngocnhanvo/anco1/actions/runs/40075559282) confirmed **TCP connectivity to the remote SQL Server**: `A connection was successfully established with the server`.
+- SQL login did **not** finish because the server TLS certificate chain was not trusted by the GitHub-hosted runner: `The certificate chain was issued by an authority that is not trusted.`
+- This is **not** evidence of a wrong user/password; no SQL SELECT has executed yet.
+- Preferred fix: configure a SQL Server TLS certificate with a trusted chain whose subject/SAN matches the hostname in `ANCO1_SQL_SERVER`, including any necessary intermediate certificate chain, and ensure the server sends that chain. Run the manual workflow again afterward.
+- Avoid setting `TrustServerCertificate=True` by default: doing so skips server identity verification and is risky with database TCP accessible from the internet.
+- During test, fixed PowerShell 7 / System.Data.SqlClient connection-string keywords in `scripts/anco1_sql_readonly.ps1` (`Data Source` and `TrustServerCertificate`).
 
 ## Implementation
 
