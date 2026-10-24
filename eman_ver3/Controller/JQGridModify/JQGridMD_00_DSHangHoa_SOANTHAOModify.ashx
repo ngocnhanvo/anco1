@@ -405,7 +405,7 @@ ORDER BY SUBSTRING(sp.ma_sanpham, 0, 12) ASC,
         titleStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
 
         var numberStyle = workbook.CreateCellStyle();
-        numberStyle.DataFormat = workbook.CreateDataFormat().GetFormat("#,##0.###");
+        numberStyle.DataFormat = workbook.CreateDataFormat().GetFormat("#,##0.########");
         var dateStyle = workbook.CreateCellStyle();
         dateStyle.DataFormat = workbook.CreateDataFormat().GetFormat("dd/MM/yyyy");
 
@@ -492,7 +492,9 @@ ORDER BY SUBSTRING(sp.ma_sanpham, 0, 12) ASC,
             if (mode != "preview" && mode != "download")
                 throw new Exception("Chế độ xuất Excel không hợp lệ.");
             var authorizedIds = GetFilteredProductIds(context, maModule, true);
-            var draftIds = GetDraftIds(authorizedIds);
+            // Preserve the authorized jqGrid ordering; EF's IN query has no guaranteed order.
+            var eligibleDraftIds = new HashSet<string>(GetDraftIds(authorizedIds), StringComparer.OrdinalIgnoreCase);
+            var draftIds = authorizedIds.Where(id => eligibleDraftIds.Contains(id)).ToList();
             if (mode == "preview")
             {
                 context.Response.ContentType = "application/json; charset=utf-8";
