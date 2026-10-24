@@ -24,6 +24,13 @@
 - Nếu Azure từ chối auto-complete do quyền hoặc cấu hình, xem log và khắc phục quyền/chính sách trên Azure. Không tự hạ mức bảo vệ.
 - Kết quả run ở [GitHub Actions](https://github.com/ngocnhanvo/anco1/actions/workflows/azure-devops-sync.yml), các PR ở `https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequests`.
 
+## Đồng bộ xuất Excel DHD/VG (24/10/2026)
+
+- [Run #40083987376](https://github.com/ngocnhanvo/anco1/actions/runs/40083987376) thành công, tạo Azure [PR #6](https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequest/6) chứa handler xuất DHD/VG. Cursor của lượt sau đã chuyển tới commit `a158f69014792d9c92354e7ff5f56235d841b31b`, xác nhận Azure hoàn tất PR #6.
+- [Run #40084193081](https://github.com/ngocnhanvo/anco1/actions/runs/40084193081) chạy thành công SELECT chỉ đọc 20 dòng DHD với điều kiện `sp.trangthai = 'DHD' AND sp.vattu = 0 AND (sp.sanpham = 1 OR sp.ban_thanhpham = 1)` và đúng 37 cột.
+- [Run #40084821550](https://github.com/ngocnhanvo/anco1/actions/runs/40084821550) **success**, dùng bản vá cho VG JavaScript cộng thao tác xóa đúng một dòng popup SOANTHAO, tạo Azure [PR #7](https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequest/7) và bật auto-complete. **Trạng thái hoàn tất/merge của PR #7 cần xác minh riêng**, log chỉ xác nhận PR đã tạo và Azure chấp nhận auto-complete.
+- Chỉ khi lịch sử nguồn đúng hai file JS và bản GitHub SOANTHAO chỉ xóa một dòng UI, cơ chế `remove_exact_popup_line` mới được phép chạy. Bản sao tạm kiểm tra `git -c core.whitespace=cr-at-eol diff --cached --check` để không báo sai xuống hàng Windows CRLF thành trailing whitespace; vẫn kiểm tra các lỗi whitespace thực.
+
 ## Kết quả kiểm thử lần đầu (24/10/2026)
 
 - [Run #40081454637](https://github.com/ngocnhanvo/anco1/actions/runs/40081454637): **success**; bản vá hai file xuất Excel SOANTHAO được ghép có kiểm tra, tạo [Azure PR #5](https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequest/5), bật auto-complete. Không mang DHD cũ.
