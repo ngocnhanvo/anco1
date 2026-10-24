@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Send only approved post-baseline Anco1 source diffs to an Azure Repos PR.
+"""Send only post-baseline Anco1 source diffs to Azure via incremental PRs.
 
-This is NOT a mirror: no old GitHub history is pushed to Azure, and Azure master
-is never modified directly. The last successfully completed Azure PR provides
-the incremental cursor; if a PR is still open, a new sync is refused.
+GitHub master pushes create Azure PRs automatically and request auto-completion
+after Azure's required branch policies pass. Neither old GitHub history nor
+Azure default-branch history is rewritten. In-flight sync PRs block duplicate
+PRs; scheduled checks catch up after they complete.
 """
 import base64
 import json
@@ -82,18 +83,43 @@ def find_last_completed(auth, target_ref, head):
     return max(candidates)[1] if candidates else BASELINE
 
 
-def assert_no_active_sync(auth, target_ref):
+def active_sync_pr(auth, target_ref):
     for item in list_prs(auth, "active"):
         if (item.get("targetRefName") == target_ref
                 and MARKER.search(item.get("description") or "")):
-            raise RuntimeError("An Azure sync PR is still active (#{}) - complete or abandon it first.".format(
-                item.get("pullRequestId")))
+            return item
+    return None
+
+
+def request_auto_complete(auth, pr):
+    """Have Azure merge only after required policies pass. Never bypass them."""
+    identity_id = (pr.get("createdBy") or {}).get("id")
+    pr_id = pr.get("pullRequestId")
+    if not identity_id or not pr_id:
+        raise RuntimeError("Azure PR did not provide a valid creator identity for auto-complete.")
+    completion = {
+        "autoCompleteSetBy": {"id": identity_id},
+        "completionOptions": {
+            "mergeStrategy": "noFastForward",
+            "deleteSourceBranch": True,
+            "bypassPolicy": False,
+        },
+    }
+    updated = api("/pullrequests/{}?api-version=7.1".format(pr_id),
+                  auth, method="PATCH", payload=completion)
+    if updated.get("status") == "completed":
+        print("Azure PR #{} already merged.".format(pr_id))
+    elif updated.get("autoCompleteSetBy"):
+        print("Auto-complete enabled on Azure PR #{} (required branch policies respected).".format(pr_id))
+    else:
+        raise RuntimeError("Azure did not confirm PR auto-complete; check branch policies and PAT permissions.")
 
 
 def main():
     head = os.environ.get("GITHUB_SHA", "").strip()
     pat = os.environ.get("AZURE_DEVOPS_PAT", "").strip()
     mode = os.environ.get("SYNC_MODE", "preview").strip()
+    automatic = os.environ.get("SYNC_AUTO_COMPLETE", "false").strip().lower() == "true"
     if not re.fullmatch(r"[a-f0-9]{40}", head):
         raise RuntimeError("GITHUB_SHA must be a 40-character SHA.")
     if os.environ.get("GITHUB_REF") != "refs/heads/master":
@@ -114,10 +140,22 @@ def main():
         raise RuntimeError("Azure repository has no recognized default branch.")
     target_branch = target_ref[len("refs/heads/"):]
 
-    assert_no_active_sync(auth, target_ref)
+    active = active_sync_pr(auth, target_ref)
+    if active:
+        message = ("Azure sync PR #{} is still active: {}. "
+                   "No duplicate branch/PR will be created; the scheduled retry "
+                   "will sync subsequent commits after this PR completes.").format(
+                       active.get("pullRequestId"), active.get("status"))
+        if not automatic:
+            raise RuntimeError(message)
+        print(message)
+        return
     start = find_last_completed(auth, target_ref, head)
     if not ancestor(start, head):
-        raise RuntimeError("Last completed release is not an ancestor of GitHub HEAD.")
+        if automatic and ancestor(head, start):
+            print("Skipped obsolete queued GitHub revision; Azure cursor is already newer.")
+            return
+        raise RuntimeError("Last completed Azure release is not an ancestor of GitHub HEAD.")
 
     patch = git("diff", "--binary", "--no-ext-diff", "--no-renames",
                 start, head, "--", *ALLOWED_PATHS)
@@ -161,18 +199,18 @@ def main():
             "commit", "-m", "sync: Anco1 approved GitHub changes {}..{}".format(start[:12], head[:12]))
         git("-C", str(root), "--config-env=http.extraheader=AZURE_GIT_AUTH_HEADER",
             "push", "origin", "HEAD:refs/heads/" + branch)
-        desc = ("Approved incremental Anco1 code changes from GitHub.\n\n"
+        desc = ("Incremental Anco1 source changes from GitHub master.\n\n"
                 "From: https://github.com/{}/commit/{}\n"
                 "To: https://github.com/{}/commit/{}\n\n"
                 "ANCO1_SYNC_FROM={}\nANCO1_SYNC_TO={}\n\n"
-                "No old history, no force push; review before merging.").format(
+                "No old history, no force push; Azure branch policies are respected.").format(
                     os.environ.get("GITHUB_REPOSITORY", "ngocnhanvo/anco1"), start,
                     os.environ.get("GITHUB_REPOSITORY", "ngocnhanvo/anco1"), head,
                     start, head)
         pr = api("/pullrequests?api-version=7.1", auth, method="POST", payload={
             "sourceRefName": "refs/heads/" + branch,
             "targetRefName": target_ref,
-            "title": "Anco1: approved GitHub changes {}..{}".format(start[:12], head[:12]),
+            "title": "Anco1: automatic GitHub source sync {}..{}".format(start[:12], head[:12]),
             "description": desc,
             "isDraft": False,
         })
@@ -180,6 +218,10 @@ def main():
         print("Created Azure PR #{}".format(pr_id))
         print("https://dev.azure.com/{}/{}/_git/{}/pullrequest/{}".format(
             AZURE_ORG, AZURE_PROJECT, AZURE_REPO, pr_id))
+        if automatic:
+            request_auto_complete(auth, pr)
+        else:
+            print("Manual PR mode: review/merge remains a separate Azure operation.")
 
 
 if __name__ == "__main__":
