@@ -1,4 +1,4 @@
-name: Anco1 - VPS SQL read-only inspection
+name: Anco1 - remote SQL read-only inspection
 
 on:
   workflow_dispatch:
@@ -15,9 +15,8 @@ permissions:
 
 jobs:
   inspect:
-    runs-on: [self-hosted, windows, anco1-sql]
+    runs-on: windows-latest
     timeout-minutes: 5
-    environment: anco1-sql-readonly
     steps:
       - uses: actions/checkout@v4
         with:
