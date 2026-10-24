@@ -16,6 +16,7 @@ on:
       - 'packages/**'
       - '.github/workflows/azure-devops-sync.yml'
       - 'scripts/azure_devops_sync.py'
+      - 'scripts/azure_devops_excel_bootstrap.py'
   schedule:
     # Retry if a previous Azure PR was awaiting validation and has since completed.
     - cron: '23 * * * *'
