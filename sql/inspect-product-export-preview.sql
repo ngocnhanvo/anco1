@@ -90,13 +90,17 @@ OUTER APPLY (
 -- cần so với FK/dữ liệu thực để xác nhận quan hệ này.
 OUTER APPLY (
     SELECT TOP (1)
-        p.sl_inner, p.dvt_inner, p.l1, p.w1, p.h1,
-        p.sl_outer, p.dvt_outer, p.l2_mix, p.w2_mix, p.h2_mix,
+        p.sl_inner, ui.ten_dvt AS dvt_inner, p.l1, p.w1, p.h1,
+        p.sl_outer, uo.ten_dvt AS dvt_outer, p.l2_mix, p.w2_mix, p.h2_mix,
         p.soluonggoi_ctn_20, p.soluonggoi_ctn, p.soluonggoi_ctn_40hc,
         p.ngayxacnhan, p.trangthai, p.mota AS ghi_chu_dg
     FROM dbo.md_donggoisanpham_ancotrading AS ds
     INNER JOIN dbo.md_donggoi_ancotrading AS p
         ON p.md_donggoi_id = ds.md_donggoi_id
+    LEFT JOIN dbo.md_donvitinh AS ui
+        ON ui.md_donvitinh_id = p.dvt_inner
+    LEFT JOIN dbo.md_donvitinh AS uo
+        ON uo.md_donvitinh_id = p.dvt_outer
     WHERE ds.md_sanpham_id = sp.md_sanpham_id
       AND ISNULL(ds.hoatdong, 1) = 1
       AND ISNULL(p.hoatdong, 1) = 1
