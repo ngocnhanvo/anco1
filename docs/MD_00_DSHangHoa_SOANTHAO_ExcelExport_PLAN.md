@@ -1,19 +1,26 @@
 # Kế hoạch triển khai Excel export — MD_00_DSHangHoa_SOANTHAO
 
 **Case:** `CA01ExportHHVG_MD00DSHangHoaSOANTHAO`  
-**Trạng thái:** **SQL SELECT bản nháp 37 cột đã được viết theo ad_module, ad_column và metadata hai bảng đóng gói**; chưa chạy DB thực tế, **chưa tích hợp chức năng export**. File: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`.  
+**Trạng thái:** **SQL SELECT bản nháp 37 cột đã chạy thành công trên SQL Server thật** (18 sản phẩm SOANTHAO); JOIN đóng gói được đối chiếu bằng SELECT và tên ĐVT Inner/Outer đã hiệu chỉnh. **Chưa tích hợp chức năng export**. File: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`.  
 **Mẫu thực tế đã kiểm tra:** `Danh sách hàng hóa-23_10_2026 13_18_02.xls` (SHA-256 `b72f0981b6425930ea983c7f7ebea228e61e7cfe9eb594621de06507fff85aa5`).  
 **Quy tắc repo:** đọc `AGENTS.md` + `docs/knowledge-base/`; chỉ code tại GitHub, Azure DevOps chỉ đồng bộ sau kiểm thử và yêu cầu phát hành riêng.  
 
 > **Điều chỉnh 24/10/2026:** người dùng xác nhận bỏ hoàn toàn 4 cột ẩn AA–AD gốc. Từ đây mọi file xuất chỉ có **37 cột**; bản SQL nháp để duyệt xem trong `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql` (không áp phân quyền thực tế, không chạy xuất file).
 
-> **Bổ sung 24/10/2026:** người dùng xác nhận `Mã thô` lấy qua `md_sanpham_bom` và `md_sanpham_bom_vattu`, nhóm đóng gói lấy từ `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`. SQL nháp đã xử lý BOM bằng `OUTER APPLY` để giữ một dòng/sản phẩm, và bổ sung câu khảo sát schema/foreign keys hai bảng đóng gói. Hai bảng đóng gói chưa có định nghĩa thực tế trong repo GitHub, nên chưa nối vào output để tránh dữ liệu sai.
+> **Bổ sung 24/10/2026:** người dùng xác nhận `Mã thô` lấy qua `md_sanpham_bom` và `md_sanpham_bom_vattu`, nhóm đóng gói lấy từ `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`. SQL nháp đã xử lý BOM bằng `OUTER APPLY` để giữ một dòng/sản phẩm, và bổ sung câu khảo sát schema/foreign keys hai bảng đóng gói. Hai bảng đóng gói đã được đối chiếu từ schema và dữ liệu thực; SQL đã lấy đủ thông tin đóng gói.
 
 > **Kiểm chứng 24/10/2026 từ các CSV được chủ dự án cung cấp:**
 > - `Results1.csv`: cấu hình `ad_module`, gồm `select_sql`, `from_sql`, `where_sql`, `orderby_sql` thực của `MD_00_DSHangHoa_SOANTHAO`.
 > - `Results2.csv`: danh sách `ad_column`; xác nhận `sp.v2` là CBM mặc định, `kd.ten_tv` là tên kiểu dáng, `cn.ten_tv` là tên chức năng, cũng như nhãn nhà cung cấp/kho/xưởng/thuế.
 > - `Results3.csv`: danh sách tên cột/tên bảng (từ `sys.tables` và `sys.columns`), **không phải** kết quả foreign keys hoặc giá trị dữ liệu mẫu. Xác nhận các trường thực tế tại `md_donggoi_ancotrading`: `sl_inner`, `dvt_inner`, `l1/w1/h1`, `sl_outer`, `dvt_outer`, `l2_mix/w2_mix/h2_mix`, `soluonggoi_ctn_20`, `soluonggoi_ctn`, `soluonggoi_ctn_40hc`, `ngayxacnhan`, `trangthai`, `mota`; cùng `md_donggoisanpham_ancotrading`: `md_sanpham_id`, `md_donggoi_id`, `macdinh`, `hoatdong`.
-> - JOIN đóng gói hiện **dự kiến** qua `ds.md_donggoi_id = p.md_donggoi_id`, chọn bản `macdinh=1` đang hoạt động và cập nhật gần nhất. Cần xác minh bằng FK và vài dòng dữ liệu thật; `SL Cont 40` dự kiến = `soluonggoi_ctn`.
+> - JOIN đóng gói hiện **dự kiến** qua `ds.md_donggoi_id = p.md_donggoi_id`, chọn bản `macdinh=1` đang hoạt động và cập nhật gần nhất. Dữ liệu SOANTHAO đã kiểm tra 18/18 sản phẩm có một liên kết mặc định/đang hoạt động, JOIN không nhân dòng; database không khai báo FK cho hai bảng này. `SL Cont 40` đang lấy `soluonggoi_ctn` (có giá trị thực tế); cần thống nhất ngữ nghĩa nhãn.
+
+> **Kết quả kiểm chứng SQL Server 24/10/2026 (GitHub Actions, SELECT read-only):**
+> - `sql/inspect-packaging-review.sql`: tập SOANTHAO có 18 sản phẩm và 18 link đóng gói; 18/18 link khớp cấu hình, còn hoạt động và là mặc định; 0 orphan, 0 bản ghi mặc định trùng, 0 `md_donggoi_id` trùng vật lý trong bảng đóng gói. Hai bảng không khai báo foreign keys trong `sys.foreign_keys`.
+> - `sql/inspect-product-export-preview.sql`: SQL xuất 37 cột trả về 18 hàng, 18 mã khác nhau; Inner/Outer/Cont/ngày xác nhận/trạng thái/ghi chú có dữ liệu; cột `Mã thô` rỗng do **0 sản phẩm SOANTHAO có BOM**; `sp.v2` đang NULL ở cả 18 hàng; các giá trị `Định khoản` đến `Thuế` cũng đang NULL theo dữ liệu này.
+> - `sql/inspect-packaging-units.sql`: ID ở `dvt_inner`/`dvt_outer` được giải đúng bằng **`md_donvitinh.md_donvitinh_id`** (không phải `md_donvitinhsanpham`); đã kiểm tra 30 mã ĐVT đang sử dụng trên toàn bộ bảng đóng gói.
+> - `sql/inspect-bom-child-types.sql`: BOM hiệu lực phiên bản mới nhất hiện có trên sản phẩm trạng thái DHD; trong tập đó có 8.998 sản phẩm cha chứa BTP trực tiếp. Không đồng nghĩa hàng SOANTHAO có BOM.
+> - Đã sửa SQL và query preview trả tên ĐVT Inner/Outer thay vì GUID. Những số lượng sản phẩm là snapshot database tại thời điểm kiểm thử, không phải quy tắc nghiệp vụ cố định.
 
 ## 1. Hiện trạng đã xác nhận từ source
 
@@ -49,12 +56,12 @@
 | L | Tên chức năng | `md_chucnang_ancotrading cn` → `cn.ten_tv` theo cấu hình `ad_module` |
 | M | Ghi chú | `md_sanpham.ghichu` |
 | N | SL Inner | `md_donggoi_ancotrading.sl_inner` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
-| O | DVT Inner | `md_donggoi_ancotrading.dvt_inner` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| O | DVT Inner | `md_donggoi_ancotrading.dvt_inner` (GUID) → `md_donvitinh.md_donvitinh_id` → `ten_dvt` (đã đối chiếu 30 mã ĐVT thực tế) |
 | P | l1 | `md_donggoi_ancotrading.l1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
 | Q | w1 | `md_donggoi_ancotrading.w1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
 | R | h1 | `md_donggoi_ancotrading.h1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
 | S | SL Outer | `md_donggoi_ancotrading.sl_outer` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
-| T | DVT Outer | `md_donggoi_ancotrading.dvt_outer` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| T | DVT Outer | `md_donggoi_ancotrading.dvt_outer` (GUID) → `md_donvitinh.md_donvitinh_id` → `ten_dvt` (đã đối chiếu 30 mã ĐVT thực tế) |
 | U | l2 | `md_donggoi_ancotrading.l2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
 | V | w2 | `md_donggoi_ancotrading.w2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
 | W | h2 | `md_donggoi_ancotrading.h2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
