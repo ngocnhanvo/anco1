@@ -22,6 +22,13 @@
 > - `sql/inspect-bom-child-types.sql`: BOM hiệu lực phiên bản mới nhất hiện có trên sản phẩm trạng thái DHD; trong tập đó có 8.998 sản phẩm cha chứa BTP trực tiếp. Không đồng nghĩa hàng SOANTHAO có BOM.
 > - Đã sửa SQL và query preview trả tên ĐVT Inner/Outer thay vì GUID. Những số lượng sản phẩm là snapshot database tại thời điểm kiểm thử, không phải quy tắc nghiệp vụ cố định.
 
+> **Kiểm tra đầy đủ dữ liệu ngày 24/10/2026 (GitHub Actions: [raw-field audit](https://github.com/ngocnhanvo/anco1/actions/runs/40077255258), [NCC audit](https://github.com/ngocnhanvo/anco1/actions/runs/40077401500)):**
+> - File kết quả SQL 37 cột có 18 dòng; **27 cột có ít nhất một giá trị**, **10 cột đều trống**: Mã thô, Thể Tích, Ghi chú, Định khoản, Nhóm VTHH, NCC mặc định, Kho SX, Kho tồn, Xưởng SX, Thuế.
+> - **Mã thô:** cách lấy từ BOM đã được chủ dự án xác nhận đúng; 18 hàng SOANTHAO chưa có BOM.
+> - **8 cột trống do dữ liệu gốc chưa nhập:** `sp.v2`, `sp.ghichu`, `sp.dinhkhoan`, `sp.md_nhomnangluc_id`, `sp.khomacdinh`, `sp.khoton`, `sp.phongbanId`, `sp.md_thue_sanpham_id` đều có **0/18 giá trị**.
+> - **NCC mặc định là trường hợp cần xử lý riêng:** `sp.nhacungung` có **18/18 giá trị**, cả 18 dùng cùng một ID, nhưng **0/18** tìm thấy bản ghi tại `md_doitackinhdoanh` bằng `md_doitackinhdoanh_id`, `ma_dtkd` hoặc `ten_dtkd`. Đây là tham chiếu NCC không giải được thành tên/mã bằng bảng tra cứu hiện tại; **không được giả định cột đã hoàn tất**.
+> - Câu SQL 37 cột đã chạy thành công trên DB thực tế, đủ 18 hàng, nhưng chưa nên xem mapping NCC là hoàn chỉnh trước khi xác minh nguồn tra cứu/khắc phục tham chiếu. Các trường NULL gốc không phải thiếu JOIN.
+
 ## 1. Hiện trạng đã xác nhận từ source
 
 - JS: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js`, hàm `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` đã có popup xác nhận nhưng **bắt buộc `selrow`**, gửi POST chỉ có `id`, sau đó gọi `oper=savefile`.
@@ -73,7 +80,7 @@
 | AC | Ghi chú ĐG | `md_donggoi_ancotrading.mota` qua bảng liên kết `md_donggoisanpham_ancotrading` (chờ kiểm tra ngữ nghĩa dữ liệu) |
 | AD | Định khoản | `md_sanpham.dinhkhoan` |
 | AE | Nhóm VTHH | Xác định chính xác mã/nhãn từ `md_nhomnangluc_id` hoặc cấu hình SQL |
-| AF | NCC mặc định | `md_sanpham.nhacungung`, join lấy mã/tên hiển thị theo mẫu |
+| AF | NCC mặc định | `md_sanpham.nhacungung` (18/18 có ID) nhưng JOIN `md_doitackinhdoanh` hiện không tìm thấy bản ghi (0/18); cần sửa dữ liệu tham chiếu hoặc chốt nguồn lookup khác trước khi xuất mã NCC |
 | AG | Kho SX | `md_sanpham.khomacdinh`, join `md_kho.ten_kho` |
 | AH | Kho tồn | `md_sanpham.khoton`, join `md_kho.ten_kho` |
 | AI | Xưởng SX | `md_sanpham.phongbanId`, join bảng phòng ban, xác định giá trị hiển thị |
