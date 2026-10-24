@@ -140,60 +140,129 @@ function CA01ImportHHVG_MD00DSHangHoaSOANTHAO(tengrid, id_parent, ma_case, Form_
 //end CA01ImportHHVG_MD00DSHangHoaSOANTHAO
 
 //start CA01ExportHHVG_MD00DSHangHoaSOANTHAO
+// Export TẤT CẢ hàng đang hiển thị theo quyền và bộ lọc jqGrid, không đòi selrow.
+// File .xls được server tạo trực tiếp và tải qua POST; không lưu workbook vào Session.
 function CA01ExportHHVG_MD00DSHangHoaSOANTHAO(tengrid, id_parent, ma_case, Form_infor, Model_infor, load_stt) {
-    var masterId = id_parent;
-    if (id_parent == null) { masterId = $('#' + tengrid).jqGrid('getGridParam', 'selrow'); }
-    if (masterId == null | masterId == '') {
-        alert('Chưa chọn đối tượng cần thao tác.');
+    var $grid = $('#' + tengrid);
+    var postData = $.extend({}, $grid.jqGrid('getGridParam', 'postData'));
+    var filters = typeof postData.filters === 'string'
+        ? postData.filters : JSON.stringify(postData.filters || {});
+    var request = {
+        filters: filters,
+        id: postData.id || (id_parent || ''),
+        where_ex: postData.where_ex || '',
+        sidx: $grid.jqGrid('getGridParam', 'sortname') || '',
+        sord: $grid.jqGrid('getGridParam', 'sortorder') || ''
+    };
+    var ma_module = 'MD_00_DSHangHoa_SOANTHAO';
+    var url = 'Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx?oper='
+        + encodeURIComponent(ma_case) + '&ma_module=' + encodeURIComponent(ma_module);
+    var formInfo = new get_Forminfor(ma_case, Form_infor);
+    var $dialog = $('<div id="dlg_ExportHHVG_SOANTHAO"><div class="dlg_content">Đang kiểm tra số lượng hàng hóa...</div></div>');
+    var snapshot = null, count = 0, busy = false;
+
+    function showError(message) {
+        $dialog.find('.dlg_content').text(message || 'Không thể xuất Excel.');
+        $dialog.parent().find('.ui-dialog-buttonpane #btn-export-hhvg')
+            .button('option', 'disabled', true);
     }
-    else {
-        var CLform_infor = new get_Forminfor(ma_case, Form_infor);
-        var ma_module = tengrid.replace('grid', '');
-        $('body').append('<div id="dlg_gridSmall" title="' + CLform_infor.tieude + '">' +
-            '<div class="dlg_content">Thực hiện chức năng này?</div>' +
-            '</div>');
-        $('#dlg_gridSmall').dialog({
-            modal: true,
-            width: CLform_infor.dodai,
-            height: CLform_infor.docao,
-            open: function (event, ui) {
-                Logo_Center(CLform_infor.logo, CLform_infor.canhgiua);
-            },
-            close: function () {
-                $(this).dialog('destroy').remove();
-            },
-            buttons: [
-                {
-                    id: 'btn-ok',
-                    text: 'Đồng ý',
-                    click: function () {
-                        $('#btn-ok').button('option', 'disabled', true);
-                        $('.dlg_content').prepend('<div class="nhan_loading"></div>');
-                        $.post('Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx?oper=CA01ExportHHVG_MD00DSHangHoaSOANTHAO&ma_module=' + ma_module,
-                            { id: masterId.toString() }, function (result) {
-                                $('.dlg_content').html(result);
-                                if (result.indexOf('Lỗi') <= -1) {
-                                    date_import = get_now();
-                                    if (result.indexOf('Đã lấy về 0 dòng') <= -1) {
-                                        modify_code('Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx?oper=savefile');
-                                    }
-                                    //loadclick(tengrid, 'edit', load_stt);
-                                    enable_timer = true;
-                                    Close_Form($('#dlg_gridSmall'), CLform_infor.dongform);
-                                }
-                            });
-                    }
-                },
-                {
-                    id: 'btn-close',
-                    text: 'Thoát',
-                    click: function () {
-                        $(this).dialog('destroy').remove();
-                    }
+    $('body').append($dialog);
+    $dialog.dialog({
+        title: formInfo.tieude,
+        modal: true,
+        resizable: false,
+        width: Math.min(550, $(window).width() - 40),
+        open: function () {
+            Logo_Center(formInfo.logo, formInfo.canhgiua, null, 'btn-export-hhvg', 'btn-close-export-hhvg');
+            var $button = $dialog.parent().find('.ui-dialog-buttonpane #btn-export-hhvg');
+            $button.button('option', 'disabled', true);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: $.extend({}, request, { mode: 'preview' })
+            }).done(function (result) {
+                if (!result || !result.ok) {
+                    showError(result && result.message);
+                    return;
                 }
-            ]
-        });
-    }
+                count = result.count || 0;
+                snapshot = result.snapshot;
+                var $content = $dialog.find('.dlg_content').empty();
+                $('<p>').text('Số hàng hóa SOANTHAO theo bộ lọc, bao gồm tất cả các trang: ' + count + '.').appendTo($content);
+                $('<p>').text('Tệp Excel 97-2003 (.xls), 37 cột đúng mẫu, không có 4 cột ẩn.').appendTo($content);
+                if (!filters || filters === '{}' || filters === '{"groupOp":"AND","rules":[]}') {
+                    $('<p>').text('Chưa áp dụng bộ lọc: sẽ xuất toàn bộ dữ liệu được phép xem.').appendTo($content);
+                }
+                if (count === 0) {
+                    $('<p>').text('Không có dữ liệu để xuất.').appendTo($content);
+                }
+                $button.button('option', 'disabled', count === 0);
+            }).fail(function (xhr) {
+                showError('Không kiểm tra được dữ liệu xuất Excel. ' + (xhr.responseJSON && xhr.responseJSON.message || ''));
+            });
+        },
+        close: function () {
+            $(this).dialog('destroy').remove();
+        },
+        buttons: [
+            {
+                id: 'btn-export-hhvg',
+                text: 'Xuất Excel',
+                click: function () {
+                    if (busy || !snapshot || count === 0) return;
+                    busy = true;
+                    var $button = $dialog.parent().find('.ui-dialog-buttonpane #btn-export-hhvg');
+                    $button.button('option', 'disabled', true);
+                    $dialog.find('.dlg_content').append('<div class="nhan_loading"></div>');
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', url, true);
+                    xhr.responseType = 'blob';
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    xhr.onload = function () {
+                        $dialog.find('.nhan_loading').remove();
+                        if (xhr.status === 200 && (xhr.getResponseHeader('Content-Type') || '').indexOf('application/vnd.ms-excel') >= 0) {
+                            var name = 'Danh sach hang hoa.xls';
+                            var disposition = xhr.getResponseHeader('Content-Disposition') || '';
+                            var match = disposition.match(/filename="?([^";]+)"?/i);
+                            if (match && match[1]) name = match[1];
+                            var blobUrl = URL.createObjectURL(xhr.response);
+                            var link = document.createElement('a');
+                            link.href = blobUrl;
+                            link.download = name;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 1000);
+                            $dialog.dialog('close');
+                            return;
+                        }
+                        if (xhr.response && window.FileReader) {
+                            var reader = new FileReader();
+                            reader.onload = function () { showError(reader.result || 'Không tải được file Excel.'); };
+                            reader.readAsText(xhr.response);
+                        } else {
+                            showError('Máy chủ trả lỗi khi xuất Excel.');
+                        }
+                        busy = false;
+                    };
+                    xhr.onerror = function () {
+                        $dialog.find('.nhan_loading').remove();
+                        showError('Lỗi mạng trong khi tải Excel. Hãy thử lại.');
+                        busy = false;
+                    };
+                    xhr.send($.param($.extend({}, request, { mode: 'download', snapshot: snapshot })));
+                }
+            },
+            {
+                id: 'btn-close-export-hhvg',
+                text: 'Thoát',
+                click: function () {
+                    if (!busy) $(this).dialog('close');
+                }
+            }
+        ]
+    });
 }
 //end CA01ExportHHVG_MD00DSHangHoaSOANTHAO
 
