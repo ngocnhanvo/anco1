@@ -115,6 +115,38 @@ def request_auto_complete(auth, pr):
         raise RuntimeError("Azure did not confirm PR auto-complete; check branch policies and PAT permissions.")
 
 
+def preload_source_patch_blobs(root, start, head):
+    """Make 3-way merge base objects available in the temporary Azure clone.
+
+    Azure history is unrelated to the rewritten GitHub history, so Azure's
+    object database does not contain the preimage blobs referenced by a
+    GitHub-generated patch. This adds only those blob objects to the TEMPORARY
+    clone. It does not change Azure branches or working-tree files.
+    """
+    raw = git("diff", "--raw", "--no-renames", "--abbrev=40",
+              start, head, "--", *ALLOWED_PATHS)
+    count = 0
+    for line in raw.decode("utf-8", "surrogateescape").splitlines():
+        header, separator, _path = line.partition("\t")
+        if not separator:
+            raise RuntimeError("Unexpected Git raw diff format.")
+        fields = header.split()
+        if len(fields) < 5:
+            raise RuntimeError("Unexpected Git raw diff header.")
+        old_blob = fields[2]
+        if not re.fullmatch(r"[a-f0-9]{40}", old_blob):
+            raise RuntimeError("Unexpected Git diff source blob ID.")
+        if old_blob == "0" * 40:
+            continue
+        data = git("cat-file", "blob", old_blob)
+        imported = git("-C", str(root), "hash-object", "-w", "--stdin",
+                       input_bytes=data).decode("ascii").strip()
+        if imported != old_blob:
+            raise RuntimeError("Blob identity changed during temporary merge-base import.")
+        count += 1
+    print("Preloaded {} source base blobs into ephemeral Azure clone for safe 3-way apply.".format(count))
+
+
 def main():
     head = os.environ.get("GITHUB_SHA", "").strip()
     pat = os.environ.get("AZURE_DEVOPS_PAT", "").strip()
@@ -188,6 +220,7 @@ def main():
         git("-C", str(root), "switch", "--detach", "origin/" + target_branch)
         branch = "github-sync/anco1-" + head[:12] + "-" + os.environ.get("GITHUB_RUN_ID", "manual")
         git("-C", str(root), "switch", "-c", branch)
+        preload_source_patch_blobs(root, start, head)
         git("-C", str(root), "apply", "--index", "--3way", "-", input_bytes=patch)
         status = git("-C", str(root), "diff", "--cached", "--name-only").decode().strip()
         if not status:
