@@ -32,7 +32,16 @@
 - Lượt chạy GitHub bị xếp hàng/đã cũ được bỏ qua an toàn nếu cursor Azure đã tiến xa hơn.
 - `AZURE_DEVOPS_PAT` chỉ được đọc từ GitHub Actions Secrets, không commit hoặc tiết lộ giá trị.
 
+## Một lần xử lý khác biệt nền lịch sử cho Excel SOANTHAO
+
+- Hai file Excel (`JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx` và `MD_00_DSHangHoa_SOANTHAO.js`) có khác biệt nền với Azure do tính năng DHD cũ nằm ngoài mốc baseline.
+- Nếu bản vá Git 3-way xung đột **ở đúng hai file này trong lần đầu tiên**, hệ thống sẽ thử phương án `scripts/azure_devops_excel_bootstrap.py` để đưa **riêng chức năng xuất Excel mới** vào Azure.
+- Trước khi thay, script xác minh block JS cũ trên Azure trùng với block tại baseline GitHub, kiểm tra duy nhất các điểm chèn case/handler, và xác nhận helper Excel hoạt động độc lập với DHD. Chỉ hai file được stage; các nội dung khác của Azure được giữ nguyên.
+- Không áp dụng phương án đặc biệt cho file khác, commit khác hoặc sau khi cursor baseline đã tiến. Nếu kiểm chứng thất bại, workflow dừng và báo lỗi, không ép ghi đè.
+- Các bản vá sau lần đầu vẫn dùng `git apply --index --3way` với dữ liệu blob gốc được nạp vào bản sao Azure tạm thời, nhằm giữ nguyên những thay đổi riêng của Azure.
+
 ## Vị trí triển khai
 
 - `.github/workflows/azure-devops-sync.yml` — trigger push, catch-up lịch định kỳ, chạy thủ công, concurrency.
 - `scripts/azure_devops_sync.py` — diff post-baseline, apply 3-way, tạo PR, yêu cầu auto-complete, cursor.
+- `scripts/azure_devops_excel_bootstrap.py` — phương án ghép một lần, có kiểm tra điểm neo, cho hai file Excel riêng.
