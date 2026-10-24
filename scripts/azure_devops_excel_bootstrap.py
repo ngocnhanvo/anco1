@@ -152,8 +152,11 @@ def remove_exact_popup_line(azure_repo, source_repo, start, head):
         ["git", "-C", str(azure_repo), "add", "--", JAVASCRIPT],
         check=True,
     )
+    # Anco1 JavaScript uses Windows CRLF. Git must not treat CR at EOL
+    # as trailing whitespace; real spaces before CR are still checked.
     subprocess.run(
-        ["git", "-C", str(azure_repo), "diff", "--cached", "--check"],
+        ["git", "-C", str(azure_repo), "-c", "core.whitespace=cr-at-eol",
+         "diff", "--cached", "--check"],
         check=True,
     )
     print("Removed exactly the requested SOANTHAO popup line on Azure "
