@@ -50,21 +50,21 @@ Consequence:
 
 ## Azure DevOps release synchronization
 
-**Status: Confirmed by project owner (2026-10-24)**
+**Status: Updated at the explicit request of the project owner on 2026-10-24. Supersedes the earlier manual-only rule.**
 
 Decision:
-- GitHub `ngocnhanvo/anco1` is the development repository; Azure DevOps `vongocnhancd10cntt2/Anco1/_git/Anco1` is the destination repository.
-- Never mirror or overwrite Azure with GitHub history. The irreversible exclusion baseline for old GitHub commits is `1e614269073c8f60bdfcdbfc1570ecd7588a2d20` (the last DHD dialog-icon fix). That commit and all earlier commits are excluded.
-- Only source-code changes after that baseline are eligible; exclude workflow/synchronization implementation and knowledge notes from the payload. Exact allowlist is in `scripts/azure_devops_sync.py`.
-- Delivery requires deliberate `workflow_dispatch` of `.github/workflows/azure-devops-sync.yml`, with `preview` before `create-pr` recommended. GitHub pushes alone must not release automatically.
-- Azure's default branch is discovered dynamically. Apply the incremental source patch against it on an isolated branch; if conflicts arise, stop rather than overwrite.
-- Create an Azure DevOps pull request; never push directly or force-push to its default branch. Human PR review/merge remains required.
-- After a successfully completed Azure sync PR, use its `ANCO1_SYNC_TO` SHA as the next incremental source cursor. Do not treat open, abandoned, or failed PRs as completed.
-- Keep Azure access credential exclusively in GitHub Actions secret `AZURE_DEVOPS_PAT` with repository Code (Read & write) permission; never store the secret in the repository or a chat.
+- GitHub `ngocnhanvo/anco1` (`master`) remains the development source of truth; Azure DevOps `vongocnhancd10cntt2/Anco1/_git/Anco1` is the receiving repository.
+- **Automatic synchronization** now runs on GitHub `master` pushes affecting code paths plus an hourly catch-up check. Routine sync no longer requires manually running `workflow_dispatch`; manual preview/create-pr remain available for diagnosis.
+- The irreversible historical exclusion cutoff remains `1e614269073c8f60bdfcdbfc1570ecd7588a2d20`. This commit and all earlier GitHub commits are excluded. Only changed source paths in the allowlist `scripts/azure_devops_sync.py` are eligible (not docs, knowledge, CI, workflow changes or synchronization scripts).
+- The sync bot **creates an incremental Azure Pull Request from the current Azure default branch**, then enables PR auto-complete if Azure accepts it. Auto-complete must honor required Azure branch policies and reviews; **no policy bypass** is permitted.
+- **Never** mirror/overwrite Azure history, force-push, or push directly into Azure's default branch. Conflicts abort synchronization. Only completed Azure PRs advance the source cursor; PRs that remain open must not result in duplicate PRs or premature cursor advancement.
+- Concurrent pushes are serialized; scheduled retries pick up source changes that arrive while an earlier PR remains open. Stale runs must not regress the cursor.
+- Keep the Azure credential exclusively in GitHub Actions secret `AZURE_DEVOPS_PAT` with the necessary code/PR permissions.
 
 Implementation:
 - `.github/workflows/azure-devops-sync.yml`
 - `scripts/azure_devops_sync.py`
+- `docs/AZURE_DEVOPS_SYNC.md`
 
 Consequence:
-- The previously completed DHD feature is *not* synchronized retroactively by this workflow. A future new source commit after the baseline is required before a nonempty first release.
+- This is **automatic source synchronization**, not an application build/deploy to IIS or FTP. The Azure default branch advances only once its PR completes under the Azure branch policies.
