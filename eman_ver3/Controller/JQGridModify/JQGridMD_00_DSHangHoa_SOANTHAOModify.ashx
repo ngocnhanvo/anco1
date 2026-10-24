@@ -511,10 +511,12 @@ ORDER BY SUBSTRING(sp.ma_sanpham, 0, 12) ASC,
 
             var rows = LoadDraftExportRows(draftIds);
             var bytes = BuildDraftExportWorkbook(draftIds, rows);
-            var filename = "Danh sach hang hoa-" + DateTime.Now.ToString("dd_MM_yyyy HH_mm_ss") + ".xls";
+            var suffix = DateTime.Now.ToString("dd_MM_yyyy HH_mm_ss") + ".xls";
+            var filename = "Danh sách hàng hóa-" + suffix;
+            var fallbackName = "DanhSachHangHoa-" + suffix;
             context.Response.Clear();
             context.Response.ContentType = "application/vnd.ms-excel";
-            context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            context.Response.AddHeader("Content-Disposition", "attachment; filename=\\"" + fallbackName + "\\"; filename*=UTF-8\u0027\u0027" + Uri.EscapeDataString(filename));
             context.Response.AddHeader("Content-Length", bytes.Length.ToString(System.Globalization.CultureInfo.InvariantCulture));
             context.Response.BinaryWrite(bytes);
             context.Response.Flush();
