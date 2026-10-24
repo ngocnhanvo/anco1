@@ -13,10 +13,10 @@ $user = $env:ANCO1_SQL_USER; $password = $env:ANCO1_SQL_PASSWORD
 if (!$server -or !$database -or !$user -or !$password) { throw 'Missing ANCO1_SQL_* configuration' }
 Add-Type -AssemblyName System.Data
 $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
-$builder.DataSource=$server; $builder.InitialCatalog=$database
-$builder.UserID=$user; $builder.Password=$password
-$builder.Encrypt=$true; $builder.TrustServerCertificate=$false
-$builder.ConnectTimeout=15; $builder.ApplicationName='Anco1-ReadOnly-Actions'
+$builder['Data Source']=$server; $builder['Initial Catalog']=$database
+$builder['User ID']=$user; $builder['Password']=$password
+$builder['Encrypt']=$true; $builder['Trust Server Certificate']=$false
+$builder['Connect Timeout']=15; $builder['Application Name']='Anco1-ReadOnly-Actions'
 $connection=New-Object System.Data.SqlClient.SqlConnection($builder.ConnectionString)
 try {
     $connection.Open()
