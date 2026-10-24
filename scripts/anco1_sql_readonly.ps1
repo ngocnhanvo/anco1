@@ -15,7 +15,7 @@ Add-Type -AssemblyName System.Data
 $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
 $builder['Data Source']=$server; $builder['Initial Catalog']=$database
 $builder['User ID']=$user; $builder['Password']=$password
-$builder['Encrypt']=$true; $builder['Trust Server Certificate']=$false
+$builder['Encrypt']=$true; $builder['TrustServerCertificate']=$false
 $builder['Connect Timeout']=15; $builder['Application Name']='Anco1-ReadOnly-Actions'
 $connection=New-Object System.Data.SqlClient.SqlConnection($builder.ConnectionString)
 try {
