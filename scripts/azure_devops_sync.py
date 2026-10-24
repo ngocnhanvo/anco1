@@ -229,21 +229,41 @@ def main():
                 input_bytes=patch)
             print("Generic safe 3-way patch applied.")
         except RuntimeError:
-            # The two-file Excel export was built on top of a previous GitHub
-            # DHD feature excluded from the Azure baseline. Never import that
-            # excluded DHD code and never replace full Azure source files.
-            # The guarded bridge copies ONLY the new, standalone Excel feature
-            # after checking the old JS block matches the known baseline.
-            if start != BASELINE or set(changed) != {
-                "eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx",
+            from azure_devops_excel_bootstrap import (
+                apply_guarded_excel_only, remove_exact_popup_line,
+            )
+            excel_first_time = (
+                start == BASELINE and set(changed) == {
+                    "eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx",
+                    "eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js",
+                }
+            )
+            vg_popup_only = set(changed) == {
+                "eman_ver3/js/Module_script/MD_00_DSHangHoaVG.js",
                 "eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js",
-            }:
+            }
+            if not (excel_first_time or vg_popup_only):
                 raise
-            print("Git patch conflicts with excluded old DHD history; "
-                  "trying a one-time guarded Excel-only integration.")
             git("-C", str(root), "reset", "--hard", "HEAD")
-            from azure_devops_excel_bootstrap import apply_guarded_excel_only
-            apply_guarded_excel_only(root, pathlib.Path.cwd(), BASELINE, changed)
+            if excel_first_time:
+                # The initial Excel feature did not depend on the excluded DHD code.
+                print("Git patch conflicts with excluded old DHD history; "
+                      "trying a one-time guarded Excel-only integration.")
+                apply_guarded_excel_only(root, pathlib.Path.cwd(), BASELINE, changed)
+            else:
+                # The VG.js diff applies cleanly, but Azure's SOANTHAO JS has a
+                # different historical base. Enforce only the approved line
+                # removal after proving the GitHub source diff is that exact edit.
+                print("Using guarded source-only repair for VG JS + "
+                      "one-line SOANTHAO popup cleanup.")
+                vg_patch = git("diff", "--binary", "--no-ext-diff",
+                               "--no-renames", start, head, "--",
+                               "eman_ver3/js/Module_script/MD_00_DSHangHoaVG.js")
+                if not vg_patch:
+                    raise RuntimeError("Expected changed VG JavaScript patch is missing.")
+                git("-C", str(root), "apply", "--index", "--3way", "-",
+                    input_bytes=vg_patch)
+                remove_exact_popup_line(root, pathlib.Path.cwd(), start, head)
         status = git("-C", str(root), "diff", "--cached", "--name-only").decode().strip()
         if not status:
             print("Diff is already present in Azure; nothing to release.")
