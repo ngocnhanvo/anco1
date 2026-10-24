@@ -1,0 +1,38 @@
+name: Anco1 - approved GitHub changes to Azure DevOps
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Preview only, or create an Azure DevOps pull request'
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - create-pr
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anco1-azure-devops-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact approved GitHub revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preview/apply changes since last completed Azure sync
+        env:
+          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+          SYNC_MODE: ${{ inputs.mode }}
+        run: python3 scripts/azure_devops_sync.py
