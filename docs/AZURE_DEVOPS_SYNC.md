@@ -1,41 +1,38 @@
-# Anco1: GitHub -> Azure DevOps (manual, incremental release)
+# Anco1: tự động đồng bộ GitHub → Azure DevOps (mã nguồn, không mirror)
 
-## Source and destination
+## Nguồn và đích
 
-- Development: `https://github.com/ngocnhanvo/anco1`, branch `master`.
-- Destination: `https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1`.
-- Fixed *exclusive* cutoff: `1e614269073c8f60bdfcdbfc1570ecd7588a2d20`.
-- This commit and all older GitHub commits are **never** included in an Azure release.
-- Previously committed DHD status-transition changes are therefore not included in the first new release.
+- Development/source of truth: [GitHub ngocnhanvo/anco1](https://github.com/ngocnhanvo/anco1), nhánh `master`.
+- Azure DevOps destination: `https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1`; nhánh mặc định được đọc động qua Azure API.
+- Mốc lịch sử loại trừ cố định: `1e614269073c8f60bdfcdbfc1570ecd7588a2d20`. Mốc này và mọi commit trước đó **không bao giờ được đồng bộ lại**.
 
-## Initial permissions
+## Cơ chế tự động — yêu cầu ngày 24/10/2026
 
-Create an Azure DevOps PAT (scope `Code: Read & write`) restricted to the correct organization. The identity must have permission to create branches and pull requests in the Anco1 Azure Repos repository.
+1. Mỗi khi có `push` lên GitHub `master` chứa file trong các khu vực `eman_ver3/`, `DataAccess/`, `GenerateModels/`, `Report/`, `Anco1.sln`, `packages/`, workflow tự chạy.
+2. Script chỉ tính **chênh lệch nguồn được phép** từ cursor `ANCO1_SYNC_TO` của PR Azure đã hoàn tất gần nhất (hoặc baseline ở lần đầu). Không đẩy lịch sử GitHub.
+3. Nếu có thay đổi, script tạo nhánh mới từ **HEAD nhánh mặc định Azure**, thử `git apply --3way --index`. Xung đột thì dừng, không ghi đè Azure.
+4. Tạo Azure Pull Request và **yêu cầu auto-complete** khi các chính sách bắt buộc Azure đã thỏa. Không bypass branch policies, không push/force-push vào `master` Azure.
+5. Nếu PR đồng bộ trước còn mở, lần chạy tự động không tạo PR trùng. Workflow định kỳ mỗi giờ (`23 * * * *` UTC) giúp gom các commit tiếp theo sau khi PR trước hoàn tất.
+6. Không có source change mới: workflow báo không có gì để chuyển.
 
-Add it to GitHub repository **Settings > Secrets and variables > Actions** as the secret `AZURE_DEVOPS_PAT`. Never commit a token or send it in chat.
+`workflow_dispatch` **vẫn giữ** hai chế độ thủ công `preview` và `create-pr` cho việc kiểm tra/chẩn đoán; ở chế độ thủ công, PR không được tự bật auto-complete.
 
-## Release procedure
+### Điều kiện để hoàn toàn tự động
 
-1. Finish and test new source commits on GitHub `master`.
-2. Run **Actions > Anco1 - approved GitHub changes to Azure DevOps > Run workflow**.
-3. Select `preview`, verify the source commit range and affected file count.
-4. Run again with `create-pr` after the owner approves the release.
-5. Review the new Azure DevOps pull request, check for unrelated modifications, and merge there.
-6. The next run discovers the last **completed** Azure sync PR and uses its GitHub source SHA as the next cursor.
+- GitHub Actions secret `AZURE_DEVOPS_PAT` phải còn hiệu lực và có quyền Code Read & write, tạo nhánh/PR/cập nhật PR/hoàn tất PR theo cấu hình Azure.
+- Azure có thể yêu cầu review/build/policy. **Auto-complete chờ các điều kiện bắt buộc; không tự lách chúng.** Khi cần duyệt người thì PR vẫn chờ.
+- Nếu Azure từ chối auto-complete do quyền hoặc cấu hình, xem log và khắc phục quyền/chính sách trên Azure. Không tự hạ mức bảo vệ.
+- Kết quả run ở [GitHub Actions](https://github.com/ngocnhanvo/anco1/actions/workflows/azure-devops-sync.yml), các PR ở `https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequests`.
 
-The workflow skips documentation, CI files, and sync infrastructure itself. Source code paths are allowlisted in `scripts/azure_devops_sync.py`.
+## Điều kiện an toàn
 
-A pending Azure sync PR blocks another release. Divergent source files or patch conflicts stop the job. There is **no force push** and **no automatic merge** of Azure's default branch.
+- Chỉ chuyển file mã nguồn theo allowlist trong `scripts/azure_devops_sync.py`; không mang tài liệu knowledge, CI config, secret hay các thay đổi workflow vào Azure payload.
+- Không `git push --force`, không ghi trực tiếp nhánh mặc định Azure, không sửa lại lịch sử cũ.
+- Một PR đang mở không được coi là đã triển khai; cursor chỉ tiến sau PR có `status=completed`.
+- Lượt chạy GitHub bị xếp hàng/đã cũ được bỏ qua an toàn nếu cursor Azure đã tiến xa hơn.
+- `AZURE_DEVOPS_PAT` chỉ được đọc từ GitHub Actions Secrets, không commit hoặc tiết lộ giá trị.
 
-If GitHub has no eligible source changes after the cutoff or the last completed sync PR, the workflow reports that there is nothing to transfer. It does not copy earlier files to create an artificial delta.
+## Vị trí triển khai
 
-## Troubleshooting
-
-- `Missing GitHub Actions secret AZURE_DEVOPS_PAT`: add or renew the secret.
-- `Azure sync PR is still active`: merge or abandon that PR first.
-- `git operation failed` while applying the patch: inspect conflicts in the Azure destination. Do not force overwrite; reconcile the target and retry.
-- Empty release: there are no new eligible source-code changes since the last approved sync cursor.
-
-Implementation:
-- `.github/workflows/azure-devops-sync.yml`
-- `scripts/azure_devops_sync.py`
+- `.github/workflows/azure-devops-sync.yml` — trigger push, catch-up lịch định kỳ, chạy thủ công, concurrency.
+- `scripts/azure_devops_sync.py` — diff post-baseline, apply 3-way, tạo PR, yêu cầu auto-complete, cursor.
