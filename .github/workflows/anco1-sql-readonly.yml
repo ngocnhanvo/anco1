@@ -1,4 +1,5 @@
 name: Anco1 - remote SQL read-only inspection
+# Verify packaging UOM dictionary with both Anco1 candidate tables.
 
 on:
   push:
