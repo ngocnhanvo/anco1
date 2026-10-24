@@ -20,6 +20,10 @@
 --   5) SQL bên dưới tái hiện điều kiện cố định của ad_module, KHÔNG bao gồm phân quyền
 --      ad_role_where và filters jqGrid động; backend production phải áp các điều kiện đó.
 --
+-- Kết quả live SQL Server ngày 24/10/2026: 18/18 hàng SOANTHAO có gói mặc định
+-- hoạt động; không nhân dòng. Có 0 BOM trong tập SOANTHAO nên cột Mã thô trống.
+-- Bảng BOM của sản phẩm DHD có dữ liệu BTP, đã đối chiếu phân loại.
+-- Bản preview riêng: sql/inspect-product-export-preview.sql (37 cột).
 -- Đây là truy vấn XEM TRƯỚC 100 dòng, không hề cập nhật dữ liệu.
 DECLARE @TrangThai nvarchar(30) = N'SOANTHAO';
 
@@ -109,8 +113,9 @@ OUTER APPLY (
 ) AS maTho
 
 -- Không JOIN thẳng bảng đóng gói 1:N: giữ đúng 1 dòng hàng hóa/ma_sanpham.
--- md_donggoisanpham_ancotrading.md_donggoi_id là khóa tham chiếu dự kiến;
--- cần so với FK/dữ liệu thực để xác nhận quan hệ này.
+-- Đã SELECT DB thật: ds.md_donggoi_id = p.md_donggoi_id khớp 18/18 hàng
+-- SOANTHAO; database không khai báo foreign key giữa hai bảng đóng gói.
+-- md_donvitinh là bảng tra GUID -> tên đơn vị cho dvt_inner/dvt_outer.
 OUTER APPLY (
     SELECT TOP (1)
         p.sl_inner, ui.ten_dvt AS dvt_inner, p.l1, p.w1, p.h1,
