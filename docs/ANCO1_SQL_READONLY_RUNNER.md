@@ -1,21 +1,33 @@
-# VPS SQL Server read-only inspection
+# Anco1 — SQL Server read-only via GitHub-hosted Actions
 
-This workflow is **not yet runnable** until the VPS self-hosted runner and GitHub environment secrets are configured.
+**Chosen setup (2026-10-24): GitHub-hosted Windows runner**, no software installation on the VPS. The VPS hosts the Anco1 SQL Server database.
 
-## VPS setup
+## Minimum configuration
 
-1. On the **Windows VPS hosting SQL Server**, create a dedicated non-admin Windows account for the GitHub Actions runner, and register a GitHub self-hosted runner with labels `self-hosted`, `windows`, `anco1-sql`. Install and run it as a Windows service under the dedicated account. Restrict the runner to this repository; use it only with trusted workflows. Prefer an isolated runner if other untrusted workflows can be edited or triggered.
-2. Create a SQL login with only `CONNECT` and `SELECT` on the required database objects (or preferably dedicated inspection views). **Do not assign `db_owner`, `db_datawriter`, `sysadmin` or other elevated roles**. Limit the login to read-only operations. Server-side SQL permissions, not the PowerShell keyword filter, are the security boundary.
-3. Configure a trusted SQL Server TLS certificate (the script requires `Encrypt=True;TrustServerCertificate=False`).
-4. In GitHub Settings > Environments, create `anco1-sql-readonly` with **required reviewers** and add environment secrets: `ANCO1_SQL_SERVER`, `ANCO1_SQL_DATABASE`, `ANCO1_SQL_USER`, `ANCO1_SQL_PASSWORD`. Never put credentials in source, logs or chat.
-5. Open Actions > **Anco1 - VPS SQL read-only inspection**, choose the approved query, and start. The job will wait for an available runner and environment approval. Download the artifact `anco1-sql-inspection` (retained one day) for review.
-6. The SQL Server does **not** need a public port 1433: the runner is installed on the VPS and makes outbound connections to GitHub.
+1. GitHub `ngocnhanvo/anco1` > **Settings > Secrets and variables > Actions > New repository secret**. Create:
+   - `ANCO1_SQL_SERVER`: a *publicly reachable* DNS name or IP, including TCP port if non-default, e.g. `tcp:db.example.com,1433` (example only).
+   - `ANCO1_SQL_DATABASE`: database name.
+   - `ANCO1_SQL_USER`: dedicated SQL Authentication login with SELECT permissions only.
+   - `ANCO1_SQL_PASSWORD`: that login's password.
+2. On SQL Server, verify TCP/IP is enabled and the configured port is reachable **from a GitHub-hosted runner**. An IP alone is NOT a network tunnel: if the SQL Server is firewalled/private, the connection will fail.
+3. Restrict firewall access to trusted source addresses wherever possible. **Do not open port 1433 unrestricted to the public internet as the default solution**. GitHub-hosted runner outbound IP addresses vary; GitHub does not recommend trying to maintain its large dynamic IP list manually. If this VPS currently has SQL private-only, prefer the **self-hosted runner or an outbound-only private tunnel** rather than weakening its firewall.
+4. SQL Server must offer a TLS certificate trusted by the runner for its connection name: client uses `Encrypt=True;TrustServerCertificate=False`. An IP literal often requires a matching certificate SAN and may fail TLS verification; a hostname with a valid matching certificate is preferable. Do **not** disable TLS certificate validation to work around this.
+5. Go to **Actions > Anco1 - remote SQL read-only inspection > Run workflow**. Choose `sql/inspect-packaging-schema.sql`. On success download `anco1-sql-inspection` artifact (`result.csv`, one-day retention).
 
-## Security notes
+## Protections / caveats
 
-- Workflow permits only committed, predefined query files. No arbitrary SQL input from the workflow form.
-- Query results may contain sensitive data. Use schema-only inspection by default, redact data, keep short artifact retention and limit GitHub repository/artifact access.
-- Only one read-only SELECT is allowed by the client script, with a 500-row result limit and a 45-second command timeout; the server login must independently enforce read-only rights.
-- Self-hosted runners execute repository code. Restrict workflow modification rights and runner access, and do not use this runner for pull requests from untrusted forks.
-- The VPS operator must perform runner registration and configure secrets; GitHub's APIs do not grant access to a private VPS automatically.
-- The workflow is deliberately **manual** and never runs on push, schedule or pull request.
+- The query runs on `windows-latest` using the secrets only; no runner registration / Windows VPS service needed.
+- Trigger: manual `workflow_dispatch` only, one approved source-controlled query file, no arbitrary text query input.
+- Client rejects multiple statements and obvious mutation keywords, limits result rows to 500, and command execution to 45s. **Client-side text filtering is not a SQL security boundary**. Enforce actual SELECT-only rights on the SQL login (prefer access to specific inspection views, not db_owner, db_datawriter or sysadmin).
+- For SQL Server logins, grant only the required database SELECT / metadata permissions. Some schema catalog metadata may need `VIEW DEFINITION` on selected objects; add only if needed.
+- SQL inspection output can contain sensitive data. Keep queries limited to schema/necessary test rows, tightly control GitHub Actions/artifact access, do not log connection strings, and rotate credentials if compromised.
+- Remote access is **not yet verified**. GitHub secrets are not supplied by the assistant and must be configured by the VPS owner. Workflow creation alone cannot prove connectivity.
+- If the database should remain internal-only or allowlisting cannot be maintained, the earlier self-hosted arrangement is still the safer operational choice; this document describes the simpler remote-access path the project owner requested.
+
+## Implementation
+
+- `.github/workflows/anco1-sql-readonly.yml`
+- `scripts/anco1_sql_readonly.ps1`
+- `sql/inspect-packaging-schema.sql`
+
+This diagnostic workflow does not run application build/deployment and does not sync Azure DevOps.
