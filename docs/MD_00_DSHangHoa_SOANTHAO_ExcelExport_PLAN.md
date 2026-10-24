@@ -1,7 +1,7 @@
 # Kế hoạch triển khai Excel export — MD_00_DSHangHoa_SOANTHAO
 
 **Case:** `CA01ExportHHVG_MD00DSHangHoaSOANTHAO`  
-**Trạng thái:** **SQL SELECT bản nháp 37 cột đã chạy thành công trên SQL Server thật** (18 sản phẩm SOANTHAO); JOIN đóng gói được đối chiếu bằng SELECT và tên ĐVT Inner/Outer đã hiệu chỉnh. **Chưa tích hợp chức năng export**. File: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`.  
+**Trạng thái 24/10/2026:** **Đã code xuất Excel `.xls` 37 cột trên GitHub `master`**, truy vấn SQL đã kiểm chứng (18 hàng SOANTHAO). **Đã kiểm tra cú pháp JavaScript và cấu trúc 37 cột; chưa thử WebForms tạo/tải file thực tế.** File: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`.  
 **Mẫu thực tế đã kiểm tra:** `Danh sách hàng hóa-23_10_2026 13_18_02.xls` (SHA-256 `b72f0981b6425930ea983c7f7ebea228e61e7cfe9eb594621de06507fff85aa5`).  
 **Quy tắc repo:** đọc `AGENTS.md` + `docs/knowledge-base/`; chỉ code tại GitHub, Azure DevOps chỉ đồng bộ sau kiểm thử và yêu cầu phát hành riêng.  
 
@@ -31,8 +31,8 @@
 
 ## 1. Hiện trạng đã xác nhận từ source
 
-- JS: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js`, hàm `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` đã có popup xác nhận nhưng **bắt buộc `selrow`**, gửi POST chỉ có `id`, sau đó gọi `oper=savefile`.
-- Handler: `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx` hiện **không có switch case** cho `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` và `savefile`, không có phương thức xuất Excel cho case này.
+- JS: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js` đã chuyển sang popup preview và POST tải Blob `.xls`, không yêu cầu `selrow`, lấy theo toàn bộ kết quả lọc mọi trang.
+- Handler: `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx` đã có switch case xuất; `mode=preview` trả JSON/snapshot, `mode=download` trả NPOI binary `.xls`, không dùng `savefile` hoặc Session để giữ workbook.
 - jqGrid Load: `eman_ver3/Controller/JQGrid/JQGridMD_00_DSHangHoa_SOANTHAOLoad.ashx` tạo danh sách từ `VNN_Config.Select_sql` + `ad_module.from_sql/where_sql` + `ad_role_where` + bộ lọc `Helper.getFilter/getFilterP`, sau đó mới phân trang. Phần export phải lấy cùng tập dữ liệu nhưng không áp giới hạn trang.
 - Đã có tiền lệ tạo HSSFWorkbook/NPOI trong `JQGridMD_00_DSHangHoaModify.ashx` (`CA_01_ExportHH`, `EXport_EXHH`, `SaveFile`); **tham khảo API/chức năng, không sao chép truy vấn hoặc danh sách cột 22 cột vì mẫu mới khác**.
 
@@ -107,6 +107,17 @@
 - Chỉ ghi đúng số byte của MemoryStream ra Response; đảm bảo MIME và Content-Disposition UTF-8 filename hợp lệ. Tránh lưu `HSSFWorkbook` trong Session dùng chung giữa các lượt xuất, vì có thể ghi đè/chồng trạng thái khi tải đồng thời.
 - Nếu dữ liệu rất lớn: timeout hợp lý, lấy theo batch/streaming và giải phóng tài nguyên, không khóa giao diện vô thời hạn.
 
+## Đã triển khai trên GitHub, chờ kiểm thử WebForms thực tế
+
+- [x] Handler + UI case có kiểm tra đăng nhập, `PhanQuyen_ChucNang`, cùng module SQL, `ad_role_where` và lọc jqGrid.
+- [x] Xuất theo mọi trang, không cần chọn dòng; preview số dòng và snapshot trước khi tải.
+- [x] SELECT 37 cột bằng `SqlParameter` theo lô 300 ID; giữ đúng thứ tự ID được cấp quyền.
+- [x] NPOI `.xls`, định dạng cột tiêu đề/số/ngày/NULL, tạo sheet mới sau 65.535 dòng dữ liệu, trả bytes trực tiếp.
+- [x] Kiểm tra cú pháp JS và kiểm tra tĩnh số tiêu đề/độ rộng 37, cấu trúc truy vấn, quyền server.
+- [ ] Kiểm thử WebForms có phiên đăng nhập hợp lệ, tải/mở `.xls` thực, không lọc/lọc/0 dòng/nhiều trang, dữ liệu mẫu, phân quyền.
+- [ ] Chỉ phát hành Azure DevOps sau kiểm thử và yêu cầu riêng của chủ dự án.
+
+Chức năng chủ động từ chối `where_ex` tùy ý của browser để tránh truy vấn ngoài quyền; không đồng bộ Azure ở bước triển khai GitHub này.
 ## 5. Các bước thực hiện dự kiến
 
 1. **Đã nhận schema CSV**: xác nhận cấu hình SQL module, nhãn cột và các trường AncoTrading. Còn cần kiểm tra FK/thực tế nhiều dòng đóng gói, thứ tự chọn `macdinh`, bản BOM thích hợp và giá trị `SL Cont 40`.
