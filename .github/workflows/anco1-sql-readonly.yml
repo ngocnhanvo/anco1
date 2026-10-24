@@ -1,6 +1,10 @@
 name: Anco1 - remote SQL read-only inspection
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/anco1-sql-readonly.yml'
   workflow_dispatch:
     inputs:
       query:
@@ -16,6 +20,7 @@ on:
           - sql/inspect-draft-export-source-fields.sql
           - sql/inspect-draft-vendor-values.sql
           - sql/inspect-product-default-vendor-51-60000-01-82.sql
+          - sql/inspect-dhd-vg-export-sample.sql
 
 permissions:
   contents: read
@@ -35,7 +40,7 @@ jobs:
           ANCO1_SQL_DATABASE: ${{ secrets.ANCO1_SQL_DATABASE }}
           ANCO1_SQL_USER: ${{ secrets.ANCO1_SQL_USER }}
           ANCO1_SQL_PASSWORD: ${{ secrets.ANCO1_SQL_PASSWORD }}
-        run: ./scripts/anco1_sql_readonly.ps1 -QueryFile "${{ inputs.query }}" -OutputDirectory "sql-results"
+        run: ./scripts/anco1_sql_readonly.ps1 -QueryFile "sql/inspect-dhd-vg-export-sample.sql" -OutputDirectory "sql-results"
       - uses: actions/upload-artifact@v4
         with:
           name: anco1-sql-inspection
