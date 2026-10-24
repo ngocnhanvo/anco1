@@ -1,13 +1,19 @@
 # Kế hoạch triển khai Excel export — MD_00_DSHangHoa_SOANTHAO
 
 **Case:** `CA01ExportHHVG_MD00DSHangHoaSOANTHAO`  
-**Trạng thái:** Đã tạo **SQL bản nháp để duyệt** tại `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`; **chưa tích hợp chức năng export**.  
+**Trạng thái:** **SQL SELECT bản nháp 37 cột đã được viết theo ad_module, ad_column và metadata hai bảng đóng gói**; chưa chạy DB thực tế, **chưa tích hợp chức năng export**. File: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`.  
 **Mẫu thực tế đã kiểm tra:** `Danh sách hàng hóa-23_10_2026 13_18_02.xls` (SHA-256 `b72f0981b6425930ea983c7f7ebea228e61e7cfe9eb594621de06507fff85aa5`).  
 **Quy tắc repo:** đọc `AGENTS.md` + `docs/knowledge-base/`; chỉ code tại GitHub, Azure DevOps chỉ đồng bộ sau kiểm thử và yêu cầu phát hành riêng.  
 
 > **Điều chỉnh 24/10/2026:** người dùng xác nhận bỏ hoàn toàn 4 cột ẩn AA–AD gốc. Từ đây mọi file xuất chỉ có **37 cột**; bản SQL nháp để duyệt xem trong `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql` (không áp phân quyền thực tế, không chạy xuất file).
 
 > **Bổ sung 24/10/2026:** người dùng xác nhận `Mã thô` lấy qua `md_sanpham_bom` và `md_sanpham_bom_vattu`, nhóm đóng gói lấy từ `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`. SQL nháp đã xử lý BOM bằng `OUTER APPLY` để giữ một dòng/sản phẩm, và bổ sung câu khảo sát schema/foreign keys hai bảng đóng gói. Hai bảng đóng gói chưa có định nghĩa thực tế trong repo GitHub, nên chưa nối vào output để tránh dữ liệu sai.
+
+> **Kiểm chứng 24/10/2026 từ các CSV được chủ dự án cung cấp:**
+> - `Results1.csv`: cấu hình `ad_module`, gồm `select_sql`, `from_sql`, `where_sql`, `orderby_sql` thực của `MD_00_DSHangHoa_SOANTHAO`.
+> - `Results2.csv`: danh sách `ad_column`; xác nhận `sp.v2` là CBM mặc định, `kd.ten_tv` là tên kiểu dáng, `cn.ten_tv` là tên chức năng, cũng như nhãn nhà cung cấp/kho/xưởng/thuế.
+> - `Results3.csv`: danh sách tên cột/tên bảng (từ `sys.tables` và `sys.columns`), **không phải** kết quả foreign keys hoặc giá trị dữ liệu mẫu. Xác nhận các trường thực tế tại `md_donggoi_ancotrading`: `sl_inner`, `dvt_inner`, `l1/w1/h1`, `sl_outer`, `dvt_outer`, `l2_mix/w2_mix/h2_mix`, `soluonggoi_ctn_20`, `soluonggoi_ctn`, `soluonggoi_ctn_40hc`, `ngayxacnhan`, `trangthai`, `mota`; cùng `md_donggoisanpham_ancotrading`: `md_sanpham_id`, `md_donggoi_id`, `macdinh`, `hoatdong`.
+> - JOIN đóng gói hiện **dự kiến** qua `ds.md_donggoi_id = p.md_donggoi_id`, chọn bản `macdinh=1` đang hoạt động và cập nhật gần nhất. Cần xác minh bằng FK và vài dòng dữ liệu thật; `SL Cont 40` dự kiến = `soluonggoi_ctn`.
 
 ## 1. Hiện trạng đã xác nhận từ source
 
@@ -38,26 +44,26 @@
 | G | H(cm) | `md_sanpham.h_cm` |
 | H | Khối lượng (kg) | `md_sanpham.trongluong` |
 | I | Diện Tích | `md_sanpham.dientich` |
-| J | Thể Tích | **Cần kiểm tra SQL biểu thức** (không thấy trường trực tiếp trong entity `md_sanpham`) |
-| K | Tên kiểu dáng | Join theo `md_kieudang_id`; xác định cột mô tả trong DB |
-| L | Tên chức năng | Join theo `md_chucnang_id`; xác định cột mô tả trong DB |
+| J | Thể Tích | `sp.v2` theo cột `CBM mặc định` trong `ad_column` (cần xác minh giá trị thực với mẫu) |
+| K | Tên kiểu dáng | `md_kieudang_ancotrading kd` → `kd.ten_tv` theo cấu hình `ad_module` |
+| L | Tên chức năng | `md_chucnang_ancotrading cn` → `cn.ten_tv` theo cấu hình `ad_module` |
 | M | Ghi chú | `md_sanpham.ghichu` |
-| N | SL Inner | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| O | DVT Inner | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| P | l1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| Q | w1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| R | h1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| S | SL Outer | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| T | DVT Outer | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| U | l2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| V | w2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| W | h2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| X | SL Cont 20 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| Y | SL Cont 40 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| Z | SL Cont 40 hc | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| AA | Ngày xác nhận ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| AB | trạng thái ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
-| AC | Ghi chú ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| N | SL Inner | `md_donggoi_ancotrading.sl_inner` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| O | DVT Inner | `md_donggoi_ancotrading.dvt_inner` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| P | l1 | `md_donggoi_ancotrading.l1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| Q | w1 | `md_donggoi_ancotrading.w1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| R | h1 | `md_donggoi_ancotrading.h1` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| S | SL Outer | `md_donggoi_ancotrading.sl_outer` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| T | DVT Outer | `md_donggoi_ancotrading.dvt_outer` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| U | l2 | `md_donggoi_ancotrading.l2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| V | w2 | `md_donggoi_ancotrading.w2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| W | h2 | `md_donggoi_ancotrading.h2_mix` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| X | SL Cont 20 | `md_donggoi_ancotrading.soluonggoi_ctn_20` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| Y | SL Cont 40 | `md_donggoi_ancotrading.soluonggoi_ctn` qua bảng liên kết `md_donggoisanpham_ancotrading` (chờ kiểm tra ngữ nghĩa dữ liệu) |
+| Z | SL Cont 40 hc | `md_donggoi_ancotrading.soluonggoi_ctn_40hc` qua bảng liên kết `md_donggoisanpham_ancotrading` (đã xác nhận tồn tại cột) |
+| AA | Ngày xác nhận ĐG | `md_donggoi_ancotrading.ngayxacnhan` qua bảng liên kết `md_donggoisanpham_ancotrading` (chờ kiểm tra ngữ nghĩa dữ liệu) |
+| AB | trạng thái ĐG | `md_donggoi_ancotrading.trangthai` qua bảng liên kết `md_donggoisanpham_ancotrading` (chờ kiểm tra ngữ nghĩa dữ liệu) |
+| AC | Ghi chú ĐG | `md_donggoi_ancotrading.mota` qua bảng liên kết `md_donggoisanpham_ancotrading` (chờ kiểm tra ngữ nghĩa dữ liệu) |
 | AD | Định khoản | `md_sanpham.dinhkhoan` |
 | AE | Nhóm VTHH | Xác định chính xác mã/nhãn từ `md_nhomnangluc_id` hoặc cấu hình SQL |
 | AF | NCC mặc định | `md_sanpham.nhacungung`, join lấy mã/tên hiển thị theo mẫu |
@@ -89,7 +95,7 @@
 
 ## 5. Các bước thực hiện dự kiến
 
-1. **Khảo sát DB/config**: đối chiếu SQL `ad_module`, `ad_column`, quy tắc hiệu lực BOM và metadata/khóa của `md_donggoi_ancotrading`, `md_donggoisanpham_ancotrading`; chốt mapping 37 cột (đặc biệt J, K:L, N:AC, AE:AF).
+1. **Đã nhận schema CSV**: xác nhận cấu hình SQL module, nhãn cột và các trường AncoTrading. Còn cần kiểm tra FK/thực tế nhiều dòng đóng gói, thứ tự chọn `macdinh`, bản BOM thích hợp và giá trị `SL Cont 40`.
 2. **Tạo truy vấn read-only** lấy toàn bộ kết quả lọc theo quyền và thứ tự sort; kiểm tra chính xác số dòng, không nhân bản.
 3. **Viết export NPOI** (.xls) tái hiện header, kích thước, ẩn cột và kiểu dữ liệu của mẫu; đối chiếu hai mã hàng minh họa trong sample; bỏ 4 cột ẩn gốc.
 4. **Hoàn thiện case JavaScript**: lọc toàn bộ, popup xác nhận, download, icon, lỗi.
