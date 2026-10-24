@@ -47,3 +47,24 @@ Context:
 
 Consequence:
 - Future source changes should avoid reintroducing these backup/archive artifacts. Database/schema context should be handled deliberately rather than by committing large backup files.
+
+## Azure DevOps release synchronization
+
+**Status: Confirmed by project owner (2026-10-24)**
+
+Decision:
+- GitHub `ngocnhanvo/anco1` is the development repository; Azure DevOps `vongocnhancd10cntt2/Anco1/_git/Anco1` is the destination repository.
+- Never mirror or overwrite Azure with GitHub history. The irreversible exclusion baseline for old GitHub commits is `1e614269073c8f60bdfcdbfc1570ecd7588a2d20` (the last DHD dialog-icon fix). That commit and all earlier commits are excluded.
+- Only source-code changes after that baseline are eligible; exclude workflow/synchronization implementation and knowledge notes from the payload. Exact allowlist is in `scripts/azure_devops_sync.py`.
+- Delivery requires deliberate `workflow_dispatch` of `.github/workflows/azure-devops-sync.yml`, with `preview` before `create-pr` recommended. GitHub pushes alone must not release automatically.
+- Azure's default branch is discovered dynamically. Apply the incremental source patch against it on an isolated branch; if conflicts arise, stop rather than overwrite.
+- Create an Azure DevOps pull request; never push directly or force-push to its default branch. Human PR review/merge remains required.
+- After a successfully completed Azure sync PR, use its `ANCO1_SYNC_TO` SHA as the next incremental source cursor. Do not treat open, abandoned, or failed PRs as completed.
+- Keep Azure access credential exclusively in GitHub Actions secret `AZURE_DEVOPS_PAT` with repository Code (Read & write) permission; never store the secret in the repository or a chat.
+
+Implementation:
+- `.github/workflows/azure-devops-sync.yml`
+- `scripts/azure_devops_sync.py`
+
+Consequence:
+- The previously completed DHD feature is *not* synchronized retroactively by this workflow. A future new source commit after the baseline is required before a nonempty first release.
