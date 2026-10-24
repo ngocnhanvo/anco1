@@ -221,7 +221,26 @@ def main():
         branch = "github-sync/anco1-" + head[:12] + "-" + os.environ.get("GITHUB_RUN_ID", "manual")
         git("-C", str(root), "switch", "-c", branch)
         preload_source_patch_blobs(root, start, head)
-        git("-C", str(root), "apply", "--index", "--3way", "-", input_bytes=patch)
+        try:
+            git("-C", str(root), "apply", "--index", "--3way", "-",
+                input_bytes=patch)
+            print("Generic safe 3-way patch applied.")
+        except RuntimeError:
+            # The two-file Excel export was built on top of a previous GitHub
+            # DHD feature excluded from the Azure baseline. Never import that
+            # excluded DHD code and never replace full Azure source files.
+            # The guarded bridge copies ONLY the new, standalone Excel feature
+            # after checking the old JS block matches the known baseline.
+            if start != BASELINE or set(changed) != {
+                "eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx",
+                "eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js",
+            }:
+                raise
+            print("Git patch conflicts with excluded old DHD history; "
+                  "trying a one-time guarded Excel-only integration.")
+            git("-C", str(root), "reset", "--hard", "HEAD")
+            from azure_devops_excel_bootstrap import apply_guarded_excel_only
+            apply_guarded_excel_only(root, pathlib.Path.cwd(), BASELINE, changed)
         status = git("-C", str(root), "diff", "--cached", "--name-only").decode().strip()
         if not status:
             print("Diff is already present in Azure; nothing to release.")
