@@ -187,3 +187,13 @@ When a future task establishes any of these, add a compact rule with status, imp
 - **Implementation (GitHub development branch, pending runtime smoke test):** `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx` handles `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` as preview/download POST; it obtains authorized IDs through module SQL, `ad_role_where`, supported jqGrid filters, uses parameterized batches for the 37-column read-only SQL, and writes an actual NPOI `HSSFWorkbook` `.xls` to the HTTP response, splitting at 65,535 data rows/sheet. `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js` now exports the current filter across all pages, without requiring `selrow`, and downloads the binary response with XHR/Blob. Text is written as text cells (never formulas), and NULL is preserved. The server deliberately rejects client `where_ex` SQL until safely supported. No Azure release was performed.
 - NCC mapping `md_sanpham.nhacungung` → `md_doitackinhdoanh.md_doitackinhdoanh_id` was positively verified for product `51-60000-01-82` (status `DHD`, vendor code/name `MUA NGOÀI`); orphan draft references remain a **data** issue, not reason to modify the confirmed join.
 - SQL draft and schema inspection queries: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`; implementation plan: `docs/MD_00_DSHangHoa_SOANTHAO_ExcelExport_PLAN.md`.
+
+### Finished goods Excel export (MD_00_DSHangHoaVG)
+
+**Status: Confirmed by project owner on 2026-10-24; SQL projection copied from the verified SOANTHAO export, DHD sample validation pending.**
+
+- Module `MD_00_DSHangHoaVG`, case `CA_01_ExportHHVG`. Export the same 37-column AncoTrading/BOM workbook and data sources as `MD_00_DSHangHoa_SOANTHAO`, including `Mã thô` from the latest BOM and packing Inner/Outer UOM from `md_donvitinh`.
+- **Required and exact product conditions:** `sp.trangthai = 'DHD' AND sp.vattu = 0 AND (sp.sanpham = 1 OR sp.ban_thanhpham = 1)`. Nullable `vattu` does **not** count as zero for this export. The source ID eligibility query and final parameterized SQL must both enforce the same restrictions.
+- Preserve authorized module/jqGrid filtering across all result pages; no selected row required. The preview/download POST handler checks login and `Security.PhanQuyen_ChucNang` before reading; NPOI returns a real `.xls` without `Session["hsswb"]`.
+- Module files: `eman_ver3/js/Module_script/MD_00_DSHangHoaVG.js`, `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoaVGModify.ashx`.
+- Excel export popup in both SOANTHAO and VG intentionally omits the explanatory `Tệp Excel 97-2003 (.xls), 37 cột đúng mẫu, không có 4 cột ẩn.` text.
