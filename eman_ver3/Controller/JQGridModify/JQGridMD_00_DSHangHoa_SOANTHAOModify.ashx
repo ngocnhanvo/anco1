@@ -516,7 +516,7 @@ ORDER BY SUBSTRING(sp.ma_sanpham, 0, 12) ASC,
             var fallbackName = "DanhSachHangHoa-" + suffix;
             context.Response.Clear();
             context.Response.ContentType = "application/vnd.ms-excel";
-            context.Response.AddHeader("Content-Disposition", "attachment; filename=\\"" + fallbackName + "\\"; filename*=UTF-8\u0027\u0027" + Uri.EscapeDataString(filename));
+            context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + fallbackName + "\"; filename*=UTF-8''" + Uri.EscapeDataString(filename));
             context.Response.AddHeader("Content-Length", bytes.Length.ToString(System.Globalization.CultureInfo.InvariantCulture));
             context.Response.BinaryWrite(bytes);
             context.Response.Flush();
