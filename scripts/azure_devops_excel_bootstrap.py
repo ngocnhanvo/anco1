@@ -116,3 +116,45 @@ def apply_guarded_excel_only(azure_repo, source_repo, baseline, changed):
                    check=True)
     print("Guarded Excel bootstrap: added export case, standalone 37-column "
           "NPOI methods and updated export JS only; DHD/history left untouched.")
+
+
+def remove_exact_popup_line(azure_repo, source_repo, start, head):
+    """Apply only the user's single-line SOANTHAO popup cleanup in Azure.
+
+    The GitHub delta must be *exactly* this one deletion; preserve any unrelated
+    Azure-side JavaScript changes. Called only after the VG JS patch applies
+    cleanly and after the Azure clone's working tree was reset.
+    """
+    obsolete = (
+        "                $('<p>').text("
+        "'Tệp Excel 97-2003 (.xls), 37 cột đúng mẫu, không có 4 cột ẩn.'"
+        ").appendTo($content);"
+    )
+    from_github = baseline_text(source_repo, start, JAVASCRIPT)
+    to_github = baseline_text(source_repo, head, JAVASCRIPT)
+    if (from_github.count(obsolete + "\n") != 1
+            or from_github.replace(obsolete + "\n", "", 1) != to_github):
+        raise RuntimeError(
+            "SOANTHAO GitHub diff contains changes besides the requested popup line."
+        )
+
+    target_path = Path(azure_repo) / JAVASCRIPT
+    azure_text, bom, crlf = decoded(target_path.read_bytes())
+    fragment = one_region(azure_text, JS_START, JS_END)
+    if fragment.count(obsolete + "\n") != 1:
+        raise RuntimeError(
+            "The expected SOANTHAO popup line is not unique in Azure; "
+            "manual conflict resolution required."
+        )
+    corrected = azure_text.replace(obsolete + "\n", "", 1)
+    target_path.write_bytes(encoded(corrected, bom, crlf))
+    subprocess.run(
+        ["git", "-C", str(azure_repo), "add", "--", JAVASCRIPT],
+        check=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(azure_repo), "diff", "--cached", "--check"],
+        check=True,
+    )
+    print("Removed exactly the requested SOANTHAO popup line on Azure "
+          "without touching any other JavaScript.")
