@@ -1,6 +1,24 @@
-name: Anco1 - approved GitHub changes to Azure DevOps
+name: Anco1 - automatic GitHub source sync to Azure DevOps
 
+# GitHub master is the development source of truth. Only approved source paths
+# are eligible; the Python sync script enforces the historical cutoff and
+# creates incremental Azure PRs without rewriting Azure master.
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'eman_ver3/**'
+      - 'DataAccess/**'
+      - 'GenerateModels/**'
+      - 'Report/**'
+      - 'Anco1.sln'
+      - 'packages/**'
+      - '.github/workflows/azure-devops-sync.yml'
+      - 'scripts/azure_devops_sync.py'
+  schedule:
+    # Retry if a previous Azure PR was awaiting validation and has since completed.
+    - cron: '23 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -25,14 +43,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout exact approved GitHub revision
+      - name: Checkout current GitHub master
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: master
           fetch-depth: 0
           persist-credentials: false
-      - name: Preview/apply changes since last completed Azure sync
+      - name: Sync eligible post-baseline source changes to Azure PR
         env:
           AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
-          SYNC_MODE: ${{ inputs.mode }}
+          SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'create-pr' }}
+          SYNC_AUTO_COMPLETE: ${{ github.event_name != 'workflow_dispatch' && 'true' || 'false' }}
         run: python3 scripts/azure_devops_sync.py
