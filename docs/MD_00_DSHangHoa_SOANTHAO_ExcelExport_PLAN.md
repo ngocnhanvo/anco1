@@ -7,6 +7,8 @@
 
 > **Điều chỉnh 24/10/2026:** người dùng xác nhận bỏ hoàn toàn 4 cột ẩn AA–AD gốc. Từ đây mọi file xuất chỉ có **37 cột**; bản SQL nháp để duyệt xem trong `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql` (không áp phân quyền thực tế, không chạy xuất file).
 
+> **Bổ sung 24/10/2026:** người dùng xác nhận `Mã thô` lấy qua `md_sanpham_bom` và `md_sanpham_bom_vattu`, nhóm đóng gói lấy từ `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`. SQL nháp đã xử lý BOM bằng `OUTER APPLY` để giữ một dòng/sản phẩm, và bổ sung câu khảo sát schema/foreign keys hai bảng đóng gói. Hai bảng đóng gói chưa có định nghĩa thực tế trong repo GitHub, nên chưa nối vào output để tránh dữ liệu sai.
+
 ## 1. Hiện trạng đã xác nhận từ source
 
 - JS: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js`, hàm `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` đã có popup xác nhận nhưng **bắt buộc `selrow`**, gửi POST chỉ có `id`, sau đó gọi `oper=savefile`.
@@ -28,7 +30,7 @@
 | Cột | Tiêu đề mẫu | Nguồn/mapping kế hoạch |
 |---|---|---|
 | A | Mã hàng | `md_sanpham.ma_sanpham` |
-| B | Mã thô | **Cần đối chiếu `ad_column` / SQL**; không tự cho rằng là `ma_sanphamcu` |
+| B | Mã thô | **Nguồn đã xác nhận:** `md_sanpham_bom` → `md_sanpham_bom_vattu` → `md_sanpham` mã vật tư con. SQL nháp chọn BOM còn hiệu lực gần nhất, ưu tiên BTP thuần (`ban_thanhpham=1`, `vattu=0/NULL`), ghép các mã nếu nhiều; cần duyệt cách chọn kết quả cuối |
 | C | Mô Tả Tiếng Việt | `md_sanpham.mota_tiengviet` |
 | D | ĐVT | Join `md_donvitinhsanpham`, giá trị hiển thị `ten_dvt` |
 | E | L(cm) | `md_sanpham.l_cm` |
@@ -40,22 +42,22 @@
 | K | Tên kiểu dáng | Join theo `md_kieudang_id`; xác định cột mô tả trong DB |
 | L | Tên chức năng | Join theo `md_chucnang_id`; xác định cột mô tả trong DB |
 | M | Ghi chú | `md_sanpham.ghichu` |
-| N | SL Inner | **Cần kiểm tra projection/bảng đóng gói** |
-| O | DVT Inner | **Cần kiểm tra projection/bảng đóng gói** |
-| P | l1 | **Cần kiểm tra projection/bảng đóng gói** |
-| Q | w1 | **Cần kiểm tra projection/bảng đóng gói** |
-| R | h1 | **Cần kiểm tra projection/bảng đóng gói** |
-| S | SL Outer | **Cần kiểm tra projection/bảng đóng gói** |
-| T | DVT Outer | **Cần kiểm tra projection/bảng đóng gói** |
-| U | l2 | **Cần kiểm tra projection/bảng đóng gói** |
-| V | w2 | **Cần kiểm tra projection/bảng đóng gói** |
-| W | h2 | **Cần kiểm tra projection/bảng đóng gói** |
-| X | SL Cont 20 | **Cần kiểm tra projection/bảng đóng gói** |
-| Y | SL Cont 40 | **Cần kiểm tra projection/bảng đóng gói** |
-| Z | SL Cont 40 hc | **Cần kiểm tra projection/bảng đóng gói** |
-| AA | Ngày xác nhận ĐG | **Cần xác định mapping/ngữ nghĩa và định dạng ngày** |
-| AB | trạng thái ĐG | **Cần xác định mapping từ dữ liệu đóng gói** |
-| AC | Ghi chú ĐG | **Cần xác định mapping từ dữ liệu đóng gói** |
+| N | SL Inner | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| O | DVT Inner | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| P | l1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| Q | w1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| R | h1 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| S | SL Outer | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| T | DVT Outer | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| U | l2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| V | w2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| W | h2 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| X | SL Cont 20 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| Y | SL Cont 40 | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| Z | SL Cont 40 hc | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| AA | Ngày xác nhận ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| AB | trạng thái ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
+| AC | Ghi chú ĐG | **Nguồn đã xác nhận:** `md_donggoi_ancotrading` và `md_donggoisanpham_ancotrading`; chưa có DDL/entity trong GitHub nên chờ đối chiếu khóa/cột thực tế |
 | AD | Định khoản | `md_sanpham.dinhkhoan` |
 | AE | Nhóm VTHH | Xác định chính xác mã/nhãn từ `md_nhomnangluc_id` hoặc cấu hình SQL |
 | AF | NCC mặc định | `md_sanpham.nhacungung`, join lấy mã/tên hiển thị theo mẫu |
@@ -79,7 +81,7 @@
 
 - Bổ sung duy nhất case `CA01ExportHHVG_MD00DSHangHoaSOANTHAO` trong `JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx`; quyền `Security.id_taikhoan` + `Security.PhanQuyen_ChucNang(context, maModule, maCase)`.
 - Tạo hàm đọc **read-only** tái sử dụng cùng module SQL/where_role/filter của jqGrid Load, bỏ paging; whitelist trường/operator lọc và áp toàn bộ điều kiện role/module ở server. **Không nhận SQL thô từ browser**, không dùng trực tiếp string `where_ex` tùy ý cho truy vấn xuất hàng loạt.
-- Ưu tiên dựa trên projection cấu hình thực tế để lấy dữ liệu hiển thị giống jqGrid; nếu cần thêm join để điền 41 cột, định nghĩa mapping tường minh và kiểm thử quan hệ 1:N không làm nhân bản mã hàng.
+- Ưu tiên dựa trên projection cấu hình thực tế để lấy dữ liệu hiển thị giống jqGrid; khi điền 37 cột cần mapping tường minh và kiểm thử quan hệ 1:N không làm nhân bản mã hàng. Với BOM dùng OUTER APPLY; với đóng gói phải xác định bản ghi đúng/ưu tiên phiên bản trước khi JOIN.
 - Tạo Excel bằng **NPOI HSSFWorkbook** hiện có, tái hiện đúng **37 header liên tiếp, không xuất 4 cột ẩn gốc**, kiểu dữ liệu và kích thước cột; dữ liệu text an toàn với Excel, không dựng công thức từ text nhập vào.
 - `.xls` giới hạn 65.536 dòng/sheet (gồm 1 header): tự chia sheet khi quá giới hạn, hoặc chọn `.xlsx` nếu có yêu cầu đổi định dạng; không được cắt mất dữ liệu im lặng.
 - Chỉ ghi đúng số byte của MemoryStream ra Response; đảm bảo MIME và Content-Disposition UTF-8 filename hợp lệ. Tránh lưu `HSSFWorkbook` trong Session dùng chung giữa các lượt xuất, vì có thể ghi đè/chồng trạng thái khi tải đồng thời.
@@ -87,11 +89,11 @@
 
 ## 5. Các bước thực hiện dự kiến
 
-1. **Khảo sát DB/config**: chốt SQL `ad_module`, `ad_column`, trạng thái/sort/filter và mapping 37 cột (đặc biệt B, J, N:AG, AI:AJ).
+1. **Khảo sát DB/config**: đối chiếu SQL `ad_module`, `ad_column`, quy tắc hiệu lực BOM và metadata/khóa của `md_donggoi_ancotrading`, `md_donggoisanpham_ancotrading`; chốt mapping 37 cột (đặc biệt J, K:L, N:AC, AE:AF).
 2. **Tạo truy vấn read-only** lấy toàn bộ kết quả lọc theo quyền và thứ tự sort; kiểm tra chính xác số dòng, không nhân bản.
 3. **Viết export NPOI** (.xls) tái hiện header, kích thước, ẩn cột và kiểu dữ liệu của mẫu; đối chiếu hai mã hàng minh họa trong sample; bỏ 4 cột ẩn gốc.
 4. **Hoàn thiện case JavaScript**: lọc toàn bộ, popup xác nhận, download, icon, lỗi.
-5. **Kiểm thử**: 0/1/nhiều dòng, lọc nhiều điều kiện, qua nhiều trang, đúng quyền role, không lọc, cột ẩn, Unicode, số thập phân, Null vs 0, Excel mở sạch, >65.535 dòng, tải đồng thời, không ghi dữ liệu DB.
+5. **Kiểm thử**: 0/1/nhiều dòng, lọc nhiều điều kiện, qua nhiều trang, đúng quyền role, không lọc, loại bỏ cột ẩn, nhiều BOM/đóng gói không nhân dòng, Unicode, số thập phân, Null vs 0, Excel mở sạch, >65.535 dòng, tải đồng thời, không ghi dữ liệu DB.
 6. **Rà soát diff + cập nhật knowledge** sau khi xác thực mapping. Commit/test trên GitHub trước. **Không tự đồng bộ Azure DevOps**; chỉ phát hành qua workflow PR riêng theo chính sách dự án khi chủ dự án yêu cầu.
 
 ## 6. Tiêu chí hoàn tất
