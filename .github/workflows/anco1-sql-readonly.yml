@@ -1,6 +1,10 @@
 name: Anco1 - remote SQL read-only inspection
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/anco1-sql-readonly.yml'
   workflow_dispatch:
     inputs:
       query:
@@ -28,7 +32,7 @@ jobs:
           ANCO1_SQL_DATABASE: ${{ secrets.ANCO1_SQL_DATABASE }}
           ANCO1_SQL_USER: ${{ secrets.ANCO1_SQL_USER }}
           ANCO1_SQL_PASSWORD: ${{ secrets.ANCO1_SQL_PASSWORD }}
-        run: ./scripts/anco1_sql_readonly.ps1 -QueryFile "${{ inputs.query }}" -OutputDirectory "sql-results"
+        run: ./scripts/anco1_sql_readonly.ps1 -QueryFile "sql/inspect-packaging-schema.sql" -OutputDirectory "sql-results"
       - uses: actions/upload-artifact@v4
         with:
           name: anco1-sql-inspection
