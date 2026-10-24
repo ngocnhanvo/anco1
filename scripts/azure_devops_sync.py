@@ -149,6 +149,10 @@ def main():
         if not automatic:
             raise RuntimeError(message)
         print(message)
+        # A queued run may have created the PR before auto-complete was configured.
+        # Safely enable it without creating a second branch or PR.
+        if not active.get("autoCompleteSetBy"):
+            request_auto_complete(auth, active)
         return
     start = find_last_completed(auth, target_ref, head)
     if not ancestor(start, head):
