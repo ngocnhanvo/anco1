@@ -168,3 +168,15 @@ When a future task establishes any of these, add a compact rule with status, imp
 - The action requires a nonempty jqGrid filter and case-level permission. The server evaluates the module SQL and role-level restrictions, previews match/eligible counts, rechecks the set before execution, and commits the batch in one database transaction.
 - Records outside the filter and records already in other states are not changed; a stale preview aborts rather than silently applying to a different set.
 - Implementation: `eman_ver3/js/Module_script/MD_00_DSHangHoa_SOANTHAO.js` and `eman_ver3/Controller/JQGridModify/JQGridMD_00_DSHangHoa_SOANTHAOModify.ashx`.
+
+
+### Draft product Excel export: BOM raw code and AncoTrading packaging
+
+**Status: Source tables confirmed by project owner (2026-10-24); field-level packaging mapping pending DB schema verification.**
+
+- Module `MD_00_DSHangHoa_SOANTHAO`, case `CA01ExportHHVG_MD00DSHangHoaSOANTHAO`: Excel `Mã thô` must come from BOM relations `md_sanpham_bom` and `md_sanpham_bom_vattu` joined to `md_sanpham` for child codes, not from splitting `ma_sanpham` or treating `ma_sanphamcu` as the raw code.
+- Current SQL **review draft** chooses the most recent eligible BOM (`ngay_hieuluc <= GETDATE()`, nonempty `ten_phienban`, tie-break by BOM ID) and aggregates distinct direct BTP child codes. Verify these exact selection/business semantics against the intended output before production.
+- All packaging data for this Excel comes from **`md_donggoi_ancotrading` and `md_donggoisanpham_ancotrading`** (confirmed source tables); do not confuse these with `md_donggoi` / sales-order line packaging data.
+- The GitHub-tracked EntityFramework `Objects` directory does not currently contain mappings for these exact `_ancotrading` tables. Determine their real columns, FKs, status/version choice and product linkage from the deployed database before composing JOINs or mapping Inner/Outer/Cont 20/40/40HC and packaging confirmation fields. No guessed column names or multiplication of product rows.
+- The owner removed four hidden Excel columns `vd`, `vn`, `vl`, `ghichu_vachngan`. Output must contain **37 columns**.
+- SQL draft and schema inspection queries: `docs/sql/MD_00_DSHangHoa_SOANTHAO_ExportHHVG_DRAFT.sql`; implementation plan: `docs/MD_00_DSHangHoa_SOANTHAO_ExcelExport_PLAN.md`.
