@@ -24,6 +24,13 @@
 - Nếu Azure từ chối auto-complete do quyền hoặc cấu hình, xem log và khắc phục quyền/chính sách trên Azure. Không tự hạ mức bảo vệ.
 - Kết quả run ở [GitHub Actions](https://github.com/ngocnhanvo/anco1/actions/workflows/azure-devops-sync.yml), các PR ở `https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequests`.
 
+## Kết quả kiểm thử lần đầu (24/10/2026)
+
+- [Run #40081454637](https://github.com/ngocnhanvo/anco1/actions/runs/40081454637): **success**; bản vá hai file xuất Excel SOANTHAO được ghép có kiểm tra, tạo [Azure PR #5](https://dev.azure.com/vongocnhancd10cntt2/Anco1/_git/Anco1/pullrequest/5), bật auto-complete. Không mang DHD cũ.
+- [Run #40081834639](https://github.com/ngocnhanvo/anco1/actions/runs/40081834639): **success**; cursor nguồn đã chuyển từ baseline thành `fce7a33555fb5ee852c42a3a890cd4e4f68db178`, xác nhận PR #5 đã được Azure đánh dấu **completed** và không còn source change mới để chuyển.
+- Vì vậy chức năng Excel SOANTHAO đã được **đồng bộ vào nhánh mặc định Azure** bằng PR tự hoàn tất. Đây là đồng bộ **source**, không phải build IIS/deploy ứng dụng.
+- Các commit docs, workflow, knowledge và script tự đồng bộ sau `fce7a335...` không tạo thêm source diff trên Azure.
+
 ## Điều kiện an toàn
 
 - Chỉ chuyển file mã nguồn theo allowlist trong `scripts/azure_devops_sync.py`; không mang tài liệu knowledge, CI config, secret hay các thay đổi workflow vào Azure payload.
