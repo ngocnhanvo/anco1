@@ -53,7 +53,7 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
 
     // Áp dụng bộ lọc và phân quyền giống JQGridMD_00_DSHangHoa_SOANTHAOLoad,
     // nhưng lấy ID tất cả các trang; không dùng selrow hoặc selarrrow.
-    private List<string> GetFilteredProductIds(HttpContext context, string maModule)
+    private List<string> GetFilteredProductIds(HttpContext context, string maModule, bool allowUnfiltered = false)
     {
         var parentId = context.Request.Form["id"] ?? "";
         // ID ngữ cảnh của jqGrid là mã định danh, không phải câu SQL tự do.
@@ -61,15 +61,15 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
             !System.Text.RegularExpressions.Regex.IsMatch(parentId, @"^[A-Za-z0-9_-]{1,64}$"))
             throw new Exception("Bộ lọc hoặc ID ngữ cảnh không hợp lệ.");
         var filterText = context.Request.Form["filters"];
-        if (string.IsNullOrWhiteSpace(filterText))
-            throw new Exception("Hãy lọc hàng hóa trên jqGrid trước khi chuyển trạng thái.");
-
-        var json = Newtonsoft.Json.Linq.JObject.Parse(filterText);
+        var json = string.IsNullOrWhiteSpace(filterText)
+            ? new Newtonsoft.Json.Linq.JObject()
+            : Newtonsoft.Json.Linq.JObject.Parse(filterText);
         var rules = json["rules"] as Newtonsoft.Json.Linq.JArray;
-        if (rules == null || rules.Count == 0 || rules.Count > 50)
+        bool hasRules = rules != null && rules.Count > 0;
+        if ((!hasRules && !allowUnfiltered) || (rules != null && rules.Count > 50))
             throw new Exception("Bộ lọc phải có ít nhất một điều kiện hợp lệ.");
         var groupOp = (string)json["groupOp"];
-        if (groupOp != "AND" && groupOp != "OR")
+        if (hasRules && groupOp != "AND" && groupOp != "OR")
             throw new Exception("Toán tử bộ lọc không hợp lệ.");
         var groups = json["groups"] as Newtonsoft.Json.Linq.JArray;
         if (groups != null && groups.Count > 0)
@@ -98,7 +98,9 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
                 throw new Exception("Khoảng số lọc không hợp lệ.");
             ((Newtonsoft.Json.Linq.JObject)item)["data"] = data.Replace("'", "''");
         }
-        var f = jqGridHelper.Filter.CreateFilter(json.ToString(Newtonsoft.Json.Formatting.None));
+        var f = hasRules
+            ? jqGridHelper.Filter.CreateFilter(json.ToString(Newtonsoft.Json.Formatting.None))
+            : null;
         var mod = VNN_Config.get_ModuleKeThua(null, 0, maModule, "", "", db);
         if (mod == null || string.IsNullOrEmpty(mod.from_sql))
             throw new Exception("Không tìm thấy cấu hình module.");
@@ -118,10 +120,10 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
                 WHeRe 1=1
                     {mod.where_sql}
                     {roleWhere}
-                    {Security.test_InjectionSQL(f.ToScript(), null, "")}
+                    {Security.test_InjectionSQL(f == null ? "" : f.ToScript(), null, "")}
                 {groupBy}
             ) P
-            WHeRe 1=1 {f.ToScriptP()}
+            WHeRe 1=1 {(f == null ? "" : f.ToScriptP())}
             order by RowNum";
         sql = ADmin_ConvertStringToCode.Avariable(context, sql, firstCol,
             context.Request.Form["id"], mod, db).Replace("'", "''");
