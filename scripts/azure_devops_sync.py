@@ -185,6 +185,9 @@ def main():
         # Safely enable it without creating a second branch or PR.
         if not active.get("autoCompleteSetBy"):
             request_auto_complete(auth, active)
+        else:
+            print("Existing Azure PR #{} has auto-complete enabled; waiting for Azure branch policies.".format(
+                active.get("pullRequestId")))
         return
     start = find_last_completed(auth, target_ref, head)
     if not ancestor(start, head):
