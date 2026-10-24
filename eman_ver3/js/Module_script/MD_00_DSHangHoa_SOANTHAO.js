@@ -190,7 +190,6 @@ function CA01ExportHHVG_MD00DSHangHoaSOANTHAO(tengrid, id_parent, ma_case, Form_
                 snapshot = result.snapshot;
                 var $content = $dialog.find('.dlg_content').empty();
                 $('<p>').text('Số hàng hóa SOANTHAO theo bộ lọc, bao gồm tất cả các trang: ' + count + '.').appendTo($content);
-                $('<p>').text('Tệp Excel 97-2003 (.xls), 37 cột đúng mẫu, không có 4 cột ẩn.').appendTo($content);
                 if (!filters || filters === '{}' || filters === '{"groupOp":"AND","rules":[]}') {
                     $('<p>').text('Chưa áp dụng bộ lọc: sẽ xuất toàn bộ dữ liệu được phép xem.').appendTo($content);
                 }
