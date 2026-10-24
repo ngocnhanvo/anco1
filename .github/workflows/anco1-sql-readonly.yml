@@ -1,5 +1,5 @@
 name: Anco1 - remote SQL read-only inspection
-# Connectivity smoke test retry: PowerShell connection builder keyword fix.
+# Connectivity smoke test retry: canonical SqlClient TrustServerCertificate keyword.
 
 on:
   push:
