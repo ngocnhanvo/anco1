@@ -224,8 +224,13 @@ function CA01ExportHHVG_MD00DSHangHoaSOANTHAO(tengrid, id_parent, ma_case, Form_
                         if (xhr.status === 200 && (xhr.getResponseHeader('Content-Type') || '').indexOf('application/vnd.ms-excel') >= 0) {
                             var name = 'Danh sach hang hoa.xls';
                             var disposition = xhr.getResponseHeader('Content-Disposition') || '';
-                            var match = disposition.match(/filename="?([^";]+)"?/i);
-                            if (match && match[1]) name = match[1];
+                            var utf8Name = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+                            if (utf8Name && utf8Name[1]) {
+                                try { name = decodeURIComponent(utf8Name[1]); } catch (e) { }
+                            } else {
+                                var match = disposition.match(/filename="?([^";]+)"?/i);
+                                if (match && match[1]) name = match[1];
+                            }
                             var blobUrl = URL.createObjectURL(xhr.response);
                             var link = document.createElement('a');
                             link.href = blobUrl;
