@@ -42,6 +42,9 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
             case "CA01ImportHHVG_MD00DSHangHoaSOANTHAO":
                 this.CA01ImportHHVG_MD00DSHangHoaSOANTHAO(context);
                 break;
+            case "CA01ExportHHVG_MD00DSHangHoaSOANTHAO":
+                this.ExportExcelHHVGSOANTHAO(context);
+                break;
             case "CA_01_ChuyenTrangThaiST":
                 this.CA_01_ChuyenTrangThaiST(context);
                 break;
@@ -81,7 +84,7 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
         var cols = new ADmin_JSON().ad_columnJSON()
             .Where(s => s.ma_module == maModule && s.hoatdong == true).ToList();
         var ops = new[] { "eq", "ne", "lt", "le", "gt", "ge", "bw", "bn", "in", "ni", "ew", "en", "cn", "abi" };
-        foreach (var item in rules)
+        foreach (var item in rules ?? new Newtonsoft.Json.Linq.JArray())
         {
             var field = (string)item["field"] ?? "";
             var op = (string)item["op"] ?? "";
@@ -156,6 +159,352 @@ public class JQGridMD_00_DSHangHoa_SOANTHAOModify : IHttpHandler, System.Web.Ses
             + "\n" + string.Join("|", drafts.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
         using (var sha = System.Security.Cryptography.SHA256.Create())
             return System.Convert.ToBase64String(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(data)));
+    }
+
+
+    // Export all authorized rows matching the current jqGrid filters (not just selected rows).
+    // SQL projection: tested against SQL Server, 37 columns A:AK; no hidden legacy columns.
+    private static readonly string[] DraftExportHeaders = new string[] {
+            "Mã hàng",
+            "Mã thô",
+            "Mô Tả Tiếng Việt",
+            "ĐVT",
+            "L(cm)",
+            "W(cm)",
+            "H(cm)",
+            "Khối lượng (kg)",
+            "Diện Tích",
+            "Thể Tích",
+            "Tên kiểu dáng",
+            "Tên chức năng",
+            "Ghi chú",
+            "SL Inner",
+            "DVT Inner",
+            "l1",
+            "w1",
+            "h1",
+            "SL Outer",
+            "DVT Outer",
+            "l2",
+            "w2",
+            "h2",
+            "SL Cont 20",
+            "SL Cont 40",
+            "SL Cont 40 hc",
+            "Ngày xác nhận ĐG",
+            "trạng thái ĐG",
+            "Ghi chú ĐG",
+            "Định khoản",
+            "Nhóm VTHH",
+            "NCC mặc định",
+            "Kho SX",
+            "Kho tồn",
+            "Xưởng SX",
+            "Thuế",
+            "Bán TP"
+    };
+    private static readonly int[] DraftExportWidths = new int[] { 16, 16, 28, 8, 8, 8, 8, 13, 11, 11, 16, 16, 19, 11, 13, 9, 9, 9, 11, 13, 9, 9, 9, 13, 13, 14, 19, 17, 20, 15, 14, 17, 14, 14, 17, 17, 10 };
+
+    private const string DraftExportSql = @"SELECT
+    sp.md_sanpham_id AS __ExportId,
+    sp.ma_sanpham                                   AS [Mã hàng],             -- A
+    maTho.ma_tho                                    AS [Mã thô],              -- B
+    sp.mota_tiengviet                               AS [Mô Tả Tiếng Việt],    -- C
+    dvt_sp.ten_dvt                                  AS [ĐVT],                 -- D
+    sp.l_cm                                         AS [L(cm)],               -- E
+    sp.w_cm                                         AS [W(cm)],               -- F
+    sp.h_cm                                         AS [H(cm)],               -- G
+    sp.trongluong                                   AS [Khối lượng (kg)],     -- H
+    sp.dientich                                     AS [Diện Tích],           -- I
+    sp.v2                                           AS [Thể Tích],            -- J
+    kd.ten_tv                                       AS [Tên kiểu dáng],       -- K
+    cn.ten_tv                                       AS [Tên chức năng],       -- L
+    sp.ghichu                                      AS [Ghi chú],             -- M
+    dg.sl_inner                                     AS [SL Inner],            -- N
+    dg.dvt_inner                                    AS [DVT Inner],           -- O
+    dg.l1                                           AS [l1],                  -- P
+    dg.w1                                           AS [w1],                  -- Q
+    dg.h1                                           AS [h1],                  -- R
+    dg.sl_outer                                     AS [SL Outer],            -- S
+    dg.dvt_outer                                    AS [DVT Outer],           -- T
+    dg.l2_mix                                       AS [l2],                  -- U
+    dg.w2_mix                                       AS [w2],                  -- V
+    dg.h2_mix                                       AS [h2],                  -- W
+    dg.soluonggoi_ctn_20                            AS [SL Cont 20],         -- X
+    dg.soluonggoi_ctn                               AS [SL Cont 40],         -- Y
+    dg.soluonggoi_ctn_40hc                          AS [SL Cont 40 hc],      -- Z
+    dg.ngayxacnhan                                 AS [Ngày xác nhận ĐG],   -- AA
+    dg.trangthai                                    AS [trạng thái ĐG],       -- AB
+    dg.ghi_chu_dg                                   AS [Ghi chú ĐG],          -- AC
+    sp.dinhkhoan                                    AS [Định khoản],         -- AD
+    cl.code_cl                                      AS [Nhóm VTHH],          -- AE
+    dtkd.ma_dtkd                                    AS [NCC mặc định],        -- AF
+    kmd.ten_kho                                     AS [Kho SX],              -- AG
+    kton.ten_kho                                    AS [Kho tồn],             -- AH
+    pb.ten_phongban                                 AS [Xưởng SX],           -- AI
+    thue.ten_thue_sanpham                           AS [Thuế],                -- AJ
+    CASE WHEN sp.ban_thanhpham = 1 THEN 1 ELSE 0 END AS [Bán TP]              -- AK
+FROM dbo.md_sanpham AS sp
+LEFT JOIN dbo.md_donvitinhsanpham AS dvt_sp
+    ON dvt_sp.md_donvitinhsanpham_id = sp.md_donvitinhsanpham_id
+LEFT JOIN dbo.ad_department AS pb
+    ON pb.md_phongban_id = sp.phongbanId
+LEFT JOIN dbo.md_kho AS kmd
+    ON kmd.md_kho_id = sp.khomacdinh
+LEFT JOIN dbo.md_kho AS kton
+    ON kton.md_kho_id = sp.khoton
+LEFT JOIN dbo.md_thue_sanpham AS thue
+    ON thue.md_thue_sanpham_id = sp.md_thue_sanpham_id
+LEFT JOIN dbo.md_doitackinhdoanh AS dtkd
+    ON dtkd.md_doitackinhdoanh_id = sp.nhacungung
+LEFT JOIN dbo.md_chungloai AS cl
+    ON cl.md_chungloai_id = sp.md_nhomnangluc_id
+LEFT JOIN dbo.md_kieudang_ancotrading AS kd
+    ON kd.md_kieudang_id = sp.md_kieudang_id
+LEFT JOIN dbo.md_chucnang_ancotrading AS cn
+    ON cn.md_chucnang_id = sp.md_chucnang_id
+
+-- Phiên bản BOM theo quy tắc đang dùng tại BaoCaoBOMHHVT2: ngay_hieuluc DESC,
+-- md_sanpham_bom_id DESC; không ép ngày phải <= GETDATE() để khớp code hiện hành.
+OUTER APPLY (
+    SELECT TOP (1) b.md_sanpham_bom_id
+    FROM dbo.md_sanpham_bom AS b
+    WHERE b.md_sanpham_id = sp.md_sanpham_id
+      AND ISNULL(b.ten_phienban, N'') <> N''
+    ORDER BY b.ngay_hieuluc DESC, b.md_sanpham_bom_id DESC
+) AS bomMoiNhat
+OUTER APPLY (
+    SELECT STUFF((
+        SELECT N', ' + x.ma_sanpham
+        FROM (
+            SELECT DISTINCT vt.ma_sanpham
+            FROM dbo.md_sanpham_bom_vattu AS bvt
+            INNER JOIN dbo.md_sanpham AS vt
+                ON vt.md_sanpham_id = bvt.md_sanpham_id
+            WHERE bvt.md_sanpham_bom_id = bomMoiNhat.md_sanpham_bom_id
+              AND vt.ban_thanhpham = 1
+              AND ISNULL(vt.vattu, 0) = 0
+              AND NULLIF(LTRIM(RTRIM(vt.ma_sanpham)), N'') IS NOT NULL
+        ) AS x
+        ORDER BY x.ma_sanpham
+        FOR XML PATH(''), TYPE
+    ).value('.', 'nvarchar(max)'), 1, 2, N'') AS ma_tho
+) AS maTho
+
+-- Không JOIN thẳng bảng đóng gói 1:N: giữ đúng 1 dòng hàng hóa/ma_sanpham.
+-- Đã SELECT DB thật: ds.md_donggoi_id = p.md_donggoi_id khớp 18/18 hàng
+-- SOANTHAO; database không khai báo foreign key giữa hai bảng đóng gói.
+-- md_donvitinh là bảng tra GUID -> tên đơn vị cho dvt_inner/dvt_outer.
+OUTER APPLY (
+    SELECT TOP (1)
+        p.sl_inner, ui.ten_dvt AS dvt_inner, p.l1, p.w1, p.h1,
+        p.sl_outer, uo.ten_dvt AS dvt_outer, p.l2_mix, p.w2_mix, p.h2_mix,
+        p.soluonggoi_ctn_20, p.soluonggoi_ctn, p.soluonggoi_ctn_40hc,
+        p.ngayxacnhan, p.trangthai, p.mota AS ghi_chu_dg
+    FROM dbo.md_donggoisanpham_ancotrading AS ds
+    INNER JOIN dbo.md_donggoi_ancotrading AS p
+        ON p.md_donggoi_id = ds.md_donggoi_id
+    LEFT JOIN dbo.md_donvitinh AS ui
+        ON ui.md_donvitinh_id = p.dvt_inner
+    LEFT JOIN dbo.md_donvitinh AS uo
+        ON uo.md_donvitinh_id = p.dvt_outer
+    WHERE ds.md_sanpham_id = sp.md_sanpham_id
+      AND ISNULL(ds.hoatdong, 1) = 1
+      AND ISNULL(p.hoatdong, 1) = 1
+    ORDER BY CASE WHEN ds.macdinh = 1 THEN 0 ELSE 1 END,
+             ISNULL(ds.ngaycapnhat, ds.ngaytao) DESC,
+             ds.md_donggoisanpham_ancotrading_id DESC,
+             p.md_donggoi_ancotrading_id DESC
+) AS dg
+WHERE ISNULL(sp.vattu, 0) = 0
+  AND (ISNULL(sp.sanpham, 0) = 1 OR ISNULL(sp.ban_thanhpham, 0) = 1)
+  AND sp.trangthai = N'SOANTHAO'
+  AND sp.md_sanpham_id IN (/*EXPORT_FILTER_IDS*/)
+ORDER BY SUBSTRING(sp.ma_sanpham, 0, 12) ASC,
+         LEN(sp.ma_sanpham), sp.ma_sanpham, sp.md_sanpham_id";
+
+    private System.Collections.Generic.Dictionary<string, DataRow> LoadDraftExportRows(List<string> ids)
+    {
+        var result = new System.Collections.Generic.Dictionary<string, DataRow>(StringComparer.OrdinalIgnoreCase);
+        using (SqlConnection connection = Mbg.Data.SqlClient.SqlHelper.GetConnection)
+        {
+            for (int offset = 0; offset < ids.Count; offset += 300)
+            {
+                var batch = ids.Skip(offset).Take(300).ToList();
+                var parameters = batch.Select((id, n) => "@pid" + n).ToArray();
+                var query = DraftExportSql.Replace("/*EXPORT_FILTER_IDS*/", string.Join(",", parameters));
+                using (SqlCommand cmd = new SqlCommand(query, connection))
+                {
+                    cmd.CommandTimeout = 120;
+                    for (int n = 0; n < batch.Count; n++)
+                        cmd.Parameters.Add("@pid" + n, SqlDbType.NVarChar, 128).Value = batch[n];
+
+                    var dt = new DataTable();
+                    using (var adapter = new SqlDataAdapter(cmd))
+                        adapter.Fill(dt);
+
+                    if (dt.Columns.Count != DraftExportHeaders.Length + 1)
+                        throw new Exception("Cấu trúc dữ liệu xuất Excel không đúng 37 cột.");
+                    for (int n = 0; n < DraftExportHeaders.Length; n++)
+                        if (!string.Equals(dt.Columns[n + 1].ColumnName, DraftExportHeaders[n], StringComparison.Ordinal))
+                            throw new Exception("Thứ tự cột dữ liệu xuất Excel đã thay đổi: " + DraftExportHeaders[n]);
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        var id = System.Convert.ToString(row[0]);
+                        if (!string.IsNullOrWhiteSpace(id) && !result.ContainsKey(id))
+                            result.Add(id, row);
+                    }
+                }
+            }
+        }
+        if (result.Count != ids.Count || ids.Any(id => !result.ContainsKey(id)))
+            throw new Exception("Danh sách hàng hóa vừa thay đổi. Hãy tải lại danh sách và thử xuất Excel.");
+        return result;
+    }
+
+    private static byte[] BuildDraftExportWorkbook(List<string> orderedIds,
+        System.Collections.Generic.Dictionary<string, DataRow> values)
+    {
+        var workbook = new HSSFWorkbook();
+        var titleFont = workbook.CreateFont();
+        titleFont.FontHeightInPoints = 10;
+        titleFont.Boldweight = (short)NPOI.SS.UserModel.FontBoldWeight.Bold;
+        var titleStyle = workbook.CreateCellStyle();
+        titleStyle.SetFont(titleFont);
+        titleStyle.WrapText = true;
+        titleStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;
+        titleStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
+        titleStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
+        titleStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
+        titleStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
+        titleStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
+
+        var numberStyle = workbook.CreateCellStyle();
+        numberStyle.DataFormat = workbook.CreateDataFormat().GetFormat("#,##0.###");
+        var dateStyle = workbook.CreateCellStyle();
+        dateStyle.DataFormat = workbook.CreateDataFormat().GetFormat("dd/MM/yyyy");
+
+        ISheet sheet = null;
+        for (int rowIndex = 0; rowIndex < orderedIds.Count; rowIndex++)
+        {
+            int position = rowIndex % 65535;
+            if (position == 0)
+            {
+                int sheetNumber = (rowIndex / 65535) + 1;
+                sheet = workbook.CreateSheet(sheetNumber == 1 ? "Sheet1" : "Sheet" + sheetNumber);
+                sheet.CreateFreezePane(0, 1);
+                sheet.FitToPage = true;
+                sheet.PrintSetup.Landscape = true;
+                sheet.PrintSetup.FitWidth = (short)1;
+                sheet.PrintSetup.FitHeight = (short)0;
+                for (int col = 0; col < DraftExportHeaders.Length; col++)
+                    sheet.SetColumnWidth(col, DraftExportWidths[col] * 256);
+                var header = sheet.CreateRow(0);
+                header.HeightInPoints = 62.4f;
+                for (int col = 0; col < DraftExportHeaders.Length; col++)
+                {
+                    var cell = header.CreateCell(col);
+                    cell.SetCellValue(DraftExportHeaders[col]);
+                    cell.CellStyle = titleStyle;
+                }
+            }
+
+            var excelRow = sheet.CreateRow(position + 1);
+            excelRow.HeightInPoints = 13.8f;
+            var record = values[orderedIds[rowIndex]];
+            for (int col = 0; col < DraftExportHeaders.Length; col++)
+            {
+                var value = record[col + 1];
+                if (value == null || value == DBNull.Value)
+                    continue; // preserve genuinely empty cells
+                var cell = excelRow.CreateCell(col);
+                if (value is DateTime)
+                {
+                    cell.SetCellValue((DateTime)value);
+                    cell.CellStyle = dateStyle;
+                }
+                else if (value is bool)
+                {
+                    cell.SetCellValue((bool)value ? 1d : 0d);
+                    cell.CellStyle = numberStyle;
+                }
+                else if (value is decimal || value is double || value is float ||
+                         value is int || value is long || value is short ||
+                         value is byte)
+                {
+                    cell.SetCellValue(System.Convert.ToDouble(value, System.Globalization.CultureInfo.InvariantCulture));
+                    cell.CellStyle = numberStyle;
+                }
+                else
+                {
+                    // Explicit string cells: never evaluate user-origin content as formulas.
+                    var text = System.Convert.ToString(value);
+                    cell.SetCellValue(text.Length > 32767 ? text.Substring(0, 32767) : text);
+                }
+            }
+        }
+        using (var stream = new MemoryStream())
+        {
+            workbook.Write(stream);
+            return stream.ToArray(); // only actual bytes; never MemoryStream.GetBuffer()
+        }
+    }
+
+    public void ExportExcelHHVGSOANTHAO(HttpContext context)
+    {
+        const string maModule = "MD_00_DSHangHoa_SOANTHAO";
+        const string maCase = "CA01ExportHHVG_MD00DSHangHoaSOANTHAO";
+        bool download = string.Equals(context.Request.Form["mode"], "download", StringComparison.Ordinal);
+        try
+        {
+            if (context.Request.HttpMethod != "POST" ||
+                string.IsNullOrEmpty(Security.id_taikhoan(context)) ||
+                context.Request.QueryString["ma_module"] != maModule ||
+                !Security.PhanQuyen_ChucNang(context, maModule, maCase))
+                throw new Exception("Bạn không có quyền xuất danh sách hàng hóa.");
+
+            var mode = context.Request.Form["mode"];
+            if (mode != "preview" && mode != "download")
+                throw new Exception("Chế độ xuất Excel không hợp lệ.");
+            var authorizedIds = GetFilteredProductIds(context, maModule, true);
+            var draftIds = GetDraftIds(authorizedIds);
+            if (mode == "preview")
+            {
+                context.Response.ContentType = "application/json; charset=utf-8";
+                context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(new {
+                    ok = true, count = draftIds.Count, total = authorizedIds.Count,
+                    snapshot = GetSnapshot(authorizedIds, draftIds)
+                }));
+                return;
+            }
+            if (draftIds.Count == 0)
+                throw new Exception("Không có hàng hóa Soạn thảo nào khớp bộ lọc.");
+            if (context.Request.Form["snapshot"] != GetSnapshot(authorizedIds, draftIds))
+                throw new Exception("Kết quả lọc đã thay đổi. Hãy mở lại hộp thoại xuất Excel.");
+
+            var rows = LoadDraftExportRows(draftIds);
+            var bytes = BuildDraftExportWorkbook(draftIds, rows);
+            var filename = "Danh sach hang hoa-" + DateTime.Now.ToString("dd_MM_yyyy HH_mm_ss") + ".xls";
+            context.Response.Clear();
+            context.Response.ContentType = "application/vnd.ms-excel";
+            context.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+            context.Response.AddHeader("Content-Length", bytes.Length.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            context.Response.BinaryWrite(bytes);
+            context.Response.Flush();
+            context.ApplicationInstance.CompleteRequest();
+        }
+        catch (Exception ex)
+        {
+            context.Response.Clear();
+            context.Response.StatusCode = 400;
+            context.Response.TrySkipIisCustomErrors = true;
+            context.Response.ContentType = download ? "text/plain; charset=utf-8" : "application/json; charset=utf-8";
+            if (download)
+                context.Response.Write(ex.Message);
+            else
+                context.Response.Write(Newtonsoft.Json.JsonConvert.SerializeObject(new { ok = false, message = ex.Message }));
+        }
     }
 
     public void CA_01_ChuyenTrangThaiST(HttpContext context)
