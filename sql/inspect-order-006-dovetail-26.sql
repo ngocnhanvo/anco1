@@ -1,31 +1,23 @@
--- Read-only reconciliation against CA01TaoLenhLSX_MD01KeHoachYCSXDH eligibility logic.
-WITH k AS (
-    SELECT p.c_kehoachdathang_id,p.c_danhsachdathang_id,p.donhang_thamchieu,p.trangthai
-    FROM dbo.c_kehoachdathang AS p
-    WHERE LTRIM(RTRIM(p.donhang_thamchieu))=N'006/DOVETAIL-26'
-),
-lines AS (
-    SELECT c.*,l.c_kehoachdathang_id
-    FROM dbo.md_lenhsanxuat_tosx_cdh AS c
-    JOIN dbo.md_lenhsanxuat AS l ON l.md_lenhsanxuat_id=c.md_lenhsanxuat_id
-    WHERE EXISTS (SELECT 1 FROM k WHERE k.c_kehoachdathang_id=l.c_kehoachdathang_id)
-),
-stat AS (
-    SELECT COUNT(*) AS tongdong,
-      SUM(CASE WHEN NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NOT NULL THEN 1 ELSE 0 END) AS da_gan_LSX,
-      SUM(CASE WHEN (c.hoatdong=1) AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NULL
-                    AND NULLIF(LTRIM(RTRIM(c.xuongPhu)),N'') IS NOT NULL
-                    AND (COALESCE(c.sl_chiato,0)-COALESCE(c.sl_chiato2,0))>0 THEN 1 ELSE 0 END) AS con_dat_sx,
-      SUM(CASE WHEN (c.hoatdong=1) AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NULL
-                    AND NULLIF(LTRIM(RTRIM(c.xuongPhu)),N'') IS NULL
-                    AND (COALESCE(c.sl_chiato,0)-COALESCE(c.sl_chiato2,0)-COALESCE(c.sl_datncc,0)-COALESCE(c.sl_datncc2,0))>0 THEN 1 ELSE 0 END) AS con_dat_ncc
-    FROM lines AS c
+-- Read-only audit trail for the targeted purchase order and its production documents.
+WITH matched AS (
+ SELECT TOP (120)
+   a.ngaytao,
+   a.ad_module_id,
+   a.ad_case_id,
+   CASE WHEN a.mota LIKE N'%006/DOVETAIL-26%' THEN N'PO'
+        WHEN a.mota LIKE N'%DSDH/2922/26%' THEN N'ORDER'
+        WHEN a.mota LIKE N'%PVC/01359/26%' THEN N'TRANSFER'
+        WHEN a.mota LIKE N'%LSX/00871/26%' THEN N'LSX-871'
+        WHEN a.mota LIKE N'%LSX/00872/26%' THEN N'LSX-872'
+        WHEN a.mota LIKE N'%LSX/00413/26%' THEN N'LSX-413' ELSE N'OTHER' END AS match_type,
+   CAST(LEFT(COALESCE(a.mota,N''),180) AS nvarchar(180)) AS mo_ta_ngan
+ FROM dbo.ad_log AS a
+ WHERE (a.ngaytao >= '2026-10-14' AND a.ngaytao < '2026-10-29')
+   AND (a.mota LIKE N'%006/DOVETAIL-26%' OR a.mota LIKE N'%DSDH/2922/26%'
+     OR a.mota LIKE N'%PVC/01359/26%' OR a.mota LIKE N'%LSX/00871/26%'
+     OR a.mota LIKE N'%LSX/00872/26%' OR a.mota LIKE N'%LSX/00413/26%')
+ ORDER BY a.ngaytao DESC
 )
-SELECT k.donhang_thamchieu AS po,k.trangthai AS trangthai_KH,d.md_trangthai_id AS trangthai_DH,
-       s.tongdong,s.da_gan_LSX,s.con_dat_sx,s.con_dat_ncc,
-       CASE WHEN s.con_dat_sx>0 OR s.con_dat_ncc>0 THEN N'DATSX'
-            WHEN s.da_gan_LSX>0 THEN N'DATHET'
-            ELSE N'CHUA_CO_LSX' END AS trangthai_du_kien_sau_tao_LSX
-FROM k 
-JOIN dbo.c_danhsachdathang AS d ON d.c_danhsachdathang_id=k.c_danhsachdathang_id
-CROSS JOIN stat AS s
+SELECT CONVERT(nvarchar(19),ngaytao,120) AS thoi_diem, ad_module_id, ad_case_id, match_type, mo_ta_ngan
+FROM matched
+ORDER BY ngaytao ASC
