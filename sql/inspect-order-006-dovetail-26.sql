@@ -1,30 +1,21 @@
--- Read-only targeted comparison: older TP stock take vs later transfer from audit.
-WITH target AS (
- SELECT v.md_vanchuyennoibo_id,v.sochungtu,v.loaichuyen,
-  v.md_trangthai_id,v.laytonTP,v.layTonTPhoacBTP,
-  v.c_doichieuhangton_id,v.donhang_thamchieu,
-  v.chungtuthamchieu,v.chungtu_lenhsx,v.sctdathang,
-  v.ngaytao,v.ngayhieuluc,v.ngaycapnhat
- FROM dbo.md_vanchuyennoibo AS v WHERE v.sochungtu IN (N'PVC/01359/26',N'PVC/01386/26')
+-- Read-only timing evidence for the last transition to processed BTP stage.
+WITH plan AS (
+ SELECT k.c_kehoachdathang_id,k.c_danhsachdathang_id,k.trangthai,k.trangthaiSav,k.ngaybatdausx,k.ngaytao,k.ngaycapnhat,k.xulykehoach,k.tinhNCVT,k.nhomKH
+ FROM dbo.c_kehoachdathang AS k WHERE LTRIM(RTRIM(k.donhang_thamchieu))=N'006/DOVETAIL-26'
 ),
-rows AS (
- SELECT 1 AS ord,v.sochungtu,CAST(v.md_trangthai_id AS nvarchar(80)) AS trangthai,
-   CAST(v.loaichuyen AS nvarchar(80)) AS loai,
-   CONVERT(nvarchar(19),v.ngaytao,120) AS ngaytao,CONVERT(nvarchar(19),v.ngayhieuluc,120) AS ngayhieuluc,
-   CONCAT(N'LayTonTP=',COALESCE(CAST(v.laytonTP AS nvarchar(10)),N'NULL'),
-     N' LayTonTPBTP=',COALESCE(CAST(v.layTonTPhoacBTP AS nvarchar(10)),N'NULL'),
-     N' KHLink=',COALESCE(v.c_doichieuhangton_id,N''),
-     N' DH=',COALESCE(v.donhang_thamchieu,N''),
-     N' CTThamChieu=',COALESCE(v.chungtuthamchieu,N''),
-     N' LSX=',COALESCE(v.chungtu_lenhsx,N''),
-     N' SoCTDH=',COALESCE(v.sctdathang,N'')) AS chi_tiet
- FROM target v
- UNION ALL
- SELECT 2,v.sochungtu,N'CDVC',N'DONG_CHUYEN',N'',N'',
-   CONCAT(N'SoDong=',COUNT(*),
-   N' SLThucChuyen=',COALESCE(CONVERT(nvarchar(100),SUM(COALESCE(c.soluong_dichchuyen,0))),N'0'),
-   N' SoDongCoLSX=',SUM(CASE WHEN NULLIF(LTRIM(RTRIM(COALESCE(c.lsxId,N''))),N'') IS NOT NULL THEN 1 ELSE 0 END))
- FROM target v JOIN dbo.md_vanchuyennoibo_cdvc c ON c.md_vanchuyennoibo_id=v.md_vanchuyennoibo_id
- GROUP BY v.sochungtu
+order_lines AS (
+ SELECT c.*,l.c_kehoachdathang_id FROM dbo.md_lenhsanxuat_tosx_cdh c JOIN dbo.md_lenhsanxuat l
+ ON l.md_lenhsanxuat_id=c.md_lenhsanxuat_id WHERE EXISTS (SELECT 1 FROM plan p WHERE p.c_kehoachdathang_id=l.c_kehoachdathang_id)
 )
-SELECT ord,sochungtu,trangthai,loai,ngaytao,ngayhieuluc,chi_tiet FROM rows ORDER BY ord,sochungtu
+SELECT TOP (10)
+ p.trangthai AS kh_trangthai,p.trangthaiSav AS kh_trangthaiSav,
+ CONVERT(nvarchar(19),p.ngaybatdausx,120) AS kh_ngaybatdausx,
+ CONVERT(nvarchar(19),p.ngaytao,120) AS kh_ngaytao,
+ CONVERT(nvarchar(19),p.ngaycapnhat,120) AS kh_ngaycapnhat,
+ CONVERT(nvarchar(19),d.ngaybatdau,120) AS dh_ngaybatdau,
+ CAST(p.xulykehoach AS nvarchar(8)) AS xulykehoach,
+ CAST(p.tinhNCVT AS nvarchar(8)) AS tinhNCVT,
+ p.nhomKH,
+ (SELECT COUNT(*) FROM order_lines c WHERE NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NOT NULL) AS dong_da_gan_lsx,
+ (SELECT COUNT(*) FROM order_lines c WHERE c.stt=9998 AND (c.sl_layton IS NOT NULL OR c.sl_nhapkho IS NOT NULL)) AS dong_co_thong_tin_layton_btp
+FROM plan p JOIN dbo.c_danhsachdathang d ON p.c_danhsachdathang_id=d.c_danhsachdathang_id
