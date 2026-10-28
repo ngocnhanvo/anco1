@@ -1,73 +1,67 @@
--- Read-only status trace for the single PO 006/DOVETAIL-26 |  no customer, product, user, or quantity data exported.
+-- Read-only, targeted chronology of production orders and BTP stock transfer for 006/DOVETAIL-26.
 WITH target AS (
-    SELECT d.c_danhsachdathang_id, d.so_po, d.sochungtu,
-           d.trangthai, d.md_trangthai_id, d.ngayhieuluc, d.ngaytao, d.ngaycapnhat
-    FROM dbo.c_danhsachdathang AS d
-    WHERE LTRIM(RTRIM(d.so_po)) = N'006/DOVETAIL-26'
+    SELECT c_danhsachdathang_id,sochungtu,so_po FROM dbo.c_danhsachdathang
+    WHERE LTRIM(RTRIM(so_po)) = N'006/DOVETAIL-26'
 ),
 plans AS (
-    SELECT k.c_kehoachdathang_id, k.c_danhsachdathang_id, k.sodonhang,
-           k.donhang_thamchieu, k.trangthai, k.trangthaiSav, k.xulykehoach,
-           k.nhomKH, k.ngaytao, k.ngaycapnhat
+    SELECT k.c_kehoachdathang_id,k.trangthai,k.nhomKH
     FROM dbo.c_kehoachdathang AS k
-    WHERE EXISTS (SELECT 1 FROM target AS d WHERE d.c_danhsachdathang_id = k.c_danhsachdathang_id)
-       OR LTRIM(RTRIM(k.donhang_thamchieu)) = N'006/DOVETAIL-26'
+    WHERE EXISTS (SELECT 1 FROM target AS d WHERE d.c_danhsachdathang_id=k.c_danhsachdathang_id)
+       OR LTRIM(RTRIM(k.donhang_thamchieu))=N'006/DOVETAIL-26'
 ),
-workshop AS (
-    SELECT p.md_dondathangphanxuong_id, p.c_kehoachdathang_id,
-           p.sochungtu, p.donhang_thamchieu, p.md_trangthai_id,
-           p.ngaytao, p.ngaycapnhat
-    FROM dbo.md_dondathangphanxuong AS p
-    WHERE EXISTS (SELECT 1 FROM plans AS k WHERE k.c_kehoachdathang_id = p.c_kehoachdathang_id)
-       OR LTRIM(RTRIM(p.donhang_thamchieu)) = N'006/DOVETAIL-26'
+lsx AS (
+    SELECT l.md_lenhsanxuat_id,l.sochungtu FROM dbo.md_lenhsanxuat AS l
+    WHERE EXISTS (SELECT 1 FROM plans AS k WHERE l.c_kehoachdathang_id=k.c_kehoachdathang_id)
 ),
-production AS (
-    SELECT l.md_lenhsanxuat_id, l.md_dondathangphanxuong_id,
-           l.c_kehoachdathang_id, l.donhang_thamchieu, l.sochungtu,
-           l.md_trangthai_id, l.ngaytao, l.ngaycapnhat
-    FROM dbo.md_lenhsanxuat AS l
-    WHERE EXISTS (SELECT 1 FROM plans AS k WHERE k.c_kehoachdathang_id = l.c_kehoachdathang_id)
-       OR EXISTS (SELECT 1 FROM workshop AS p WHERE p.md_dondathangphanxuong_id = l.md_dondathangphanxuong_id)
-       OR LTRIM(RTRIM(l.donhang_thamchieu)) = N'006/DOVETAIL-26'
+teams AS (
+    SELECT t.md_lenhsanxuat_tosx_id,t.stt,t.phieulayht,t.phieulayhttp,t.md_lenhsanxuat_id
+    FROM dbo.md_lenhsanxuat_tosx AS t
+    WHERE EXISTS (SELECT 1 FROM lsx AS l WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id)
 ),
-records AS (
-    SELECT 1 AS thu_tu, N'DON_HANG' AS loai,
-           CAST(d.so_po AS nvarchar(200)) AS chungtu,
-           CAST(d.trangthai AS nvarchar(100)) AS trangthai,
-           CAST(d.md_trangthai_id AS nvarchar(100)) AS trangthai_phu,
-           CONVERT(nvarchar(19), d.ngaytao, 120) AS ngaytao,
-           CONVERT(nvarchar(19), d.ngaycapnhat, 120) AS ngaycapnhat,
-           CONCAT(N'SoChungTu=', COALESCE(d.sochungtu,N''), N' |  NgayHieuLuc=',COALESCE(CONVERT(nvarchar(19),d.ngayhieuluc,120),N'')) AS thongtin
-    FROM target AS d
+transfers AS (
+    SELECT DISTINCT v.md_vanchuyennoibo_id,v.sochungtu,v.md_trangthai_id,
+           v.laytonTP,v.laytonTPhoacBTP,v.ngaytao,v.ngaycapnhat,v.ngayhieuluc,
+           v.donhang_thamchieu
+    FROM dbo.md_vanchuyennoibo AS v
+    WHERE LTRIM(RTRIM(v.donhang_thamchieu))=N'006/DOVETAIL-26'
+       OR EXISTS (
+           SELECT 1 FROM teams AS t
+           WHERE CHARINDEX(N','+v.sochungtu+N',',N','+COALESCE(t.phieulayht,N'')+N',')>0
+              OR CHARINDEX(N','+v.sochungtu+N',',N','+COALESCE(t.phieulayhttp,N'')+N',')>0
+       )
+),
+result_rows AS (
+    SELECT 1 AS ord,N'LENH_CHI_TIET' AS loai,CAST(x.sochungtu AS nvarchar(200)) AS chungtu,
+           CAST(x.trangthai AS nvarchar(100)) AS trangthai,
+           CONVERT(nvarchar(19),x.ngaytao,120) AS ngaytao,
+           CONVERT(nvarchar(19),x.ngaycapnhat,120) AS ngaycapnhat,
+           CONCAT(N'Nhom=',COALESCE(x.donhang,N''),N' | KH=',COALESCE(x.c_kehoachdathang_id,N''),
+                  N' | HanHoanThanh=',COALESCE(CONVERT(nvarchar(19),x.ngayhoanthanh,120),N'')) AS thongtin
+    FROM dbo.md_lenhsanxuat2 AS x
+    WHERE EXISTS (SELECT 1 FROM target AS d WHERE CHARINDEX(d.c_danhsachdathang_id,COALESCE(x.c_danhsachdathang_id,N''))>0)
+       OR EXISTS (SELECT 1 FROM plans AS k WHERE CHARINDEX(k.c_kehoachdathang_id,COALESCE(x.c_kehoachdathang_id,N''))>0)
     UNION ALL
-    SELECT 2, N'KE_HOACH', CAST(k.donhang_thamchieu AS nvarchar(200)),
-           CAST(k.trangthai AS nvarchar(100)), CAST(k.trangthaiSav AS nvarchar(100)),
-           CONVERT(nvarchar(19),k.ngaytao,120),CONVERT(nvarchar(19),k.ngaycapnhat,120),
-           CONCAT(N'XuLyKeHoach=', CASE WHEN k.xulykehoach=1 THEN N'1' WHEN k.xulykehoach=0 THEN N'0' ELSE N'NULL' END,
-                  N' |  NhomKH=',COALESCE(k.nhomKH,N''),N' |  SoDonHang=',COALESCE(k.sodonhang,N''))
-    FROM plans AS k
+    SELECT 2,N'PHIEU_VAN_CHUYEN',CAST(v.sochungtu AS nvarchar(200)),
+           CAST(v.md_trangthai_id AS nvarchar(100)),
+           CONVERT(nvarchar(19),v.ngaytao,120),
+           CONVERT(nvarchar(19),v.ngayhieuluc,120),
+           CONCAT(N'LayTonTP=',CASE WHEN v.laytonTP=1 THEN N'1' ELSE N'0' END,
+                  N' | LayTonTPhoacBTP=',CASE WHEN v.laytonTPhoacBTP=1 THEN N'1' ELSE N'0' END,
+                  N' | ThamChieu=',COALESCE(v.donhang_thamchieu,N''))
+    FROM transfers AS v
     UNION ALL
-    SELECT 3, N'DON_PHAN_XUONG', CAST(p.sochungtu AS nvarchar(200)),
-           CAST(p.md_trangthai_id AS nvarchar(100)), N'',
-           CONVERT(nvarchar(19),p.ngaytao,120),CONVERT(nvarchar(19),p.ngaycapnhat,120),
-           CONCAT(N'ThamChieu=',COALESCE(p.donhang_thamchieu,N''))
-    FROM workshop AS p
+    SELECT 3,N'TO_SAN_XUAT',CAST(l.sochungtu AS nvarchar(200)),
+           CAST(t.stt AS nvarchar(100)),
+           N'',N'',
+           CONCAT(N'LayBTP=',COALESCE(t.phieulayht,N''),N' | LayTP=',COALESCE(t.phieulayhttp,N''))
+    FROM teams AS t JOIN lsx AS l ON t.md_lenhsanxuat_id=l.md_lenhsanxuat_id
     UNION ALL
-    SELECT 4, N'LENH_SAN_XUAT', CAST(l.sochungtu AS nvarchar(200)),
-           CAST(l.md_trangthai_id AS nvarchar(100)), N'',
-           CONVERT(nvarchar(19),l.ngaytao,120),CONVERT(nvarchar(19),l.ngaycapnhat,120),
-           CONCAT(N'SoToSX=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx AS t WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND (t.stt IS NULL OR t.stt<>9999)),
-                  N' |  ToSXCheckHoanThanh=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx AS t WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND t.check_hoanthanh=1))
-    FROM production AS l
-    UNION ALL
-    SELECT 5, N'LENH_SAN_XUAT_CHI_TIET', CAST(l2.sochungtu AS nvarchar(200)),
-           CAST(l2.trangthai AS nvarchar(100)), N'',
-           CONVERT(nvarchar(19),l2.ngayhoanthanh,120),N'',
-           N''
-    FROM dbo.md_lenhsanxuat2 AS l2
-    WHERE EXISTS (SELECT 1 FROM target AS d WHERE d.c_danhsachdathang_id = l2.c_danhsachdathang_id)
-       OR EXISTS (SELECT 1 FROM plans AS k WHERE k.c_kehoachdathang_id = l2.c_kehoachdathang_id)
+    SELECT 4,N'PHAN_BO_LSX',CAST(l.sochungtu AS nvarchar(200)),
+           N'',N'',N'',
+           CONCAT(N'SoDongDaCoLSXCT=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx_cdh AS c WHERE c.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NOT NULL),
+                  N' | SoDongChuaCoLSXCT=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx_cdh AS c WHERE c.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NULL))
+    FROM lsx AS l
 )
-SELECT TOP (200) loai,chungtu,trangthai,trangthai_phu,ngaytao,ngaycapnhat,thongtin
-FROM records
-ORDER BY thu_tu,chungtu
+SELECT TOP(200) loai,chungtu,trangthai,ngaytao,ngaycapnhat,thongtin
+FROM result_rows
+ORDER BY ord,chungtu
