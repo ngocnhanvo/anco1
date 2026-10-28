@@ -287,10 +287,10 @@ public class JQGridMD_00_PVCNoiBoModify : IHttpHandler, System.Web.SessionState.
                     {
                         var dsLSX = string.Join(", ", lsxChiTiet
                             .Select(s => s.sochungtu).Where(s => !string.IsNullOrWhiteSpace(s))
-                            .Distinct().OrderBy(s => s).Select(HttpUtility.HtmlEncode));
+                            .Distinct().OrderBy(s => s).Select(s => HttpUtility.HtmlEncode(s)));
                         var dsDMH = string.Join(", ", donMuaHang
                             .Select(s => s.sochungtu).Where(s => !string.IsNullOrWhiteSpace(s))
-                            .Distinct().OrderBy(s => s).Select(HttpUtility.HtmlEncode));
+                            .Distinct().OrderBy(s => s).Select(s => HttpUtility.HtmlEncode(s)));
 
                         msg += string.Format(
                             "<br><b>{0} ({1})</b>: Không thể trả/xóa phiếu lấy tồn vì kế hoạch đã phát sinh chứng từ đặt sản xuất hoặc mua hàng." +
