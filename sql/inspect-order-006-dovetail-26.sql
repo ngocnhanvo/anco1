@@ -1,17 +1,31 @@
--- Diagnose database-side status writers without exposing stored procedure bodies.
-SELECT TOP (100)
-    CAST(N'TRIGGER' AS nvarchar(50)) AS loai,
-    CAST(OBJECT_SCHEMA_NAME(tr.object_id)+N'.'+tr.name AS nvarchar(300)) AS ten,
-    CAST(parent.name AS nvarchar(150)) AS bang_nguon,
-    CAST(CASE WHEN mod.definition IS NULL THEN N'NO_DEFINITION' ELSE N'VISIBLE' END AS nvarchar(40)) AS truy_cap,
-    CAST(CASE WHEN mod.definition LIKE N'%DaXLTBTP%' THEN 1 ELSE 0 END AS int) AS viet_DaXLTBTP,
-    CAST(CASE WHEN mod.definition LIKE N'%DATSX%' THEN 1 ELSE 0 END AS int) AS viet_DATSX,
-    CAST(CASE WHEN mod.definition LIKE N'%c_kehoachdathang%' THEN 1 ELSE 0 END AS int) AS tham_chieu_kehoach,
-    CAST(CASE WHEN mod.definition LIKE N'%md_trangthai_id%' THEN 1 ELSE 0 END AS int) AS tham_chieu_trangthai
-FROM sys.triggers AS tr
-JOIN sys.tables AS parent ON parent.object_id=tr.parent_id
-LEFT JOIN sys.sql_modules AS mod ON mod.object_id=tr.object_id
-WHERE parent.name IN (N'c_kehoachdathang',N'c_danhsachdathang',N'md_lenhsanxuat2',N'md_vanchuyennoibo',N'md_lenhsanxuat_tosx_cdh',N'md_dondathangphanxuong')
-   OR mod.definition LIKE N'%DaXLTBTP%'
-   OR mod.definition LIKE N'%DATSX%'
-ORDER BY parent.name,tr.name
+-- Read-only reconciliation against CA01TaoLenhLSX_MD01KeHoachYCSXDH eligibility logic.
+WITH k AS (
+    SELECT p.c_kehoachdathang_id,p.c_danhsachdathang_id,p.donhang_thamchieu,p.trangthai
+    FROM dbo.c_kehoachdathang AS p
+    WHERE LTRIM(RTRIM(p.donhang_thamchieu))=N'006/DOVETAIL-26'
+),
+lines AS (
+    SELECT c.*,l.c_kehoachdathang_id
+    FROM dbo.md_lenhsanxuat_tosx_cdh AS c
+    JOIN dbo.md_lenhsanxuat AS l ON l.md_lenhsanxuat_id=c.md_lenhsanxuat_id
+    WHERE EXISTS (SELECT 1 FROM k WHERE k.c_kehoachdathang_id=l.c_kehoachdathang_id)
+),
+stat AS (
+    SELECT COUNT(*) AS tongdong,
+      SUM(CASE WHEN NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NOT NULL THEN 1 ELSE 0 END) AS da_gan_LSX,
+      SUM(CASE WHEN (c.hoatdong=1) AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NULL
+                    AND NULLIF(LTRIM(RTRIM(c.xuongPhu)),N'') IS NOT NULL
+                    AND (COALESCE(c.sl_chiato,0)-COALESCE(c.sl_chiato2,0))>0 THEN 1 ELSE 0 END) AS con_dat_sx,
+      SUM(CASE WHEN (c.hoatdong=1) AND NULLIF(LTRIM(RTRIM(c.lsxCT)),N'') IS NULL
+                    AND NULLIF(LTRIM(RTRIM(c.xuongPhu)),N'') IS NULL
+                    AND (COALESCE(c.sl_chiato,0)-COALESCE(c.sl_chiato2,0)-COALESCE(c.sl_datncc,0)-COALESCE(c.sl_datncc2,0))>0 THEN 1 ELSE 0 END) AS con_dat_ncc
+    FROM lines AS c
+)
+SELECT k.donhang_thamchieu AS po,k.trangthai AS trangthai_KH,d.md_trangthai_id AS trangthai_DH,
+       s.tongdong,s.da_gan_LSX,s.con_dat_sx,s.con_dat_ncc,
+       CASE WHEN s.con_dat_sx>0 OR s.con_dat_ncc>0 THEN N'DATSX'
+            WHEN s.da_gan_LSX>0 THEN N'DATHET'
+            ELSE N'CHUA_CO_LSX' END AS trangthai_du_kien_sau_tao_LSX
+FROM k 
+JOIN dbo.c_danhsachdathang AS d ON d.c_danhsachdathang_id=k.c_danhsachdathang_id
+CROSS JOIN stat AS s
