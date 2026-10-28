@@ -1,4 +1,4 @@
--- Read-only status trace for the single PO 006/DOVETAIL-26; no customer, product, user, or quantity data exported.
+-- Read-only status trace for the single PO 006/DOVETAIL-26 |  no customer, product, user, or quantity data exported.
 WITH target AS (
     SELECT d.c_danhsachdathang_id, d.so_po, d.sochungtu,
            d.trangthai, d.md_trangthai_id, d.ngayhieuluc, d.ngaytao, d.ngaycapnhat
@@ -37,14 +37,14 @@ records AS (
            CAST(d.md_trangthai_id AS nvarchar(100)) AS trangthai_phu,
            CONVERT(nvarchar(19), d.ngaytao, 120) AS ngaytao,
            CONVERT(nvarchar(19), d.ngaycapnhat, 120) AS ngaycapnhat,
-           CONCAT(N'SoChungTu=', COALESCE(d.sochungtu,N''), N'; NgayHieuLuc=',COALESCE(CONVERT(nvarchar(19),d.ngayhieuluc,120),N'')) AS thongtin
+           CONCAT(N'SoChungTu=', COALESCE(d.sochungtu,N''), N' |  NgayHieuLuc=',COALESCE(CONVERT(nvarchar(19),d.ngayhieuluc,120),N'')) AS thongtin
     FROM target AS d
     UNION ALL
     SELECT 2, N'KE_HOACH', CAST(k.donhang_thamchieu AS nvarchar(200)),
            CAST(k.trangthai AS nvarchar(100)), CAST(k.trangthaiSav AS nvarchar(100)),
            CONVERT(nvarchar(19),k.ngaytao,120),CONVERT(nvarchar(19),k.ngaycapnhat,120),
            CONCAT(N'XuLyKeHoach=', CASE WHEN k.xulykehoach=1 THEN N'1' WHEN k.xulykehoach=0 THEN N'0' ELSE N'NULL' END,
-                  N'; NhomKH=',COALESCE(k.nhomKH,N''),N'; SoDonHang=',COALESCE(k.sodonhang,N''))
+                  N' |  NhomKH=',COALESCE(k.nhomKH,N''),N' |  SoDonHang=',COALESCE(k.sodonhang,N''))
     FROM plans AS k
     UNION ALL
     SELECT 3, N'DON_PHAN_XUONG', CAST(p.sochungtu AS nvarchar(200)),
@@ -57,7 +57,7 @@ records AS (
            CAST(l.md_trangthai_id AS nvarchar(100)), N'',
            CONVERT(nvarchar(19),l.ngaytao,120),CONVERT(nvarchar(19),l.ngaycapnhat,120),
            CONCAT(N'SoToSX=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx AS t WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND (t.stt IS NULL OR t.stt<>9999)),
-                  N'; ToSXCheckHoanThanh=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx AS t WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND t.check_hoanthanh=1))
+                  N' |  ToSXCheckHoanThanh=',(SELECT COUNT(*) FROM dbo.md_lenhsanxuat_tosx AS t WHERE t.md_lenhsanxuat_id=l.md_lenhsanxuat_id AND t.check_hoanthanh=1))
     FROM production AS l
     UNION ALL
     SELECT 5, N'LENH_SAN_XUAT_CHI_TIET', CAST(l2.sochungtu AS nvarchar(200)),
