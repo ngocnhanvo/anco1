@@ -1,7 +1,7 @@
 -- Read-only verification of database principal capabilities; no table mutation.
 SELECT
  DB_NAME() AS connected_database,
- DB_USER() AS connected_user,
+ USER_NAME() AS connected_user,
  IS_MEMBER(N'db_datawriter') AS datawriter_role,
  IS_MEMBER(N'db_owner') AS owner_role,
  IS_SRVROLEMEMBER(N'sysadmin') AS server_admin_role,
