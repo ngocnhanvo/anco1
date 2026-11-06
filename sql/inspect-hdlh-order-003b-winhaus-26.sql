@@ -82,3 +82,48 @@ SELECT
 FROM md_taptin f
 INNER JOIN target t ON t.c_danhsachdathang_id = f.lienket
 WHERE f.doituong_dinhkem IN (N'HDLH', N'HDLHTC')
+UNION ALL
+SELECT
+    N'DHCPX',
+    p.c_kehoachdathang_dhcpx_id,
+    t.sochungtu,
+    t.so_po,
+    CAST(p.sctdathang AS nvarchar(200)),
+    CAST(NULL AS nvarchar(200)),
+    CAST(NULL AS bit),
+    CAST(NULL AS datetime),
+    p.ngaycapnhat,
+    CAST(NULL AS datetime),
+    p.value_nguoicapnhat,
+    CAST(p.hdlh AS nvarchar(max)),
+    CAST(p.hdlhchung AS nvarchar(max)),
+    CAST(NULL AS nvarchar(max)),
+    CAST(NULL AS nvarchar(max)),
+    CAST(NULL AS nvarchar(200)),
+    CAST(p.c_kehoachdathang_id AS nvarchar(200)),
+    CAST(p.donhang AS nvarchar(200))
+FROM c_kehoachdathang_dhcpx p
+INNER JOIN target t ON t.c_danhsachdathang_id = p.c_danhsachdathang_id
+UNION ALL
+SELECT
+    N'DDHPX',
+    d.md_dondathangphanxuong_id,
+    t.sochungtu,
+    t.so_po,
+    CAST(d.sochungtu AS nvarchar(200)),
+    CAST(NULL AS nvarchar(200)),
+    CAST(NULL AS bit),
+    CAST(NULL AS datetime),
+    d.ngaycapnhat,
+    CAST(NULL AS datetime),
+    d.value_nguoicapnhat,
+    CAST(d.hdlh AS nvarchar(max)),
+    CAST(d.hdlhchung AS nvarchar(max)),
+    CAST(NULL AS nvarchar(max)),
+    CAST(NULL AS nvarchar(max)),
+    CAST(NULL AS nvarchar(200)),
+    CAST(d.c_kehoachdathang_id AS nvarchar(200)),
+    CAST(d.donhang_thamchieu AS nvarchar(200))
+FROM md_dondathangphanxuong d
+INNER JOIN c_kehoachdathang_dhcpx p ON p.c_kehoachdathang_dhcpx_id = d.c_kehoachdathang_dhcpx_id
+INNER JOIN target t ON t.c_danhsachdathang_id = p.c_danhsachdathang_id
